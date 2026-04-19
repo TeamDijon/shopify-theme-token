@@ -1,4 +1,9 @@
-.context/
-.claude/settings.local.json
-.claude/skills/
+# Claude Code junctions to .context/ (tracked on the context branch)
 .claude/rules/
+.claude/skills/
+
+# Personal Claude Code permissions
+.claude/settings.local.json
+
+# Worktree pinned to the orphan context branch
+.context/
