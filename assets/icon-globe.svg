@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50" data-name="globe">
+  <path data-edge="" d="M 25 2 A 23 23 0 1 1 25 48 A 23 23 0 1 1 25 2 Z"/>
+  <path data-edge="" d="M 2 25 L 48 25"/>
+  <path data-edge="" d="M 25 2 C 12 8 12 42 25 48"/>
+  <path data-edge="" d="M 25 2 C 38 8 38 42 25 48"/>
+</svg>
