@@ -7,4 +7,54 @@
  * them to be replayed on top of admin edits when both move in parallel.
  * ------------------------------------------------------------
  */
-{}
+{
+  "spacing": {
+    "name": "Espacement",
+    "gutter": {
+      "content": "Gouttière",
+      "mobile": "Mobile",
+      "desktop": "Bureau"
+    }
+  },
+  "colors": {
+    "name": "Couleurs",
+    "scheme": {
+      "background": "Arrière-plan",
+      "background_gradient": "Dégradé d'arrière-plan",
+      "foreground": "Texte",
+      "foreground_heading": "Titres",
+      "primary": "Principal / accent",
+      "border": "Bordures",
+      "shadow": "Ombre",
+      "primary_button_header": "Bouton principal",
+      "secondary_button_header": "Bouton secondaire",
+      "inputs_header": "Champs de saisie"
+    },
+    "meta_theme_color": {
+      "header": "Couleur <meta>",
+      "header_info": "Les couleurs du thème sont disponibles via le métaobjet « Couleur de thème »",
+      "label": "Couleur",
+      "info": "[Consulter la documentation](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/meta/name/theme-color)"
+    }
+  },
+  "typography": {
+    "name": "Typographie",
+    "text_styles": {
+      "header": "Styles de texte",
+      "header_info": "Les styles de texte sont disponibles via le métaobjet « Style de texte »",
+      "base_label": "Style de texte de base"
+    },
+    "fonts": {
+      "mono_label": "Police monospace",
+      "sans_serif_label": "Police sans empattement",
+      "serif_label": "Police à empattement"
+    }
+  },
+  "favicon": {
+    "name": "Favicon",
+    "image": {
+      "label": "Image favicon",
+      "info": "Format carré recommandé. Sera redimensionné à 32×32 pixels"
+    }
+  }
+}

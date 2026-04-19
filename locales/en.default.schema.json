@@ -1,10 +1,51 @@
-/*
- * ------------------------------------------------------------
- * Schema translations for theme settings, section names, and block names.
- *
- * The Shopify admin language editor may overwrite this file when merchants
- * edit schema labels through the UI. Keep hand-edits minimal and expect
- * them to be replayed on top of admin edits when both move in parallel.
- * ------------------------------------------------------------
- */
-{}
+{
+  "spacing": {
+    "name": "Spacing",
+    "gutter": {
+      "content": "Gutter",
+      "mobile": "Mobile",
+      "desktop": "Desktop"
+    }
+  },
+  "colors": {
+    "name": "Colors",
+    "scheme": {
+      "background": "Background",
+      "background_gradient": "Background gradient",
+      "foreground": "Text",
+      "foreground_heading": "Headings",
+      "primary": "Primary / accent",
+      "border": "Borders",
+      "shadow": "Shadow",
+      "primary_button_header": "Primary button",
+      "secondary_button_header": "Secondary button",
+      "inputs_header": "Inputs"
+    },
+    "meta_theme_color": {
+      "header": "<meta> Theme color",
+      "header_info": "Theme colors are made available via the \"Theme color\" metaobject",
+      "label": "Color",
+      "info": "[See documentation](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/meta/name/theme-color)"
+    }
+  },
+  "typography": {
+    "name": "Typography",
+    "text_styles": {
+      "header": "Text styles",
+      "header_info": "Text styles are made available via the \"Text style\" metaobject",
+      "base_label": "Base text style"
+    },
+    "fonts": {
+      "mono_label": "Monospace font",
+      "sans_serif_label": "Sans Serif font",
+      "serif_label": "Serif font"
+    }
+  },
+  "favicon": {
+    "name": "Favicon",
+    "image": {
+      "label": "Favicon image",
+      "info": "Square format recommended. Will be scaled down to 32x32 pixels"
+    }
+  }
+}
