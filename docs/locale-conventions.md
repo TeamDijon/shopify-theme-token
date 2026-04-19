@@ -80,15 +80,58 @@ See `.claude/rules/liquid-date-translation.md` for the replacement pattern.
 
 ## Schema file (`*.schema.json`)
 
-Schema translations live in a separate file. Shopify's keys are dictated:
+Schema translations live in `*.schema.json` and are referenced from schema JSON via the `t:` prefix. Unlike runtime translations (`| t` filter on strings), schema translations are resolved by Shopify at theme-editor display time.
 
-- `general.*` — top-level theme settings
-- `sections.<type>.*` — section UI labels (name, settings, option labels)
-- `blocks.<type>.*` — block UI labels
-- `settings_schema.<setting_id>.*` — detailed settings translations
+### Reference syntax
 
-Agent-editable now that scale is manageable, but expect the Shopify admin language editor to overwrite. Keep hand-edits small and treat the file as soft-shared state with the admin.
+```json
+{
+  "name": "t:spacing.name",
+  "settings": [
+    { "type": "header", "content": "t:spacing.gutter.content" },
+    { "type": "range", "id": "mobile_gutter", "label": "t:spacing.gutter.mobile", ... }
+  ]
+}
+```
+
+The `t:` prefix accepts dotted keys resolving into `*.schema.json`. Shopify's docs example: `t:sections.product.name`.
+
+### Translatable fields
+
+The following schema fields accept `t:` values:
+
+- Section / block: `name`
+- All settings: `label`, `info`
+- `header` and `paragraph` settings: `content`
+- `select` options: `group`
+- `text`, `textarea`, etc.: `placeholder`
+- `range`: `unit`
+- Presets: `name`, `category`
+- Content fields (text, richtext, video, etc.): `default`
+
+Other fields (ids, defaults for numeric/color/boolean types, types, roles) are NOT translatable and stay hardcoded.
+
+### Key structure (project convention)
+
+Top-level keys are **setting groups** (`spacing`, `colors`, `typography`, `favicon`) or **section/block types** (`sections.foo`, `blocks.bar`). Inside each group, organize by purpose:
+
+- `<group>.name` — the group title
+- `<group>.<subgroup>.<field>` — scoped setting fields. Examples:
+  - `spacing.gutter.mobile` — mobile gutter label
+  - `colors.scheme.background` — background color label (reused across button bg, input bg, etc.)
+  - `colors.meta_theme_color.info` — info text for the meta_theme_color setting
+
+Reuse keys when the string is identical across settings (e.g. `colors.scheme.background` is the label for `background`, `primary_button_background`, `secondary_button_background`, `input_background` — all "Background").
+
+### Admin-editor overwrites
+
+The Shopify admin language editor can overwrite `*.schema.json` when merchants edit labels through the UI. Agents editing this file should:
+
+- Expect re-applied patches after admin edits
+- Keep changes small and focused
+- Not batch unrelated edits into a single patch
 
 ## Related
 
 - Date translation pattern: `.claude/rules/liquid-date-translation.md`
+- Shopify `t:` docs: https://shopify.dev/docs/storefronts/themes/architecture/locales/schema-locale-files

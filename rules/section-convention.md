@@ -110,4 +110,5 @@ A rendered section produces two nested wrappers:
 - Dynamic style pattern: `.context/docs/dynamic-style-pattern.md`
 - Schema conventions: `.context/docs/schema-conventions.md`
 - Design-system metaobjects: `.context/docs/design-system-metaobjects.md`
+- Locale conventions (incl. `t:` prefix for schema translations): `.context/docs/locale-conventions.md`
 - Versioning and changelog: `.context/docs/versioning-and-changelog.md`
