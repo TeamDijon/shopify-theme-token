@@ -1,0 +1,15 @@
+{% # Preload hints v1.0.0 %}
+
+{% doc %}
+  @description Renders <link rel="preload"> / <link rel="preconnect"> / <link rel="dns-prefetch"> hints for critical-path resources.
+
+  Add a hint here when a resource is:
+  - Needed before the renderer discovers it in CSS/JS (fonts referenced from CSS, hero images, etc.)
+  - Hosted on a third-party origin whose TCP/TLS handshake is worth starting early (preconnect)
+
+  Skip when:
+  - The resource is inlined
+  - Shopify's CDN already handles it
+
+  @example {% render 'utility--preload-hints' %}
+{% enddoc %}

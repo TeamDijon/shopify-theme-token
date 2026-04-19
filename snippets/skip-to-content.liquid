@@ -1,0 +1,17 @@
+{% # Skip to content v1.1.0 %}
+
+{% comment %}
+  Changelog
+  - v1.1.0 — drop redundant `role="link"`, `tabindex="0"`, and `aria-label` (native <a> semantics cover them; matching aria-label/text is an anti-pattern)
+  - v1.0.0 — initial
+{% endcomment %}
+
+{% doc %}
+  @description Accessibility helper: renders a "Skip to content" link targeting `#page_content`. Called directly from layouts before section groups to let keyboard and screen-reader users bypass navigation. Styled in `assets/core.css` (visually hidden until focused).
+
+  @example {% render 'skip-to-content' %}
+{% enddoc %}
+
+<a class="skip-to-content" href="#page_content">
+  {{- 'actions.skip_to_content' | t -}}
+</a>

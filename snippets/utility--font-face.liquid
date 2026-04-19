@@ -1,0 +1,58 @@
+{% # Font Face v1.2.0 %}
+
+{% comment %}
+  Changelog
+  - v1.2.0 — map `otf` → `opentype` and `ttf` → `truetype` in the format() descriptor
+  - v1.1.0 — quote font-family to handle multi-word names; single-line output
+  - v1.0.0 — initial
+{% endcomment %}
+
+{% doc %}
+  @description Emits @font-face declarations from the `typeface` metaobject. Designed to be captured by the caller (see `utility--core-assets`) and piped through the inline-CSS asset loader. Emits nothing when no typefaces are defined.
+
+  Depends on: `typeface` and `font` metaobjects. See `.context/docs/design-system-metaobjects.md`.
+
+  @example {% render 'utility--font-face' %}
+{% enddoc %}
+
+{% for typeface in metaobjects.typeface.values %}
+  {% liquid
+    if typeface.name.value == blank or typeface.asset_list.value.size == 0
+      continue
+    endif
+  %}
+
+  {% for font in typeface.font_list.value %}
+    {% liquid
+      assign font_weight = font.weight.value | plus: 0
+
+      if font_weight < 100
+        assign font_weight_start = font.weight_range_start.value | plus: 0
+        assign font_weight_end = font.weight_range_end.value | plus: 0
+
+        if font_weight_start < 100 or font_weight_end < 100 or font_weight_start >= font_weight_end
+          continue
+        endif
+
+        assign font_weight = font_weight_start | append: ' ' | append: font_weight_end
+      endif
+    %}
+
+    {% capture font_source %}
+      {%- for asset in font.asset_list.value -%}
+        {%- liquid
+          assign asset_format = asset.url | split: '.' | last | split: '?' | first
+
+          if asset_format == 'otf'
+            assign asset_format = 'opentype'
+          elsif asset_format == 'ttf'
+            assign asset_format = 'truetype'
+          endif
+        -%}
+        url("{{ asset.url }}") format("{{ asset_format }}"){% unless forloop.last %}, {% endunless %}
+      {%- endfor %}
+    {% endcapture %}
+
+    @font-face { src: {{ font_source }}; font-family: "{{ typeface.name.value }}"; font-style: {{ font.style.value }}; font-weight: {{ font_weight }}; font-display: swap; }
+  {% endfor %}
+{% endfor %}

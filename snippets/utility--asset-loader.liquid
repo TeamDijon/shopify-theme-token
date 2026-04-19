@@ -1,0 +1,51 @@
+{% # Asset loader v1.3.0 %}
+
+{% comment %}
+  Changelog
+  - v1.3.0 — use break for early exit; drop dead rel="modulepreload" on <script>; stop stripping newlines in inline JS (ASI/comment safety)
+  - v1.2.0 — (template-theme history)
+{% endcomment %}
+
+{% doc %}
+  @description Loads assets for a component with per-channel strategies. See `.context/docs/asset-loading.md` for strategy details.
+
+  @param {string} [name] - Component name. Resolves to assets/<name>.css and assets/<name>.js.
+  @param {string} [css] - CSS strategy: 'link' (default), 'inline', or false
+  @param {string} [js] - JS strategy: 'module' (default), 'preload', 'inline', or false
+  @param {string} [css_content] - Arbitrary CSS string; used when css='inline' and no name is given
+  @param {string} [js_content] - Arbitrary JS string; used when js='inline' and no name is given
+
+  @example {% render 'utility--asset-loader', name: 'hero-section' %}
+  @example {% render 'utility--asset-loader', name: 'core', css: 'inline', js: 'preload' %}
+  @example {% render 'utility--asset-loader', css: 'inline', css_content: dynamic_style, js: false %}
+{% enddoc %}
+
+{% liquid
+  assign css = css | default: 'link', allow_false: true
+  assign js = js | default: 'module', allow_false: true
+
+  if css == false and js == false
+    break
+  endif
+
+  if css == 'link' and name != blank
+    echo name | append: '.css' | asset_url | stylesheet_tag
+  elsif css == 'inline' and css_content != blank
+    render 'utility--css-minifier', css_content: css_content
+  elsif css == 'inline' and name != blank
+    assign css_content = name | append: '.css' | inline_asset_content
+    render 'utility--css-minifier', css_content: css_content
+  endif
+
+  if js == 'module' and name != blank
+    echo name | append: '.js' | asset_url | script_tag | replace: 'text/javascript', 'module'
+  elsif js == 'preload' and name != blank
+    echo name | append: '.js' | asset_url | prepend: '<link rel="modulepreload" fetchpriority="high" href="' | append: '">'
+    echo name | append: '.js' | asset_url | script_tag | replace: 'text/javascript', 'module'
+  elsif js == 'inline' and js_content != blank
+    echo '<script>' | append: js_content | append: '</script>'
+  elsif js == 'inline' and name != blank
+    assign js_content = name | append: '.js' | inline_asset_content
+    echo '<script>' | append: js_content | append: '</script>'
+  endif
+%}

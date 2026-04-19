@@ -1,0 +1,19 @@
+{% # Language v1.0.0 %}
+
+{% doc %}
+  @description Render the lang and dir attributes for the HTML tag based on the current locale.
+
+  @example {% render 'utility--language' %}
+{% enddoc %}
+
+{% liquid
+  assign language_code = request.locale.iso_code
+  assign language_direction = 'ltr'
+
+  assign rtl_language_list = 'ae,ar,arc,bcc,bqi,ckb,dv,fa,glk,ha,he,kwh,ks,ku,mzn,nqo,pnb,ps,sd,ug,ur,yi' | split: ','
+  if rtl_language_list contains language_code
+    assign language_direction = 'rtl'
+  endif
+%}
+
+lang="{{ language_code }}" dir="{{ language_direction }}"

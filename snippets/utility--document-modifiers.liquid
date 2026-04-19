@@ -1,0 +1,28 @@
+{% # Document modifiers v1.1.0 %}
+
+{% comment %}
+  Changelog
+  - v1.1.0 — fix missing comma before `policy`; policy pages now emit `template:policy`; delegate attribute emission to `utility--modifiers`
+  - v1.0.0 — initial
+{% endcomment %}
+
+{% doc %}
+  @description Renders document-scope data-modifiers for the <html> tag: template name, design-mode flag. Policy pages report as `template:policy`.
+
+  @example {% render 'utility--document-modifiers' %}
+{% enddoc %}
+
+{% liquid
+  assign template_value = template
+  if request.page_type == 'policy'
+    assign template_value = 'policy'
+  endif
+
+  assign modifier_list = 'template:' | append: template_value
+
+  if request.design_mode
+    assign modifier_list = modifier_list | append: ',shopify-design-mode'
+  endif
+
+  render 'utility--modifiers', modifier_list: modifier_list
+%}

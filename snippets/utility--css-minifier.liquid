@@ -1,0 +1,37 @@
+{% # CSS Minifier v1.2.0 %}
+
+{% comment %}
+  Changelog
+  - v1.2.0 — drop unused `base_selector` param; simplify empty check to `css_content == blank`
+  - v1.1.0 — use squish filter for the whitespace-normalization pass; use break for early exit
+  - v1.0.0 — initial
+{% endcomment %}
+
+{% doc %}
+  @description Minifies CSS (comment strip + whitespace collapse + syntax-token space removal) and wraps it in a <style> tag. Returns nothing when the input is blank.
+
+  @param {string} css_content - CSS to minify
+
+  @example {% render 'utility--css-minifier', css_content: css_content %}
+{% enddoc %}
+
+{% liquid
+  if css_content == blank
+    break
+  endif
+
+  # Normalize whitespace and strip /* ... */ comments
+  assign css_chunk_list = css_content | squish | split: '*/'
+  assign minified_css = ''
+  for css_chunk in css_chunk_list
+    assign minified_chunk = css_chunk | split: '/*' | first | strip
+    assign minified_css = minified_css | append: minified_chunk
+  endfor
+
+  # Collapse spaces around CSS syntax tokens
+  assign minified_css = minified_css | replace: '; ', ';' | replace: '} ', '}' | replace: '{ ', '{' | replace: ' {', '{' | replace: ': ', ':' | replace: ';}', '}' | replace: ') ;', ');'
+
+  style
+    echo minified_css
+  endstyle
+%}

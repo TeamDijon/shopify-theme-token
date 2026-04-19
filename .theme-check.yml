@@ -1,3 +1,11 @@
 root: .
 
 ignore: [".github/", ".shopify/", ".vscode/", "node_modules/"]
+
+ParserBlockingScript:
+  ignore: ["snippets/utility--asset-loader.liquid"]
+
+UnknownFilter:
+  ignore:
+    - "snippets/utility--css-minifier.liquid"
+    - "snippets/utility--structured-data.liquid"

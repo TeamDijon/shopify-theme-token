@@ -1,0 +1,30 @@
+{% # Import map v1.1.0 %}
+
+{% comment %}
+  Changelog
+  - v1.1.0 — switch to loop-based rendering from a single module_list array for DRY maintenance; update specifiers to @theme/<name> (flat naming)
+  - v1.0.0 — initial
+{% endcomment %}
+
+{% doc %}
+  @description
+  Renders a <script type="importmap"> declaring module specifiers for the theme's JS modules. Each module in `module_list` becomes the specifier `@theme/<name>` resolving to `assets/<name>.js`. Emits nothing when the list is empty.
+
+  When adding a new JS module, append its filename (without extension) to `module_list` below.
+
+  @example {% render 'utility--import-map' %}
+{% enddoc %}
+
+{% assign module_list = '' | split: ',' %}
+
+{%- if module_list.size > 0 -%}
+  <script type='importmap'>
+    {
+      "imports": {
+        {%- for module_name in module_list -%}
+          "@theme/{{ module_name }}": "{{ module_name | append: '.js' | asset_url }}"{% unless forloop.last %},{% endunless %}
+        {%- endfor %}
+      }
+    }
+  </script>
+{%- endif -%}

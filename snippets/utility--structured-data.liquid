@@ -1,0 +1,211 @@
+{% # Structured Data v2.0.0 %}
+
+{% comment %}
+  Changelog
+  - v2.0.0 — drop judge.me review augmentation (organization + product); fix missing comma in website schema; swap whitespace pipeline to squish
+  - v1.0.0 — initial
+{% endcomment %}
+
+{% doc %}
+  @description
+  Emits site-wide schema.org JSON-LD (`<script type="application/ld+json">` blocks) in the <head>:
+  - Organization (always)
+  - WebSite (index only)
+  - BreadcrumbList (always; uses the `breadcrumb.collection` metafield convention — see `.context/docs/metafield-patterns.md`)
+  - Product (product pages only)
+
+  Each schema is built via `{% capture %}` with readable JSON, then squished and wrapped in a script tag. Entries accumulate into `schema_snippet_list` which is iterated once at the end — adding a new schema is one capture + one concat.
+
+  Section- or block-scoped schemas (e.g. Article, Event) can be emitted inline by those files; multiple JSON-LD blocks on a single page is valid per the schema.org spec.
+
+  @example {% render 'utility--structured-data' %}
+{% enddoc %}
+
+{% assign schema_snippet_list = null | uniq %}
+
+{% # Organization schema %}
+{% capture organization_schema %}
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "{{ shop.name | escape }}",
+    {% if shop.brand.logo %}
+      "logo": "{{ shop.brand.logo | image_url: width: 512 | prepend: 'https:' }}",
+    {% endif %}
+    {% if shop.brand.short_description %}
+      "description": "{{ shop.brand.short_description | escape }}",
+    {% endif %}
+    {% if shop.brand.slogan %}
+      "slogan": "{{ shop.brand.slogan | escape }}",
+    {% endif %}
+    {% if shop.brand.metafields.social_links.size > 0 %}
+      "sameAs": [
+        {% for social_link in shop.brand.metafields.social_links %}
+          "{{ social_link.last.value }}"{% if forloop.last == false %},{% endif %}
+        {% endfor %}
+      ],
+    {% endif %}
+    "url": "{{ request.origin | append: page.url }}"
+  }
+{% endcapture %}
+{% assign schema_snippet_list = organization_schema
+  | squish
+  | prepend: '<script type="application/ld+json">'
+  | append: '</script>'
+  | uniq
+  | concat: schema_snippet_list
+%}
+
+{% # Website schema %}
+{% if request.page_type == 'index' %}
+  {% capture website_schema %}
+    {% assign potential_search_action = request.origin | append: routes.search_url | append: '?q={search_term_string}' %}
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "{{ shop.name | escape }}",
+      "url": "{{ request.origin | append: page.url }}",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": {
+          "@type": "EntryPoint",
+          "urlTemplate": "{{ potential_search_action }}"
+        },
+        "query-input": "required name=search_term_string"
+      }
+    }
+  {% endcapture %}
+  {% assign schema_snippet_list = website_schema
+    | squish
+    | prepend: '<script type="application/ld+json">'
+    | append: '</script>'
+    | uniq
+    | concat: schema_snippet_list
+  %}
+{% endif %}
+
+{% # Breadcrumb schema %}
+{% capture breadcrumb_schema %}
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [{
+        "@type": "ListItem",
+        "position": 1,
+        "name": "{{ shop.name | escape }}",
+        "item": "{{ shop.url }}"
+      }{% if request.page_type != 'index' %},{% endif %}
+
+      {% liquid
+        assign breadcrumb_index = 2
+        if request.page_type == 'collection' or request.page_type == 'product'
+          assign current_collection = product.metafields.breadcrumb.collection.value | default: product.collections[0] | default: collection
+
+          assign breadcrumb_collection_list = current_collection | uniq
+          for i in (0..9)
+            assign mother_collection = current_collection.metafields.breadcrumb.collection.value
+            if mother_collection == blank
+              break
+            endif
+
+            assign breadcrumb_collection_list = mother_collection | uniq | concat: breadcrumb_collection_list
+            assign current_collection = mother_collection
+          endfor
+        endif
+      %}
+
+      {% if request.page_type != 'index' %}
+        {% if request.page_type == 'collection' or request.page_type == 'product' %}
+          {% for breadcrumb_collection in breadcrumb_collection_list %}
+            {
+              "@type": "ListItem",
+              "position": {{ breadcrumb_index }},
+              "name": "{{ breadcrumb_collection.title | escape }}",
+              "item": "{{ breadcrumb_collection.url | prepend: request.origin }}"
+            }{% if forloop.last == false or request.page_type == 'product' %},{% endif %}
+
+            {% assign breadcrumb_index = breadcrumb_index | plus: 1 %}
+          {% endfor %}
+
+          {% if request.page_type == 'product' %}
+            {
+              "@type": "ListItem",
+              "position": {{ breadcrumb_index }},
+              "name": "{{ product.title | escape }}",
+              "item": "{{ product.url | prepend: request.origin }}"
+            }
+          {% endif %}
+        {% else %}
+          {
+            "@type": "ListItem",
+            "position": {{ breadcrumb_index }},
+            "name": "{{ page_title | escape }}",
+            "item": "{{ request.path | prepend: request.origin }}"
+          }
+        {% endif %}
+      {% endif %}
+    ]
+  }
+{% endcapture %}
+{% assign schema_snippet_list = breadcrumb_schema
+  | squish
+  | prepend: '<script type="application/ld+json">'
+  | append: '</script>'
+  | uniq
+  | concat: schema_snippet_list
+%}
+
+{% # Product schema %}
+{% if request.page_type == 'product' %}
+  {% capture product_schema %}
+    {% assign product_title = product.metafields.seo.title.value | default: product.title %}
+    {
+      "@context": "https://schema.org",
+      "@type": "Product",
+      "name": "{{ product_title | escape }}",
+      "productID": "{{ product.id }}",
+      "description": "{{ product.description | strip_html | escape }}",
+      "category": "{{ product.type | escape }}",
+      "url": "{{ product.url }}",
+      "image": {
+        "@type": "ImageObject",
+        "url": "https:{{ product.featured_image | image_url: width: product.featured_image.width }}",
+        "image": "https:{{ product.featured_image | image_url: width: product.featured_image.height }}",
+        "name": "{{ product.featured_image.alt | escape }}",
+        "width": "{{ product.featured_image.width }}",
+        "height": "{{ product.featured_image.height }}"
+      },
+      "offers": [
+        {% for variant in product.variants %}
+          {
+            "@type": "Offer",
+            "name": "{{ product_title | escape }} - {{ variant.title | escape }}",
+            {% if variant.available %}
+              "availability": "http://schema.org/InStock",
+            {% else %}
+              "availability": "http://schema.org/OutOfStock",
+            {% endif %}
+            {% if variant.sku != blank %}
+              "sku": "{{ variant.sku }}",
+            {% endif %}
+            "url": "{{ variant.url }}",
+            "price": {{ variant.price | divided_by: 100.0 }},
+            "priceCurrency": "{{ cart.currency.iso_code }}",
+            "priceValidUntil": "{{ 'now' | date: '%s' | plus: 864000 | date: '%Y-%m-%d' }}"
+          }{% if forloop.last == false %},{% endif %}
+        {% endfor %}
+      ]
+    }
+  {% endcapture %}
+  {% assign schema_snippet_list = product_schema
+    | squish
+    | prepend: '<script type="application/ld+json">'
+    | append: '</script>'
+    | uniq
+    | concat: schema_snippet_list
+  %}
+{% endif %}
+
+{% for schema_snippet in schema_snippet_list reversed %}
+  {{ schema_snippet }}
+{% endfor %}

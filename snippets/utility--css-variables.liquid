@@ -1,0 +1,246 @@
+{% # CSS Variables v1.2.1 %}
+
+{% comment %}
+  Changelog
+  - v1.2.1 — inline the media queries inside :root via native CSS nesting; no behavior change, cleaner output
+  - v1.2.0 — replace clamp-based responsive snap with explicit `@media (width >= 48rem)` overrides for font-size and gutter; clearer intent, no stealth ramp math
+  - v1.1.0 — drop `experience-section` :has selector in favor of `.shopify-section`; use `base_text_style` as the default-font-family fallback (was `settings.text_style`, which does not exist in the settings schema)
+  - v1.0.0 — initial
+{% endcomment %}
+
+{% doc %}
+  @description Emits :root and per-scheme custom properties from design-system metaobjects and settings. Designed to be captured by the caller (see `utility--core-assets`) and piped through the inline-CSS asset loader. Returns nothing when the output would be empty.
+
+  Depends on:
+  - `theme_color` metaobject — `.system.handle` + `.hex_code.value`
+  - `text_style` metaobject — many fields, see `.context/docs/design-system-metaobjects.md`
+  - `typeface` metaobject (nested via `text_style.font_family`)
+  - Theme settings: `color_schemes` (built-in), `base_text_style`, `mono_font`, `serif_font`, `sans_serif_font`, `mobile_gutter`, `desktop_gutter`
+
+  @example {% render 'utility--css-variables' %}
+{% enddoc %}
+
+{% capture css_variables %}
+  {% # Theme colors %}
+  :root {
+    {% for theme_color in metaobjects.theme_color.values %}
+      --{{ theme_color.system.handle }}-color: {{ theme_color.hex_code.value }};
+    {% endfor %}
+
+    --color-error: #DC2626;
+    --color-success: #16A34A;
+    --color-warning: #D97706;
+  }
+
+  ::selection {
+    background-color: rgba(var(--color-primary-rgb), 0.3);
+    color: var(--color-foreground);
+  }
+
+  {% # Color schemes %}
+  {% for scheme in settings.color_schemes -%}
+    {% liquid
+      assign background_brightness = scheme.settings.background | color_brightness
+      if background_brightness < 64
+        assign opacity_subtle = 0.15
+        assign opacity_muted = 0.60
+        assign opacity_border_soft = 0.25
+      else
+        assign opacity_subtle = 0.05
+        assign opacity_muted = 0.40
+        assign opacity_border_soft = 0.10
+      endif
+    %}
+
+    {% if forloop.index == 1 %}
+      :root,
+    {% endif %}
+    [data-modifiers*="color-scheme:{{ scheme.id }}"],
+    .shopify-section:has([data-modifiers*="color-scheme:{{ scheme.id }}"]) {
+      --color-background: {{ scheme.settings.background }};
+      --color-background-rgb: {{ scheme.settings.background.red }}, {{ scheme.settings.background.green }}, {{ scheme.settings.background.blue }};
+      --gradient-background: {% if scheme.settings.background_gradient != blank %}{{ scheme.settings.background_gradient }}{% else %}{{ scheme.settings.background }}{% endif %};
+
+      --color-foreground: {{ scheme.settings.foreground }};
+      --color-foreground-rgb: {{ scheme.settings.foreground.red }}, {{ scheme.settings.foreground.green }}, {{ scheme.settings.foreground.blue }};
+
+      --color-foreground-heading: {{ scheme.settings.foreground_heading }};
+      --color-primary: {{ scheme.settings.primary }};
+      --color-primary-rgb: {{ scheme.settings.primary.red }}, {{ scheme.settings.primary.green }}, {{ scheme.settings.primary.blue }};
+      --color-border: {{ scheme.settings.border }};
+      --color-border-rgb: {{ scheme.settings.border.red }}, {{ scheme.settings.border.green }}, {{ scheme.settings.border.blue }};
+      --color-shadow: {{ scheme.settings.shadow }};
+      --color-shadow-rgb: {{ scheme.settings.shadow.red }}, {{ scheme.settings.shadow.green }}, {{ scheme.settings.shadow.blue }};
+
+      --color-primary-button-bg: {{ scheme.settings.primary_button_background }};
+      --color-primary-button-text: {{ scheme.settings.primary_button_text }};
+      --color-primary-button-border: {{ scheme.settings.primary_button_border }};
+      --color-secondary-button-bg: {{ scheme.settings.secondary_button_background }};
+      --color-secondary-button-text: {{ scheme.settings.secondary_button_text }};
+      --color-secondary-button-border: {{ scheme.settings.secondary_button_border }};
+
+      --color-input-bg: {{ scheme.settings.input_background }};
+      --color-input-text: {{ scheme.settings.input_text }};
+      --color-input-text-rgb: {{ scheme.settings.input_text.red }}, {{ scheme.settings.input_text.green }}, {{ scheme.settings.input_text.blue }};
+      --color-input-border: {{ scheme.settings.input_border }};
+
+      --opacity-subtle: {{ opacity_subtle }};
+      --opacity-muted: {{ opacity_muted }};
+      --opacity-border-soft: {{ opacity_border_soft }};
+
+      --color-primary-button-bg-hover: color-mix(in oklab, var(--color-primary-button-bg), black 12%);
+      --color-primary-button-text-hover: var(--color-primary-button-text);
+      --color-primary-button-border-hover: color-mix(in oklab, var(--color-primary-button-border), black 12%);
+      --color-secondary-button-bg-hover: color-mix(in oklab, var(--color-secondary-button-bg), var(--color-foreground) 8%);
+      --color-secondary-button-text-hover: var(--color-secondary-button-text);
+      --color-secondary-button-border-hover: color-mix(in oklab, var(--color-secondary-button-border), black 12%);
+      --color-input-bg-hover: color-mix(in oklab, var(--color-input-bg), var(--color-foreground) 4%);
+      --color-input-border-hover: color-mix(in oklab, var(--color-input-border), var(--color-foreground) 20%);
+
+      --color-foreground-muted: rgba(var(--color-foreground-rgb), var(--opacity-muted));
+      --color-placeholder: rgba(var(--color-input-text-rgb), 0.5);
+      --color-disabled-bg: rgba(var(--color-foreground-rgb), var(--opacity-subtle));
+      --color-disabled-text: rgba(var(--color-foreground-rgb), 0.4);
+      --color-disabled-border: rgba(var(--color-foreground-rgb), var(--opacity-border-soft));
+      --color-focus-ring: var(--color-primary);
+      --color-backdrop: rgba(var(--color-shadow-rgb), 0.5);
+
+      --font-heading--color: var(--color-foreground-heading);
+
+      --shadow-sm: 0 1px 2px rgba(var(--color-shadow-rgb), 0.06);
+      --shadow-md: 0 4px 12px rgba(var(--color-shadow-rgb), 0.10);
+      --shadow-lg: 0 8px 24px rgba(var(--color-shadow-rgb), 0.14);
+    }
+  {% endfor %}
+
+  {% # Text styles %}
+  {% liquid
+    assign base_text_style = settings.base_text_style
+    assign hn_style_list = 'h1,h2,h3,h4,h5,h6' | split: ','
+  %}
+
+  {% for text_style in metaobjects.text_style.values %}
+    {% liquid
+      if forloop.first
+        assign default_font_family = base_text_style.font_family.value.name.value
+      endif
+
+      assign style_handle = text_style.system.handle
+
+      assign font_family = text_style.font_family.value.name.value | default: default_font_family
+      assign font_fallback_family = text_style.font_fallback_family.value | default: 'sans-serif'
+      case text_style.font_fallback_family.value
+        when 'mono'
+          assign font_fallback_family = settings.mono_font
+
+        when 'serif'
+          assign font_fallback_family = settings.serif_font
+
+        else
+          assign font_fallback_family = settings.sans_serif_font
+      endcase
+      assign font_family = font_family | append: ', ' | append: font_fallback_family.family | append: ', ' | append: font_fallback_family.fallback_families
+
+      assign font_style = text_style.font_style.value | default: 'normal'
+
+      assign mobile_font_size = text_style.mobile_font_size.value | divided_by: 16.0 | round: 3
+      assign desktop_font_size = text_style.desktop_font_size.value | divided_by: 16.0 | round: 3
+      if mobile_font_size == 0 and desktop_font_size == 0
+        assign mobile_font_size = 1.0
+        assign desktop_font_size = 1.0
+      elsif mobile_font_size == 0
+        assign mobile_font_size = desktop_font_size
+      elsif desktop_font_size == 0
+        assign desktop_font_size = mobile_font_size
+      endif
+
+      assign line_height = text_style.line_height.value | divided_by: 100.0 | round: 2
+      if line_height == 0
+        assign line_height = 1.5
+      endif
+
+      assign font_weight = text_style.weight.value | default: '400'
+      assign letter_spacing = text_style.letter_spacing.value | divided_by: 16.0 | round: 3
+
+      assign text_style_transform = 'none'
+      if text_style.uppercase.value == true
+        assign text_style_transform = 'uppercase'
+      endif
+
+      assign text_style_decoration = 'none'
+      if text_style.underline.value == true
+        assign text_style_decoration = 'underline'
+      endif
+    %}
+
+    :root {
+      --{{ style_handle }}-font-family: {{ font_family }};
+      --{{ style_handle }}-font-style: {{ font_style }};
+      --{{ style_handle }}-font-size: {{ mobile_font_size }}rem;
+
+      --{{ style_handle }}-line-height: {{ line_height }};
+
+      --{{ style_handle }}-font-weight: {{ font_weight }};
+      --{{ style_handle }}-letter-spacing: {{ letter_spacing }}rem;
+
+      --{{ style_handle }}-text-transform: {{ text_style_transform }};
+      --{{ style_handle }}-text-decoration: {{ text_style_decoration }};
+
+      {% if base_text_style != null and text_style == base_text_style %}
+        --base-font-family: var(--{{ style_handle }}-font-family);
+        --base-font-style: var(--{{ style_handle }}-font-style);
+        --base-font-size: var(--{{ style_handle }}-font-size);
+        --base-line-height: var(--{{ style_handle }}-line-height);
+        --base-font-weight: var(--{{ style_handle }}-font-weight);
+        --base-letter-spacing: var(--{{ style_handle }}-letter-spacing);
+        --base-text-transform: var(--{{ style_handle }}-text-transform);
+        --base-text-decoration: var(--{{ style_handle }}-text-decoration);
+      {% endif %}
+
+      {% if mobile_font_size != desktop_font_size %}
+        @media (width >= 48rem) {
+          --{{ style_handle }}-font-size: {{ desktop_font_size }}rem;
+        }
+      {% endif %}
+    }
+
+    {% if hn_style_list contains style_handle %}
+      {{ style_handle }},
+    {% endif %}
+    [data-text-style='{{ style_handle }}'],
+    [data-modifiers*='text-style:{{ style_handle }}'] {
+      font-family: var(--{{ style_handle }}-font-family);
+      font-style: var(--{{ style_handle }}-font-style);
+      font-size: var(--{{ style_handle }}-font-size);
+      line-height: var(--{{ style_handle }}-line-height);
+      font-weight: var(--{{ style_handle }}-font-weight);
+      letter-spacing: var(--{{ style_handle }}-letter-spacing);
+      text-transform: var(--{{ style_handle }}-text-transform);
+      text-decoration: var(--{{ style_handle }}-text-decoration);
+    }
+  {% endfor %}
+
+  {% # Spacing %}
+  {% liquid
+    assign mobile_gutter = settings.mobile_gutter | divided_by: 16.0 | round: 3
+    assign desktop_gutter = settings.desktop_gutter | divided_by: 16.0 | round: 3
+  %}
+  :root {
+    --mobile-gutter: {{ mobile_gutter }}rem;
+    --desktop-gutter: {{ desktop_gutter }}rem;
+    --gutter: var(--mobile-gutter);
+
+    {% if mobile_gutter != desktop_gutter %}
+      @media (width >= 48rem) {
+        --gutter: var(--desktop-gutter);
+      }
+    {% endif %}
+  }
+{% endcapture %}
+
+{% liquid
+  assign final_content = css_variables | remove: ':root {' | remove: '}' | strip
+  if final_content != blank
+    echo css_variables
+  endif
+%}

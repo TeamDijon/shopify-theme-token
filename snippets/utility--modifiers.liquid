@@ -1,0 +1,25 @@
+{% # Modifiers v1.1.0 %}
+
+{% comment %}
+  Changelog
+  - v1.1.0 — use break for early exit; drop redundant default
+  - v1.0.0 — initial
+{% endcomment %}
+
+{% doc %}
+  @description Renders the data-modifiers attribute, or nothing when the list is blank.
+
+  @param {string} [modifier_list] - Comma-separated modifier list. Blank omits the attribute entirely.
+
+  @example
+  {% assign modifier_list = 'size:large,state:active' %}
+  {% render 'utility--modifiers', modifier_list: modifier_list %}
+{% enddoc %}
+
+{% liquid
+  if modifier_list == blank
+    break
+  endif
+%}
+
+data-modifiers="{{ modifier_list }}"

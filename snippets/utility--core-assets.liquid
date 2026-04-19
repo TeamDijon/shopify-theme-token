@@ -1,0 +1,34 @@
+{% # Core Assets v1.1.0 %}
+
+{% comment %}
+  Changelog
+  - v1.1.0 — drop `lab.css` template-suffix branch (lab concept not in this theme)
+  - v1.0.0 — initial
+{% endcomment %}
+
+{% doc %}
+  @description
+  Emits the theme's head assets in order:
+  1. `core.css` inline (critical-path CSS) + `core.js` preloaded as an ES module
+  2. Dynamic styles (from `utility--font-face` + `utility--css-variables`) inlined as a second minified block
+  3. ES module import map
+
+  Intended to be called once in `layout/theme.liquid` inside <head>. See `.context/docs/asset-loading.md` for the strategy catalog used at each step.
+
+  @example {% render 'utility--core-assets' %}
+{% enddoc %}
+
+{% liquid
+  # Primary: core.css inline + core.js preload
+  render 'utility--asset-loader', name: 'core', css: 'inline', js: 'preload'
+
+  # Secondary: dynamic styles (fonts + CSS variables)
+  capture dynamic_style
+    render 'utility--font-face'
+    render 'utility--css-variables'
+  endcapture
+  render 'utility--asset-loader', css: 'inline', css_content: dynamic_style, js: false
+
+  # Tertiary: ES module import map
+  render 'utility--import-map'
+%}
