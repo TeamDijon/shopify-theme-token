@@ -69,3 +69,7 @@ assign month_local = 'dates.months.' | append: month_handle | t
 ## When to use
 
 When displaying dates to customers in any context where the store supports multiple locales. The same pattern works for day names using `dates.days` keys.
+
+## Related
+
+- Locale file structure: `.context/docs/locale-conventions.md`
