@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|resume",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "git -C .context pull --ff-only 2>&1 | tee /dev/stderr"
+          }
+        ]
+      }
+    ]
+  }
+}
