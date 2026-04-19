@@ -1,0 +1,13 @@
+{
+  "name": "shopify-theme-token",
+  "private": true,
+  "scripts": {
+    "dev": "npx shopify theme dev --environment development",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "devDependencies": {
+    "@shopify/cli": "^3.92.1",
+    "prettier": "^3.3.3"
+  }
+}

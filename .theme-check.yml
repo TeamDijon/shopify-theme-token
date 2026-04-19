@@ -1,0 +1,3 @@
+root: .
+
+ignore: [".github/", ".shopify/", ".vscode/", "node_modules/"]

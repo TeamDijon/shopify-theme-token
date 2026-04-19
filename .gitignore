@@ -7,3 +7,13 @@
 
 # Worktree pinned to the orphan context branch
 .context/
+
+# Shopify CLI local state
+.shopify/
+
+# Node
+node_modules/
+package-lock.json
+
+# Environment
+.env
