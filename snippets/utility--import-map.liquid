@@ -15,7 +15,7 @@
   @example {% render 'utility--import-map' %}
 {% enddoc %}
 
-{% assign module_list = '' | split: ',' %}
+{% assign module_list = 'core,utils,dom,events-manager,observers-manager,cache-manager,modifiers-manager,base-component' | split: ',' %}
 
 {%- if module_list.size > 0 -%}
   <script type='importmap'>
