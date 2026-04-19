@@ -7,7 +7,7 @@ paths:
 
 ## Naming
 
-- `core.js` — entry point. Imports every module, re-exports them for consumers, and populates the `window.experience` namespace for inline scripts and Liquid templates.
+- `core.js` — entry point. Imports every module, re-exports them for consumers, and populates the `window.theme` namespace for inline scripts and Liquid templates.
 - `<name>.js` — single-purpose module, no prefix (e.g. `utils.js`, `dom.js`, `events-manager.js`, `base-component.js`).
 - Module specifiers use `@theme/<name>` via the import map declared in `snippets/utility--import-map.liquid`. When adding a module, append its filename (without `.js`) to the `module_list` array in that snippet.
 
