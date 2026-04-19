@@ -11,7 +11,10 @@ This doc is the single source of truth for which metaobjects exist, their access
 | `button_style` | `button_style` | `.system.handle` | Button visual variant (e.g. `solid-primary`, `solid-secondary`, `outline`, `ghost`, `text-link`) |
 | `content_width` | `content_width` | `.width.value` (numeric px) | Max inline-size of a component |
 | `icon` | `icon` | `.file_name.value`, `.preset.value` | Consumed by `snippets/icon.liquid`; references `assets/icon-*.svg` by `file_name` |
-| `theme_color` | `content_color`, others | TBD — document as fields are accessed | Color token from the palette |
+| `theme_color` | `content_color`, `meta_theme_color`, others; also iterated via `metaobjects.theme_color.values` | `.system.handle` (used for CSS variable naming: `--<handle>-color`), `.hex_code.value` (hex string) | Color token from the palette |
+| `typeface` | — (iterated via `metaobjects.typeface.values`) | `.name.value`, `.asset_list.value` (size check), `.font_list.value` (list of nested `font` entries) | Font family + its variants; consumed by `snippets/utility--font-face.liquid` |
+| `font` (nested inside `typeface.font_list`) | — | `.weight.value`, `.weight_range_start.value`, `.weight_range_end.value`, `.style.value`, `.asset_list.value` (list of file assets) | Single font variant; supports static weights (100–900) and variable-font ranges (`weight < 100` ⇒ use range fields) |
+| `text_style` | `base_text_style` (singular); also iterated via `metaobjects.text_style.values` | `.system.handle`, `.font_family.value` (typeface ref; access `.name.value`), `.font_fallback_family.value` (`'mono'` / `'serif'` / other), `.font_style.value`, `.mobile_font_size.value` (px), `.desktop_font_size.value` (px), `.line_height.value` (pct × 100), `.weight.value`, `.letter_spacing.value` (px), `.uppercase.value` (boolean), `.underline.value` (boolean) | Typographic style definition; consumed by `snippets/utility--css-variables.liquid` which emits per-style `--<handle>-font-*` properties plus a utility rule targeting headings, `[data-text-style=<handle>]`, and `[data-modifiers*="text-style:<handle>"]` |
 
 ## Schema usage
 

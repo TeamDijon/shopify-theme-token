@@ -16,11 +16,11 @@ Every snippet in `snippets/*.liquid` follows this structure.
 2. **Changelog block** — `{% comment %}` with interface changes (see "Changelog" below). Omit on v1.0.0 only; required from any subsequent version.
 
 3. **`{% doc %}` block**
-   - `@description` — one-line purpose
+   - `@description` — concise purpose. One line when possible; multi-line (with structure — numbered steps, `Depends on:` callouts, etc.) when the description naturally warrants it. Keep it meaningful — the doc block is cheap but important.
    - `@param {type} [name] - <description>` — one line per param. Types: `string`, `boolean`, `number`, `metaobject`, `section`, `block`, `object`. Brackets `[name]` mark optional params. Describe default and blank-behavior.
    - `@example {% render '<name>', ... %}` — at least one usage. Multiple allowed for variants.
 
-4. **Logic block** — `{% liquid %}` for assign/capture/control flow. Resolve each param with a `| default:` chain: explicit arg → `block.settings.x` → literal default. Early-exit with `break` or `continue` when a required input is blank.
+4. **Logic block** — `{% liquid %}` for assign/capture/control flow. Resolve each param with a `| default:` chain: explicit arg → `block.settings.x` → literal default. Early-exit with `break` when a required input is blank (not `continue` — `break` reads as "stop this snippet").
 
 5. **Output** — HTML markup, followed by optional `{% stylesheet %}` block scoped to `.shopify-block--<name>` or the component's root class.
 
@@ -33,8 +33,10 @@ See `.context/docs/versioning-and-changelog.md` for format and policy.
 
 ## Naming
 
-- `utility--<name>.liquid` — internal helper producing attributes, metadata, or inline utility output (e.g. `utility--language`, `utility--base-selector`). No user-facing block markup.
-- `<name>.liquid` — renderable component consumed by a matching `blocks/<name>.liquid` (e.g. `button`, `icon`, `richtext`).
+- `utility--<name>.liquid` — internal helper that outputs head content, metadata, or attributes. Never visible body DOM. Examples: `utility--language` (emits `lang`/`dir`), `utility--open-graph` (emits `<meta>`), `utility--css-variables` (emits captured CSS).
+- `<name>.liquid` — renderable component that outputs visible body DOM. Either:
+  - Paired with a matching `blocks/<name>.liquid` that consumes it (e.g. `button`, `icon`, `richtext`), or
+  - Rendered directly from a layout, section, or another snippet when no merchant-editable block fits (e.g. `skip-to-content` — a fixed accessibility helper called from `layout/theme.liquid`).
 
 ## Example
 
