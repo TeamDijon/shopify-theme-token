@@ -1,0 +1,54 @@
+<!doctype html>
+<html {% render 'utility--language' %} {% render 'utility--document-modifiers' %}>
+  <head>
+    {% # Meta %}
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    {% # Meta theme color %}
+    {% render 'utility--meta-theme-color' %}
+
+    {% # Preload hints %}
+    {% render 'utility--preload-hints' %}
+
+    {% # Core assets %}
+    {% render 'utility--core-assets' %}
+
+    {% # Title & meta-description %}
+    <title>{{ page_title }}</title>
+    {% if page_description != blank %}
+      <meta name="description" content="{{ page_description | escape }}">
+    {% endif %}
+
+    {% # Canonical URL %}
+    {% if canonical_url != blank %}
+      <link rel="canonical" href="{{ canonical_url | escape }}">
+    {% endif %}
+
+    {% # Favicon %}
+    {% if settings.favicon %}
+      <link rel="shortcut icon" href="{{ settings.favicon | image_url: width: 32, height: 32 }}" type="image/png">
+    {% endif %}
+
+    {% # Structured data %}
+    {% render 'utility--structured-data' %}
+
+    {% # Open Graph %}
+    {% render 'utility--open-graph' %}
+
+    {% # Shopify data %}
+    {{ content_for_header }}
+  </head>
+  <body>
+    {% # Skip to content %}
+    {% render 'skip-to-content' %}
+
+    {% # Content %}
+    <div class="page-container">
+      <main class="main-content" id="page_content">
+        {{ content_for_layout }}
+      </main>
+    </div>
+  </body>
+</html>
