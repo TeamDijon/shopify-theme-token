@@ -1,0 +1,71 @@
+/*
+ * ------------------------------------------------------------
+ * Non-default locale. The Shopify admin language editor may overwrite
+ * this file when merchants translate via the UI. Keep hand-edits
+ * minimal and expect them to be replayed.
+ * ------------------------------------------------------------
+ */
+{
+  "actions": {
+    "skip_to_content": "Passer au contenu"
+  },
+  "dates": {
+    "formats": {
+      "default": "%d/%m/%Y"
+    },
+    "days": {
+      "one": "jour",
+      "other": "jours",
+      "monday": "lundi",
+      "tuesday": "mardi",
+      "wednesday": "mercredi",
+      "thursday": "jeudi",
+      "friday": "vendredi",
+      "saturday": "samedi",
+      "sunday": "dimanche",
+      "default": {
+        "one": "day",
+        "other": "days",
+        "monday": "Monday",
+        "tuesday": "Tuesday",
+        "wednesday": "Wednesday",
+        "thursday": "Thursday",
+        "friday": "Friday",
+        "saturday": "Saturday",
+        "sunday": "Sunday"
+      }
+    },
+    "months": {
+      "one": "mois",
+      "other": "mois",
+      "january": "janvier",
+      "february": "février",
+      "march": "mars",
+      "april": "avril",
+      "may": "mai",
+      "june": "juin",
+      "july": "juillet",
+      "august": "août",
+      "september": "septembre",
+      "october": "octobre",
+      "november": "novembre",
+      "december": "décembre",
+      "default": {
+        "one": "month",
+        "other": "months",
+        "january": "January",
+        "february": "February",
+        "march": "March",
+        "april": "April",
+        "may": "May",
+        "june": "June",
+        "july": "July",
+        "august": "August",
+        "september": "September",
+        "october": "October",
+        "november": "November",
+        "december": "December"
+      }
+    }
+  }
+}

@@ -1,0 +1,10 @@
+/*
+ * ------------------------------------------------------------
+ * Schema translations for theme settings, section names, and block names.
+ *
+ * The Shopify admin language editor may overwrite this file when merchants
+ * edit schema labels through the UI. Keep hand-edits minimal and expect
+ * them to be replayed on top of admin edits when both move in parallel.
+ * ------------------------------------------------------------
+ */
+{}
