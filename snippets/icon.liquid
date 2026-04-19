@@ -1,0 +1,38 @@
+{% # Icon v1.1.0 %}
+
+{% comment %}
+  Changelog
+  - v1.1.0 — early exit with `break` when neither file_name nor an icon metaobject is provided
+  - v1.0.0 — initial
+{% endcomment %}
+
+{% doc %}
+  @description Renders an icon SVG inline from `assets/icon-<name>.svg` via `inline_asset_content`. Accepts either a direct `file_name` string or an `icon` metaobject reference. Optional `preset` injects a `data-preset="<value>"` attribute on the root SVG for CSS targeting.
+
+  @param {metaobject} [icon] - Icon metaobject entry; its `file_name` and `preset` fields are read
+  @param {string} [file_name] - Filename stem without the `icon-` prefix or `.svg` extension (e.g. `chevron`). Takes precedence over the metaobject.
+  @param {string} [preset] - CSS hook emitted as `data-preset="..."`. Takes precedence over the metaobject's preset.
+
+  @example {% render 'icon', icon: metaobjects.icon.plus %}
+  @example {% render 'icon', file_name: 'chevron' %}
+  @example {% render 'icon', file_name: 'warning', preset: 'inline-badge' %}
+{% enddoc %}
+
+{% liquid
+  assign file_name = file_name | default: icon.file_name.value
+  if file_name == blank
+    break
+  endif
+
+  assign file_name = 'icon-' | append: file_name | append: '.svg'
+  assign icon_preset = preset | default: icon.preset.value
+
+  assign icon_markup = file_name | inline_asset_content
+
+  if icon_preset != blank
+    assign preset_attribute_markup = ' data-preset="' | append: icon_preset | append: '">'
+    assign icon_markup = icon_markup | replace_first: '>', preset_attribute_markup
+  endif
+
+  echo icon_markup
+%}
