@@ -1,2 +1,4 @@
 .context/
 .claude/settings.local.json
+.claude/skills/
+.claude/rules/
