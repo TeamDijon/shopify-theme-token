@@ -56,5 +56,59 @@
       "label": "Image favicon",
       "info": "Format carré recommandé. Sera redimensionné à 32×32 pixels"
     }
+  },
+  "sections": {
+    "section": {
+      "name": "Section",
+      "settings": {
+        "layout": { "content": "Mise en page" },
+        "content_width": {
+          "label": "Largeur du contenu",
+          "info": "Laisser vide pour pleine largeur"
+        },
+        "appearance": { "content": "Apparence" },
+        "color_scheme": { "label": "Palette de couleurs" }
+      },
+      "presets": {
+        "section": { "name": "Section" }
+      }
+    }
+  },
+  "blocks": {
+    "spacer": {
+      "name": "Espaceur",
+      "settings": {
+        "spacer": { "content": "Espaceur" },
+        "breakpoint": {
+          "label": "Point de rupture",
+          "options": {
+            "none": "Aucun",
+            "sm": "640px",
+            "md": "960px",
+            "lg": "1280px"
+          }
+        },
+        "spacer_block_size": { "label": "Taille" },
+        "mobile_spacer_block_size": {
+          "label": "Mobile",
+          "info": "Appliqué en deçà du point de rupture"
+        },
+        "desktop_spacer_block_size": {
+          "label": "Bureau",
+          "info": "Point de rupture et au-delà"
+        },
+        "appearance": { "content": "Apparence" },
+        "background_color": {
+          "label": "Arrière-plan",
+          "info": "Laisser vide pour transparent"
+        }
+      },
+      "presets": {
+        "spacer": {
+          "name": "Espaceur",
+          "category": "Espacement"
+        }
+      }
+    }
   }
 }

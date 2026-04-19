@@ -1,0 +1,81 @@
+{% # Spacer block v1.0.0 %}
+
+{% render 'spacer', section: section, block: block %}
+
+{% schema %}
+{
+  "name": "t:blocks.spacer.name",
+  "tag": null,
+  "blocks": [],
+  "settings": [
+    {
+      "type": "header",
+      "content": "t:blocks.spacer.settings.spacer.content"
+    },
+    {
+      "type": "select",
+      "id": "breakpoint",
+      "label": "t:blocks.spacer.settings.breakpoint.label",
+      "options": [
+        { "value": "none", "label": "t:blocks.spacer.settings.breakpoint.options.none" },
+        { "value": "40", "label": "t:blocks.spacer.settings.breakpoint.options.sm" },
+        { "value": "60", "label": "t:blocks.spacer.settings.breakpoint.options.md" },
+        { "value": "80", "label": "t:blocks.spacer.settings.breakpoint.options.lg" }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "range",
+      "id": "spacer_block_size",
+      "label": "t:blocks.spacer.settings.spacer_block_size.label",
+      "min": 0,
+      "max": 200,
+      "step": 2,
+      "unit": "px",
+      "default": 24,
+      "visible_if": "{{ block.settings.breakpoint == 'none' }}"
+    },
+    {
+      "type": "range",
+      "id": "mobile_spacer_block_size",
+      "label": "t:blocks.spacer.settings.mobile_spacer_block_size.label",
+      "min": 0,
+      "max": 200,
+      "step": 2,
+      "unit": "px",
+      "default": 16,
+      "info": "t:blocks.spacer.settings.mobile_spacer_block_size.info",
+      "visible_if": "{{ block.settings.breakpoint != 'none' }}"
+    },
+    {
+      "type": "range",
+      "id": "desktop_spacer_block_size",
+      "label": "t:blocks.spacer.settings.desktop_spacer_block_size.label",
+      "min": 0,
+      "max": 200,
+      "step": 2,
+      "unit": "px",
+      "default": 24,
+      "info": "t:blocks.spacer.settings.desktop_spacer_block_size.info",
+      "visible_if": "{{ block.settings.breakpoint != 'none' }}"
+    },
+    {
+      "type": "header",
+      "content": "t:blocks.spacer.settings.appearance.content"
+    },
+    {
+      "type": "metaobject",
+      "metaobject_type": "theme_color",
+      "id": "background_color",
+      "label": "t:blocks.spacer.settings.background_color.label",
+      "info": "t:blocks.spacer.settings.background_color.info"
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:blocks.spacer.presets.spacer.name",
+      "category": "t:blocks.spacer.presets.spacer.category"
+    }
+  ]
+}
+{% endschema %}

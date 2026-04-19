@@ -1,0 +1,91 @@
+{% # Spacer v1.0.0 %}
+
+{% doc %}
+  @description Renders a spacer div with responsive block-size and optional background color. Either one fixed size (no breakpoint) or a mobile/desktop pair that switches at the selected breakpoint.
+
+  @param {section} [section] - The section object containing the block
+  @param {block} [block] - Block object containing the settings
+  @param {string} [block_id] - Unique block ID for static renders
+  @param {string} [breakpoint] - Breakpoint at which to switch from mobile to desktop size (`none`, `40`, `60`, `80`). Defaults to `none`.
+  @param {number} [spacer_block_size] - Height in px when `breakpoint` is `none`. Defaults to 0.
+  @param {number} [mobile_spacer_block_size] - Height in px below the breakpoint. Defaults to 0.
+  @param {number} [desktop_spacer_block_size] - Height in px at or above the breakpoint. Defaults to 0.
+  @param {metaobject} [background_color] - `theme_color` metaobject for background. Defaults to transparent.
+
+  @example {% render 'spacer', section: section, block: block %}
+{% enddoc %}
+
+{% liquid
+  assign breakpoint = breakpoint | default: block.settings.breakpoint | default: 'none'
+  assign spacer_block_size = spacer_block_size | default: block.settings.spacer_block_size | default: 0
+  assign mobile_spacer_block_size = mobile_spacer_block_size | default: block.settings.mobile_spacer_block_size | default: 0
+  assign desktop_spacer_block_size = desktop_spacer_block_size | default: block.settings.desktop_spacer_block_size | default: 0
+  assign background_color = background_color | default: block.settings.background_color | default: ''
+
+  if breakpoint != 'none'
+    assign modifier_list = 'breakpoint:' | append: breakpoint
+  endif
+
+  capture base_selector
+    render 'utility--base-selector', section: section, block: block, identifier: block_id
+  endcapture
+  assign base_selector = base_selector | strip
+
+  capture modifiers
+    render 'utility--modifiers', modifier_list: modifier_list
+  endcapture
+%}
+
+<div class="shopify-block shopify-block--spacer" id="{{ base_selector }}" {{ modifiers }}>
+  {% capture dynamic_style %}
+    {% if spacer_block_size and spacer_block_size > 0 and breakpoint == 'none' %}
+      --spacer-block-size: {{ spacer_block_size | divided_by: 16.0 | round: 3 }}rem;
+    {% endif %}
+
+    {% if mobile_spacer_block_size and mobile_spacer_block_size > 0 and breakpoint != 'none' %}
+      --mobile-spacer-block-size: {{ mobile_spacer_block_size | divided_by: 16.0 | round: 3 }}rem;
+    {% endif %}
+
+    {% if desktop_spacer_block_size and desktop_spacer_block_size > 0 and breakpoint != 'none' %}
+      --desktop-spacer-block-size: {{ desktop_spacer_block_size | divided_by: 16.0 | round: 3 }}rem;
+    {% endif %}
+
+    {% if background_color and background_color != blank %}
+      --background-color: {{ background_color.hex_code.value }};
+    {% endif %}
+  {% endcapture %}
+  {% render 'utility--dynamic-style', base_selector: base_selector, css_content: dynamic_style %}
+</div>
+
+{% stylesheet %}
+  .shopify-block--spacer {
+    display: block;
+    position: relative;
+    inline-size: 100%;
+    block-size: var(--spacer-block-size, 0);
+    margin: 0 auto;
+    background-color: var(--background-color, transparent);
+
+    &[data-modifiers*='breakpoint'] {
+      block-size: var(--mobile-spacer-block-size, 0);
+    }
+
+    @media (width >= 40rem) {
+      &[data-modifiers*='breakpoint:40'] {
+        block-size: var(--desktop-spacer-block-size, 0);
+      }
+    }
+
+    @media (width >= 60rem) {
+      &[data-modifiers*='breakpoint:60'] {
+        block-size: var(--desktop-spacer-block-size, 0);
+      }
+    }
+
+    @media (width >= 80rem) {
+      &[data-modifiers*='breakpoint:80'] {
+        block-size: var(--desktop-spacer-block-size, 0);
+      }
+    }
+  }
+{% endstylesheet %}

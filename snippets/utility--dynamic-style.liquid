@@ -1,0 +1,28 @@
+{% # Dynamic style v1.1.0 %}
+
+{% comment %}
+  Changelog
+  - v1.1.0 — use break for early exit
+  - v1.0.0 — initial
+{% endcomment %}
+
+{% doc %}
+  @description Wraps the given CSS content in `#<base_selector> { ... }` and emits it inline via `utility--asset-loader`. Emits nothing when either input is blank. See `.context/docs/dynamic-style-pattern.md` for the full pattern.
+
+  @param {string} base_selector - Unique DOM id scoping the CSS (usually from `utility--base-selector`)
+  @param {string} css_content - The CSS declarations to emit inside the selector block
+
+  @example {% render 'utility--dynamic-style', base_selector: base_selector, css_content: css_content %}
+{% enddoc %}
+
+{% liquid
+  if base_selector == blank or css_content == blank
+    break
+  endif
+
+  capture css_content
+    echo '#' | append: base_selector | append: ' { ' | append: css_content | append: ' }'
+  endcapture
+
+  render 'utility--asset-loader', css: 'inline', css_content: css_content, js: false
+%}

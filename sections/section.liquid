@@ -1,27 +1,26 @@
 {% # Section v1.0.0 %}
 
-{% comment %}
-  {% liquid
-    assign content_width = section.settings.content_width
-    assign base_selector = 'shopify-section-' | append: section.id
-  %}
+{% liquid
+  assign content_width = section.settings.content_width
+  assign base_selector = 'shopify-section-' | append: section.id
+%}
 
-  <token-section data-modifiers='color-scheme:{{ section.settings.color_scheme }}'>
-    {% content_for 'blocks' %}
-  </token-section>
+<theme-section data-modifiers="color-scheme:{{ section.settings.color_scheme }}">
+  {% content_for 'blocks' %}
+</theme-section>
 
-  {% capture dynamic_style %}
-    {% if content_width and content_width != blank %}
-      --content-width: {{ content_width.width.value }}px;
-    {% endif %}
-  {% endcapture %}
-  {% render 'utility--dynamic-style', base_selector: base_selector, css_content: dynamic_style %}
-{% endcomment %}
+{% capture dynamic_style %}
+  {% if content_width and content_width != blank %}
+    --content-width: {{ content_width.width.value }}px;
+  {% endif %}
+{% endcapture %}
+{% render 'utility--dynamic-style', base_selector: base_selector, css_content: dynamic_style %}
 
 {% schema %}
 {
-  "name": "Section",
+  "name": "t:sections.section.name",
   "tag": "section",
+  "class": "shopify-section--section",
   "blocks": [{ "type": "@theme" }, { "type": "@app" }],
   "disabled_on": {
     "groups": ["header", "footer"]
@@ -29,29 +28,29 @@
   "settings": [
     {
       "type": "header",
-      "content": "Layout"
+      "content": "t:sections.section.settings.layout.content"
     },
     {
       "type": "metaobject",
       "metaobject_type": "content_width",
       "id": "content_width",
-      "label": "Content width",
-      "info": "Leave blank for full width"
+      "label": "t:sections.section.settings.content_width.label",
+      "info": "t:sections.section.settings.content_width.info"
     },
     {
       "type": "header",
-      "content": "Appearance"
+      "content": "t:sections.section.settings.appearance.content"
     },
     {
       "type": "color_scheme",
       "id": "color_scheme",
-      "label": "Color scheme",
+      "label": "t:sections.section.settings.color_scheme.label",
       "default": "scheme-1"
     }
   ],
   "presets": [
     {
-      "name": "Section"
+      "name": "t:sections.section.presets.section.name"
     }
   ]
 }
