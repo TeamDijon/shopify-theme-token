@@ -265,7 +265,7 @@
     }
   }
 
-  /* Inner section container: layout, scoped descendant reset, and typography overrides. */
+  /* Inner section container: layout + typography overrides. No aggressive descendant reset — global @layer reset already handles box-sizing/margin/padding/media-display, and forcing display:block on every descendant overreached into app blocks and miscategorized phrasing-content elements (cite, time, output, label, ...). Per-block CSS owns each block's layout. */
   theme-section {
     display: flow-root;
     position: relative;
@@ -275,23 +275,6 @@
 
     @media (width < 48rem) {
       padding-inline: var(--mobile-gutter, var(--gutter));
-    }
-
-    /* Descendant reset (scoped to our sections only) */
-    & :where(*, ::after, ::before) {
-      box-sizing: border-box;
-      display: block;
-      zoom: 1;
-      margin: 0;
-      padding: 0;
-    }
-
-    /* Inline elements */
-    & :where(a, span, b, strong, i, em, small, mark, sub, sup, abbr, code) {
-      display: inline;
-    }
-    & :where(link, script, style) {
-      display: none;
     }
 
     /* Heading color */
@@ -331,7 +314,7 @@
 }
 
 @layer utilities {
-  /* Prose modifier — rich-content spacing utility. Lives in `@layer utilities` (not nested under `theme-section`) so specialized sections (`<theme-cart>`, `<theme-header>`, `<theme-overlay>`) and any non-section context style rich content the same way. The `& li { display: list-item }` rule is load-bearing inside `theme-section` (defeats the descendant reset) and a no-op outside it. */
+  /* Prose modifier — rich-content spacing utility. Lives in `@layer utilities` (not nested under `theme-section`) so specialized sections (`<theme-cart>`, `<theme-header>`, `<theme-overlay>`) and any non-section context style rich content the same way. */
   [data-modifiers*="prose"] {
     & > *:not(style) {
       margin-block: 1rem;
