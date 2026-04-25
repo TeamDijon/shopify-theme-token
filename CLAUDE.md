@@ -9,3 +9,7 @@ A `SessionStart` hook runs `git -C .context pull --ff-only` automatically. If it
 ## Doc placement guideline
 
 A pattern earns its own file in `.context/docs/` when it's referenced from 2+ rules. Otherwise, inline the pattern in the single rule that needs it.
+
+## Rule "Related" sections
+
+List only references the body doesn't already make. If everything's already inline, drop the section.
