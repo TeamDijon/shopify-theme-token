@@ -1,5 +1,5 @@
 {
-  "type": "overlay",
+  "type": "custom.overlay",
   "name": "Overlay",
   "sections": {},
   "order": []
