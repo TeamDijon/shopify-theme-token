@@ -20,7 +20,7 @@ Every snippet in `snippets/*.liquid` follows this structure.
    - `@param {type} [name] - <description>` — one line per param. Types: `string`, `boolean`, `number`, `metaobject`, `section`, `block`, `object`. Brackets `[name]` mark optional params. Describe default and blank-behavior.
    - `@example {% render '<name>', ... %}` — at least one usage. Multiple allowed for variants.
 
-4. **Logic block** — `{% liquid %}` for assign/capture/control flow. Resolve each param with a `| default:` chain: explicit arg → `block.settings.x` → literal default. Early-exit with `break` when a required input is blank (not `continue` — `break` reads as "stop this snippet").
+4. **Logic block** — `{% liquid %}` for assign/capture/control flow. Resolve each param with a `| default:` chain: explicit arg → `block.settings.x` → literal default. Early-exit with `break` when a required input is blank (works outside `for` blocks; chosen over `continue` for "escape this snippet" semantics).
 
 5. **Output** — HTML markup, followed by optional `{% stylesheet %}` block scoped to `.shopify-block--<name>` or the component's root class.
 
