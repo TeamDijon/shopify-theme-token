@@ -2,28 +2,7 @@
 
 {% comment %}
   Changelog
-  - v2.0.0
-    - drop judge.me review augmentation (organization + product)
-    - fix missing comma in website schema
-    - fix wrong canonical URL on Organization/WebSite/Breadcrumb root (`page.url` resolves only on `page` templates) — drop the `page.url` append so URLs use `request.origin`
-    - make `product.url`, `variant.url`, and breadcrumb `collection.url` absolute (prepend `request.origin`)
-    - drop invalid `image` property on `ImageObject` and the copy-paste `height`-as-`width:` argument
-    - switch `schema.org` enum URLs to `https://`
-    - drop the arbitrary `priceValidUntil` (10 days) — implied a price commitment that didn't exist
-    - use `page.title` / `article.title` / `blog.title` for breadcrumb name on non-collection/non-product pages instead of the formatted `page_title`
-    - switch multi-variant products to `ProductGroup` with per-variant `Product` nodes under `hasVariant`
-    - wrap `BreadcrumbList` items as `{ "@id", "name" }` objects (strict-validator-friendly)
-    - wrap `availability` enums as `{ "@id": "https://schema.org/..." }`
-    - add `@id` to all top-level entities (Organization / WebSite / BreadcrumbList / Product / Offer) — unlocks graph-merge across pages
-    - add `name` to `SearchAction` and `EntryPoint`
-    - emit `WebSite` on every page (not only `index`) so Sitelinks Searchbox + Organization↔WebSite refs always resolve; add `publisher` ref to Organization
-    - add `seller` (Organization ref), `itemCondition` (`NewCondition`), `brand` (from `product.vendor`), `category` (from `product.category` taxonomy with `product.type` fallback) to Product / Offer
-    - emit `ImageObject.width` / `height` as numbers (not quoted strings) to match the schema.org expected shape
-    - on multi-variant `ProductGroup`, propagate `description` and `brand` to each `hasVariant` Product, and fall back to the parent `featured_image` when `variant.image` is unset (strict-validator wants these on every Product node, not just inherited)
-    - add `name` to every `Offer` (recommended-property warning)
-    - add `settings.favicon` fallback when `shop.brand.logo` is absent
-    - swap whitespace pipeline from `squish` to portable `strip | split: ' ' | join: ' '`
-    - rename internal accumulator `schema_snippet_list` → `schema_list`
+  - v2.0.0 — pass strict schema.org validation; switch multi-variant products to `ProductGroup` with per-variant `Product`/`Offer` nodes; emit `WebSite` on every page; add `@id` to all top-level entities for graph-merge; drop judge.me augmentation
   - v1.0.0 — initial
 {% endcomment %}
 
@@ -250,8 +229,18 @@
         "@type": "ImageObject",
         "url": "{{ featured_image_url }}",
         "name": "{{ product.featured_image.alt | escape }}",
-        "width": {{ product.featured_image.width }},
-        "height": {{ product.featured_image.height }}
+        "width": {
+          "@type": "QuantitativeValue",
+          "name": "Width",
+          "value": {{ product.featured_image.width }},
+          "unitCode": "E37"
+        },
+        "height": {
+          "@type": "QuantitativeValue",
+          "name": "Height",
+          "value": {{ product.featured_image.height }},
+          "unitCode": "E37"
+        }
       },
       {% if product.variants.size > 1 %}
         "hasVariant": [
