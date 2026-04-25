@@ -248,8 +248,8 @@
     }
   }
 
-  /* Theme-level appearance shared by every theme-managed section root. Listed explicitly so app sections (which never render a theme-* element) don't inherit. Add new theme-* tags to this `:is()` list as specialized sections are authored. */
-  :is(theme-section, theme-cart, theme-header, theme-footer, theme-overlay) {
+  /* Inner section container — appearance + layout. When authoring a specialized section root (theme-cart, theme-header, etc.), expand the selector to `:is(theme-section, theme-cart, ...)` so it inherits these defaults; section-specific layout stays in its own selector. */
+  theme-section {
     background-color: var(--color-background);
     background: var(--gradient-background);
     color: var(--color-foreground);
@@ -269,10 +269,7 @@
     @media (prefers-reduced-motion) {
       transition-duration: 0s;
     }
-  }
 
-  /* Inner section container: layout + typography overrides. No aggressive descendant reset — global @layer reset already handles box-sizing/margin/padding/media-display, and forcing display:block on every descendant overreached into app blocks and miscategorized phrasing-content elements (cite, time, output, label, ...). Per-block CSS owns each block's layout. */
-  theme-section {
     display: flow-root;
     position: relative;
     max-inline-size: var(--content-width, 125rem);
@@ -336,10 +333,8 @@
       padding-inline-start: 0.75rem;
     }
     & li {
-      display: list-item;
       margin-block: 0.5rem 0.5rem;
       text-align: left;
-      list-style: initial;
     }
     & li :is(ul, ol) {
       margin-block: 0rem;
