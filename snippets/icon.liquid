@@ -1,7 +1,8 @@
-{% # Icon v1.1.0 %}
+{% # Icon v1.2.0 %}
 
 {% comment %}
   Changelog
+  - v1.2.0 — route asset inlining through `utility--inline-asset` so a missing icon yields empty markup instead of the raw `<!-- inline_asset_content: Asset not found. -->` comment which would otherwise render as an empty SVG
   - v1.1.0 — early exit with `break` when neither file_name nor an icon metaobject is provided
   - v1.0.0 — initial
 {% endcomment %}
@@ -27,7 +28,9 @@
   assign file_name = 'icon-' | append: file_name | append: '.svg'
   assign icon_preset = preset | default: icon.preset.value
 
-  assign icon_markup = file_name | inline_asset_content
+  capture icon_markup
+    render 'utility--inline-asset', asset_name: file_name
+  endcapture
 
   if icon_preset != blank
     assign preset_attribute_markup = ' data-preset="' | append: icon_preset | append: '">'
