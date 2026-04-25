@@ -5,7 +5,7 @@ The theme ships two files per language: a runtime locale and a schema locale.
 - **Default locale** (English): `locales/en.default.json` + `locales/en.default.schema.json`
 - **Non-default locales** (e.g. French): `locales/fr.json` + `locales/fr.schema.json`
 
-One file pair per supported language. The `.default` suffix identifies the source-of-truth locale (developer-authored). When adding a new language, add both the runtime and schema files; keep every language's key set in sync with the default.
+One file pair per supported language. The `.default` suffix identifies the source-of-truth locale (developer-authored). When adding a new language, add both the runtime and schema files; keep every language's key set in sync with the default (non-default editors otherwise show fallback English strings on missing keys).
 
 ## Files
 
