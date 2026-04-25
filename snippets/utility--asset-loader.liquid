@@ -1,7 +1,8 @@
-{% # Asset loader v1.3.0 %}
+{% # Asset loader v1.4.0 %}
 
 {% comment %}
   Changelog
+  - v1.4.0 — drop minifier on inline_asset_content path; Shopify's asset pipeline already minifies CSS files (~6% additional savings not worth the correctness risk on token-collapse / comment-strip passes)
   - v1.3.0 — use break for early exit; drop dead rel="modulepreload" on <script>; stop stripping newlines in inline JS (ASI/comment safety)
   - v1.2.0 — (template-theme history)
 {% endcomment %}
@@ -34,7 +35,7 @@
     render 'utility--css-minifier', css_content: css_content
   elsif css == 'inline' and name != blank
     assign css_content = name | append: '.css' | inline_asset_content
-    render 'utility--css-minifier', css_content: css_content
+    echo '<style>' | append: css_content | append: '</style>'
   endif
 
   if js == 'module' and name != blank

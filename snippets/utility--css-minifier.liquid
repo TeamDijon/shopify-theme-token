@@ -1,14 +1,15 @@
-{% # CSS Minifier v1.2.0 %}
+{% # CSS Minifier v2.0.0 %}
 
 {% comment %}
   Changelog
-  - v1.2.0 — drop unused `base_selector` param; simplify empty check to `css_content == blank`
-  - v1.1.0 — use squish filter for the whitespace-normalization pass; use break for early exit
+  - v2.0.0 — restore working whitespace pass; v1.1.0's squish migration silently no-op'd it (squish does not function in this Liquid runtime, see `.context/rules/liquid-filter-gotchas.md`)
+  - v1.2.0 — drop unused base_selector param; simplify empty check
+  - v1.1.0 — use squish for whitespace pass [regression: squish is no-op]
   - v1.0.0 — initial
 {% endcomment %}
 
 {% doc %}
-  @description Minifies CSS (comment strip + whitespace collapse + syntax-token space removal) and wraps it in a <style> tag. Returns nothing when the input is blank.
+  @description Minifies Liquid-captured CSS (whitespace pass + comment strip + token collapse) and wraps it in a <style> tag. Returns nothing when input is blank. Not for use on `inline_asset_content` output — Shopify's asset pipeline already minifies CSS files there.
 
   @param {string} css_content - CSS to minify
 
@@ -20,15 +21,15 @@
     break
   endif
 
-  # Normalize whitespace and strip /* ... */ comments
-  assign css_chunk_list = css_content | squish | split: '*/'
+  # Whitespace pass + comment strip. Use strip_newlines + split + join (squish is a no-op in this runtime — see `liquid-filter-gotchas.md`); split on `*/` then drop the `/* ... ` half of each chunk to remove block comments.
+  assign css_chunk_list = css_content | strip_newlines | split: ' ' | join: ' ' | split: '*/'
   assign minified_css = ''
   for css_chunk in css_chunk_list
     assign minified_chunk = css_chunk | split: '/*' | first | strip
     assign minified_css = minified_css | append: minified_chunk
   endfor
 
-  # Collapse spaces around CSS syntax tokens
+  # Token collapse. Safe under our conventions: data-modifiers values use `key:value` (no space, see modifiers-manager); we don't author multi-space inside CSS string values.
   assign minified_css = minified_css | replace: '; ', ';' | replace: '} ', '}' | replace: '{ ', '{' | replace: ' {', '{' | replace: ': ', ':' | replace: ';}', '}' | replace: ') ;', ');'
 
   style
