@@ -1,39 +1,41 @@
 /**
  * Attribute-based modifier management for HTML elements.
  * @module @theme/modifiers-manager
- * @version 1.0.0
+ * @version 2.0.0
+ *
+ * Changelog
+ * - v2.0.0 — slim to actually-used surface (drop setValue, getValue, hasValue, getCount, keys, list); private methods via #parse/#serialize; hardcode attribute name; toggle reframed to value-aware (toggles by key, uses `:value` suffix as the value to add)
+ * - v1.0.0 — initial
  */
 
+const ATTRIBUTE_NAME = "data-modifiers";
+
 /**
- * Manages attribute-based modifiers for HTML elements.
- * Provides methods to check, add, remove, toggle, and replace modifiers stored in a data attribute.
+ * Reads and mutates the `data-modifiers` attribute on an element.
+ * Modifiers are comma-separated `key:value` (or bare `key`) tokens.
  *
  * @param {HTMLElement} element - The element to manage modifiers for.
  */
 export class ModifiersManager {
   constructor(element) {
     this.element = element;
-    this.attributeName = "data-modifiers";
   }
 
   /**
-   * Parses the modifiers string into an array of objects
-   * @private
+   * Parses the modifiers attribute into typed entries.
    * @returns {Array<{key: string, value: string|null, raw: string}>}
    */
-  _parse = () => {
-    if (!this.element.hasAttribute(this.attributeName)) return [];
+  #parse = () => {
+    if (!this.element.hasAttribute(ATTRIBUTE_NAME)) return [];
 
     return this.element
-      .getAttribute(this.attributeName)
+      .getAttribute(ATTRIBUTE_NAME)
       .split(",")
       .map((modifier) => modifier.trim())
       .filter(Boolean)
       .map((raw) => {
         const colonIndex = raw.indexOf(":");
-        if (colonIndex === -1) {
-          return { key: raw, value: null, raw };
-        }
+        if (colonIndex === -1) return { key: raw, value: null, raw };
         return {
           key: raw.substring(0, colonIndex),
           value: raw.substring(colonIndex + 1),
@@ -43,78 +45,32 @@ export class ModifiersManager {
   };
 
   /**
-   * Serializes parsed modifiers back to string format
-   * @private
-   * @param {Array} parsed - Array of parsed modifier objects
+   * Serializes parsed entries back to attribute-string format.
+   * @param {Array} parsed
    * @returns {string}
    */
-  _serialize = (parsed) => {
-    return parsed.map((m) => m.raw).join(", ");
-  };
-
-  /**
-   * Gets the list of all modifiers on the element (raw strings).
-   * @returns {string[]} Array of modifier strings.
-   */
-  list = () => {
-    return this._parse().map((m) => m.raw);
-  };
-
-  /**
-   * Gets all modifier keys (without values).
-   * @returns {string[]} Array of modifier keys.
-   */
-  keys = () => {
-    return this._parse().map((m) => m.key);
-  };
+  #serialize = (parsed) => parsed.map((m) => m.raw).join(", ");
 
   /**
    * Checks if the element has a specific modifier key.
-   * @param {string} key - The modifier key to check for.
-   * @returns {boolean} True if the element has the modifier key.
+   * @param {string} key
+   * @returns {boolean}
    */
-  has = (key) => {
-    return this._parse().some((m) => m.key === key);
-  };
+  has = (key) => this.#parse().some((m) => m.key === key);
 
   /**
-   * Gets the value of a modifier key.
-   * @param {string} key - The modifier key.
-   * @param {string|null} defaultValue - Default value if not found.
-   * @returns {string|null} The value or default.
-   */
-  getValue = (key, defaultValue = null) => {
-    const modifier = this._parse().find((m) => m.key === key);
-    return modifier ? modifier.value : defaultValue;
-  };
-
-  /**
-   * Checks if a modifier has a specific value.
-   * @param {string} key - The modifier key.
-   * @param {string} value - The value to check for.
-   * @returns {boolean} True if the modifier has the specified value.
-   */
-  hasValue = (key, value) => {
-    const modifier = this._parse().find((m) => m.key === key);
-    return modifier ? modifier.value === value : false;
-  };
-
-  /**
-   * Adds one or more modifiers to the element.
-   * Can be simple strings or key:value pairs.
-   * @param {...string} modifiers - Modifiers to add (e.g., "active", "size:large").
-   * @returns {this} For method chaining.
+   * Adds one or more modifiers (no-op if the key already exists).
+   * @param {...string} modifiers - e.g. "active", "size:large"
+   * @returns {this}
    */
   add = (...modifiers) => {
-    const current = this._parse();
+    const current = this.#parse();
     const currentKeys = current.map((m) => m.key);
 
     const toAdd = modifiers
       .map((raw) => {
         const colonIndex = raw.indexOf(":");
-        if (colonIndex === -1) {
-          return { key: raw, value: null, raw };
-        }
+        if (colonIndex === -1) return { key: raw, value: null, raw };
         return {
           key: raw.substring(0, colonIndex),
           value: raw.substring(colonIndex + 1),
@@ -125,86 +81,31 @@ export class ModifiersManager {
 
     if (toAdd.length === 0) return this;
 
-    const updated = [...current, ...toAdd];
-    this.element.setAttribute(this.attributeName, this._serialize(updated));
-
+    this.element.setAttribute(ATTRIBUTE_NAME, this.#serialize([...current, ...toAdd]));
     return this;
   };
 
   /**
-   * Removes one or more modifier keys from the element.
-   * @param {...string} keys - Modifier keys to remove.
-   * @returns {this} For method chaining.
+   * Removes one or more modifier keys.
+   * @param {...string} keys
+   * @returns {this}
    */
   remove = (...keys) => {
-    const current = this._parse();
-    const updated = current.filter((m) => !keys.includes(m.key));
+    const updated = this.#parse().filter((m) => !keys.includes(m.key));
 
     if (updated.length === 0) {
-      this.element.removeAttribute(this.attributeName);
+      this.element.removeAttribute(ATTRIBUTE_NAME);
     } else {
-      this.element.setAttribute(this.attributeName, this._serialize(updated));
+      this.element.setAttribute(ATTRIBUTE_NAME, this.#serialize(updated));
     }
-
     return this;
   };
 
   /**
-   * Sets or updates a modifier with a value.
-   * @param {string} key - The modifier key.
-   * @param {string|null} value - The value (null for simple modifier).
-   * @returns {this} For method chaining.
-   */
-  setValue = (key, value = null) => {
-    const current = this._parse();
-    const existingIndex = current.findIndex((m) => m.key === key);
-
-    const raw = value === null ? key : `${key}:${value}`;
-    const newModifier = { key, value, raw };
-
-    if (existingIndex !== -1) {
-      current[existingIndex] = newModifier;
-    } else {
-      current.push(newModifier);
-    }
-
-    this.element.setAttribute(this.attributeName, this._serialize(current));
-    return this;
-  };
-
-  /**
-   * Toggles one or more modifier keys on the element.
-   * @param {...string} keys - Modifier keys to toggle.
-   * @returns {this} For method chaining.
-   */
-  toggle = (...keys) => {
-    const current = this._parse();
-    const currentKeys = current.map((m) => m.key);
-
-    const toRemove = new Set(keys.filter((k) => currentKeys.includes(k)));
-    const toAdd = keys
-      .filter((k) => !currentKeys.includes(k))
-      .map((k) => ({ key: k, value: null, raw: k }));
-
-    const updated = [
-      ...current.filter((m) => !toRemove.has(m.key)),
-      ...toAdd,
-    ];
-
-    if (updated.length === 0) {
-      this.element.removeAttribute(this.attributeName);
-    } else {
-      this.element.setAttribute(this.attributeName, this._serialize(updated));
-    }
-
-    return this;
-  };
-
-  /**
-   * Sets a single modifier based on a condition
-   * @param {string} modifier - The modifier to set (can include :value)
-   * @param {boolean} condition - Whether to add (true) or remove (false) the modifier
-   * @returns {this} For method chaining
+   * Adds or removes a single modifier based on a boolean condition.
+   * @param {string} modifier - May include a `:value` suffix
+   * @param {boolean} condition
+   * @returns {this}
    */
   set = (modifier, condition) => {
     const key = modifier.split(":")[0];
@@ -212,19 +113,21 @@ export class ModifiersManager {
   };
 
   /**
-   * Clears all modifiers.
-   * @returns {this} For method chaining.
+   * Toggles a modifier by key — adds the full `key:value` token if the key isn't present, removes it if it is.
+   * @param {string} modifier - May include a `:value` suffix; the key is everything before the first `:`
+   * @returns {this}
    */
-  clear = () => {
-    this.element.removeAttribute(this.attributeName);
-    return this;
+  toggle = (modifier) => {
+    const key = modifier.split(":")[0];
+    return this.set(modifier, !this.has(key));
   };
 
   /**
-   * Gets the count of modifiers on the element.
-   * @returns {number} The number of modifiers.
+   * Removes all managed modifiers.
+   * @returns {this}
    */
-  getCount = () => {
-    return this._parse().length;
+  clear = () => {
+    this.element.removeAttribute(ATTRIBUTE_NAME);
+    return this;
   };
 }
