@@ -18,6 +18,10 @@ paths:
 3. **Named exports only** — no `export default`. Every exported symbol has its own JSDoc with `@param` and `@returns` (or `@type` for constants).
 4. **Import from module specifiers**, not relative paths: `import { dom } from "@theme/dom";` (not `"./dom.js"`).
 
+## Specialized section components
+
+JS files paired with a specialized section (`sections/<name>.liquid` + `<theme-<name>>` custom element) follow this convention plus the worked example at `.context/docs/specialized-section-pattern.md`.
+
 ## Changelog
 
 See `.context/docs/versioning-and-changelog.md` for format and policy.
