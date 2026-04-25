@@ -17,3 +17,7 @@ List only references the body doesn't already make. If everything's already inli
 ## Codebase architecture
 
 For the high-level map (repo layout, render model, asset pipeline, CSS layers, conventions), see `.context/docs/architecture.md`.
+
+## Always-on Liquid context budget
+
+Stay under ~400 lines per Liquid edit (auto-loaded `**/*.liquid` rules + the matching convention for `snippets/`/`blocks/`/`sections/`). Trim or reorganize an existing rule before adding above the cap.
