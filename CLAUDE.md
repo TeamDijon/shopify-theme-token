@@ -13,3 +13,7 @@ A pattern earns its own file in `.context/docs/` when it's referenced from 2+ ru
 ## Rule "Related" sections
 
 List only references the body doesn't already make. If everything's already inline, drop the section.
+
+## Codebase architecture
+
+For the high-level map (repo layout, render model, asset pipeline, CSS layers, conventions), see `.context/docs/architecture.md`.
