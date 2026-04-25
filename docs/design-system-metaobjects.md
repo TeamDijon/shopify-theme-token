@@ -41,6 +41,15 @@ Always guard with a blank check before accessing nested fields. Metaobject refer
 
 When the value is passed through the modifier system, emit as `<key>:<handle>` — see `.context/docs/modifier-system.md`.
 
+### Dual-API consumption (when a snippet accepts either)
+
+Some snippets accept either a metaobject reference OR the primitive value(s) the metaobject would have provided. `snippets/icon.liquid` is the canonical example: it takes either an `icon` metaobject ref or a `file_name` string. Pick by what the caller has on hand — neither path is preferred:
+
+- Caller has the metaobject (from a `"type": "metaobject"` setting, or from `metaobjects.<type>.<handle>`) → pass the ref. Snippet reads the relevant fields.
+- Caller has the primitive directly (typical in hardcoded markup) → pass it. Snippet uses it as-is, bypassing the metaobject lookup.
+
+The snippet's doc block specifies which fields the metaobject path reads, so the primitive path is one-to-one with those fields — same render output, different input shape.
+
 ## Adding a new metaobject
 
 1. Create the metaobject definition in the Shopify admin (or via an agent following `metaobject-definitions.md`)
