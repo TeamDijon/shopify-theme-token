@@ -79,7 +79,7 @@ Three flows, each with its own strategy:
 `assets/core.css` declares `@layer reset, theme, utilities;`:
 
 - **`@layer reset`** — universal hygiene (box-sizing, margin/padding zero, media defaults, common typography).
-- **`@layer theme`** — `.shopify-section` (outer, universal — minimal) + `:is(theme-section, theme-cart, theme-header, theme-footer, theme-overlay)` (theme defaults — typography, background, transition) + `theme-section` specific (layout, gutter, max-inline-size, form inputs).
+- **`@layer theme`** — `.shopify-section` (outer, universal — minimal) + `theme-section` (theme defaults — typography, background, transition — plus the section's own layout, gutter, max-inline-size, form inputs). When authoring a specialized section root, expand the appearance selector to `:is(theme-section, theme-cart, ...)` so it inherits the shared defaults.
 - **`@layer utilities`** — opt-in modifiers like prose, skip-to-content.
 
 When adding a specialized section root, add its tag to the `:is(...)` list so it inherits theme defaults.

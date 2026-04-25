@@ -24,7 +24,7 @@ Modern CSS nesting is used throughout — `& > *`, `&[data-modifiers*="x"]`, `& 
 `assets/core.css` declares `@layer reset, theme, utilities;`. Stylesheets default to **no layer** (highest precedence). Place rules deliberately:
 
 - `@layer reset` — universal hygiene applied to everything (UA-default normalizations, media defaults).
-- `@layer theme` — theme-managed roots (`:is(theme-section, theme-cart, ...)` typography/background) + `theme-section` layout/form rules.
+- `@layer theme` — theme-managed roots: `theme-section` today (appearance + layout). Expand to `:is(theme-section, theme-cart, ...)` for the appearance defaults when specialized roots are added.
 - `@layer utilities` — opt-in modifiers (prose, skip-to-content). Lowest specificity within the layer ladder, highest layer precedence.
 
 Component CSS in `assets/<name>.css` and `{% stylesheet %}` blocks lives **outside layers** (highest precedence) so component styles override theme defaults.
