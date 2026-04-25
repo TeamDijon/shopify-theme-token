@@ -15,8 +15,6 @@ Filters whose documented behavior diverges from what we observe in this Shopify 
 
 **Why it matters** — `utility--css-minifier` v1.1.0 silently regressed when its whitespace pass migrated to `squish`; the bug went unnoticed for the entire v1.1.x–v1.2.x window because the comment-strip and token-collapse passes still produced visible savings on test inputs. Restored to the working chain in v2.0.0.
 
-**Reference** — `sections/test-minifier.liquid` (test fixture; remove once v2.0.0 has soaked).
-
 ## When you reach for a filter you "remember works"
 
 Run a 30-second sanity check (`{{ '  a   b  ' | <filter> | prepend: '[' | append: ']' }}`) before relying on it. Filter documentation is not a guarantee in this runtime.
