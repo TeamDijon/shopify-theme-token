@@ -48,8 +48,12 @@ A rendered section produces two nested wrappers:
 </section>
 ```
 
-- **Outer `<section class="shopify-section shopify-section--<name>">`** — Shopify-wrapped. `shopify-section` is always present; `shopify-section--<name>` comes from the schema `"class"` attribute. Base resets, typography, and color scheme defaults target `.shopify-section` in `assets/core.css`. `shopify-section--<name>` is the per-section hook for component-specific outer styling.
-- **Inner custom element** — `<theme-section>` for standard sections (registered directly as `BaseComponent`), or `<theme-<name>>` for specialized sections (class extending `BaseComponent`). Provides content-width + padding, and wires the section into the JS runtime (`events`, `observers`, `cache`, `modifiers` managers).
+The two wrappers serve different audiences and have different blast radii. Each layer's job follows from its scope.
+
+- **Outer `<section class="shopify-section ...">`** — Shopify wraps every section, ours and apps', in this. **Universal scope.** Anything we put on `.shopify-section` propagates to app sections too, so only outer-flow concerns belong here: anchor scrolling (`scroll-margin-block-start`), scroll-behavior, inter-section spacing if ever needed. **No typography, background, or transitions** — those would bleed into apps. The schema's `"class": "shopify-section--<name>"` adds a per-section identity hook used rarely, only for outer-level overrides that *can't* live on the inner element (typically `position: sticky` for header sections, `z-index` overlaps, document-flow positioning). Most sections add no rule at this layer.
+- **Inner `<theme-section>` / `<theme-<name>>`** — our domain, no bleed. **All content-level appearance lives here**: typography, color, background, transitions, content-width, gutter, layout. Plus the JS runtime wiring (`events`, `observers`, `cache`, `modifiers` managers via `BaseComponent`). Theme-level defaults shared by every theme-managed root are applied via `:is(theme-section, theme-cart, theme-header, theme-footer, theme-overlay)` in `assets/core.css`; specialized sections add their own layout/behavior on top.
+
+The split keeps app sections un-themed by default (since they only get the outer wrapper, never an inner `theme-*`), avoiding silent bleed of typography or background into app content. As new specialized sections are authored, their tag is added to the `:is()` list so the shared defaults apply.
 
 ## Naming
 
@@ -58,7 +62,7 @@ A rendered section produces two nested wrappers:
 
 ## Schema requirements
 
-- `"tag": "section"`, `"class": "shopify-section--<name>"` — per-section outer hook. Do not add an additional project-level class; use `.shopify-section` in CSS for theme-wide styling.
+- `"tag": "section"`, `"class": "shopify-section--<name>"` — per-section outer hook. Reserved for outer-level overrides only (e.g. `position: sticky` for the header section). Theme-wide content styling goes on the inner `theme-*` root, not here — see Architecture.
 - `"blocks"` — `[{ "type": "@theme" }, { "type": "@app" }]` for standard sections accepting any block; custom lists or `[]` for specialized/static sections
 - `"disabled_on"` — restrict where the section can appear (e.g. `{ "groups": ["header", "footer"] }` for content sections)
 - Base settings (Layout + Appearance) — see `.context/docs/schema-conventions.md#section-base-settings`. Required for merchant-addable standard sections; optional for specialized or static sections
