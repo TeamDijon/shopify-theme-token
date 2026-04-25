@@ -1,7 +1,8 @@
-{% # Modifiers v1.1.0 %}
+{% # Modifiers v1.2.0 %}
 
 {% comment %}
   Changelog
+  - v1.2.0 — escape modifier_list in output (prevents attribute breakout if input contains special chars)
   - v1.1.0 — use break for early exit; drop redundant default
   - v1.0.0 — initial
 {% endcomment %}
@@ -22,4 +23,4 @@
   endif
 %}
 
-data-modifiers="{{ modifier_list }}"
+data-modifiers="{{ modifier_list | escape }}"
