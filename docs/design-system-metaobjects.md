@@ -2,7 +2,9 @@
 
 The project exposes metaobject definitions that encode reusable design decisions. Block schemas should prefer a metaobject reference over free-form values when a matching metaobject exists.
 
-This doc is the single source of truth for which metaobjects exist, their accessible fields, and how to use them in schemas and Liquid. Populate as metaobjects are added; an undocumented metaobject should not be consumed by a block schema.
+This doc is the **consumption-side reference**: which metaobject types exist, which fields the Liquid utilities access, and how to use them in schemas. For the **type definitions** (field handles, types, and validations needed when creating these on a fresh Shopify store), see `metaobject-definitions.md`. The two docs are kept separate by audience: this one for developers consuming the metaobjects in code; the definitions doc for an agent or human setting up the store.
+
+Populate as metaobjects are added; an undocumented metaobject should not be consumed by a block schema.
 
 ## Catalog
 
@@ -41,6 +43,11 @@ When the value is passed through the modifier system, emit as `<key>:<handle>` �
 
 ## Adding a new metaobject
 
-1. Create the metaobject definition in the Shopify admin
-2. Document it in the catalog above with its fields and intended use
+1. Create the metaobject definition in the Shopify admin (or via an agent following `metaobject-definitions.md`)
+2. Document it in **both** docs: this one (consumption — which fields code accesses) and `metaobject-definitions.md` (creation — field handles, types, validations)
 3. Only then reference it in a block schema
+
+## Related
+
+- `metaobject-definitions.md` — type definitions for setup (audience: agent/human creating definitions on the store)
+- `schema-conventions.md` — when to prefer a metaobject picker over a hardcoded select

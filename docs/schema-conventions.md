@@ -61,10 +61,28 @@ See `.claude/rules/section-convention.md` for the full section structure.
 - Group related settings under `{ "type": "header" }` separators
 - Use `{ "type": "paragraph" }` only for short hints directly under a header (e.g. breakpoint reminders like "Mobile style < 768px"); not for long documentation
 
+## Metaobject picker vs hardcoded select
+
+Prefer `"type": "metaobject"` over `"type": "select"` with a hardcoded `options` list when:
+
+- Values represent **curated content** the merchant should manage (icons, theme colors, button styles, typographic styles, layout tokens)
+- New entries should be addable without a code change
+- The set of values shares a structure (a "name + slug" pair, a color hex, a numeric width, etc.) that benefits from being a metaobject
+
+Hardcoded `select` is fine for **stable theme constants** where merchant curation isn't a goal:
+
+- Breakpoints (`none / 40 / 60 / 80` — tied to CSS media queries)
+- Alignment options (`start / center / end` — finite UI primitives)
+- Layout direction (`horizontal / vertical`, `image-first / text-first`)
+- Boolean-ish enums (`auto / always / never`)
+
+Whenever you choose a metaobject picker, the type must be documented in `metaobject-definitions.md` (definitions) and `design-system-metaobjects.md` (consumption) before being referenced in a schema.
+
 ## Adding a new convention
 
 When a recurring schema shape appears across multiple files, document it here and update the relevant rule(s) to reference it.
 
 ## Related
 
-- Design-system metaobjects: `.context/docs/design-system-metaobjects.md`
+- Design-system metaobjects (consumption): `.context/docs/design-system-metaobjects.md`
+- Metaobject definitions (creation): `.context/docs/metaobject-definitions.md`
