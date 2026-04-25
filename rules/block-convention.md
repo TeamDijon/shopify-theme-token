@@ -37,6 +37,10 @@ See `.context/docs/versioning-and-changelog.md` for format and policy.
 - Prefer metaobjects over free-form values when a matching one exists — see `.context/docs/design-system-metaobjects.md`
 - For recurring schema shapes (top-spacing pair, etc.), see `.context/docs/schema-conventions.md`
 
+## Styles and scripts
+
+Block CSS lives in a `{% stylesheet %}` block inside the matching snippet (the block file itself contains only the schema + render call). Block JS lives in a `{% javascript %}` block in the same snippet. For Liquid-computed per-instance values, render `utility--dynamic-style`. See `.context/docs/asset-loading.md` for the file-vs-inline decision rule across all consumer types.
+
 ## Example
 
 ```liquid
