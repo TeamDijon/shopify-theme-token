@@ -82,4 +82,3 @@ See `.context/docs/versioning-and-changelog.md` for format and policy.
 ## Related
 
 - Modifier system (for `data-modifiers` attributes): `.context/docs/modifier-system.md`
-- Versioning and changelog: `.context/docs/versioning-and-changelog.md`

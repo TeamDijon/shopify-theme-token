@@ -10,7 +10,7 @@ paths:
 Every section file has:
 
 1. **Version header** — `{% # <Name> vX.Y.Z %}`
-2. **Changelog block** — `{% comment %}` with schema/markup changes. Omit on v1.0.0 only; required from any subsequent version.
+2. **Changelog block** — `{% comment %}` with schema/markup changes; see `.context/docs/versioning-and-changelog.md` for format. Omit on v1.0.0 only; required from any subsequent version.
 3. **Body** — see patterns below
 4. **`{% schema %}`** — see Schema requirements
 
@@ -111,8 +111,5 @@ The split keeps app sections un-themed by default (since they only get the outer
 ## Related
 
 - Modifier system: `.context/docs/modifier-system.md`
-- Dynamic style pattern: `.context/docs/dynamic-style-pattern.md`
-- Schema conventions: `.context/docs/schema-conventions.md`
 - Design-system metaobjects: `.context/docs/design-system-metaobjects.md`
 - Locale conventions (incl. `t:` prefix for schema translations): `.context/docs/locale-conventions.md`
-- Versioning and changelog: `.context/docs/versioning-and-changelog.md`
