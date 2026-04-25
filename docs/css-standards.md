@@ -54,6 +54,37 @@ Logical properties handle RTL/vertical flow correctly without per-locale overrid
 
 Component CSS targets a unique root selector — `.shopify-block--<name>` for blocks, the custom element tag for sections (`theme-cart`, `theme-header`). Avoid bare element selectors that could leak (`button { ... }` in a block stylesheet styles every `<button>` on the page once the block is rendered, not just the block's own).
 
+## Container queries
+
+For block-level layout adaptation (a child responding to its container's actual width rather than the viewport), use `@container` queries. Most relevant for the `group` / `columns` / `media` blocks where a child's available width is a function of how the merchant composed the layout, not a global breakpoint.
+
+```css
+.shopify-block--media {
+  container-type: inline-size;
+  container-name: media;
+
+  @container media (inline-size < 24rem) {
+    /* compact layout for narrow containers */
+  }
+}
+```
+
+Prefer container queries over media queries whenever the relevant width is the parent's, not the viewport's. Modern engines all support this.
+
+## `@property` for animatable custom properties
+
+Untyped CSS custom properties don't animate — `transition: --my-color 0.3s` is a no-op because CSS treats the value as a string. Declare the property with `@property` to enable smooth animation and type safety:
+
+```css
+@property --my-color {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: transparent;
+}
+```
+
+Use whenever a custom property needs to animate (color-scheme transitions, computed gutter changes, etc.). All modern engines support `@property` (Safari since 16.4, Firefox since 128).
+
 ## Focus and motion
 
 - `:focus-visible` for outline rules; never `outline: none` without a replacement.
