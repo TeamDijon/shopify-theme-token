@@ -75,3 +75,5 @@ When both a `name` and a `*_content` are passed with `inline`, the content takes
 - `snippets/utility--css-minifier.liquid` — inline CSS pipeline
 - `snippets/utility--core-assets.liquid` — top-level callsite; wires `core.js`/`core.css` + dynamic styles + import map
 - `snippets/utility--import-map.liquid` — module specifier resolution
+- `.context/docs/css-standards.md` — how component CSS is written (specificity, layers, logical properties)
+- `.context/docs/html-standards.md` — native elements first, semantic structure
