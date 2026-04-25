@@ -22,6 +22,8 @@ Rationale: sections are big enough to deserve their own asset bundles and benefi
 
 The three rows aren't mutually exclusive: a section with `assets/<name>.css` can also use `utility--dynamic-style` for per-instance variables. Pure utility snippets (`utility--*`) generally don't carry stylesheet blocks at all — they emit head content, attributes, or JSON, not visible markup.
 
+**JS-specific footgun**: `{% javascript %}` blocks run in classic-script context, not as ES modules. ES syntax (`import` / `export`) is unavailable inside them. Blocks and snippets needing functionality from `core.js`-registered modules access them via the `window.theme` namespace (`js-asset-convention.md` documents this affordance). ES module imports are only available in `assets/<name>.js` files loaded via `utility--asset-loader` with `js: 'module'` — that's the structural reason a block would graduate to a paired asset file (rare; revisit case-by-case).
+
 ## CSS strategies
 
 | Strategy | Emits | Use when |
