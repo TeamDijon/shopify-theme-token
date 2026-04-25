@@ -236,8 +236,20 @@
 }
 
 @layer theme {
-  /* Outer section container: visual defaults applied to every shopify-section (ours and app). */
+  /* Outer section wrapper. Universal scope — applies to ours AND app sections, so only outer-flow concerns belong here (anchor scrolling, scroll-behavior). All content-level styling (typography, background, transitions) lives on the inner `theme-*` roots so it doesn't bleed into apps. See `.context/rules/section-convention.md` for the three-layer model. */
   .shopify-section {
+    scroll-margin-block-start: 5rem;
+    scroll-behavior: var(--scroll-behavior);
+
+    --scroll-behavior: smooth;
+
+    @media (prefers-reduced-motion) {
+      --scroll-behavior: auto;
+    }
+  }
+
+  /* Theme-level appearance shared by every theme-managed section root. Listed explicitly so app sections (which never render a theme-* element) don't inherit. Add new theme-* tags to this `:is()` list as specialized sections are authored. */
+  :is(theme-section, theme-cart, theme-header, theme-footer, theme-overlay) {
     background-color: var(--color-background);
     background: var(--gradient-background);
     color: var(--color-foreground);
@@ -252,16 +264,10 @@
     text-decoration: var(--base-text-decoration);
     text-wrap: pretty;
 
-    scroll-margin-block-start: 5rem;
-    scroll-behavior: var(--scroll-behavior);
     transition: 0.15s ease-out;
-
-    --scroll-behavior: smooth;
 
     @media (prefers-reduced-motion) {
       transition-duration: 0s;
-
-      --scroll-behavior: auto;
     }
   }
 
