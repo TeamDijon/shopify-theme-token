@@ -76,3 +76,34 @@ The `ModifiersManager` class (`assets/modifiers-manager.js`) reads and mutates `
 
 - **Per-instance values** (width, color, margin): use CSS custom properties via `utility--dynamic-style` instead
 - **Pure JS state that does not drive styling**: use standard attributes (`aria-*`, `data-<name>`) or classes
+
+## Authoring guardrails
+
+Three discipline rules that prevent silent footguns. None violated by current usage; documented forward-looking.
+
+### Categorical only — not continuous
+
+Use `data-modifiers` for **finite, named** enum values (`button-style:solid-secondary`, `state:loading`, `template:product`). For continuous/numeric values (margins, sizes, computed offsets), use CSS custom properties via `utility--dynamic-style` instead. ZAG's `top-margin:0` through `top-margin:22` is the anti-pattern: 23 individual CSS selectors instead of one variable.
+
+Discrete numeric labels tied to a fixed enum (e.g. our `breakpoint:40` / `:60` / `:80` mapping to media queries) are categorical, not continuous.
+
+### No prefix collisions
+
+The substring-match nature of `*=` selectors means a token can shadow a longer one. Don't have `state:open` and `state:opened` coexist; don't have `breakpoint:4` and `breakpoint:40` coexist. Naming discipline: avoid making one key/value a prefix of another **unless the substring match is intentional** (like our `prose` matching both `prose` and `prose:narrow`).
+
+Forward-looking: if we ever add hierarchical template paths (e.g. `template:product.bundle`), the existing `template:product` would silently match. Audit before adding.
+
+### API preference: add/remove over setValue
+
+ZAG's runtime usage data showed `add` (24×) and `remove` (28×) dominate; `setValue` (2×) is rarely reached for. Prefer the granular API:
+
+```js
+// Preferred — explicit add/remove
+this.modifiers.add("state:loading");
+this.modifiers.remove("state:loading");
+
+// Use only when swapping a dimension's value
+this.modifiers.setValue("step", "validating"); // replaces any existing step:* value
+```
+
+`add`/`remove` is explicit about what's happening; `setValue` is the "replace this dimension's value, whatever it was" operation — useful but rarely needed.
