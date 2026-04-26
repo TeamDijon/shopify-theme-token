@@ -1,7 +1,10 @@
-{% # CSS Variables v1.2.1 %}
+{% # CSS Variables v1.4.1 %}
 
 {% comment %}
   Changelog
+  - v1.4.1 — rename `--font-heading--color` (double dash) to `--font-heading-color` for naming consistency; coordinate with `core.css` rename
+  - v1.4.0 — text_style cleanups: hoist `default_font_family` out of the loop with a `system-ui` terminal fallback (fixes invalid leading comma in `font-family` when `base_text_style` is unset); drop dead `font_fallback_family` assign; switch `line_height` storage from "% × 100" to a direct decimal; `base_text_style != null` → `!= blank`
+  - v1.3.0 — rename theme-color iteration output from `--<handle>-color` to `--color-<handle>` for consistency with scheme variables (`--color-background`, `--color-primary`, etc.)
   - v1.2.1 — inline the media queries inside :root via native CSS nesting; no behavior change, cleaner output
   - v1.2.0 — replace clamp-based responsive snap with explicit `@media (width >= 48rem)` overrides for font-size and gutter; clearer intent, no stealth ramp math
   - v1.1.0 — drop `experience-section` :has selector in favor of `.shopify-section`; use `base_text_style` as the default-font-family fallback (was `settings.text_style`, which does not exist in the settings schema)
@@ -24,7 +27,7 @@
   {% # Theme colors %}
   :root {
     {% for theme_color in metaobjects.theme_color.values %}
-      --{{ theme_color.system.handle }}-color: {{ theme_color.hex_code.value }};
+      --color-{{ theme_color.system.handle }}: {{ theme_color.hex_code.value }};
     {% endfor %}
 
     --color-error: #DC2626;
@@ -105,7 +108,7 @@
       --color-focus-ring: var(--color-primary);
       --color-backdrop: rgba(var(--color-shadow-rgb), 0.5);
 
-      --font-heading--color: var(--color-foreground-heading);
+      --font-heading-color: var(--color-foreground-heading);
 
       --shadow-sm: 0 1px 2px rgba(var(--color-shadow-rgb), 0.06);
       --shadow-md: 0 4px 12px rgba(var(--color-shadow-rgb), 0.10);
@@ -116,19 +119,15 @@
   {% # Text styles %}
   {% liquid
     assign base_text_style = settings.base_text_style
+    assign default_font_family = base_text_style.font_family.value.name.value | default: 'system-ui'
     assign hn_style_list = 'h1,h2,h3,h4,h5,h6' | split: ','
   %}
 
   {% for text_style in metaobjects.text_style.values %}
     {% liquid
-      if forloop.first
-        assign default_font_family = base_text_style.font_family.value.name.value
-      endif
-
       assign style_handle = text_style.system.handle
 
       assign font_family = text_style.font_family.value.name.value | default: default_font_family
-      assign font_fallback_family = text_style.font_fallback_family.value | default: 'sans-serif'
       case text_style.font_fallback_family.value
         when 'mono'
           assign font_fallback_family = settings.mono_font
@@ -154,7 +153,7 @@
         assign desktop_font_size = mobile_font_size
       endif
 
-      assign line_height = text_style.line_height.value | divided_by: 100.0 | round: 2
+      assign line_height = text_style.line_height.value | round: 2
       if line_height == 0
         assign line_height = 1.5
       endif
@@ -186,7 +185,7 @@
       --{{ style_handle }}-text-transform: {{ text_style_transform }};
       --{{ style_handle }}-text-decoration: {{ text_style_decoration }};
 
-      {% if base_text_style != null and text_style == base_text_style %}
+      {% if base_text_style != blank and text_style == base_text_style %}
         --base-font-family: var(--{{ style_handle }}-font-family);
         --base-font-style: var(--{{ style_handle }}-font-style);
         --base-font-size: var(--{{ style_handle }}-font-size);
