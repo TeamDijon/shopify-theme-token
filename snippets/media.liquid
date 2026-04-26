@@ -19,8 +19,8 @@
   @param {metaobject} [media_size] - `media_size` metaobject. Reads `.system.handle` (for `fill` special-case), `.type.value`, and `.value.value`.
   @param {metaobject} [mobile_media_size] - Mobile `media_size` override. Same shape as `media_size`. Inherits desktop when blank.
   @param {boolean} [bleed] - Extends media past the section gutter (full viewport width). Defaults to false.
-  @param {string} [horizontal_alignment] - Child content `align-items` value. Defaults to `'flex-start'`.
-  @param {string} [vertical_alignment] - Child content `justify-content` value. Defaults to `'flex-end'`.
+  @param {string} [horizontal_alignment] - Child content `align-items` value. Defaults to `'start'`.
+  @param {string} [vertical_alignment] - Child content `justify-content` value. Defaults to `'end'`.
   @param {metaobject} [content_width] - `content_width` metaobject. Caps `max-inline-size`. Ignored when `bleed` is true.
   @param {number} [gap] - Child content gap in px. Defaults to 16.
   @param {string} [overlay_color] - Tint color (with alpha) painted over the media. No overlay when blank or fully transparent.
@@ -44,8 +44,8 @@
   assign media_size = media_size | default: block.settings.media_size
   assign mobile_media_size = mobile_media_size | default: block.settings.mobile_media_size
   assign bleed = bleed | default: block.settings.bleed, allow_false: true | default: false, allow_false: true
-  assign horizontal_alignment = horizontal_alignment | default: block.settings.horizontal_alignment | default: 'flex-start'
-  assign vertical_alignment = vertical_alignment | default: block.settings.vertical_alignment | default: 'flex-end'
+  assign horizontal_alignment = horizontal_alignment | default: block.settings.horizontal_alignment | default: 'start'
+  assign vertical_alignment = vertical_alignment | default: block.settings.vertical_alignment | default: 'end'
   assign content_width = content_width | default: block.settings.content_width | default: ''
   assign gap = gap | default: block.settings.gap | default: 16
   assign overlay_color = overlay_color | default: block.settings.overlay_color | default: ''
@@ -154,11 +154,11 @@
       {% endif %}
     {% endif %}
 
-    {% if horizontal_alignment != 'flex-start' %}
+    {% if horizontal_alignment != 'start' %}
       --horizontal-alignment: {{ horizontal_alignment }};
     {% endif %}
 
-    {% if vertical_alignment != 'flex-end' %}
+    {% if vertical_alignment != 'end' %}
       --vertical-alignment: {{ vertical_alignment }};
     {% endif %}
 
@@ -255,8 +255,8 @@
         inset: 0;
         display: flex;
         flex-direction: column;
-        justify-content: var(--vertical-alignment, flex-end);
-        align-items: var(--horizontal-alignment, flex-start);
+        justify-content: var(--vertical-alignment, end);
+        align-items: var(--horizontal-alignment, start);
         gap: var(--gap, 1rem);
         padding: var(--gutter, 1rem);
       }

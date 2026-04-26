@@ -9,8 +9,8 @@
   @param {string} [contents] - Pre-rendered child blocks markup. Skips render when blank.
   @param {string} [direction] - `'column'` (default) or `'row'`.
   @param {string} [stack_below] - In `row` direction, switch to column when container is below the breakpoint. One of `'none'`, `'40'`, `'60'`, `'80'` (rem). Defaults to `'60'`.
-  @param {string} [horizontal_alignment] - In `column` direction maps to `align-items`; in `row` direction maps to `justify-content`. One of `'flex-start'` (default), `'center'`, `'flex-end'`, `'space-between'`.
-  @param {string} [vertical_alignment] - In `row` direction maps to `align-items`. One of `'flex-start'` (default), `'center'`, `'flex-end'`. Ignored in `column` direction.
+  @param {string} [horizontal_alignment] - In `column` direction maps to `align-items`; in `row` direction maps to `justify-content`. One of `'start'` (default), `'center'`, `'end'`, `'space-between'`.
+  @param {string} [vertical_alignment] - In `row` direction maps to `align-items`. One of `'start'` (default), `'center'`, `'end'`. Ignored in `column` direction.
   @param {metaobject} [content_width] - `content_width` metaobject. Caps `max-inline-size`. Full width when blank.
   @param {number} [gap] - Gap between children in px. Defaults to 16.
   @param {string} [color_scheme] - Optional `color_scheme` setting value. When set, emits `color-scheme:<id>` modifier so the global scheme rules from `utility--css-variables` apply.
@@ -27,8 +27,8 @@
 
   assign direction = direction | default: block.settings.direction | default: 'column'
   assign stack_below = stack_below | default: block.settings.stack_below | default: '60'
-  assign horizontal_alignment = horizontal_alignment | default: block.settings.horizontal_alignment | default: 'flex-start'
-  assign vertical_alignment = vertical_alignment | default: block.settings.vertical_alignment | default: 'flex-start'
+  assign horizontal_alignment = horizontal_alignment | default: block.settings.horizontal_alignment | default: 'start'
+  assign vertical_alignment = vertical_alignment | default: block.settings.vertical_alignment | default: 'start'
   assign content_width = content_width | default: block.settings.content_width | default: ''
   assign gap = gap | default: block.settings.gap | default: 16
   assign color_scheme = color_scheme | default: block.settings.color_scheme | default: ''
@@ -61,11 +61,11 @@
       --gap: {{ gap | divided_by: 16.0 | round: 3 }}rem;
     {% endif %}
 
-    {% if horizontal_alignment != 'flex-start' %}
+    {% if horizontal_alignment != 'start' %}
       --horizontal-alignment: {{ horizontal_alignment }};
     {% endif %}
 
-    {% if vertical_alignment != 'flex-start' %}
+    {% if vertical_alignment != 'start' %}
       --vertical-alignment: {{ vertical_alignment }};
     {% endif %}
 
@@ -101,42 +101,42 @@
 
       &[data-modifiers*='direction:column'] {
         flex-direction: column;
-        align-items: var(--horizontal-alignment, flex-start);
+        align-items: var(--horizontal-alignment, start);
       }
 
       &[data-modifiers*='direction:row'] {
         flex-direction: row;
-        justify-content: var(--horizontal-alignment, flex-start);
-        align-items: var(--vertical-alignment, flex-start);
+        justify-content: var(--horizontal-alignment, start);
+        align-items: var(--vertical-alignment, start);
       }
 
       /* Stack-below: collapse to column when container is narrower than the breakpoint */
       &[data-modifiers*='stack-below'] {
         flex-direction: column;
-        align-items: var(--horizontal-alignment, flex-start);
+        align-items: var(--horizontal-alignment, start);
       }
 
       @container group (inline-size >= 40rem) {
         &[data-modifiers*='stack-below:40'] {
           flex-direction: row;
-          justify-content: var(--horizontal-alignment, flex-start);
-          align-items: var(--vertical-alignment, flex-start);
+          justify-content: var(--horizontal-alignment, start);
+          align-items: var(--vertical-alignment, start);
         }
       }
 
       @container group (inline-size >= 60rem) {
         &[data-modifiers*='stack-below:60'] {
           flex-direction: row;
-          justify-content: var(--horizontal-alignment, flex-start);
-          align-items: var(--vertical-alignment, flex-start);
+          justify-content: var(--horizontal-alignment, start);
+          align-items: var(--vertical-alignment, start);
         }
       }
 
       @container group (inline-size >= 80rem) {
         &[data-modifiers*='stack-below:80'] {
           flex-direction: row;
-          justify-content: var(--horizontal-alignment, flex-start);
-          align-items: var(--vertical-alignment, flex-start);
+          justify-content: var(--horizontal-alignment, start);
+          align-items: var(--vertical-alignment, start);
         }
       }
     }
