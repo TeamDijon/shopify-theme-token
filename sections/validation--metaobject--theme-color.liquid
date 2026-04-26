@@ -1,0 +1,225 @@
+{% # Validation - Theme color v1.0.0 %}
+
+{% comment %}
+  Visual test page for the `theme_color` metaobject. Iterates every entry and
+  renders three swatches per color so the design-token pipeline can be eyeballed:
+
+  1. on-self  — the token color as background, computed contrast as foreground.
+                Verifies `--color-<handle>` resolved correctly and that the
+                contrast helper picks a legible counterpart.
+  2. on-light — the token color as foreground against #ffffff.
+  3. on-dark  — the token color as foreground against #000000.
+
+  Reachable only at /?view=validation--metaobject--theme-color.
+  See `.context/docs/validation.md` for the validation-suite convention.
+{% endcomment %}
+
+{% liquid
+  assign max_inline_size = section.settings.max_inline_size
+  assign base_selector = 'shopify-section-' | append: section.id
+%}
+
+<theme-section>
+  <header class="validation__intro">
+    <h1>Theme color</h1>
+    <p>
+      Source: <code>metaobjects.theme_color.values</code>. Consumed via
+      <code>var(--color-&lt;handle&gt;)</code>. Each row renders one entry three
+      ways &mdash; as a background against itself, as a foreground on white, and
+      as a foreground on black. A failing entry is one where any swatch is
+      illegible.
+    </p>
+  </header>
+
+  <ol class="theme-color-suite">
+    {% for theme_color in metaobjects.theme_color.values %}
+      {% liquid
+        assign handle = theme_color.system.handle
+        assign hex = theme_color.hex_code.value
+        capture contrast
+          render 'utility--color-contrast', color: hex
+        endcapture
+        assign contrast = contrast | strip
+      %}
+
+      <li
+        class="theme-color"
+        style="--color: var(--color-{{ handle }}); --contrast: {{ contrast }};"
+      >
+        <header class="theme-color__head">
+          <code class="theme-color__handle">{{ handle }}</code>
+          <code class="theme-color__hex">{{ hex }}</code>
+        </header>
+
+        <div class="theme-color__swatches">
+          <div class="theme-color__swatch" data-context="on-self">
+            <span class="theme-color__context">On self</span>
+            <span class="theme-color__sample">Aa</span>
+          </div>
+          <div class="theme-color__swatch" data-context="on-light">
+            <span class="theme-color__context">On light</span>
+            <span class="theme-color__sample">Aa</span>
+          </div>
+          <div class="theme-color__swatch" data-context="on-dark">
+            <span class="theme-color__context">On dark</span>
+            <span class="theme-color__sample">Aa</span>
+          </div>
+        </div>
+      </li>
+    {% else %}
+      <li class="theme-color-suite__empty">
+        No <code>theme_color</code> metaobject entries defined.
+      </li>
+    {% endfor %}
+  </ol>
+</theme-section>
+
+{% capture dynamic_style %}
+  {% if max_inline_size and max_inline_size != blank %}
+    --max-inline-size: {{ max_inline_size }}px;
+  {% endif %}
+{% endcapture %}
+{% render 'utility--dynamic-style', base_selector: base_selector, css_content: dynamic_style %}
+
+{% schema %}
+{
+  "name": "Validation - Theme color",
+  "tag": "section",
+  "class": "shopify-section--validation--metaobject--theme-color",
+  "settings": [
+    {
+      "type": "range",
+      "id": "max_inline_size",
+      "label": "Max width",
+      "min": 800,
+      "max": 1920,
+      "step": 20,
+      "unit": "px",
+      "default": 1280
+    }
+  ]
+}
+{% endschema %}
+
+{% stylesheet %}
+  @layer components {
+    .shopify-section--validation--metaobject--theme-color {
+      theme-section {
+        display: block;
+        max-inline-size: var(--max-inline-size, 80rem);
+        margin-inline: auto;
+        padding-block: 2rem;
+        padding-inline: 1.5rem;
+      }
+
+      .validation__intro {
+        margin-block-end: 2rem;
+
+        h1 {
+          margin-block-end: 0.5rem;
+        }
+
+        p {
+          max-inline-size: 65ch;
+          opacity: 0.75;
+        }
+
+        code {
+          font-family: ui-monospace, monospace;
+          font-size: 0.95em;
+        }
+      }
+
+      .theme-color-suite {
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+
+      .theme-color-suite__empty {
+        padding: 1.5rem;
+        border: 1px dashed currentColor;
+        border-radius: 0.5rem;
+        text-align: center;
+        opacity: 0.7;
+      }
+
+      .theme-color {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        padding: 1rem;
+        border: 1px solid rgba(0, 0, 0, 0.12);
+        border-radius: 0.5rem;
+      }
+
+      .theme-color__head {
+        display: flex;
+        align-items: baseline;
+        gap: 0.75rem;
+      }
+
+      .theme-color__handle {
+        font-family: ui-monospace, monospace;
+        font-weight: 600;
+      }
+
+      .theme-color__hex {
+        font-family: ui-monospace, monospace;
+        opacity: 0.6;
+      }
+
+      .theme-color__swatches {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 0.75rem;
+
+        @media (width < 48rem) {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .theme-color__swatch {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        aspect-ratio: 2 / 1;
+        border-radius: 0.375rem;
+        border: 1px solid rgba(0, 0, 0, 0.12);
+
+        &[data-context='on-self'] {
+          background-color: var(--color);
+          color: var(--contrast);
+        }
+
+        &[data-context='on-light'] {
+          background-color: #ffffff;
+          color: var(--color);
+        }
+
+        &[data-context='on-dark'] {
+          background-color: #000000;
+          color: var(--color);
+        }
+      }
+
+      .theme-color__context {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        opacity: 0.7;
+      }
+
+      .theme-color__sample {
+        font-size: 2rem;
+        line-height: 1;
+        font-weight: 600;
+      }
+    }
+  }
+{% endstylesheet %}

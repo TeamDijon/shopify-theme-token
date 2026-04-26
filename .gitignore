@@ -21,3 +21,6 @@ package-lock.json
 # MCP — local instance may carry per-environment paths or future secrets;
 # .mcp.template.json is the committed baseline. Copy to .mcp.json on first setup.
 .mcp.json
+
+# Playwright MCP — local debug artifacts (snapshots, console logs, screenshots)
+.playwright-mcp/
