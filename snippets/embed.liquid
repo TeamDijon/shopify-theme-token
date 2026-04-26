@@ -1,4 +1,10 @@
-{% # Embed v1.0.0 %}
+{% # Embed v1.0.1 %}
+
+{% comment %}
+  Changelog
+  - v1.0.1 — chain `--block-rhythm-mobile`/`--block-rhythm-desktop` as inner fallback for `margin-block-start` so section-level block rhythm applies when no per-block margin is authored
+  - v1.0.0 — initial
+{% endcomment %}
 
 {% doc %}
   @description Renders a third-party video embed (YouTube or Vimeo) as a lazy-loaded iframe inside an aspect-ratio wrapper. URL is parsed in Liquid for known provider patterns; unknown URLs render a placeholder. Iframe carries a `title` attribute for screen readers — schema-level default plus a runtime fallback via `accessibility.embedded_content`.
@@ -177,11 +183,11 @@
       overflow: hidden;
       max-inline-size: var(--content-width, 100%);
       margin-inline: auto;
-      margin-block-start: var(--mobile-margin-block-start, 0rem);
+      margin-block-start: var(--mobile-margin-block-start, var(--block-rhythm-mobile, 0rem));
       aspect-ratio: 16 / 9;
 
       @media (width >= 48rem) {
-        margin-block-start: var(--desktop-margin-block-start, 0rem);
+        margin-block-start: var(--desktop-margin-block-start, var(--block-rhythm-desktop, 0rem));
       }
 
       /* Sizing override: aspect ratio from media_size metaobject */

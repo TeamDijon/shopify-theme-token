@@ -1,4 +1,10 @@
-{% # Group v1.0.0 %}
+{% # Group v1.0.1 %}
+
+{% comment %}
+  Changelog
+  - v1.0.1 — chain `--block-rhythm-mobile`/`--block-rhythm-desktop` as inner fallback for `margin-block-start` so section-level block rhythm applies when no per-block margin is authored
+  - v1.0.0 — initial
+{% endcomment %}
 
 {% doc %}
   @description Renders a flex container that groups child blocks. Direction (column/row), alignment, gap, and breakpoint stacking are merchant-configurable. Stack-below uses `@container` queries against the group's own width (not the viewport), so a row-direction group placed inside a narrow column stacks correctly without false-positive matches against the viewport breakpoint.
@@ -89,10 +95,10 @@
       display: flex;
       gap: var(--gap, 0rem);
       max-inline-size: var(--content-width, 100%);
-      margin-block-start: var(--mobile-margin-block-start, 0rem);
+      margin-block-start: var(--mobile-margin-block-start, var(--block-rhythm-mobile, 0rem));
 
       @media (width >= 48rem) {
-        margin-block-start: var(--desktop-margin-block-start, 0rem);
+        margin-block-start: var(--desktop-margin-block-start, var(--block-rhythm-desktop, 0rem));
       }
 
       &[data-modifiers*='direction:column'] {

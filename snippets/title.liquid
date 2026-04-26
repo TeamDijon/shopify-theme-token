@@ -1,4 +1,10 @@
-{% # Title v1.0.0 %}
+{% # Title v1.0.1 %}
+
+{% comment %}
+  Changelog
+  - v1.0.1 — chain `--block-rhythm-mobile`/`--block-rhythm-desktop` as inner fallback for `margin-block-start` so section-level block rhythm applies when no per-block margin is authored
+  - v1.0.0 — initial
+{% endcomment %}
 
 {% doc %}
   @description Renders a title element with rich-text content, configurable HTML tag, optional text_style override, optional leading icon, max-width, color, and responsive top spacing.
@@ -77,11 +83,11 @@
   @layer components {
     .shopify-block--title {
       max-inline-size: var(--content-width, 100%);
-      margin-block-start: var(--mobile-margin-block-start, 0rem);
+      margin-block-start: var(--mobile-margin-block-start, var(--block-rhythm-mobile, 0rem));
       color: var(--text-color, var(--color-foreground-heading));
 
       @media (width >= 48rem) {
-        margin-block-start: var(--desktop-margin-block-start, 0rem);
+        margin-block-start: var(--desktop-margin-block-start, var(--block-rhythm-desktop, 0rem));
       }
 
       & svg {
