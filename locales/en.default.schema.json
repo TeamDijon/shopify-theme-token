@@ -311,7 +311,7 @@
         },
         "color_scheme": {
           "label": "Color scheme",
-          "info": "Override the section's scheme — useful for light text on dark images"
+          "info": "Override the section's scheme for this block and its children"
         },
         "top_spacing": { "content": "Top spacing" },
         "mobile_margin_block_start": { "label": "Mobile" },
@@ -403,7 +403,7 @@
         "appearance": { "content": "Appearance" },
         "color_scheme": {
           "label": "Color scheme",
-          "info": "Override the section's scheme for this group and its children"
+          "info": "Override the section's scheme for this block and its children"
         },
         "top_spacing": { "content": "Top spacing" },
         "mobile_margin_block_start": { "label": "Mobile" },

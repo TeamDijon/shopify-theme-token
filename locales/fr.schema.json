@@ -320,7 +320,7 @@
         },
         "color_scheme": {
           "label": "Palette de couleurs",
-          "info": "Remplace la palette de la section — utile pour du texte clair sur image sombre"
+          "info": "Remplace la palette de la section pour ce bloc et ses enfants"
         },
         "top_spacing": { "content": "Espacement supérieur" },
         "mobile_margin_block_start": { "label": "Mobile" },
@@ -412,7 +412,7 @@
         "appearance": { "content": "Apparence" },
         "color_scheme": {
           "label": "Palette de couleurs",
-          "info": "Remplace la palette de la section pour ce groupe et ses enfants"
+          "info": "Remplace la palette de la section pour ce bloc et ses enfants"
         },
         "top_spacing": { "content": "Espacement supérieur" },
         "mobile_margin_block_start": { "label": "Mobile" },
