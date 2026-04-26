@@ -55,7 +55,11 @@
         "layout": { "content": "Layout" },
         "content_width": {
           "label": "Content width",
-          "info": "Leave blank for full width"
+          "info": "Leave blank for the 2000px theme default — full width on most screens (1920px and below)."
+        },
+        "block_rhythm": {
+          "label": "Block rhythm",
+          "info": "Vertical space between blocks. Leave blank for none."
         },
         "appearance": { "content": "Appearance" },
         "color_scheme": { "label": "Color scheme" }

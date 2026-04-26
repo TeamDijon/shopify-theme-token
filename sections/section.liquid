@@ -1,7 +1,14 @@
-{% # Section v1.0.0 %}
+{% # Section v1.1.0 %}
+
+{% comment %}
+  Changelog
+  - v1.1.0 — add `block_rhythm` setting (spacing metaobject) + emit `--block-rhythm-{mobile,desktop}` variables for the inter-block margin rule in `core.css`
+  - v1.0.0 — initial
+{% endcomment %}
 
 {% liquid
   assign content_width = section.settings.content_width
+  assign block_rhythm = section.settings.block_rhythm
   assign base_selector = 'shopify-section-' | append: section.id
 %}
 
@@ -12,6 +19,10 @@
 {% capture dynamic_style %}
   {% if content_width and content_width != blank %}
     --content-width: {{ content_width.width.value }}px;
+  {% endif %}
+  {% if block_rhythm and block_rhythm != blank %}
+    --block-rhythm-mobile: {{ block_rhythm.mobile_value.value }}px;
+    --block-rhythm-desktop: {{ block_rhythm.desktop_value.value }}px;
   {% endif %}
 {% endcapture %}
 {% render 'utility--dynamic-style', base_selector: base_selector, css_content: dynamic_style %}
@@ -36,6 +47,13 @@
       "id": "content_width",
       "label": "t:sections.section.settings.content_width.label",
       "info": "t:sections.section.settings.content_width.info"
+    },
+    {
+      "type": "metaobject",
+      "metaobject_type": "spacing",
+      "id": "block_rhythm",
+      "label": "t:sections.section.settings.block_rhythm.label",
+      "info": "t:sections.section.settings.block_rhythm.info"
     },
     {
       "type": "header",

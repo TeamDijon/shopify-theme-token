@@ -64,7 +64,11 @@
         "layout": { "content": "Mise en page" },
         "content_width": {
           "label": "Largeur du contenu",
-          "info": "Laisser vide pour pleine largeur"
+          "info": "Laisser vide pour le défaut du thème (2000px) — pleine largeur sur la plupart des écrans (1920px et moins)."
+        },
+        "block_rhythm": {
+          "label": "Espacement vertical",
+          "info": "Espace vertical entre les blocs. Laisser vide pour aucun."
         },
         "appearance": { "content": "Apparence" },
         "color_scheme": { "label": "Palette de couleurs" }
