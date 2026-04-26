@@ -1,0 +1,295 @@
+{% # Validation - Icon v1.0.0 %}
+
+{% comment %}
+  Visual test page for the `icon` metaobject. Iterates every entry and renders
+  each one twice — once at four sizes (testing scalability) and once at four
+  colors (testing currentColor inheritance).
+
+  Diagnostic intent:
+  1. Asset resolves — a missing `assets/icon-<file_name>.svg` causes
+     `utility--inline-asset` to emit empty markup, so the cell shows blank.
+  2. Scales via CSS sizing — explicit `inline-size`/`block-size` on the SVG
+     proves the SVG's intrinsic viewBox isn't fighting the wrapper.
+  3. Inherits color via `currentColor` — fill/stroke baked into the SVG
+     source will show a hardcoded color across all four color cells; a
+     correctly-authored icon will recolor in each cell.
+
+  Reachable only at /?view=validation--metaobject--icon.
+  See `.context/docs/validation.md` for the validation-suite convention.
+{% endcomment %}
+
+{% liquid
+  assign max_inline_size = section.settings.max_inline_size
+  assign base_selector = 'shopify-section-' | append: section.id
+%}
+
+<theme-section>
+  <header class="validation__intro">
+    <h1>Icon</h1>
+    <p>
+      Source: <code>metaobjects.icon.values</code>. Rendered via the
+      <code>icon</code> snippet, which inlines
+      <code>assets/icon-&lt;file_name&gt;.svg</code>. Each row tests one
+      entry at four sizes and four colors. An empty cell signals a missing
+      asset; a uniformly-coloured colour row signals a hardcoded fill in
+      the SVG source rather than <code>currentColor</code>.
+    </p>
+  </header>
+
+  <ol class="icon-suite">
+    {% for icon in metaobjects.icon.values %}
+      {% liquid
+        assign handle = icon.system.handle
+        assign file_name = icon.file_name.value
+        assign preset = icon.preset.value
+      %}
+
+      <li class="icon-row">
+        <header class="icon-row__head">
+          <code class="icon-row__handle">{{ handle }}</code>
+          <code class="icon-row__file">icon-{{ file_name }}.svg</code>
+          {% if preset != blank %}
+            <code class="icon-row__preset">preset:{{ preset }}</code>
+          {% endif %}
+        </header>
+
+        <div class="icon-row__group" data-axis="size">
+          <span class="icon-row__group-label">Sizes</span>
+          <div class="icon-row__cells">
+            <div class="icon-cell" data-size="sm">
+              <div class="icon-cell__icon">{% render 'icon', icon: icon %}</div>
+              <span class="icon-cell__label">1rem</span>
+            </div>
+            <div class="icon-cell" data-size="md">
+              <div class="icon-cell__icon">{% render 'icon', icon: icon %}</div>
+              <span class="icon-cell__label">1.5rem</span>
+            </div>
+            <div class="icon-cell" data-size="lg">
+              <div class="icon-cell__icon">{% render 'icon', icon: icon %}</div>
+              <span class="icon-cell__label">3rem</span>
+            </div>
+            <div class="icon-cell" data-size="xl">
+              <div class="icon-cell__icon">{% render 'icon', icon: icon %}</div>
+              <span class="icon-cell__label">5rem</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="icon-row__group" data-axis="color">
+          <span class="icon-row__group-label">Colors</span>
+          <div class="icon-row__cells">
+            <div class="icon-cell" data-color="foreground">
+              <div class="icon-cell__icon">{% render 'icon', icon: icon %}</div>
+              <span class="icon-cell__label">foreground</span>
+            </div>
+            <div class="icon-cell" data-color="primary">
+              <div class="icon-cell__icon">{% render 'icon', icon: icon %}</div>
+              <span class="icon-cell__label">primary</span>
+            </div>
+            <div class="icon-cell" data-color="muted">
+              <div class="icon-cell__icon">{% render 'icon', icon: icon %}</div>
+              <span class="icon-cell__label">muted</span>
+            </div>
+            <div class="icon-cell" data-color="literal">
+              <div class="icon-cell__icon">{% render 'icon', icon: icon %}</div>
+              <span class="icon-cell__label">#cc0033</span>
+            </div>
+          </div>
+        </div>
+      </li>
+    {% else %}
+      <li class="icon-suite__empty">
+        No <code>icon</code> metaobject entries defined.
+      </li>
+    {% endfor %}
+  </ol>
+</theme-section>
+
+{% capture dynamic_style %}
+  {% if max_inline_size and max_inline_size != blank %}
+    --max-inline-size: {{ max_inline_size }}px;
+  {% endif %}
+{% endcapture %}
+{% render 'utility--dynamic-style', base_selector: base_selector, css_content: dynamic_style %}
+
+{% schema %}
+{
+  "name": "Validation - Icon",
+  "tag": "section",
+  "class": "shopify-section--validation--metaobject--icon",
+  "settings": [
+    {
+      "type": "range",
+      "id": "max_inline_size",
+      "label": "Max width",
+      "min": 800,
+      "max": 1920,
+      "step": 20,
+      "unit": "px",
+      "default": 1280
+    }
+  ]
+}
+{% endschema %}
+
+{% stylesheet %}
+  @layer components {
+    .shopify-section--validation--metaobject--icon {
+      theme-section {
+        display: block;
+        max-inline-size: var(--max-inline-size, 80rem);
+        margin-inline: auto;
+        padding-block: 2rem;
+        padding-inline: 1.5rem;
+      }
+
+      .validation__intro {
+        margin-block-end: 2rem;
+
+        h1 {
+          margin-block-end: 0.5rem;
+        }
+
+        p {
+          max-inline-size: 65ch;
+          opacity: 0.75;
+        }
+
+        code {
+          font-family: ui-monospace, monospace;
+          font-size: 0.95em;
+        }
+      }
+
+      .icon-suite {
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+
+      .icon-suite__empty {
+        padding: 1.5rem;
+        border: 1px dashed currentColor;
+        border-radius: 0.5rem;
+        text-align: center;
+        opacity: 0.7;
+      }
+
+      .icon-row {
+        display: flex;
+        flex-direction: column;
+        gap: 0.875rem;
+        padding: 1rem;
+        border: 1px solid rgba(0, 0, 0, 0.12);
+        border-radius: 0.5rem;
+      }
+
+      .icon-row__head {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: baseline;
+        gap: 0.75rem;
+
+        code {
+          font-family: ui-monospace, monospace;
+        }
+      }
+
+      .icon-row__handle {
+        font-weight: 600;
+      }
+
+      .icon-row__file {
+        opacity: 0.6;
+      }
+
+      .icon-row__preset {
+        padding-block: 0.125rem;
+        padding-inline: 0.375rem;
+        border: 1px solid rgba(0, 0, 0, 0.18);
+        border-radius: 0.25rem;
+        font-size: 0.75rem;
+      }
+
+      .icon-row__group {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+
+        @media (width < 48rem) {
+          flex-direction: column;
+          align-items: stretch;
+        }
+      }
+
+      .icon-row__group-label {
+        inline-size: 4.5rem;
+        flex-shrink: 0;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        opacity: 0.7;
+      }
+
+      .icon-row__cells {
+        flex: 1;
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 0.75rem;
+
+        @media (width < 48rem) {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+
+      .icon-cell {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 0.5rem;
+        min-block-size: 7rem;
+        padding: 0.75rem;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        border-radius: 0.375rem;
+      }
+
+      .icon-cell__icon {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        & svg {
+          inline-size: var(--icon-size, 1.5rem);
+          block-size: var(--icon-size, 1.5rem);
+        }
+      }
+
+      .icon-cell__label {
+        font-family: ui-monospace, monospace;
+        font-size: 0.75rem;
+        opacity: 0.65;
+      }
+
+      [data-axis='size'] .icon-cell {
+        &[data-size='sm'] { --icon-size: 1rem; }
+        &[data-size='md'] { --icon-size: 1.5rem; }
+        &[data-size='lg'] { --icon-size: 3rem; }
+        &[data-size='xl'] { --icon-size: 5rem; }
+      }
+
+      [data-axis='color'] .icon-cell {
+        --icon-size: 2.5rem;
+
+        &[data-color='foreground'] { color: var(--color-foreground); }
+        &[data-color='primary'] { color: var(--color-primary); }
+        &[data-color='muted'] { color: var(--color-foreground-muted); }
+        &[data-color='literal'] { color: #cc0033; }
+      }
+    }
+  }
+{% endstylesheet %}
