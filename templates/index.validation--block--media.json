@@ -1,0 +1,121 @@
+{
+  "sections": {
+    "main": {
+      "type": "validation--block--media",
+      "blocks": {
+        "plain": {
+          "type": "media",
+          "settings": {
+            "media_type": "image"
+          }
+        },
+        "with-overlay": {
+          "type": "media",
+          "settings": {
+            "media_type": "image",
+            "overlay_color": "rgba(0, 51, 153, 0.4)"
+          }
+        },
+        "with-children": {
+          "type": "media",
+          "blocks": {
+            "child-title": {
+              "type": "title",
+              "settings": {
+                "tag": "h2",
+                "content": "Overlay title"
+              }
+            },
+            "child-button": {
+              "type": "button",
+              "settings": {
+                "content": "Call to action",
+                "link": "/"
+              }
+            }
+          },
+          "block_order": ["child-title", "child-button"],
+          "settings": {
+            "media_type": "image",
+            "overlay_color": "rgba(0, 0, 0, 0.35)",
+            "horizontal_alignment": "center",
+            "vertical_alignment": "center",
+            "gap": 24
+          }
+        },
+        "alignment-end": {
+          "type": "media",
+          "blocks": {
+            "child-title": {
+              "type": "title",
+              "settings": {
+                "tag": "h3",
+                "content": "Bottom-end aligned"
+              }
+            }
+          },
+          "block_order": ["child-title"],
+          "settings": {
+            "media_type": "image",
+            "horizontal_alignment": "end",
+            "vertical_alignment": "end"
+          }
+        },
+        "bleed": {
+          "type": "media",
+          "settings": {
+            "media_type": "image",
+            "bleed": true,
+            "overlay_color": "rgba(0, 0, 0, 0.2)"
+          }
+        },
+        "color-scheme": {
+          "type": "media",
+          "blocks": {
+            "child-title": {
+              "type": "title",
+              "settings": {
+                "tag": "h3",
+                "content": "Inside scheme-2"
+              }
+            }
+          },
+          "block_order": ["child-title"],
+          "settings": {
+            "media_type": "image",
+            "color_scheme": "scheme-2",
+            "horizontal_alignment": "center",
+            "vertical_alignment": "center"
+          }
+        },
+        "video-atmosphere": {
+          "type": "media",
+          "settings": {
+            "media_type": "video",
+            "video_mode": "atmosphere"
+          }
+        },
+        "with-spacing": {
+          "type": "media",
+          "settings": {
+            "media_type": "image",
+            "mobile_margin_block_start": 16,
+            "desktop_margin_block_start": 64
+          }
+        }
+      },
+      "block_order": [
+        "plain",
+        "with-overlay",
+        "with-children",
+        "alignment-end",
+        "bleed",
+        "color-scheme",
+        "video-atmosphere",
+        "with-spacing"
+      ],
+      "settings": {}
+    }
+  },
+  "order": ["main"]
+}
