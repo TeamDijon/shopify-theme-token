@@ -59,6 +59,17 @@ The snippet's doc block specifies which fields the metaobject path reads, so the
 2. Document it in **both** docs: this one (consumption — which fields code accesses) and `metaobject-definitions.md` (creation — field handles, types, validations)
 3. Only then reference it in a block schema
 
+## Load-bearing handles
+
+Most field references resolve by GID, so handle renames are safe. A few patterns *do* couple to the entry's `system.handle` directly — renaming the entry in admin will silently break them. Keep these handle sets stable:
+
+- `theme_color` — handles drive `--color-<handle>` CSS variable names; consumed by every CSS rule that uses `var(--color-X)`
+- `text_style` — handles `h1`–`h6` auto-bind to bare HTML headings (`utility--css-variables`); other handles drive `[data-text-style="<handle>"]` and `[data-modifiers*="text-style:<handle>"]` selectors
+- `media_size` — handle `fill` is a special-case branch in the media block (no type/value, emits `block-size: 100%`)
+- `button_style`, `container_style` — handles drive `[data-modifiers*='button-style:<handle>']` / `[data-modifiers*='container-style:<handle>']` CSS rules in the respective block stylesheets
+
+If you need to rename one of these, audit consumers first.
+
 ## Related
 
 - `metaobject-definitions.md` — type definitions for setup (audience: agent/human creating definitions on the store)
