@@ -29,6 +29,8 @@ Interactive elements: 44×44px minimum (iOS guideline). Use `min-block-size`/`mi
 
 Strings live under `accessibility.*` in locale files (see `.context/docs/locale-conventions.md`). Render via `| t`; visually hide with the `.sr-only` utility defined in `assets/core.css` (`@layer utilities`).
 
+Existing keys: `accessibility.opens_in_new_tab` (button new-tab links), `accessibility.embedded_content` (embed iframe `title` fallback). Add new keys here, not under `actions.*` or component namespaces.
+
 ## Existing patterns in the theme
 
 - **Skip-to-content link** — `snippets/skip-to-content.liquid`, rendered from `layout/theme.liquid`

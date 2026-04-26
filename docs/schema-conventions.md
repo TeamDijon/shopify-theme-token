@@ -77,6 +77,21 @@ The `:where()` keeps specificity at zero so per-block overrides work; the siblin
 
 See `.claude/rules/section-convention.md` for the full section structure.
 
+## Block-level color scheme override
+
+Blocks that can override the section's color scheme (typically containers like `media`, `group`, `columns`) expose a single `color_scheme` setting with no default:
+
+```json
+{
+  "type": "color_scheme",
+  "id": "color_scheme",
+  "label": "t:blocks.<name>.settings.color_scheme.label",
+  "info": "t:blocks.<name>.settings.color_scheme.info"
+}
+```
+
+Blank means "inherit from the section." The snippet emits a `color-scheme:<id>` modifier only when the setting is non-blank, so the per-scheme rules emitted by `utility--css-variables` re-apply to the block subtree. Replaces the experience-theme pattern of pairing a `custom_colors` checkbox with a separate scheme picker — one setting expresses "off" via blank, fewer pieces for the merchant to coordinate.
+
 ## Grouping
 
 - Group related settings under `{ "type": "header" }` separators

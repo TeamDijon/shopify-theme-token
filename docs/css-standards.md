@@ -74,6 +74,10 @@ For block-level layout adaptation (a child responding to its container's actual 
 
 Prefer container queries over media queries whenever the relevant width is the parent's, not the viewport's. Modern engines all support this.
 
+**Established consumers**: `group` and `columns` declare a container query context (`container-type: inline-size; container-name: <block>`) and emit a `stack-below:40|60|80` modifier; the stylesheet maps each token to a container-width threshold to switch between row/grid and column layout.
+
+**Caveat**: `@container` queries silently fail when the ancestor doesn't establish a containing block — e.g., a `display: contents` parent removes the size context, so `inline-size >= 40rem` never matches and the unconditional fallback rule stays in place. If a child block looks "stuck" in its small-container state, audit the parent chain.
+
 ## `@property` for animatable custom properties
 
 Untyped CSS custom properties don't animate — `transition: --my-color 0.3s` is a no-op because CSS treats the value as a string. Declare the property with `@property` to enable smooth animation and type safety:
