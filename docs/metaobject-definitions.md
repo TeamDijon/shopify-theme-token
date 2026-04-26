@@ -495,23 +495,27 @@ Type-level metadata: follows [convention](#type-level-metadata-convention), no d
 
 #### `name` — Name
 
-Standard name field — see [convention](#name-field-convention). Description: *"Display label for this button style (e.g., 'Solid primary', 'Outline', 'Ghost'). The auto-generated handle is what the CSS targets."*
+Standard name field — see [convention](#name-field-convention). Description: *"Display label for this button style (e.g., 'Solid primary', 'Outline secondary'). The auto-generated handle is what the CSS targets."*
 
 **Runtime notes:**
 
-- Currently has no consumers in this theme — the button block is not yet implemented.
-- The predecessor theme (`shopify-theme-experience`) and ZAG both treat this type as a named-selector mechanism: each entry's `system.handle` is appended to a `data-modifiers` attribute as `button-style:<handle>`, which CSS rules in the button snippet target via `[data-modifiers*='button-style:<handle>']`. See [`modifier-system.md`](modifier-system.md) for why static visual variants belong in `data-modifiers` rather than CSS classes.
-- Conventional handle set from the predecessor: `solid-primary`, `solid-secondary`, `outline`, `ghost`, `text-link`. Merchants creating entries should name them so the auto-generated handles match the future CSS rules.
+- Consumed by `snippets/button.liquid`. Each entry's `system.handle` is appended to `data-modifiers` as `button-style:<handle>`, which the snippet's `{% stylesheet %}` block targets via `[data-modifiers*='button-style:<handle>']`. See [`modifier-system.md`](modifier-system.md) for why static visual variants belong in `data-modifiers` rather than CSS classes.
+- Handle set is a **3×3 family/variant matrix**: family `solid-` / `outline-` / `link-` × variant `-primary` (accent) / `-secondary` (black) / `-tertiary` (white). The button snippet's CSS uses CSS custom properties to compose these — families set bg/border/decoration/padding, variants set the color token. Off-list handles fall through to the default `solid-primary` appearance. New variants are added by extending `snippets/button.liquid`'s stylesheet, not the metaobject schema.
 - **No additional fields needed** — the named-variant pattern is sufficient. The CSS for each variant lives in the button snippet's `{% stylesheet %}` block, not in field values.
 
-**Recommended entries** (matches the predecessor's CSS rule set; the button block's stylesheet will target these handles):
+**Recommended entries** (the full 3×3 matrix the snippet's stylesheet covers):
 
 | Handle | Name |
 |---|---|
 | `solid-primary` | Solid primary |
 | `solid-secondary` | Solid secondary |
+| `solid-tertiary` | Solid tertiary |
 | `outline-primary` | Outline primary |
 | `outline-secondary` | Outline secondary |
+| `outline-tertiary` | Outline tertiary |
+| `link-primary` | Link primary |
+| `link-secondary` | Link secondary |
+| `link-tertiary` | Link tertiary |
 
 ### `container_style`
 

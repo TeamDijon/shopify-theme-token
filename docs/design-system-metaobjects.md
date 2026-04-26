@@ -10,7 +10,7 @@ Populate as metaobjects are added; an undocumented metaobject should not be cons
 
 | `metaobject_type` | Common settings `id` | Observed access fields | Used for |
 |---|---|---|---|
-| `button_style` | `button_style` | `.system.handle` | Button visual variant (e.g. `solid-primary`, `solid-secondary`, `outline`, `ghost`, `text-link`) |
+| `button_style` | `button_style` | `.system.handle` | Button visual variant. Handle set is a 3×3 family/variant matrix: family `solid-` / `outline-` / `link-` × variant `-primary` (accent) / `-secondary` (black) / `-tertiary` (white). Off-list handles fall through to `solid-primary`. |
 | `content_width` | `content_width` | `.width.value` (numeric px) | Max inline-size of a component |
 | `icon` | `icon` | `.file_name.value`, `.preset.value` | Consumed by `snippets/icon.liquid`; references `assets/icon-*.svg` by `file_name` |
 | `theme_color` | `meta_theme_color` (settings), `background_color` (spacer), `text_color` (title, richtext), `line_color` (separator), `overlay_color` (media); also iterated via `metaobjects.theme_color.values` | `.system.handle` (used for CSS variable naming: `--color-<handle>`), `.hex_code.value` (hex string; only for non-CSS contexts like the `<meta name="theme-color">` tag — for CSS, reference the global `var(--color-<handle>)` instead) | Color token from the palette |

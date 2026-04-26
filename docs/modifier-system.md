@@ -54,13 +54,13 @@ Two patterns, depending on how the set evolves:
 Target modifiers with attribute-contains selectors:
 
 ```css
-.shopify-block--button[data-modifiers*='button-style:outline'] {
+.shopify-block--button[data-modifiers*='button-style:outline-'] {
   background-color: transparent;
-  border-color: var(--color-primary);
+  border-color: var(--button-color);
 }
 ```
 
-Use `*=` (contains) rather than `=` (equals) so an element can carry multiple modifiers without the selector having to list them all.
+Use `*=` (contains) rather than `=` (equals) so an element can carry multiple modifiers without the selector having to list them all. When a value family shares a prefix (e.g. `outline-primary`, `outline-secondary`, `outline-tertiary`), anchor the selector on a trailing separator (`outline-`) so substring matches stay scoped to that family.
 
 ## JS hooks
 
