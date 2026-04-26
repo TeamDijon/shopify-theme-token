@@ -323,6 +323,39 @@
           "category": "Media"
         }
       }
+    },
+    "embed": {
+      "name": "Embed",
+      "settings": {
+        "embed": { "content": "Embed" },
+        "url": {
+          "label": "URL",
+          "info": "YouTube or Vimeo video URL"
+        },
+        "title": {
+          "label": "Accessibility title",
+          "info": "Describes the embed for screen readers",
+          "default": "Embedded video"
+        },
+        "layout": { "content": "Layout" },
+        "media_size": {
+          "label": "Size",
+          "info": "Leave blank for 16:9"
+        },
+        "content_width": {
+          "label": "Content width",
+          "info": "Leave blank for full width"
+        },
+        "top_spacing": { "content": "Top spacing" },
+        "mobile_margin_block_start": { "label": "Mobile" },
+        "desktop_margin_block_start": { "label": "Desktop" }
+      },
+      "presets": {
+        "embed": {
+          "name": "Embed",
+          "category": "Media"
+        }
+      }
     }
   }
 }

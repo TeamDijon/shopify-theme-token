@@ -1,0 +1,78 @@
+{% # Embed block v1.0.0 %}
+
+{% render 'embed', section: section, block: block %}
+
+{% schema %}
+{
+  "name": "t:blocks.embed.name",
+  "tag": null,
+  "blocks": [],
+  "settings": [
+    {
+      "type": "header",
+      "content": "t:blocks.embed.settings.embed.content"
+    },
+    {
+      "type": "url",
+      "id": "url",
+      "label": "t:blocks.embed.settings.url.label",
+      "info": "t:blocks.embed.settings.url.info"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "t:blocks.embed.settings.title.label",
+      "info": "t:blocks.embed.settings.title.info",
+      "default": "t:blocks.embed.settings.title.default"
+    },
+    {
+      "type": "header",
+      "content": "t:blocks.embed.settings.layout.content"
+    },
+    {
+      "type": "metaobject",
+      "metaobject_type": "media_size",
+      "id": "media_size",
+      "label": "t:blocks.embed.settings.media_size.label",
+      "info": "t:blocks.embed.settings.media_size.info"
+    },
+    {
+      "type": "metaobject",
+      "metaobject_type": "content_width",
+      "id": "content_width",
+      "label": "t:blocks.embed.settings.content_width.label",
+      "info": "t:blocks.embed.settings.content_width.info"
+    },
+    {
+      "type": "header",
+      "content": "t:blocks.embed.settings.top_spacing.content"
+    },
+    {
+      "type": "range",
+      "id": "mobile_margin_block_start",
+      "label": "t:blocks.embed.settings.mobile_margin_block_start.label",
+      "min": 0,
+      "max": 200,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "desktop_margin_block_start",
+      "label": "t:blocks.embed.settings.desktop_margin_block_start.label",
+      "min": 0,
+      "max": 200,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:blocks.embed.presets.embed.name",
+      "category": "t:blocks.embed.presets.embed.category"
+    }
+  ]
+}
+{% endschema %}

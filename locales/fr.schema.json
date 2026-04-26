@@ -332,6 +332,39 @@
           "category": "Média"
         }
       }
+    },
+    "embed": {
+      "name": "Intégration",
+      "settings": {
+        "embed": { "content": "Intégration" },
+        "url": {
+          "label": "URL",
+          "info": "URL d'une vidéo YouTube ou Vimeo"
+        },
+        "title": {
+          "label": "Titre d'accessibilité",
+          "info": "Décrit l'intégration pour les lecteurs d'écran",
+          "default": "Vidéo intégrée"
+        },
+        "layout": { "content": "Mise en page" },
+        "media_size": {
+          "label": "Taille",
+          "info": "Laisser vide pour 16:9"
+        },
+        "content_width": {
+          "label": "Largeur du contenu",
+          "info": "Laisser vide pour la pleine largeur"
+        },
+        "top_spacing": { "content": "Espacement supérieur" },
+        "mobile_margin_block_start": { "label": "Mobile" },
+        "desktop_margin_block_start": { "label": "Bureau" }
+      },
+      "presets": {
+        "embed": {
+          "name": "Intégration",
+          "category": "Média"
+        }
+      }
     }
   }
 }

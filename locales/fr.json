@@ -7,6 +7,7 @@
  */
 {
   "accessibility": {
+    "embedded_content": "Contenu intégré",
     "opens_in_new_tab": "(s'ouvre dans un nouvel onglet)"
   },
   "actions": {

@@ -1,0 +1,180 @@
+{% # Embed v1.0.0 %}
+
+{% doc %}
+  @description Renders a third-party video embed (YouTube or Vimeo) as a lazy-loaded iframe inside an aspect-ratio wrapper. URL is parsed in Liquid for known provider patterns; unknown URLs render a placeholder. Iframe carries a `title` attribute for screen readers — schema-level default plus a runtime fallback via `accessibility.embedded_content`.
+
+  Supported URL shapes:
+  - YouTube: `youtube.com/watch?v=ID`, `youtu.be/ID`, `youtube.com/embed/ID`, `youtube.com/shorts/ID`
+  - Vimeo: `vimeo.com/ID`, `vimeo.com/ID/HASH` (unlisted videos), `player.vimeo.com/video/ID`
+
+  No autoplay/controls schema yet — merchants who need them append URL params manually. No click-to-load privacy gate yet — iframe loads directly with `loading="lazy"`.
+
+  @param {section} [section] - The section object containing the block
+  @param {block} [block] - Block object containing the settings
+  @param {string} [block_id] - Unique block ID for static renders
+  @param {string} [url] - Provider URL. Renders a placeholder when blank or unparseable.
+  @param {string} [title] - Iframe title for screen readers. Falls back to `accessibility.embedded_content` translation when blank.
+  @param {metaobject} [media_size] - `media_size` metaobject. Reads `.type.value` and `.value.value`. Defaults to 16/9 aspect ratio when blank.
+  @param {metaobject} [content_width] - `content_width` metaobject. Caps `max-inline-size`.
+  @param {number} [mobile_margin_block_start] - Top margin in px below the desktop breakpoint. Defaults to 0.
+  @param {number} [desktop_margin_block_start] - Top margin in px at or above the desktop breakpoint. Defaults to 0.
+
+  @example {% render 'embed', section: section, block: block %}
+{% enddoc %}
+
+{% liquid
+  assign url = url | default: block.settings.url | default: ''
+  assign title = title | default: block.settings.title
+  if title == blank
+    assign title = 'accessibility.embedded_content' | t
+  endif
+  assign media_size = media_size | default: block.settings.media_size
+  assign content_width = content_width | default: block.settings.content_width | default: ''
+  assign mobile_margin_block_start = mobile_margin_block_start | default: block.settings.mobile_margin_block_start | default: 0
+  assign desktop_margin_block_start = desktop_margin_block_start | default: block.settings.desktop_margin_block_start | default: 0
+
+  assign provider = ''
+  assign embed_url = ''
+
+  if url contains 'youtu.be/'
+    assign provider = 'youtube'
+    assign video_id = url | split: 'youtu.be/' | last | split: '?' | first | split: '&' | first
+    assign embed_url = 'https://www.youtube.com/embed/' | append: video_id
+  elsif url contains 'youtube.com/embed/'
+    assign provider = 'youtube'
+    assign embed_url = url
+  elsif url contains 'youtube.com/shorts/'
+    assign provider = 'youtube'
+    assign video_id = url | split: 'youtube.com/shorts/' | last | split: '?' | first
+    assign embed_url = 'https://www.youtube.com/embed/' | append: video_id
+  elsif url contains 'youtube.com/watch'
+    assign provider = 'youtube'
+    assign video_id = url | split: '?v=' | last | split: '&' | first
+    assign embed_url = 'https://www.youtube.com/embed/' | append: video_id
+  elsif url contains 'player.vimeo.com/video/'
+    assign provider = 'vimeo'
+    assign embed_url = url
+  elsif url contains 'vimeo.com/'
+    assign provider = 'vimeo'
+    assign vimeo_path = url | split: 'vimeo.com/' | last | split: '?' | first
+    assign vimeo_parts = vimeo_path | split: '/'
+    assign video_id = vimeo_parts | first
+    if vimeo_parts.size > 1
+      assign embed_url = 'https://player.vimeo.com/video/' | append: video_id | append: '?h=' | append: vimeo_parts[1]
+    else
+      assign embed_url = 'https://player.vimeo.com/video/' | append: video_id
+    endif
+  endif
+
+  assign modifier_list = ''
+  if provider != blank
+    assign modifier_list = 'provider:' | append: provider
+  endif
+  if media_size != blank
+    if media_size.type.value == 'ratio'
+      if modifier_list != blank
+        assign modifier_list = modifier_list | append: ','
+      endif
+      assign modifier_list = modifier_list | append: 'sizing:ratio'
+    elsif media_size.type.value == 'relative' or media_size.type.value == 'fixed'
+      if modifier_list != blank
+        assign modifier_list = modifier_list | append: ','
+      endif
+      assign modifier_list = modifier_list | append: 'sizing:height'
+    endif
+  endif
+
+  capture base_selector
+    render 'utility--base-selector', section: section, block: block, identifier: block_id
+  endcapture
+  assign base_selector = base_selector | strip
+
+  capture modifiers
+    render 'utility--modifiers', modifier_list: modifier_list
+  endcapture
+%}
+
+<div class="shopify-block shopify-block--embed" id="{{ base_selector }}" {{ modifiers }}>
+  {% if embed_url != blank %}
+    {% if provider == 'youtube' %}
+      <iframe
+        src="{{ embed_url }}"
+        title="{{ title | escape }}"
+        loading="lazy"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        allowfullscreen
+      ></iframe>
+    {% elsif provider == 'vimeo' %}
+      <iframe
+        src="{{ embed_url }}"
+        title="{{ title | escape }}"
+        loading="lazy"
+        allow="autoplay; fullscreen; picture-in-picture"
+        allowfullscreen
+      ></iframe>
+    {% endif %}
+  {% else %}
+    {{ 'image' | placeholder_svg_tag }}
+  {% endif %}
+
+  {% capture dynamic_style %}
+    {% if media_size != blank %}
+      {% if media_size.type.value == 'ratio' %}
+        --media-ratio: {{ media_size.value.value }};
+      {% elsif media_size.type.value == 'relative' or media_size.type.value == 'fixed' %}
+        --media-height: {{ media_size.value.value }};
+      {% endif %}
+    {% endif %}
+
+    {% if content_width and content_width != blank %}
+      --content-width: {{ content_width.width.value }}px;
+    {% endif %}
+
+    {% if mobile_margin_block_start and mobile_margin_block_start > 0 %}
+      --mobile-margin-block-start: {{ mobile_margin_block_start | divided_by: 16.0 | round: 3 }}rem;
+    {% endif %}
+
+    {% if desktop_margin_block_start and desktop_margin_block_start > 0 %}
+      --desktop-margin-block-start: {{ desktop_margin_block_start | divided_by: 16.0 | round: 3 }}rem;
+    {% endif %}
+  {% endcapture %}
+  {% render 'utility--dynamic-style', base_selector: base_selector, css_content: dynamic_style %}
+</div>
+
+{% stylesheet %}
+  @layer components {
+    .shopify-block--embed {
+      position: relative;
+      overflow: hidden;
+      max-inline-size: var(--content-width, 100%);
+      margin-inline: auto;
+      margin-block-start: var(--mobile-margin-block-start, 0rem);
+      aspect-ratio: 16 / 9;
+
+      @media (width >= 48rem) {
+        margin-block-start: var(--desktop-margin-block-start, 0rem);
+      }
+
+      /* Sizing override: aspect ratio from media_size metaobject */
+      &[data-modifiers*='sizing:ratio'] {
+        aspect-ratio: var(--media-ratio, 16 / 9);
+      }
+
+      /* Sizing override: explicit block-size (relative/fixed metaobject types) */
+      &[data-modifiers*='sizing:height'] {
+        aspect-ratio: auto;
+        block-size: var(--media-height);
+      }
+
+      & > iframe,
+      & > svg {
+        display: block;
+        position: absolute;
+        inset: 0;
+        inline-size: 100%;
+        block-size: 100%;
+        border: none;
+      }
+    }
+  }
+{% endstylesheet %}
