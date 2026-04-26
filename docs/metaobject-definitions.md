@@ -54,7 +54,7 @@ Setup is intended to be agent-driven. The Shopify Admin GraphQL API exposes the 
 ### Authentication
 
 ```
-POST https://<store-handle>.myshopify.com/admin/api/2025-01/graphql.json
+POST https://<store-handle>.myshopify.com/admin/api/2026-04/graphql.json
 Content-Type: application/json
 X-Shopify-Access-Token: shpca_<token>
 ```
