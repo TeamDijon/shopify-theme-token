@@ -9,6 +9,33 @@ The metaobject **type definitions** the theme expects to exist in the Shopify ad
 
 For the consumption-side reference (which Liquid utilities access which fields, schema usage patterns), see `design-system-metaobjects.md`. This doc and that one are kept separate on purpose: definitions for setup, consumption for development.
 
+## Type-level metadata convention
+
+Every type below uses these defaults at the type level. Per-type sections only call out deviations.
+
+- **`displayNameKey`:** `name` — Shopify uses the `name` field as the entry's display label and as the source for `system.handle`.
+- **Access controls:**
+  - `admin`: `PUBLIC_READ_WRITE`
+  - `storefront`: `PUBLIC_READ`
+- **Capabilities:**
+  - `publishable`: enabled
+  - `translatable`: enabled
+  - `renderable`: disabled
+  - `onlineStore`: disabled
+
+## `name` field convention
+
+Every type has a `name` field with this base configuration:
+
+- **Type:** Single line text
+- **Cardinality:** One
+- **Required:** no
+- **Validation:** *(none)*
+
+It serves as the type's display-name source (`displayNameKey: name`). Shopify auto-generates `system.handle` from this value when set; if blank, Shopify generates a handle from another source. The `name` field is never read by Liquid — only `system.handle` is consumed.
+
+The field's **description** varies per type and is documented in each type section.
+
 ## Creation order
 
 References between types impose this order:
@@ -16,90 +43,468 @@ References between types impose this order:
 1. **`font`** — no dependencies
 2. **`typeface`** — references `font` via the `font_list` field
 3. **`text_style`** — references `typeface` via the `font_family` field
-4. **`theme_color`, `content_width`, `icon`, `button_style`** — independent; create in any order
+4. **`theme_color`, `content_width`, `icon`, `button_style`, `container_style`, `media_size`, `spacing`** — independent; create in any order
 
 ## Type definitions
 
 ### `theme_color`
 
-Display name: Theme color (singular) / Theme colors (plural).
+**Type:**
 
-| Field handle | Display name | Type | Required | Notes |
-|---|---|---|---|---|
-| `name` | Name | `single_line_text_field` | yes | Editor-visible label |
-| `hex_code` | Hex code | `color` | yes | CSS value for `--<handle>-color` |
+| Setting | Value |
+|---|---|
+| Type key | `theme_color` |
+| Display name | Theme color |
+| Description | Color reference to be used on the theme data/settings |
 
-The entry's `system.handle` (auto-generated from the name) is used as the CSS variable suffix in `utility--css-variables`.
+Type-level metadata: follows [convention](#type-level-metadata-convention), no deviations.
+
+**Fields:**
+
+#### `name` — Name
+
+Standard name field — see [convention](#name-field-convention). Description: *"Name used to reference the theme color"*.
+
+#### `hex_code` — Hexadecimal code (required)
+
+- Type: Color
+- Cardinality: One
+- Description: The hex code associated with the color
+- Validation: *(none)*
+
+**Runtime notes:**
+
+- `hex_code.value` is read by `utility--css-variables` and emitted as `--color-<system.handle>`.
+- Consumers reading a single entry (block/section settings) should reference the global CSS variable `var(--color-<system.handle>)` rather than re-extracting `hex_code.value`. The hex is only re-extracted in non-CSS contexts (e.g. the `<meta name="theme-color">` tag).
 
 ### `typeface`
 
-Display name: Typeface / Typefaces.
+**Type:**
 
-| Field handle | Display name | Type | Required | Notes |
-|---|---|---|---|---|
-| `name` | Name | `single_line_text_field` | yes | Used as the quoted `font-family` value in `@font-face` rules |
-| `asset_list` | Assets | `list.file_reference` | recommended | Non-empty check at runtime; entry is skipped if empty. Configure file-type validation to accept `woff2`, `woff`, `otf`, `ttf` |
-| `font_list` | Fonts | `list.metaobject_reference` (→ `font`) | recommended | Each referenced `font` emits one `@font-face` declaration. Skipped if empty |
+| Setting | Value |
+|---|---|
+| Type key | `typeface` |
+| Display name | Typeface |
+| Description | Collection of fonts used in the theme |
+
+Type-level metadata: follows [convention](#type-level-metadata-convention), no deviations.
+
+**Fields:**
+
+#### `name` — Name
+
+Standard name field — see [convention](#name-field-convention). Description: *"Display name of the typeface (e.g., Helvetica, Inter). Used as the `font-family` value in CSS."*
+
+#### `font_list` — Fonts
+
+- Type: List of metaobject references (→ `font`)
+- Cardinality: List
+- Required: no
+- Description: *"Fonts (weight/style variants) that make up this typeface. Each font emits one `@font-face` declaration."*
+- Validation: `metaobject_definition_id` pinned to the `font` type
+
+**Runtime notes:**
+
+- `name.value` is read by `utility--font-face` and emitted as the quoted `font-family` value in `@font-face` rules. Also accessed indirectly via `text_style.font_family.value.name.value` in `utility--css-variables` to compose the `--<style>-font-family` CSS variable.
+- `font_list.value` is iterated by `utility--font-face` to emit one `@font-face` per referenced font. Typefaces with a blank `name` or empty `font_list` are skipped.
 
 ### `font`
 
-Display name: Font / Fonts.
+**Type:**
 
-| Field handle | Display name | Type | Required | Notes |
-|---|---|---|---|---|
-| `weight` | Weight | `number_integer` | yes | Static weight (100–900). Use a value `< 100` (e.g. `0`) to flag variable-font range mode |
-| `weight_range_start` | Weight range start | `number_integer` | no | Required when `weight < 100`; emitted as start of the `font-weight: <start> <end>` range |
-| `weight_range_end` | Weight range end | `number_integer` | no | Paired with `weight_range_start`; entry is skipped if either is missing or invalid in range mode |
-| `style` | Style | `single_line_text_field` with choices `normal`, `italic` | yes | Emitted as `font-style` |
-| `asset_list` | Assets | `list.file_reference` | yes | Each file becomes one `src: url(...) format(...)` entry; format auto-detected from extension. Configure file-type validation to accept `woff2`, `woff`, `otf`, `ttf` |
+| Setting | Value |
+|---|---|
+| Type key | `font` |
+| Display name | Font |
+| Description | A single font variant (one weight/style combination, or a variable-font weight range) used by a typeface |
+
+Type-level metadata: follows [convention](#type-level-metadata-convention), no deviations.
+
+**Fields:**
+
+#### `name` — Name
+
+Standard name field — see [convention](#name-field-convention). Description: *"Display label for this font in the admin (e.g., 'Helvetica Bold'). Not read by the theme code."*
+
+#### `asset_list` — Assets (required)
+
+- Type: List of file references
+- Cardinality: List
+- Description: *"Font files. Prefer `.woff2` and `.woff` for performance; `.otf` and `.ttf` also supported."*
+- Validation: *(none)* — Shopify file-reference validation only supports `image`/`video`/`all` categories, so font extensions can't be enforced at the definition level. The Liquid emitter handles all four extensions (woff2/woff/otf/ttf) via `format(...)` mapping; other types yield a bogus format string that browsers silently drop.
+
+#### `style` — Style
+
+- Type: Single line text
+- Cardinality: One
+- Required: no
+- Description: *"CSS font-style. Defaults to `normal` when blank."*
+- Validation: `choices: ["normal", "italic", "oblique"]`
+
+#### `weight` — Weight
+
+- Type: Single line text
+- Cardinality: One
+- Required: no
+- Description: *"Static weight (100-900). Leave blank for variable fonts (uses the range fields below)."*
+- Validation: `regex: ^[1-9]00$` (canonical 100-step weights only)
+
+#### `weight_range_start` — Weight range start
+
+- Type: Single line text
+- Cardinality: One
+- Required: no
+- Description: *"Variable font weight range start (100-900). Only used when `Weight` is blank."*
+- Validation: `regex: ^[1-9]00$`
+
+#### `weight_range_end` — Weight range end
+
+- Type: Single line text
+- Cardinality: One
+- Required: no
+- Description: *"Variable font weight range end (100-900). Only used when `Weight` is blank."*
+- Validation: `regex: ^[1-9]00$`
+
+**Runtime notes:**
+
+- Weight is stored as text+regex (not `number_integer`) to enforce 100-step canonical values; `utility--font-face` coerces with `| plus: 0` for the comparison.
+- **Variable-font mode trigger:** `weight` blank → `"" | plus: 0` → `0` → the `< 100` branch fires and the range fields are read. The blank-weight path is the only way to enter variable mode — the regex blocks any explicit `< 100` value.
+- A font is skipped (no `@font-face` emitted) if its `asset_list` is empty, or if it's in variable mode with missing/invalid range bounds.
+- `name` is never read; only the other fields are consumed.
 
 ### `text_style`
 
-Display name: Text style / Text styles.
+**Type:**
 
-| Field handle | Display name | Type | Required | Notes |
-|---|---|---|---|---|
-| `font_family` | Font family | `metaobject_reference` (→ `typeface`) | no | If blank, falls back to the first text_style's font_family |
-| `font_fallback_family` | Fallback family | `single_line_text_field` with choices `mono`, `serif`, `sans-serif` | no | Maps to the matching theme setting (`mono_font` / `serif_font` / `sans_serif_font`); defaults to `sans-serif` |
-| `font_style` | Style | `single_line_text_field` with choices `normal`, `italic` | no | Defaults to `normal` |
-| `mobile_font_size` | Mobile font size | `number_decimal` | no | Px; converted to rem via `÷ 16.0`. If both mobile and desktop are 0, defaults to 1rem |
-| `desktop_font_size` | Desktop font size | `number_decimal` | no | Px; same conversion. If only one of mobile/desktop is set, the other inherits it |
-| `line_height` | Line height | `number_decimal` | no | Percentage × 100 (e.g. `150` for 1.5); converted via `÷ 100.0`; defaults to 1.5 if 0 |
-| `weight` | Weight | `number_integer` | no | 100–900; defaults to 400 |
-| `letter_spacing` | Letter spacing | `number_decimal` | no | Px; converted to rem via `÷ 16.0` |
-| `uppercase` | Uppercase | `boolean` | no | Maps to `text-transform: uppercase` |
-| `underline` | Underline | `boolean` | no | Maps to `text-decoration: underline` |
+| Setting | Value |
+|---|---|
+| Type key | `text_style` |
+| Display name | Text style |
+| Description | A reusable typography style applied to elements via `data-text-style` or modifiers |
 
-The entry's `system.handle` is the prefix for emitted CSS variables (`--<handle>-font-family`, `--<handle>-font-size`, etc.) and the value for the `[data-text-style="<handle>"]` and `[data-modifiers*="text-style:<handle>"]` selectors.
+Type-level metadata: follows [convention](#type-level-metadata-convention), no deviations.
+
+**Fields:**
+
+#### `name` — Name
+
+Standard name field — see [convention](#name-field-convention). Description: *"Display label for this text style (e.g., 'Heading 1', 'Body', 'Caption')."*
+
+#### `font_family` — Font family
+
+- Type: Metaobject reference (→ `typeface`)
+- Cardinality: One
+- Required: no
+- Description: *"Typeface to use. Falls back to the first text style's font when blank."*
+- Validation: `metaobject_definition_id` pinned to the `typeface` type
+
+#### `font_fallback_family` — Fallback family
+
+- Type: Single line text
+- Cardinality: One
+- Required: no
+- Description: *"Generic CSS fallback used while the typeface loads. Defaults to `sans-serif` when blank."*
+- Validation: `choices: ["sans-serif", "serif", "mono"]`
+
+#### `font_style` — Style
+
+- Type: Single line text
+- Cardinality: One
+- Required: no
+- Description: *"CSS font-style. Defaults to `normal` when blank."*
+- Validation: `choices: ["normal", "italic", "oblique"]`
+
+#### `weight` — Weight
+
+- Type: Single line text
+- Cardinality: One
+- Required: no
+- Description: *"Static font weight (100-900). Defaults to 400 when blank."*
+- Validation: `regex: ^[1-9]00$`
+
+#### `mobile_font_size` — Mobile font size
+
+- Type: Number (decimal)
+- Cardinality: One
+- Required: no
+- Description: *"Font size in px on mobile. Defaults to 16px when both mobile and desktop are blank."*
+- Validation: *(none)*
+
+#### `desktop_font_size` — Desktop font size
+
+- Type: Number (decimal)
+- Cardinality: One
+- Required: no
+- Description: *"Font size in px on desktop (≥768px). If blank, inherits the mobile size."*
+- Validation: *(none)*
+
+#### `line_height` — Line height
+
+- Type: Number (decimal)
+- Cardinality: One
+- Required: no
+- Description: *"Line height as a multiplier (e.g., 1.5). Defaults to 1.5 when blank."*
+- Validation: *(none)*
+
+#### `letter_spacing` — Letter spacing
+
+- Type: Number (decimal)
+- Cardinality: One
+- Required: no
+- Description: *"Letter spacing in px. Defaults to 0 when blank."*
+- Validation: *(none)*
+
+#### `uppercase` — Uppercase
+
+- Type: Boolean
+- Cardinality: One
+- Required: no
+- Description: *"If enabled, transforms text to uppercase."*
+- Validation: *(none)*
+
+#### `underline` — Underline
+
+- Type: Boolean
+- Cardinality: One
+- Required: no
+- Description: *"If enabled, adds underline decoration."*
+- Validation: *(none)*
+
+**Runtime notes:**
+
+- The entry's `system.handle` is the prefix for emitted CSS variables: `--<handle>-font-family`, `--<handle>-font-size`, `--<handle>-line-height`, `--<handle>-font-weight`, `--<handle>-letter-spacing`, `--<handle>-text-transform`, `--<handle>-text-decoration`, `--<handle>-font-style`.
+- The same handle is also the value for the `[data-text-style="<handle>"]` and `[data-modifiers*="text-style:<handle>"]` selectors that apply the style.
+- **`h1`-`h6` auto-bind:** entries with handles `h1`, `h2`, `h3`, `h4`, `h5`, or `h6` get auto-applied to the matching bare HTML element (`h1 { ... }`). Naming heading entries with these handles wires them up to the document automatically — no `data-text-style` attribute needed.
+- **`--base-*` aliases:** when an entry matches the `base_text_style` setting, all its properties are re-exported as `--base-font-family`, `--base-font-size`, etc. Any element can `var(--base-font-family)` to inherit "the theme's default body typography" without referencing a specific handle.
+- Px-to-rem conversion (mobile/desktop font size, letter spacing) happens in Liquid via `÷ 16.0`. Merchants enter px; the CSS receives rem.
+- `weight` is stored as text+regex (matching `font.weight`) to enforce canonical 100-step values; Liquid coerces with `| default: '400'`.
 
 ### `content_width`
 
-Display name: Content width / Content widths.
+**Type:**
 
-| Field handle | Display name | Type | Required | Notes |
-|---|---|---|---|---|
-| `width` | Width | `number_decimal` | yes | Px; emitted as `--content-width: <value>px` |
+| Setting | Value |
+|---|---|
+| Type key | `content_width` |
+| Display name | Content width |
+| Description | A reusable max-width constraint applied to a section's content area |
+
+Type-level metadata: follows [convention](#type-level-metadata-convention), no deviations.
+
+**Fields:**
+
+#### `name` — Name
+
+Standard name field — see [convention](#name-field-convention). Description: *"Display label for this content width (e.g., 'Narrow', 'Wide', 'Full bleed')."*
+
+#### `width` — Width (required)
+
+- Type: Number (decimal)
+- Cardinality: One
+- Description: *"Maximum content width in px. Used as the section's `max-inline-size`."*
+- Validation: *(none)*
+
+**Runtime notes:**
+
+- Read by `sections/section.liquid` via the section's `content_width` setting; emitted as `--content-width: <value>px` into the section's dynamic style.
+- When no entry is selected, [core.css](assets/core.css) falls back to `var(--content-width, 125rem)` — the **2000px theme default**, which acts as a big-screen protection. Most screens (≤1920px) render full-width within this cap. The outer `3200px` background-stop guard lives elsewhere in `core.css`.
 
 ### `icon`
 
-Display name: Icon / Icons.
+**Type:**
 
-| Field handle | Display name | Type | Required | Notes |
-|---|---|---|---|---|
-| `file_name` | File name | `single_line_text_field` | yes | Slug without `icon-` prefix or `.svg` suffix; resolves to `assets/icon-<file_name>.svg`. Type a value that matches an existing SVG in the theme's assets |
-| `preset` | Preset | `single_line_text_field` | no | Optional CSS hook; emitted as `data-preset="<value>"` on the rendered SVG root for CSS targeting |
+| Setting | Value |
+|---|---|
+| Type key | `icon` |
+| Display name | Icon |
+| Description | An SVG icon reference. Resolves to `assets/icon-<file_name>.svg` |
+
+Type-level metadata: follows [convention](#type-level-metadata-convention), no deviations.
+
+**Fields:**
+
+#### `name` — Name
+
+Standard name field — see [convention](#name-field-convention). Description: *"Display label for this icon (e.g., 'Chevron', 'Cart', 'Search')."*
+
+#### `file_name` — File name (required)
+
+- Type: Single line text
+- Cardinality: One
+- Description: *"SVG file slug (e.g., `chevron` for `assets/icon-chevron.svg`)."*
+- Validation: `regex: ^[a-z0-9-]+$` (lowercase slug, no extension or prefix)
+
+#### `preset` — Preset
+
+- Type: Single line text
+- Cardinality: One
+- Required: no
+- Description: *"Optional CSS hook. Emitted as `data-preset` on the SVG root for CSS targeting."*
+- Validation: *(none)*
+
+**Runtime notes:**
+
+- Read by `snippets/icon.liquid` via the dual-API pattern: caller passes either an `icon` metaobject reference (from a schema setting or `metaobjects.icon.<handle>`) or the primitive `file_name` string directly.
+- The snippet resolves to `assets/icon-<file_name>.svg` and inlines it via `utility--inline-asset` (yields empty markup if the SVG is missing — no broken render).
+- `preset.value` (or the `preset` arg) is emitted as `data-preset="<value>"` on the SVG root, providing a CSS hook (e.g., `[data-preset="inline-badge"] { ... }`).
+- The `file_name` regex prevents typos like `Chevron`, `arrow.svg`, or `my icon` from saving — only lowercase slugs are accepted.
 
 ### `button_style`
 
-Display name: Button style / Button styles.
+**Type:**
 
-The theme currently accesses only `system.handle` on this type. No custom fields are required by the code as of today. Recommended for editor UX:
+| Setting | Value |
+|---|---|
+| Type key | `button_style` |
+| Display name | Button style |
+| Description | A named button variant. The handle is consumed via `[data-modifiers*='button-style:<handle>']` selectors in the button block |
 
-| Field handle | Display name | Type | Required | Notes |
-|---|---|---|---|---|
-| `name` | Name | `single_line_text_field` | yes | Editor-visible label |
+Type-level metadata: follows [convention](#type-level-metadata-convention), no deviations.
 
-Expand this type's fields when the future button block consumes more (e.g., `border_radius`, `border_width`, color references, etc.).
+**Fields:**
+
+#### `name` — Name
+
+Standard name field — see [convention](#name-field-convention). Description: *"Display label for this button style (e.g., 'Solid primary', 'Outline', 'Ghost'). The auto-generated handle is what the CSS targets."*
+
+**Runtime notes:**
+
+- Currently has no consumers in this theme — the button block is not yet implemented.
+- The predecessor theme (`shopify-theme-experience`) and ZAG both treat this type as a named-selector mechanism: each entry's `system.handle` is appended to a `data-modifiers` attribute as `button-style:<handle>`, which CSS rules in the button snippet target via `[data-modifiers*='button-style:<handle>']`. See [`modifier-system.md`](modifier-system.md) for why static visual variants belong in `data-modifiers` rather than CSS classes.
+- Conventional handle set from the predecessor: `solid-primary`, `solid-secondary`, `outline`, `ghost`, `text-link`. Merchants creating entries should name them so the auto-generated handles match the future CSS rules.
+- **No additional fields needed** — the named-variant pattern is sufficient. The CSS for each variant lives in the button snippet's `{% stylesheet %}` block, not in field values.
+
+### `container_style`
+
+**Type:**
+
+| Setting | Value |
+|---|---|
+| Type key | `container_style` |
+| Display name | Container style |
+| Description | A named container variant. The handle is consumed via `[data-modifiers*='container-style:<handle>']` selectors in the container/group block |
+
+Type-level metadata: follows [convention](#type-level-metadata-convention), no deviations.
+
+**Fields:**
+
+#### `name` — Name
+
+Standard name field — see [convention](#name-field-convention). Description: *"Display label for this container style (e.g., 'Card', 'Outlined', 'Elevated'). The auto-generated handle is what the CSS targets."*
+
+**Runtime notes:**
+
+- Currently has no consumers in this theme — the container/group block is not yet implemented.
+- Same named-selector pattern as [`button_style`](#button_style): the entry's `system.handle` is appended to a `data-modifiers` attribute as `container-style:<handle>`, which CSS rules in the container snippet target via `[data-modifiers*='container-style:<handle>']`.
+- Conventional handle suggestions: `card`, `outlined`, `elevated`, `flat`. Final set will be settled when the container block is built.
+- **No additional fields needed** — the named-variant pattern bundles its visual configuration (border, radius, shadow, padding) into the CSS rule, not into field values.
+
+### `media_size`
+
+**Type:**
+
+| Setting | Value |
+|---|---|
+| Type key | `media_size` |
+| Display name | Media size |
+| Description | A sizing constraint applied to a media block. Determines container aspect ratio, height, or fill behavior |
+
+Type-level metadata: follows [convention](#type-level-metadata-convention), no deviations.
+
+**Fields:**
+
+#### `name` — Name
+
+Standard name field — see [convention](#name-field-convention). Description: *"Display label for this media size (e.g., '16:9', 'Tall', 'Full screen', 'Fill')."*
+
+#### `type` — Type
+
+- Type: Single line text
+- Cardinality: One
+- Required: no
+- Description: *"Sizing mode. Leave blank for the special `fill` entry (handle-routed)."*
+- Validation: `choices: ["ratio", "relative", "fixed"]`
+
+#### `value` — Value
+
+- Type: Single line text
+- Cardinality: One
+- Required: no
+- Description: *"CSS value for the chosen mode: ratio like `16/9`, viewport unit like `100svh`, or fixed like `400px`. Leave blank for `fill`."*
+- Validation: *(none)*
+
+**Runtime notes:**
+
+- Adopted from the [Liquified.dev `media-block-spec.md`](C:/Users/troph/Desktop/MX/Code/Liquified.dev/docs/media-block-spec.md). Three sizing modes via the `type` field, plus one special handle-routed mode (`fill`), plus a "blank entry" mode for natural ratio.
+- **Mode → CSS mapping** (the media block consumes this):
+
+  | Selection | type | value | Emitted CSS |
+  |---|---|---|---|
+  | Block setting unset | — | — | none — image renders at natural ratio |
+  | Aspect ratio | `ratio` | e.g., `16/9` | `aspect-ratio: 16/9` |
+  | Relative height | `relative` | e.g., `100svh` | `block-size: 100svh` |
+  | Fixed height | `fixed` | e.g., `400px` | `block-size: 400px` |
+  | Fill parent | handle: `fill` | — | — | `block-size: 100%` |
+
+- **`object-fit: cover` is hardcoded** in the media block CSS. Per-context overrides (e.g., a product gallery needing `contain`) live in the consuming block's stylesheet, not in this metaobject.
+- **Suggested starter entries** (per the spec):
+  - Ratios: `1-1`, `4-3`, `3-2`, `16-9`, `9-16`, `4-5`
+  - Relative: `half-screen` (50svh), `tall` (75svh), `full-screen` (100svh)
+  - Special: `fill` (no type/value)
+
+### `spacing`
+
+**Type:**
+
+| Setting | Value |
+|---|---|
+| Type key | `spacing` |
+| Display name | Spacing |
+| Description | A reusable spacing token for vertical rhythm. Each token carries a mobile and desktop px value |
+
+Type-level metadata: follows [convention](#type-level-metadata-convention), no deviations.
+
+**Fields:**
+
+#### `name` — Name
+
+Standard name field — see [convention](#name-field-convention). Description: *"Display label for this spacing (e.g., 'None', 'Tight', 'Default', 'Spacious', 'Loose')."*
+
+#### `mobile_value` — Mobile value (required)
+
+- Type: Number (decimal)
+- Cardinality: One
+- Description: *"Spacing value on mobile, in px."*
+- Validation: *(none)*
+
+#### `desktop_value` — Desktop value (required)
+
+- Type: Number (decimal)
+- Cardinality: One
+- Description: *"Spacing value on desktop (≥768px), in px."*
+- Validation: *(none)*
+
+**Runtime notes:**
+
+- Two-value-per-token design (vs. Horizon's single-value-with-global-scale): allows exotic entries like `0px` mobile / `48px` desktop without re-architecting the scale system.
+- Consumed by section schemas as a `block_rhythm` setting (vertical space between child blocks) and optionally by individual blocks for top/bottom override (rare — most blocks inherit the section rhythm).
+- Section CSS pattern:
+  ```css
+  .shopify-section {
+    --block-rhythm: var(--block-rhythm-mobile, 1.5rem);
+    @media (width >= 48rem) { --block-rhythm: var(--block-rhythm-desktop, 1.5rem); }
+
+    & :where(.shopify-block) + .shopify-block { margin-block-start: var(--block-rhythm); }
+  }
+  ```
+  The `:where()` keeps specificity at zero so per-block overrides work; the sibling combinator gets margin-collapse semantics for free.
+- **Suggested starter entries**:
+  - `none` (0 / 0)
+  - `tight` (8 / 12)
+  - `default` (16 / 24)
+  - `spacious` (32 / 48)
+  - `loose` (64 / 96)
+- **Padding stays inline** as range fields on blocks where it matters (sections with backgrounds, blocks with internal padding). Padding is structural, not rhythmic, so it doesn't share the token model.
 
 ## Related
 
