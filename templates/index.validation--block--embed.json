@@ -1,0 +1,94 @@
+{
+  "sections": {
+    "main": {
+      "type": "validation--block--embed",
+      "blocks": {
+        "youtube-watch": {
+          "type": "embed",
+          "settings": {
+            "url": "https://www.youtube.com/watch?v=aqz-KE-bpKQ",
+            "title": "YouTube watch URL"
+          }
+        },
+        "youtube-short-url": {
+          "type": "embed",
+          "settings": {
+            "url": "https://youtu.be/aqz-KE-bpKQ",
+            "title": "YouTube short URL"
+          }
+        },
+        "youtube-shorts": {
+          "type": "embed",
+          "settings": {
+            "url": "https://www.youtube.com/shorts/aqz-KE-bpKQ",
+            "title": "YouTube Shorts"
+          }
+        },
+        "youtube-embed": {
+          "type": "embed",
+          "settings": {
+            "url": "https://www.youtube.com/embed/aqz-KE-bpKQ",
+            "title": "YouTube embed URL"
+          }
+        },
+        "vimeo": {
+          "type": "embed",
+          "settings": {
+            "url": "https://vimeo.com/76979871",
+            "title": "Vimeo public"
+          }
+        },
+        "vimeo-unlisted": {
+          "type": "embed",
+          "settings": {
+            "url": "https://vimeo.com/76979871/abcdef1234",
+            "title": "Vimeo unlisted (with hash)"
+          }
+        },
+        "vimeo-player": {
+          "type": "embed",
+          "settings": {
+            "url": "https://player.vimeo.com/video/76979871",
+            "title": "Vimeo player URL"
+          }
+        },
+        "unparseable": {
+          "type": "embed",
+          "settings": {
+            "url": "https://example.com/not-a-video",
+            "title": "Unparseable URL → placeholder"
+          }
+        },
+        "blank-url": {
+          "type": "embed",
+          "settings": {
+            "title": "No URL → placeholder"
+          }
+        },
+        "with-spacing": {
+          "type": "embed",
+          "settings": {
+            "url": "https://youtu.be/aqz-KE-bpKQ",
+            "title": "After 64px desktop margin",
+            "mobile_margin_block_start": 16,
+            "desktop_margin_block_start": 64
+          }
+        }
+      },
+      "block_order": [
+        "youtube-watch",
+        "youtube-short-url",
+        "youtube-shorts",
+        "youtube-embed",
+        "vimeo",
+        "vimeo-unlisted",
+        "vimeo-player",
+        "unparseable",
+        "blank-url",
+        "with-spacing"
+      ],
+      "settings": {}
+    }
+  },
+  "order": ["main"]
+}
