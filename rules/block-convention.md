@@ -11,10 +11,10 @@ Blocks are thin wrappers. They declare the schema and render a matching snippet 
 
 1. **Version header** — `{% # <Name> block vX.Y.Z %}`
 2. **Changelog block** — `{% comment %}` with schema/setting changes (see "Changelog" below). Omit on v1.0.0 only; required from any subsequent version.
-3. **Render call** — `{% render '<same-name>', section: section, block: block %}` where `<same-name>` is the matching file in `snippets/`
+3. **Render call** — `{% render '<same-name>', section: section, block: block %}` where `<same-name>` is the matching file in `snippets/`. Blocks accepting `@theme` children precede this with `{% capture contents %}{% content_for 'blocks' %}{% endcapture %}` and pass `contents: contents` as an extra render argument.
 4. **`{% schema %}` block**
 
-A block file must contain only these four things. No conditionals, no HTML, no additional Liquid beyond the render call.
+A block file's only Liquid is what's described above — no conditionals, no HTML, no rendering logic.
 
 ## Changelog
 
