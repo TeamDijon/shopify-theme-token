@@ -1,6 +1,10 @@
-{% # Validation - Block - Separator v1.0.0 %}
+{% # Validation - Block - Separator v1.0.1 %}
 
 {% comment %}
+  Changelog
+  - v1.0.1 — drop the local `inline-size: 100%` workaround now that the snippet sets it itself
+  - v1.0.0 — initial
+
   Block-validation harness for `separator`. The JSON template at
   `templates/index.validation--block--separator.json` bakes the test
   matrix as block instances; the section just renders them in a
@@ -132,16 +136,9 @@
       }
 
       /* Outline the separator wrapper so the inline-size + applied
-         margins are visible (the <hr> line itself is just 1px).
-
-         Override: the separator's `margin-inline: auto` on a flex child
-         (no explicit inline-size, no intrinsic content width) collapses
-         the wrapper to 0 here. Force `inline-size: 100%` locally so the
-         line renders. The underlying behaviour is a bug in the production
-         snippet — logged to triage rather than fixed in this commit. */
+         margins are visible (the <hr> line itself is just 1px). */
       .block-validation-suite > .shopify-block--separator {
         position: relative;
-        inline-size: 100%;
         outline: 1px dashed rgba(0, 0, 0, 0.18);
       }
 
