@@ -2,10 +2,12 @@
 
 The metaobject **type definitions** the theme expects to exist in the Shopify admin. Designed as input for an agent (or human) creating definitions on a fresh store before the theme is installed.
 
-**No entries are required.** The theme renders gracefully without any entries — typography falls back to system fonts, no custom colors emit, etc. What matters is the *definitions* exist so:
+**No entries are strictly required.** The theme renders gracefully without any entries — typography falls back to system fonts, no custom colors emit, etc. What matters at minimum is the *definitions* exist so:
 
 - Schema-level metaobject pickers (`"type": "metaobject", "metaobject_type": "<type>"`) show without errors in the theme editor
 - Liquid utilities iterating `metaobjects.<type>.values` return an empty list rather than failing
+
+**For a usable design system, a recommended seed set exists per type** (see "Recommended entries" subsections below). An agent doing a full setup should provision both the definitions and the recommended entries. Merchant-specific types (`typeface`, `font`, `icon`) are populated based on the assets the store ships with — see each type's notes.
 
 For the consumption-side reference (which Liquid utilities access which fields, schema usage patterns), see `design-system-metaobjects.md`. This doc and that one are kept separate on purpose: definitions for setup, consumption for development.
 
@@ -45,6 +47,92 @@ References between types impose this order:
 3. **`text_style`** — references `typeface` via the `font_family` field
 4. **`theme_color`, `content_width`, `icon`, `button_style`, `container_style`, `media_size`, `spacing`** — independent; create in any order
 
+## Setup via GraphQL
+
+Setup is intended to be agent-driven. The Shopify Admin GraphQL API exposes the full lifecycle (create / update / delete) for both definitions and entries.
+
+### Authentication
+
+```
+POST https://<store-handle>.myshopify.com/admin/api/2025-01/graphql.json
+Content-Type: application/json
+X-Shopify-Access-Token: shpca_<token>
+```
+
+Token must come from a custom app installed on the store (or a theme-development collaborator) with these scopes:
+
+- `write_metaobject_definitions` — manage type definitions
+- `write_metaobjects` — manage entries
+- `read_metaobjects` — query existing state (implied by write)
+
+### Key operations
+
+| Operation | Purpose | Docs |
+|---|---|---|
+| `metaobjectDefinitionByType(type:)` | Query a type by its `type` key | [docs](https://shopify.dev/docs/api/admin-graphql/latest/queries/metaobjectDefinitionByType) |
+| `metaobjectDefinitions(first:)` | List all definitions (paginated) | [docs](https://shopify.dev/docs/api/admin-graphql/latest/queries/metaobjectDefinitions) |
+| `metaobjectDefinitionCreate(definition:)` | Create a new type | [docs](https://shopify.dev/docs/api/admin-graphql/latest/mutations/metaobjectDefinitionCreate) |
+| `metaobjectDefinitionUpdate(id:, definition:)` | Add/update/delete fields on existing type, refine descriptions/validations | [docs](https://shopify.dev/docs/api/admin-graphql/latest/mutations/metaobjectDefinitionUpdate) |
+| `metaobjects(type:, first:)` | Query entries of a type | [docs](https://shopify.dev/docs/api/admin-graphql/latest/queries/metaobjects) |
+| `metaobjectCreate(metaobject:)` | Create an entry | [docs](https://shopify.dev/docs/api/admin-graphql/latest/mutations/metaobjectCreate) |
+| `metaobjectDelete(id:)` | Delete an entry by GID | [docs](https://shopify.dev/docs/api/admin-graphql/latest/mutations/metaobjectDelete) |
+
+### Setup-time quirks
+
+- **Idempotency:** `metaobjectDefinitionCreate` returns code `TAKEN` if the type exists. Query first via `metaobjectDefinitionByType`, branch to update vs. create.
+- **Access enum asymmetry:** create input expects `access.admin` from `[MERCHANT_READ, MERCHANT_READ_WRITE]`, but the read query returns `PUBLIC_READ_WRITE`. Pass `MERCHANT_READ_WRITE` on create.
+- **Capability defaults on create:** newly created definitions default to `publishable: false`, `translatable: false`, `storefront: NONE`. Follow each create with a `metaobjectDefinitionUpdate` that sets `access.storefront: PUBLIC_READ` + enables both capabilities (or omit access/capabilities from the create input — defaults will fire — and patch in a follow-up update).
+- **Field operations are keyed by `key`**, not GID. `metaobjectDefinitionUpdate` accepts `fieldDefinitions` ops `create` / `update` / `delete`.
+- **Bulk creates via aliases:** GraphQL aliases (`e1: metaobjectCreate(...)`, `e2: metaobjectCreate(...)`) batch many entries in one request. Each costs ~10 query points; with 2000-point budgets this comfortably handles 100+ entries per request.
+- **References by GID:** `metaobject_reference` and `list.metaobject_reference` field values are GIDs (`gid://shopify/Metaobject/<numeric>`). Resolve dependencies first (e.g., create `font` entries before referencing them in `typeface.font_list`).
+
+### Example: create a definition + seed an entry
+
+```graphql
+mutation Create {
+  defn: metaobjectDefinitionCreate(definition: {
+    type: "spacing"
+    name: "Spacing"
+    description: "A reusable spacing token for vertical rhythm. Each token carries a mobile and desktop px value."
+    displayNameKey: "name"
+    fieldDefinitions: [
+      { key: "name", name: "Name", type: "single_line_text_field", required: false },
+      { key: "mobile_value", name: "Mobile value", type: "number_decimal", required: true },
+      { key: "desktop_value", name: "Desktop value", type: "number_decimal", required: true }
+    ]
+  }) {
+    metaobjectDefinition { id type }
+    userErrors { field message code }
+  }
+}
+
+mutation Seed {
+  e1: metaobjectCreate(metaobject: {
+    type: "spacing"
+    handle: "default"
+    fields: [
+      { key: "name", value: "Default" }
+      { key: "mobile_value", value: "16" }
+      { key: "desktop_value", value: "24" }
+    ]
+  }) {
+    metaobject { id handle }
+    userErrors { field message code }
+  }
+}
+```
+
+### Recommended setup flow for an agent
+
+1. Query each type via `metaobjectDefinitionByType`. Branch:
+   - **Missing** → `metaobjectDefinitionCreate` per the spec in this doc
+   - **Present** → diff fields/descriptions; `metaobjectDefinitionUpdate` to align
+2. After all definitions are present, follow up with a single update batch to enforce convention defaults (`access.storefront: PUBLIC_READ`, capabilities enabled) — these can drift on create.
+3. Seed recommended entries per type (see "Recommended entries" tables below). Each `metaobjectCreate` is independent; aliases batch them.
+4. Wire dependent theme settings:
+   - `settings_data.json` → `current.base_text_style` = GID of the `body` text_style entry
+5. Optionally verify by re-querying via `metaobjectDefinitions` + `metaobjects` and asserting against the doc.
+
 ## Type definitions
 
 ### `theme_color`
@@ -77,6 +165,16 @@ Standard name field — see [convention](#name-field-convention). Description: *
 - `hex_code.value` is read by `utility--css-variables` and emitted as `--color-<system.handle>`.
 - Consumers reading a single entry (block/section settings) should reference the global CSS variable `var(--color-<system.handle>)` rather than re-extracting `hex_code.value`. The hex is only re-extracted in non-CSS contexts (e.g. the `<meta name="theme-color">` tag).
 
+**Recommended entries** (palette is intentionally tame — extend per-store as needed):
+
+| Handle | Name | hex_code |
+|---|---|---|
+| `white` | White | `#ffffff` |
+| `off-white` | Off white | `#faf8f5` |
+| `black` | Black | `#1a1a1a` |
+| `muted` | Muted | `#6b6b6b` |
+| `accent` | Accent | `#c2410c` |
+
 ### `typeface`
 
 **Type:**
@@ -107,6 +205,8 @@ Standard name field — see [convention](#name-field-convention). Description: *
 
 - `name.value` is read by `utility--font-face` and emitted as the quoted `font-family` value in `@font-face` rules. Also accessed indirectly via `text_style.font_family.value.name.value` in `utility--css-variables` to compose the `--<style>-font-family` CSS variable.
 - `font_list.value` is iterated by `utility--font-face` to emit one `@font-face` per referenced font. Typefaces with a blank `name` or empty `font_list` are skipped.
+
+**Recommended entries:** store-specific. Seeds depend on the typefaces and font files the theme ships with. No canonical set.
 
 ### `font`
 
@@ -171,6 +271,8 @@ Standard name field — see [convention](#name-field-convention). Description: *
 - **Variable-font mode trigger:** `weight` blank → `"" | plus: 0` → `0` → the `< 100` branch fires and the range fields are read. The blank-weight path is the only way to enter variable mode — the regex blocks any explicit `< 100` value.
 - A font is skipped (no `@font-face` emitted) if its `asset_list` is empty, or if it's in variable mode with missing/invalid range bounds.
 - `name` is never read; only the other fields are consumed.
+
+**Recommended entries:** store-specific. One entry per font file (or variable-font range) the theme ships. No canonical set.
 
 ### `text_style`
 
@@ -279,6 +381,22 @@ Standard name field — see [convention](#name-field-convention). Description: *
 - Px-to-rem conversion (mobile/desktop font size, letter spacing) happens in Liquid via `÷ 16.0`. Merchants enter px; the CSS receives rem.
 - `weight` is stored as text+regex (matching `font.weight`) to enforce canonical 100-step values; Liquid coerces with `| default: '400'`.
 
+**Recommended entries** (h1–h6 use auto-bind handles; `body` is the canonical handle for the `base_text_style` setting):
+
+| Handle | Name | mobile_font_size | desktop_font_size | line_height | weight |
+|---|---|---|---|---|---|
+| `h1` | H1 | 32 | 48 | 1.2 | 700 |
+| `h2` | H2 | 28 | 40 | 1.25 | 700 |
+| `h3` | H3 | 24 | 32 | 1.3 | 600 |
+| `h4` | H4 | 20 | 24 | 1.4 | 600 |
+| `h5` | H5 | 18 | 20 | 1.4 | 600 |
+| `h6` | H6 | 16 | 18 | 1.5 | 600 |
+| `body` | Body | 16 | 16 | 1.5 | 400 |
+
+All entries point `font_family` at the same typeface (e.g., the merchant's primary sans-serif) and use `font_fallback_family: sans-serif`. Tune per-store post-seed.
+
+After seeding, set `settings_data.json` → `current.base_text_style` to the `body` entry's GID so `--base-*` aliases populate.
+
 ### `content_width`
 
 **Type:**
@@ -308,6 +426,15 @@ Standard name field — see [convention](#name-field-convention). Description: *
 
 - Read by `sections/section.liquid` via the section's `content_width` setting; emitted as `--content-width: <value>px` into the section's dynamic style.
 - When no entry is selected, [core.css](assets/core.css) falls back to `var(--content-width, 125rem)` — the **2000px theme default**, which acts as a big-screen protection. Most screens (≤1920px) render full-width within this cap. The outer `3200px` background-stop guard lives elsewhere in `core.css`.
+
+**Recommended entries** (no `default` entry — blank section setting falls through to the 2000px CSS fallback):
+
+| Handle | Name | width |
+|---|---|---|
+| `narrow` | Narrow | 600 |
+| `reading` | Reading | 680 |
+| `medium` | Medium | 1000 |
+| `wide` | Wide | 1400 |
 
 ### `icon`
 
@@ -349,6 +476,8 @@ Standard name field — see [convention](#name-field-convention). Description: *
 - `preset.value` (or the `preset` arg) is emitted as `data-preset="<value>"` on the SVG root, providing a CSS hook (e.g., `[data-preset="inline-badge"] { ... }`).
 - The `file_name` regex prevents typos like `Chevron`, `arrow.svg`, or `my icon` from saving — only lowercase slugs are accepted.
 
+**Recommended entries:** one entry per `assets/icon-*.svg` file in the theme. Handle = file_name = the slug between `icon-` and `.svg` (e.g., `arrow` for `assets/icon-arrow.svg`). Display name = title-cased version (e.g., `Arrow`). An agent should enumerate the assets directory at setup time rather than rely on a static list — the icon set evolves with the theme.
+
 ### `button_style`
 
 **Type:**
@@ -374,6 +503,15 @@ Standard name field — see [convention](#name-field-convention). Description: *
 - Conventional handle set from the predecessor: `solid-primary`, `solid-secondary`, `outline`, `ghost`, `text-link`. Merchants creating entries should name them so the auto-generated handles match the future CSS rules.
 - **No additional fields needed** — the named-variant pattern is sufficient. The CSS for each variant lives in the button snippet's `{% stylesheet %}` block, not in field values.
 
+**Recommended entries** (matches the predecessor's CSS rule set; the button block's stylesheet will target these handles):
+
+| Handle | Name |
+|---|---|
+| `solid-primary` | Solid primary |
+| `solid-secondary` | Solid secondary |
+| `outline-primary` | Outline primary |
+| `outline-secondary` | Outline secondary |
+
 ### `container_style`
 
 **Type:**
@@ -398,6 +536,8 @@ Standard name field — see [convention](#name-field-convention). Description: *
 - Same named-selector pattern as [`button_style`](#button_style): the entry's `system.handle` is appended to a `data-modifiers` attribute as `container-style:<handle>`, which CSS rules in the container snippet target via `[data-modifiers*='container-style:<handle>']`.
 - Conventional handle suggestions: `card`, `outlined`, `elevated`, `flat`. Final set will be settled when the container block is built.
 - **No additional fields needed** — the named-variant pattern bundles its visual configuration (border, radius, shadow, padding) into the CSS rule, not into field values.
+
+**Recommended entries:** none yet — defer until the container/group block defines the canonical variant set.
 
 ### `media_size`
 
@@ -447,10 +587,20 @@ Standard name field — see [convention](#name-field-convention). Description: *
   | Fill parent | handle: `fill` | — | — | `block-size: 100%` |
 
 - **`object-fit: cover` is hardcoded** in the media block CSS. Per-context overrides (e.g., a product gallery needing `contain`) live in the consuming block's stylesheet, not in this metaobject.
-- **Suggested starter entries** (per the spec):
-  - Ratios: `1-1`, `4-3`, `3-2`, `16-9`, `9-16`, `4-5`
-  - Relative: `half-screen` (50svh), `tall` (75svh), `full-screen` (100svh)
-  - Special: `fill` (no type/value)
+
+**Recommended entries** (adopted from the Liquified.dev spec):
+
+| Handle | Name | type | value |
+|---|---|---|---|
+| `1-1` | 1:1 (Square) | `ratio` | `1/1` |
+| `4-3` | 4:3 | `ratio` | `4/3` |
+| `3-2` | 3:2 | `ratio` | `3/2` |
+| `16-9` | 16:9 (Widescreen) | `ratio` | `16/9` |
+| `9-16` | 9:16 (Vertical) | `ratio` | `9/16` |
+| `4-5` | 4:5 (Portrait) | `ratio` | `4/5` |
+| `half-screen` | Half screen | `relative` | `50svh` |
+| `full-screen` | Full screen | `relative` | `100svh` |
+| `fill` | Fill | *(blank)* | *(blank)* |
 
 ### `spacing`
 
@@ -498,13 +648,17 @@ Standard name field — see [convention](#name-field-convention). Description: *
   }
   ```
   The `:where()` keeps specificity at zero so per-block overrides work; the sibling combinator gets margin-collapse semantics for free.
-- **Suggested starter entries**:
-  - `none` (0 / 0)
-  - `tight` (8 / 12)
-  - `default` (16 / 24)
-  - `spacious` (32 / 48)
-  - `loose` (64 / 96)
 - **Padding stays inline** as range fields on blocks where it matters (sections with backgrounds, blocks with internal padding). Padding is structural, not rhythmic, so it doesn't share the token model.
+
+**Recommended entries:**
+
+| Handle | Name | mobile_value | desktop_value |
+|---|---|---|---|
+| `none` | None | 0 | 0 |
+| `tight` | Tight | 8 | 12 |
+| `default` | Default | 16 | 24 |
+| `spacious` | Spacious | 32 | 48 |
+| `loose` | Loose | 64 | 96 |
 
 ## Related
 
