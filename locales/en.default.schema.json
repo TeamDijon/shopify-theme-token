@@ -104,6 +104,29 @@
           "category": "Spacing"
         }
       }
+    },
+    "separator": {
+      "name": "Separator",
+      "settings": {
+        "separator": { "content": "Separator" },
+        "content_width": {
+          "label": "Width",
+          "info": "Leave blank for full width"
+        },
+        "line_color": {
+          "label": "Color",
+          "info": "Leave blank to inherit"
+        },
+        "top_spacing": { "content": "Top spacing" },
+        "mobile_margin_block_start": { "label": "Mobile" },
+        "desktop_margin_block_start": { "label": "Desktop" }
+      },
+      "presets": {
+        "separator": {
+          "name": "Separator",
+          "category": "Decoration"
+        }
+      }
     }
   }
 }

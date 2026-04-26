@@ -1,0 +1,61 @@
+{% # Separator block v1.0.0 %}
+
+{% render 'separator', section: section, block: block %}
+
+{% schema %}
+{
+  "name": "t:blocks.separator.name",
+  "tag": null,
+  "blocks": [],
+  "settings": [
+    {
+      "type": "header",
+      "content": "t:blocks.separator.settings.separator.content"
+    },
+    {
+      "type": "metaobject",
+      "metaobject_type": "content_width",
+      "id": "content_width",
+      "label": "t:blocks.separator.settings.content_width.label",
+      "info": "t:blocks.separator.settings.content_width.info"
+    },
+    {
+      "type": "metaobject",
+      "metaobject_type": "theme_color",
+      "id": "line_color",
+      "label": "t:blocks.separator.settings.line_color.label",
+      "info": "t:blocks.separator.settings.line_color.info"
+    },
+    {
+      "type": "header",
+      "content": "t:blocks.separator.settings.top_spacing.content"
+    },
+    {
+      "type": "range",
+      "id": "mobile_margin_block_start",
+      "label": "t:blocks.separator.settings.mobile_margin_block_start.label",
+      "min": 0,
+      "max": 200,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "desktop_margin_block_start",
+      "label": "t:blocks.separator.settings.desktop_margin_block_start.label",
+      "min": 0,
+      "max": 200,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:blocks.separator.presets.separator.name",
+      "category": "t:blocks.separator.presets.separator.category"
+    }
+  ]
+}
+{% endschema %}

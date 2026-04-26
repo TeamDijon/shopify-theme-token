@@ -113,6 +113,29 @@
           "category": "Espacement"
         }
       }
+    },
+    "separator": {
+      "name": "Séparateur",
+      "settings": {
+        "separator": { "content": "Séparateur" },
+        "content_width": {
+          "label": "Largeur",
+          "info": "Laisser vide pour la pleine largeur"
+        },
+        "line_color": {
+          "label": "Couleur",
+          "info": "Laisser vide pour hériter"
+        },
+        "top_spacing": { "content": "Espacement supérieur" },
+        "mobile_margin_block_start": { "label": "Mobile" },
+        "desktop_margin_block_start": { "label": "Bureau" }
+      },
+      "presets": {
+        "separator": {
+          "name": "Séparateur",
+          "category": "Décoration"
+        }
+      }
     }
   }
 }

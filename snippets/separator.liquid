@@ -1,0 +1,68 @@
+{% # Separator v1.0.0 %}
+
+{% doc %}
+  @description Renders a horizontal rule with optional max-width, line color (from a `theme_color` metaobject), and responsive top spacing.
+
+  @param {section} [section] - The section object containing the block
+  @param {block} [block] - Block object containing the settings
+  @param {string} [block_id] - Unique block ID for static renders
+  @param {metaobject} [content_width] - `content_width` metaobject. Reads `.width.value` (px). Full width if blank.
+  @param {metaobject} [line_color] - `theme_color` metaobject. Reads `.system.handle` to consume `var(--color-<handle>)`. Falls back to `--color-border` if blank.
+  @param {number} [mobile_margin_block_start] - Top margin in px below the desktop breakpoint. Defaults to 0.
+  @param {number} [desktop_margin_block_start] - Top margin in px at or above the desktop breakpoint. Defaults to 0.
+
+  @example {% render 'separator', section: section, block: block %}
+{% enddoc %}
+
+{% liquid
+  assign content_width = content_width | default: block.settings.content_width | default: ''
+  assign line_color = line_color | default: block.settings.line_color | default: ''
+  assign mobile_margin_block_start = mobile_margin_block_start | default: block.settings.mobile_margin_block_start | default: 0
+  assign desktop_margin_block_start = desktop_margin_block_start | default: block.settings.desktop_margin_block_start | default: 0
+
+  capture base_selector
+    render 'utility--base-selector', section: section, block: block, identifier: block_id
+  endcapture
+  assign base_selector = base_selector | strip
+%}
+
+<div class="shopify-block shopify-block--separator" id="{{ base_selector }}">
+  <hr>
+
+  {% capture dynamic_style %}
+    {% if content_width and content_width != blank %}
+      --content-width: {{ content_width.width.value }}px;
+    {% endif %}
+
+    {% if line_color and line_color != blank %}
+      --line-color: var(--color-{{ line_color.system.handle }});
+    {% endif %}
+
+    {% if mobile_margin_block_start and mobile_margin_block_start > 0 %}
+      --mobile-margin-block-start: {{ mobile_margin_block_start | divided_by: 16.0 | round: 3 }}rem;
+    {% endif %}
+
+    {% if desktop_margin_block_start and desktop_margin_block_start > 0 %}
+      --desktop-margin-block-start: {{ desktop_margin_block_start | divided_by: 16.0 | round: 3 }}rem;
+    {% endif %}
+  {% endcapture %}
+  {% render 'utility--dynamic-style', base_selector: base_selector, css_content: dynamic_style %}
+</div>
+
+{% stylesheet %}
+  .shopify-block--separator {
+    max-inline-size: var(--content-width, 100%);
+    margin-inline: auto;
+    margin-block-start: var(--mobile-margin-block-start, 0rem);
+
+    @media (width >= 48rem) {
+      margin-block-start: var(--desktop-margin-block-start, 0rem);
+    }
+
+    & hr {
+      margin: 0;
+      border: none;
+      border-block-start: 0.0625rem solid var(--line-color, var(--color-border));
+    }
+  }
+{% endstylesheet %}
