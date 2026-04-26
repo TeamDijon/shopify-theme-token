@@ -21,10 +21,6 @@
 {% enddoc %}
 
 {% liquid
-  if contents == blank
-    break
-  endif
-
   assign direction = direction | default: block.settings.direction | default: 'column'
   assign stack_below = stack_below | default: block.settings.stack_below | default: '60'
   assign horizontal_alignment = horizontal_alignment | default: block.settings.horizontal_alignment | default: 'start'

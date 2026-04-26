@@ -20,10 +20,6 @@
 {% enddoc %}
 
 {% liquid
-  if contents == blank
-    break
-  endif
-
   assign columns = columns | default: block.settings.columns | default: '2'
   assign stack_below = stack_below | default: block.settings.stack_below | default: '60'
   assign vertical_alignment = vertical_alignment | default: block.settings.vertical_alignment | default: 'start'
