@@ -234,11 +234,13 @@
         block-size: 100svh;
       }
 
-      /* Bleed: escape the section gutter, span full viewport */
+      /* Bleed: escape the section gutter, span full visible viewport.
+         100dvw (not 100vw) so scrollbar-gutter: stable doesn't cause
+         horizontal overflow. */
       &[data-modifiers*='bleed'] {
-        inline-size: 100vw;
+        inline-size: 100dvw;
         max-inline-size: none;
-        margin-inline: calc(50% - 50vw);
+        margin-inline: calc(50% - 50dvw);
       }
 
       /* Overlay tint — natural stacking puts it above the media, below contents */
