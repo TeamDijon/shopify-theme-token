@@ -32,7 +32,7 @@ Component CSS in `assets/<name>.css` and `{% stylesheet %}` blocks lives **outsi
 ## Variables and tokens
 
 - **CSS custom properties for repeated values** — colors, spacing, typography, animation timings.
-- **Color tokens come from `theme_color` metaobjects** via `utility--css-variables`. Don't hardcode colors in component CSS; use `var(--<token>-color)`.
+- **Color tokens come from `theme_color` metaobjects** via `utility--css-variables`. Don't hardcode colors in component CSS; use `var(--color-<token>)`.
 - **Spacing/typography tokens come from theme settings + `text_style`/`content_width` metaobjects.** Same rule: use the variable, not the literal.
 - **Component-local custom properties** are fine — declare on the component's root selector; reference via `var(--name, fallback)`.
 

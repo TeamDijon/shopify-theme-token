@@ -19,7 +19,7 @@ Theme-wide a11y patterns. Per-component patterns (forms, modals, tabs, accordion
 
 ## Color contrast
 
-WCAG AA: 4.5:1 for normal text, 3:1 for large text and UI components (borders, focus indicators). Use named theme color tokens (`var(--<name>-color)` from `theme_color` metaobjects) — never hardcoded hex pairings that could fail contrast at runtime.
+WCAG AA: 4.5:1 for normal text, 3:1 for large text and UI components (borders, focus indicators). Use named theme color tokens (`var(--color-<name>)` from `theme_color` metaobjects) — never hardcoded hex pairings that could fail contrast at runtime.
 
 ## Touch targets
 
