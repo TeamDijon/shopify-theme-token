@@ -34,7 +34,8 @@
 
   if link != blank
     assign tag = 'a'
-    assign behavior_attribute = 'href="' | append: link | append: '"'
+    assign link_safe = link | escape
+    assign behavior_attribute = 'href="' | append: link_safe | append: '"'
     if open_in_new_tab
       assign behavior_attribute = behavior_attribute | append: ' target="_blank" rel="noopener noreferrer"'
     endif

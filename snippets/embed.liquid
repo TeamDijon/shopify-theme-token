@@ -98,7 +98,7 @@
   {% if embed_url != blank %}
     {% if provider == 'youtube' %}
       <iframe
-        src="{{ embed_url }}"
+        src="{{ embed_url | escape }}"
         title="{{ title | escape }}"
         loading="lazy"
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
@@ -106,7 +106,7 @@
       ></iframe>
     {% elsif provider == 'vimeo' %}
       <iframe
-        src="{{ embed_url }}"
+        src="{{ embed_url | escape }}"
         title="{{ title | escape }}"
         loading="lazy"
         allow="autoplay; fullscreen; picture-in-picture"

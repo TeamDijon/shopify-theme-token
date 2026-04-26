@@ -75,11 +75,11 @@
     {% if video_loop %}loop{% endif %}
     preload="{{ video_preload }}"
     loading="{{ loading }}"
-    poster="{{ video_poster }}"
+    poster="{{ video_poster | escape }}"
   >
     {% if mobile_video_url != blank %}
-      <source src="{{ mobile_video_url }}" media="(max-width: 47.99rem)" type="video/mp4">
+      <source src="{{ mobile_video_url | escape }}" media="(max-width: 47.99rem)" type="video/mp4">
     {% endif %}
-    <source src="{{ video_url }}" type="video/mp4">
+    <source src="{{ video_url | escape }}" type="video/mp4">
   </video>
 </media-video>
