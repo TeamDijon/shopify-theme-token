@@ -127,6 +127,50 @@
           "category": "Decoration"
         }
       }
+    },
+    "title": {
+      "name": "Title",
+      "settings": {
+        "title": { "content": "Title" },
+        "content": {
+          "label": "Content",
+          "default": "A striking title"
+        },
+        "tag": {
+          "label": "Tag",
+          "options": {
+            "h1": "H1",
+            "h2": "H2",
+            "h3": "H3",
+            "h4": "H4",
+            "h5": "H5",
+            "h6": "H6",
+            "p": "Paragraph"
+          }
+        },
+        "text_style": {
+          "label": "Text style",
+          "info": "Leave blank to use the default style for the selected tag"
+        },
+        "icon": { "label": "Icon" },
+        "content_width": {
+          "label": "Content width",
+          "info": "Leave blank for full width"
+        },
+        "text_color": {
+          "label": "Color",
+          "info": "Leave blank to inherit"
+        },
+        "top_spacing": { "content": "Top spacing" },
+        "mobile_margin_block_start": { "label": "Mobile" },
+        "desktop_margin_block_start": { "label": "Desktop" }
+      },
+      "presets": {
+        "title": {
+          "name": "Title",
+          "category": "Text"
+        }
+      }
     }
   }
 }

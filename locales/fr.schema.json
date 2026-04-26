@@ -136,6 +136,50 @@
           "category": "Décoration"
         }
       }
+    },
+    "title": {
+      "name": "Titre",
+      "settings": {
+        "title": { "content": "Titre" },
+        "content": {
+          "label": "Contenu",
+          "default": "Un titre marquant"
+        },
+        "tag": {
+          "label": "Balise",
+          "options": {
+            "h1": "H1",
+            "h2": "H2",
+            "h3": "H3",
+            "h4": "H4",
+            "h5": "H5",
+            "h6": "H6",
+            "p": "Paragraphe"
+          }
+        },
+        "text_style": {
+          "label": "Style de texte",
+          "info": "Laisser vide pour utiliser le style par défaut de la balise sélectionnée"
+        },
+        "icon": { "label": "Icône" },
+        "content_width": {
+          "label": "Largeur du contenu",
+          "info": "Laisser vide pour la pleine largeur"
+        },
+        "text_color": {
+          "label": "Couleur",
+          "info": "Laisser vide pour hériter"
+        },
+        "top_spacing": { "content": "Espacement supérieur" },
+        "mobile_margin_block_start": { "label": "Mobile" },
+        "desktop_margin_block_start": { "label": "Bureau" }
+      },
+      "presets": {
+        "title": {
+          "name": "Titre",
+          "category": "Texte"
+        }
+      }
     }
   }
 }

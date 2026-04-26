@@ -1,0 +1,95 @@
+{% # Title block v1.0.0 %}
+
+{% render 'title', section: section, block: block %}
+
+{% schema %}
+{
+  "name": "t:blocks.title.name",
+  "tag": null,
+  "blocks": [],
+  "settings": [
+    {
+      "type": "header",
+      "content": "t:blocks.title.settings.title.content"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "content",
+      "label": "t:blocks.title.settings.content.label",
+      "default": "t:blocks.title.settings.content.default"
+    },
+    {
+      "type": "select",
+      "id": "tag",
+      "label": "t:blocks.title.settings.tag.label",
+      "options": [
+        { "value": "h1", "label": "t:blocks.title.settings.tag.options.h1" },
+        { "value": "h2", "label": "t:blocks.title.settings.tag.options.h2" },
+        { "value": "h3", "label": "t:blocks.title.settings.tag.options.h3" },
+        { "value": "h4", "label": "t:blocks.title.settings.tag.options.h4" },
+        { "value": "h5", "label": "t:blocks.title.settings.tag.options.h5" },
+        { "value": "h6", "label": "t:blocks.title.settings.tag.options.h6" },
+        { "value": "p", "label": "t:blocks.title.settings.tag.options.p" }
+      ],
+      "default": "h2"
+    },
+    {
+      "type": "metaobject",
+      "metaobject_type": "text_style",
+      "id": "text_style",
+      "label": "t:blocks.title.settings.text_style.label",
+      "info": "t:blocks.title.settings.text_style.info"
+    },
+    {
+      "type": "metaobject",
+      "metaobject_type": "icon",
+      "id": "icon",
+      "label": "t:blocks.title.settings.icon.label"
+    },
+    {
+      "type": "metaobject",
+      "metaobject_type": "content_width",
+      "id": "content_width",
+      "label": "t:blocks.title.settings.content_width.label",
+      "info": "t:blocks.title.settings.content_width.info"
+    },
+    {
+      "type": "metaobject",
+      "metaobject_type": "theme_color",
+      "id": "text_color",
+      "label": "t:blocks.title.settings.text_color.label",
+      "info": "t:blocks.title.settings.text_color.info"
+    },
+    {
+      "type": "header",
+      "content": "t:blocks.title.settings.top_spacing.content"
+    },
+    {
+      "type": "range",
+      "id": "mobile_margin_block_start",
+      "label": "t:blocks.title.settings.mobile_margin_block_start.label",
+      "min": 0,
+      "max": 200,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "desktop_margin_block_start",
+      "label": "t:blocks.title.settings.desktop_margin_block_start.label",
+      "min": 0,
+      "max": 200,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:blocks.title.presets.title.name",
+      "category": "t:blocks.title.presets.title.category"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,95 @@
+{% # Title v1.0.0 %}
+
+{% doc %}
+  @description Renders a title element with rich-text content, configurable HTML tag, optional text_style override, optional leading icon, max-width, color, and responsive top spacing.
+
+  @param {section} [section] - The section object containing the block
+  @param {block} [block] - Block object containing the settings
+  @param {string} [block_id] - Unique block ID for static renders
+  @param {string} [content] - Title text. Supports inline rich text. Skips render when blank.
+  @param {string} [tag] - HTML tag. One of `h1`, `h2`, `h3`, `h4`, `h5`, `h6`, `p`. Defaults to `h2`.
+  @param {metaobject} [text_style] - `text_style` metaobject. Reads `.system.handle` and emits `text-style:<handle>` modifier so the global text_style binding (from `utility--css-variables`) applies. Falls back to the bare-tag binding when blank (e.g. `<h2>` auto-binds to the `h2` text_style).
+  @param {metaobject} [icon] - `icon` metaobject. Inline SVG prepended to the title. No icon when blank.
+  @param {metaobject} [content_width] - `content_width` metaobject. Reads `.width.value` (px). Full width when blank.
+  @param {metaobject} [text_color] - `theme_color` metaobject. Reads `.system.handle` to consume `var(--color-<handle>)`. Falls back to `--color-foreground-heading` when blank.
+  @param {number} [mobile_margin_block_start] - Top margin in px below the desktop breakpoint. Defaults to 0.
+  @param {number} [desktop_margin_block_start] - Top margin in px at or above the desktop breakpoint. Defaults to 0.
+
+  @example {% render 'title', section: section, block: block %}
+{% enddoc %}
+
+{% liquid
+  assign content = content | default: block.settings.content
+  if content == blank
+    break
+  endif
+
+  assign tag = tag | default: block.settings.tag | default: 'h2'
+  assign text_style = text_style | default: block.settings.text_style
+  assign icon = icon | default: block.settings.icon
+  assign content_width = content_width | default: block.settings.content_width | default: ''
+  assign text_color = text_color | default: block.settings.text_color | default: ''
+  assign mobile_margin_block_start = mobile_margin_block_start | default: block.settings.mobile_margin_block_start | default: 0
+  assign desktop_margin_block_start = desktop_margin_block_start | default: block.settings.desktop_margin_block_start | default: 0
+
+  if text_style and text_style != blank
+    assign modifier_list = 'text-style:' | append: text_style.system.handle
+  endif
+
+  capture base_selector
+    render 'utility--base-selector', section: section, block: block, identifier: block_id
+  endcapture
+  assign base_selector = base_selector | strip
+
+  capture modifiers
+    render 'utility--modifiers', modifier_list: modifier_list
+  endcapture
+%}
+
+<{{ tag }} class="shopify-block shopify-block--title" id="{{ base_selector }}" {{ modifiers }}>
+  {% if icon and icon != blank %}
+    {% render 'icon', icon: icon %}
+  {% endif %}
+
+  {{ content }}
+
+  {% capture dynamic_style %}
+    {% if content_width and content_width != blank %}
+      --content-width: {{ content_width.width.value }}px;
+    {% endif %}
+
+    {% if text_color and text_color != blank %}
+      --text-color: var(--color-{{ text_color.system.handle }});
+    {% endif %}
+
+    {% if mobile_margin_block_start and mobile_margin_block_start > 0 %}
+      --mobile-margin-block-start: {{ mobile_margin_block_start | divided_by: 16.0 | round: 3 }}rem;
+    {% endif %}
+
+    {% if desktop_margin_block_start and desktop_margin_block_start > 0 %}
+      --desktop-margin-block-start: {{ desktop_margin_block_start | divided_by: 16.0 | round: 3 }}rem;
+    {% endif %}
+  {% endcapture %}
+  {% render 'utility--dynamic-style', base_selector: base_selector, css_content: dynamic_style %}
+</{{ tag }}>
+
+{% stylesheet %}
+  .shopify-block--title {
+    max-inline-size: var(--content-width, 100%);
+    margin-block-start: var(--mobile-margin-block-start, 0rem);
+    color: var(--text-color, var(--color-foreground-heading));
+
+    @media (width >= 48rem) {
+      margin-block-start: var(--desktop-margin-block-start, 0rem);
+    }
+
+    & svg {
+      display: inline-flex;
+      align-self: center;
+      block-size: 0.75em;
+      min-inline-size: 0.75em;
+      margin-inline-end: 0.25em;
+      vertical-align: -0.05em;
+    }
+  }
+{% endstylesheet %}
