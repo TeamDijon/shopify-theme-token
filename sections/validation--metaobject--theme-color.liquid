@@ -1,6 +1,10 @@
-{% # Validation - Theme color v1.0.0 %}
+{% # Validation - Theme color v1.1.0 %}
 
 {% comment %}
+  Changelog
+  - v1.1.0 — render `validation--breadcrumb` at the top so the developer can navigate back to the hub
+  - v1.0.0 — initial
+
   Visual test page for the `theme_color` metaobject. Iterates every entry and
   renders three swatches per color so the design-token pipeline can be eyeballed:
 
@@ -20,6 +24,8 @@
 %}
 
 <theme-section>
+  {% render 'validation--breadcrumb' %}
+
   <header class="validation__intro">
     <h1>Theme color</h1>
     <p>

@@ -1,6 +1,10 @@
-{% # Validation - Text style v1.0.0 %}
+{% # Validation - Text style v1.1.0 %}
 
 {% comment %}
+  Changelog
+  - v1.1.0 — render `validation--breadcrumb` at the top so the developer can navigate back to the hub
+  - v1.0.0 — initial
+
   Visual test page for the `text_style` metaobject. Iterates every entry,
   surfaces the raw metaobject fields as a metadata strip, and renders a
   pangram specimen with `data-text-style="<handle>"` so the actual
@@ -27,6 +31,8 @@
 %}
 
 <theme-section>
+  {% render 'validation--breadcrumb' %}
+
   <header class="validation__intro">
     <h1>Text style</h1>
     <p>
