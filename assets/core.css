@@ -449,7 +449,18 @@
 
     /* Icon presets */
     &[data-name="arrow"] {
-      /* Source SVG points top-right; cardinal presets rotate from there. */
+      /* Source SVG points top-right (corner-to-corner diagonal). Cardinal
+         presets rotate from there; the diagonal then lands on a viewBox
+         axis and the tip overshoots the box by sqrt(2). Scale back by
+         1/sqrt(2) on the orthogonal presets to keep the arrow in bounds. */
+      &:is(
+        [data-preset="up"],
+        [data-preset="right"],
+        [data-preset="down"],
+        [data-preset="left"]
+      ) {
+        scale: 0.7071;
+      }
       &[data-preset="up"] {
         transform: rotate(-45deg);
       }
