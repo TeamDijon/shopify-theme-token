@@ -1,0 +1,83 @@
+{% # Button block v1.0.0 %}
+
+{% render 'button', section: section, block: block %}
+
+{% schema %}
+{
+  "name": "t:blocks.button.name",
+  "tag": null,
+  "blocks": [],
+  "settings": [
+    {
+      "type": "header",
+      "content": "t:blocks.button.settings.button.content"
+    },
+    {
+      "type": "text",
+      "id": "content",
+      "label": "t:blocks.button.settings.content.label",
+      "default": "t:blocks.button.settings.content.default"
+    },
+    {
+      "type": "url",
+      "id": "link",
+      "label": "t:blocks.button.settings.link.label"
+    },
+    {
+      "type": "checkbox",
+      "id": "open_in_new_tab",
+      "label": "t:blocks.button.settings.open_in_new_tab.label",
+      "default": false
+    },
+    {
+      "type": "metaobject",
+      "metaobject_type": "button_style",
+      "id": "button_style",
+      "label": "t:blocks.button.settings.button_style.label"
+    },
+    {
+      "type": "metaobject",
+      "metaobject_type": "icon",
+      "id": "icon",
+      "label": "t:blocks.button.settings.icon.label"
+    },
+    {
+      "type": "metaobject",
+      "metaobject_type": "content_width",
+      "id": "content_width",
+      "label": "t:blocks.button.settings.content_width.label",
+      "info": "t:blocks.button.settings.content_width.info"
+    },
+    {
+      "type": "header",
+      "content": "t:blocks.button.settings.top_spacing.content"
+    },
+    {
+      "type": "range",
+      "id": "mobile_margin_block_start",
+      "label": "t:blocks.button.settings.mobile_margin_block_start.label",
+      "min": 0,
+      "max": 200,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "desktop_margin_block_start",
+      "label": "t:blocks.button.settings.desktop_margin_block_start.label",
+      "min": 0,
+      "max": 200,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:blocks.button.presets.button.name",
+      "category": "t:blocks.button.presets.button.category"
+    }
+  ]
+}
+{% endschema %}

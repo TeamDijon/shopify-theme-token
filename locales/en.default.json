@@ -1,4 +1,7 @@
 {
+  "accessibility": {
+    "opens_in_new_tab": "(opens in new tab)"
+  },
   "actions": {
     "skip_to_content": "Skip to content"
   },

@@ -211,6 +211,33 @@
           "category": "Texte"
         }
       }
+    },
+    "button": {
+      "name": "Bouton",
+      "settings": {
+        "button": { "content": "Bouton" },
+        "content": {
+          "label": "Libellé",
+          "default": "Découvrir"
+        },
+        "link": { "label": "Lien" },
+        "open_in_new_tab": { "label": "Ouvrir dans un nouvel onglet" },
+        "button_style": { "label": "Style" },
+        "icon": { "label": "Icône" },
+        "content_width": {
+          "label": "Largeur du contenu",
+          "info": "Laisser vide pour la pleine largeur"
+        },
+        "top_spacing": { "content": "Espacement supérieur" },
+        "mobile_margin_block_start": { "label": "Mobile" },
+        "desktop_margin_block_start": { "label": "Bureau" }
+      },
+      "presets": {
+        "button": {
+          "name": "Bouton",
+          "category": "Action"
+        }
+      }
     }
   }
 }

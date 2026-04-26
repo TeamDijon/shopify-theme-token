@@ -6,6 +6,9 @@
  * ------------------------------------------------------------
  */
 {
+  "accessibility": {
+    "opens_in_new_tab": "(s'ouvre dans un nouvel onglet)"
+  },
   "actions": {
     "skip_to_content": "Passer au contenu"
   },

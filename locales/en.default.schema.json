@@ -202,6 +202,33 @@
           "category": "Text"
         }
       }
+    },
+    "button": {
+      "name": "Button",
+      "settings": {
+        "button": { "content": "Button" },
+        "content": {
+          "label": "Label",
+          "default": "Discover more"
+        },
+        "link": { "label": "Link" },
+        "open_in_new_tab": { "label": "Open in new tab" },
+        "button_style": { "label": "Style" },
+        "icon": { "label": "Icon" },
+        "content_width": {
+          "label": "Content width",
+          "info": "Leave blank for full width"
+        },
+        "top_spacing": { "content": "Top spacing" },
+        "mobile_margin_block_start": { "label": "Mobile" },
+        "desktop_margin_block_start": { "label": "Desktop" }
+      },
+      "presets": {
+        "button": {
+          "name": "Button",
+          "category": "Action"
+        }
+      }
     }
   }
 }

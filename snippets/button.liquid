@@ -1,0 +1,189 @@
+{% # Button v1.0.0 %}
+
+{% doc %}
+  @description Renders a button or link with style variants (driven by `button_style` metaobject handle), optional leading icon, max-width cap, and responsive top spacing. Renders as `<a>` when `link` is set, otherwise as `<button type="button">`. When `open_in_new_tab` is true on a linked variant, appends `target="_blank" rel="noopener noreferrer"` plus a screen-reader-only "(opens in new tab)" string.
+
+  @param {section} [section] - The section object containing the block
+  @param {block} [block] - Block object containing the settings
+  @param {string} [block_id] - Unique block ID for static renders
+  @param {string} [content] - Button label. Skips render when blank.
+  @param {string} [link] - URL. When blank, renders a `<button type="button">`.
+  @param {boolean} [open_in_new_tab] - When true on a linked button, opens in a new tab and announces it to screen readers. Defaults to false.
+  @param {metaobject} [button_style] - `button_style` metaobject. Reads `.system.handle` and emits `button-style:<handle>` modifier. Recognized handles drive variant CSS: `solid-primary` (also the default appearance, no modifier needed), `solid-secondary`, `outline`, `ghost`, `text-link`.
+  @param {metaobject} [icon] - `icon` metaobject. Inline SVG before the label. No icon when blank.
+  @param {metaobject} [content_width] - `content_width` metaobject. Reads `.width.value` (px) and applies as `max-inline-size`. No cap when blank.
+  @param {number} [mobile_margin_block_start] - Top margin in px below the desktop breakpoint. Defaults to 0.
+  @param {number} [desktop_margin_block_start] - Top margin in px at or above the desktop breakpoint. Defaults to 0.
+
+  @example {% render 'button', section: section, block: block %}
+{% enddoc %}
+
+{% liquid
+  assign content = content | default: block.settings.content
+  if content == blank
+    break
+  endif
+
+  assign link = link | default: block.settings.link
+  assign open_in_new_tab = open_in_new_tab | default: block.settings.open_in_new_tab | default: false
+  assign button_style = button_style | default: block.settings.button_style
+  assign icon = icon | default: block.settings.icon
+  assign content_width = content_width | default: block.settings.content_width | default: ''
+  assign mobile_margin_block_start = mobile_margin_block_start | default: block.settings.mobile_margin_block_start | default: 0
+  assign desktop_margin_block_start = desktop_margin_block_start | default: block.settings.desktop_margin_block_start | default: 0
+
+  if link != blank
+    assign tag = 'a'
+    assign behavior_attribute = 'href="' | append: link | append: '"'
+    if open_in_new_tab
+      assign behavior_attribute = behavior_attribute | append: ' target="_blank" rel="noopener noreferrer"'
+    endif
+  else
+    assign tag = 'button'
+    assign behavior_attribute = 'type="button"'
+  endif
+
+  if button_style and button_style != blank
+    assign modifier_list = 'button-style:' | append: button_style.system.handle
+  endif
+
+  capture base_selector
+    render 'utility--base-selector', section: section, block: block, identifier: block_id
+  endcapture
+  assign base_selector = base_selector | strip
+
+  capture modifiers
+    render 'utility--modifiers', modifier_list: modifier_list
+  endcapture
+%}
+
+<{{ tag }}
+  class="shopify-block shopify-block--button"
+  id="{{ base_selector }}"
+  {{ behavior_attribute }}
+  {{ modifiers }}
+>
+  {%- if icon and icon != blank %}
+    {% render 'icon', icon: icon %}
+  {%- endif %}
+
+  {{ content }}
+
+  {%- if tag == 'a' and open_in_new_tab %}
+    <span class="sr-only">{{ 'accessibility.opens_in_new_tab' | t }}</span>
+  {%- endif %}
+
+  {% capture dynamic_style %}
+    {% if content_width and content_width != blank %}
+      --content-width: {{ content_width.width.value }}px;
+    {% endif %}
+
+    {% if mobile_margin_block_start and mobile_margin_block_start > 0 %}
+      --mobile-margin-block-start: {{ mobile_margin_block_start | divided_by: 16.0 | round: 3 }}rem;
+    {% endif %}
+
+    {% if desktop_margin_block_start and desktop_margin_block_start > 0 %}
+      --desktop-margin-block-start: {{ desktop_margin_block_start | divided_by: 16.0 | round: 3 }}rem;
+    {% endif %}
+  {% endcapture %}
+  {% render 'utility--dynamic-style', base_selector: base_selector, css_content: dynamic_style %}
+</{{ tag }}>
+
+{% stylesheet %}
+  @layer components {
+    .shopify-block--button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5em;
+
+      max-inline-size: var(--content-width, none);
+      margin-block-start: var(--mobile-margin-block-start, 0rem);
+      padding: 0.75rem 1.5rem;
+
+      background-color: var(--color-primary-button-bg);
+      color: var(--color-primary-button-text);
+      border: 0.0625rem solid var(--color-primary-button-border);
+      border-radius: 0.25rem;
+
+      text-decoration: none;
+      appearance: none;
+      cursor: pointer;
+      transition: 0.15s ease-out;
+
+      @media (width >= 48rem) {
+        margin-block-start: var(--desktop-margin-block-start, 0rem);
+      }
+
+      @media (prefers-reduced-motion) {
+        transition-duration: 0s;
+      }
+
+      & svg {
+        block-size: 0.85em;
+        min-inline-size: 0.85em;
+      }
+
+      &:hover {
+        background-color: var(--color-primary-button-bg-hover);
+        color: var(--color-primary-button-text-hover);
+        border-color: var(--color-primary-button-border-hover);
+      }
+
+      &:focus-visible {
+        outline: 0.125rem solid var(--color-focus-ring);
+        outline-offset: 0.25rem;
+      }
+
+      /* Variant: solid secondary */
+      &[data-modifiers*='button-style:solid-secondary'] {
+        background-color: var(--color-secondary-button-bg);
+        color: var(--color-secondary-button-text);
+        border-color: var(--color-secondary-button-border);
+
+        &:hover {
+          background-color: var(--color-secondary-button-bg-hover);
+          color: var(--color-secondary-button-text-hover);
+          border-color: var(--color-secondary-button-border-hover);
+        }
+      }
+
+      /* Variant: outline */
+      &[data-modifiers*='button-style:outline'] {
+        background-color: transparent;
+        color: var(--color-primary);
+        border-color: var(--color-primary);
+
+        &:hover {
+          background-color: rgba(var(--color-primary-rgb), var(--opacity-subtle));
+        }
+      }
+
+      /* Variant: ghost */
+      &[data-modifiers*='button-style:ghost'] {
+        background-color: transparent;
+        color: var(--color-primary);
+        border-color: transparent;
+
+        &:hover {
+          background-color: rgba(var(--color-primary-rgb), var(--opacity-subtle));
+        }
+      }
+
+      /* Variant: text link */
+      &[data-modifiers*='button-style:text-link'] {
+        background-color: transparent;
+        color: var(--color-primary);
+        border-color: transparent;
+        padding: 0;
+        border-radius: 0;
+        text-decoration: underline;
+        text-underline-offset: 0.2em;
+
+        &:hover {
+          opacity: 0.75;
+        }
+      }
+    }
+  }
+{% endstylesheet %}
