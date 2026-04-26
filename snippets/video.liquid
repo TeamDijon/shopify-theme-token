@@ -1,0 +1,85 @@
+{% # Video v1.0.0 %}
+
+{% doc %}
+  @description Renders a `<video>` element wrapped in `<media-video>`, with optional mobile art direction and configurable playback flags. Reads the mp4 source URL directly from `video.sources` (not via regex extraction from `video_tag` output) — Shopify's `video.sources` array exposes per-format URLs cleanly.
+
+  Two playback profiles via `video_mode`:
+  - `atmosphere` — autoplay + muted + no controls + loop. Decorative background.
+  - `content` — caller-controlled autoplay/controls. Interactive video. Autoplay forces muted (browser requirement).
+
+  @param {object} [video] - Shopify video object (desktop or fallback). Required.
+  @param {object} [mobile_video] - Optional Shopify video object for mobile art direction.
+  @param {string} [video_mode] - `'atmosphere'` (default) or `'content'`.
+  @param {string} [video_controls] - `'minimal'` (no native controls) or `'full'` (browser-native controls). Only applies in `content` mode. Defaults to `'minimal'`.
+  @param {boolean} [video_autoplay] - Autoplay flag for `content` mode. Defaults to false.
+  @param {boolean} [video_loop] - Loop the video. Defaults to true.
+  @param {string} [video_preload] - `<video preload>` value: `'none'` (default), `'metadata'`, `'auto'`.
+  @param {string} [loading] - `<video loading>` hint. Defaults to `'lazy'`.
+
+  @example {% render 'video', video: block.settings.video, video_mode: 'atmosphere' %}
+{% enddoc %}
+
+{% liquid
+  if video == blank
+    break
+  endif
+
+  assign video_mode = video_mode | default: 'atmosphere'
+  assign video_controls = video_controls | default: 'minimal'
+  assign video_autoplay = video_autoplay | default: false
+  assign video_loop = video_loop | default: true
+  assign video_preload = video_preload | default: 'none'
+  assign loading = loading | default: 'lazy'
+
+  if video_mode == 'atmosphere'
+    assign autoplay = true
+    assign muted = true
+    assign controls = false
+  else
+    assign autoplay = video_autoplay
+    assign muted = video_autoplay
+    if video_controls == 'full'
+      assign controls = true
+    else
+      assign controls = false
+    endif
+  endif
+
+  assign video_url = ''
+  for source in video.sources
+    if source.format == 'mp4'
+      assign video_url = source.url
+      break
+    endif
+  endfor
+
+  assign mobile_video_url = ''
+  if mobile_video != blank
+    for source in mobile_video.sources
+      if source.format == 'mp4'
+        assign mobile_video_url = source.url
+        break
+      endif
+    endfor
+  endif
+
+  assign video_poster = video.preview_image | image_url: width: 1920
+%}
+
+<media-video>
+  <video
+    playsinline
+    {% if autoplay %}autoplay{% endif %}
+    {% if muted %}muted{% endif %}
+    {% if controls %}controls{% endif %}
+    {% if video_loop %}loop{% endif %}
+    preload="{{ video_preload }}"
+    loading="{{ loading }}"
+    poster="{{ video_poster }}"
+  >
+    {% if mobile_video_url != blank %}
+      <source src="{{ mobile_video_url }}" media="(max-width: 47.99rem)" type="video/mp4">
+    {% endif %}
+    <source src="{{ video_url }}" type="video/mp4">
+  </video>
+</media-video>

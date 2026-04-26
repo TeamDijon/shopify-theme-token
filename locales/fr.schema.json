@@ -238,6 +238,100 @@
           "category": "Action"
         }
       }
+    },
+    "media": {
+      "name": "Média",
+      "settings": {
+        "media": { "content": "Média" },
+        "media_type": {
+          "label": "Type",
+          "options": {
+            "image": "Image",
+            "video": "Vidéo"
+          }
+        },
+        "image": { "label": "Image" },
+        "mobile_image": {
+          "label": "Image mobile",
+          "info": "Optionnel. Image différente en deçà de 768px."
+        },
+        "video": { "label": "Vidéo" },
+        "mobile_video": {
+          "label": "Vidéo mobile",
+          "info": "Optionnel. Vidéo différente en deçà de 768px."
+        },
+        "video_mode": {
+          "label": "Mode vidéo",
+          "options": {
+            "atmosphere": "Ambiance",
+            "content": "Contenu"
+          }
+        },
+        "video_autoplay": {
+          "label": "Lecture automatique",
+          "info": "La vidéo sera muette en lecture automatique"
+        },
+        "video_controls": {
+          "label": "Contrôles",
+          "options": {
+            "minimal": "Minimaux",
+            "full": "Complets"
+          }
+        },
+        "video_loop": { "label": "Boucle" },
+        "layout": { "content": "Mise en page" },
+        "media_size": {
+          "label": "Taille",
+          "info": "Laisser vide pour automatique"
+        },
+        "mobile_media_size": {
+          "label": "Taille mobile",
+          "info": "Laisser vide pour hériter du bureau"
+        },
+        "bleed": {
+          "label": "Bord à bord",
+          "info": "Étend le média au-delà de la gouttière de la section"
+        },
+        "horizontal_alignment": {
+          "label": "Horizontal",
+          "options": {
+            "start": "Début",
+            "center": "Centre",
+            "end": "Fin"
+          }
+        },
+        "vertical_alignment": {
+          "label": "Vertical",
+          "options": {
+            "start": "Début",
+            "center": "Centre",
+            "end": "Fin"
+          }
+        },
+        "content_width": {
+          "label": "Largeur du contenu",
+          "info": "Laisser vide pour la pleine largeur"
+        },
+        "gap": { "label": "Écart" },
+        "appearance": { "content": "Apparence" },
+        "overlay_color": {
+          "label": "Superposition",
+          "info": "Teinte appliquée sur le média. Transparent pour aucune."
+        },
+        "color_scheme": {
+          "label": "Palette de couleurs",
+          "info": "Remplace la palette de la section — utile pour du texte clair sur image sombre"
+        },
+        "top_spacing": { "content": "Espacement supérieur" },
+        "mobile_margin_block_start": { "label": "Mobile" },
+        "desktop_margin_block_start": { "label": "Bureau" }
+      },
+      "presets": {
+        "media": {
+          "name": "Média",
+          "category": "Média"
+        }
+      }
     }
   }
 }

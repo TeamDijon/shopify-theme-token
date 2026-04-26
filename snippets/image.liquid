@@ -1,0 +1,78 @@
+{% # Image v1.0.0 %}
+
+{% doc %}
+  @description Renders a Shopify image with responsive `srcset` and optional mobile art direction. When `mobile_image` is provided, wraps in a `<picture>` with a mobile `<source>`; otherwise emits a single `image_tag` with the full width ladder.
+
+  @param {object} [image] - Shopify image object (desktop or fallback). Required.
+  @param {object} [mobile_image] - Optional Shopify image object for mobile art direction. Wraps the output in `<picture>` when set.
+  @param {string} [sizes_value] - Value for the `sizes` attribute. Defaults to `'auto, 100vw'`.
+  @param {string} [loading] - Loading strategy: `'lazy'` (default) or `'eager'`.
+  @param {string} [fetchpriority] - Fetch priority: `'auto'` (default), `'low'`, or `'high'`.
+  @param {boolean} [preload] - Whether to emit a preload hint. Defaults to false.
+
+  @example {% render 'image', image: block.settings.image, mobile_image: block.settings.mobile_image %}
+  @example {% render 'image', image: block.settings.image, loading: 'eager', fetchpriority: 'high', preload: true %}
+{% enddoc %}
+
+{% liquid
+  if image == blank
+    break
+  endif
+
+  assign sizes_value = sizes_value | default: 'auto, 100vw'
+  assign loading = loading | default: 'lazy'
+  assign fetchpriority = fetchpriority | default: 'auto'
+  assign preload = preload | default: false
+
+  assign desktop_widths = '768,1000,1024,1280,1440,1600,1800,2000,2560'
+  assign full_widths = '360,480,640,750,900,1080,1200,1350,1440,1600,1800,2000,2560'
+%}
+
+{% if mobile_image != blank %}
+  {%- liquid
+    assign mobile_width_list = '360,480,640,750,900,1080,1200,1350,1440' | split: ','
+
+    capture mobile_srcset
+      for width in mobile_width_list
+        assign width_integer = width | times: 1
+        echo mobile_image | image_url: width: width_integer
+        echo ' '
+        echo width_integer
+        echo 'w'
+        unless forloop.last
+          echo ', '
+        endunless
+      endfor
+    endcapture
+  -%}
+  <picture>
+    <source
+      media="(max-width: 47.99rem)"
+      srcset="{{ mobile_srcset }}"
+      sizes="{{ sizes_value }}"
+      width="{{ mobile_image.width }}"
+      height="{{ mobile_image.height }}"
+    >
+    {{
+      image
+      | image_url: width: image.width
+      | image_tag:
+        widths: desktop_widths,
+        sizes: sizes_value,
+        loading: loading,
+        fetchpriority: fetchpriority,
+        preload: preload
+    }}
+  </picture>
+{% else %}
+  {{
+    image
+    | image_url: width: image.width
+    | image_tag:
+      widths: full_widths,
+      sizes: sizes_value,
+      loading: loading,
+      fetchpriority: fetchpriority,
+      preload: preload
+  }}
+{% endif %}

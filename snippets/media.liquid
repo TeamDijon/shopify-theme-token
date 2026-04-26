@@ -1,0 +1,265 @@
+{% # Media v1.0.0 %}
+
+{% doc %}
+  @description Renders a media container (image or video) with optional art direction, sizing modes, edge-to-edge bleed, color-scheme override, overlay tint, and overlaid child blocks. Sizing is driven by the `media_size` metaobject (`fill` / `ratio` / `relative` / `fixed`) and emitted as a `sizing:*` modifier consumed by the stylesheet. Child content is captured by the block file via `{% content_for 'blocks' %}` and passed in as `contents`.
+
+  @param {section} [section] - The section object containing the block
+  @param {block} [block] - Block object containing the settings
+  @param {string} [block_id] - Unique block ID for static renders
+  @param {string} [contents] - Pre-rendered child blocks markup (captured by the block file). Wrapped in `<media-contents>` when non-blank.
+  @param {string} [media_type] - `'image'` (default) or `'video'`.
+  @param {object} [image] - Primary image object.
+  @param {object} [mobile_image] - Optional mobile image for art direction.
+  @param {object} [video] - Primary video object.
+  @param {object} [mobile_video] - Optional mobile video for art direction.
+  @param {string} [video_mode] - `'atmosphere'` (default) or `'content'`. See `snippets/video.liquid`.
+  @param {string} [video_controls] - `'minimal'` or `'full'`. Only applies in `content` mode.
+  @param {boolean} [video_autoplay] - Autoplay flag for `content` mode. Defaults to false.
+  @param {boolean} [video_loop] - Loop the video. Defaults to true.
+  @param {metaobject} [media_size] - `media_size` metaobject. Reads `.system.handle` (for `fill` special-case), `.type.value`, and `.value.value`.
+  @param {metaobject} [mobile_media_size] - Mobile `media_size` override. Same shape as `media_size`. Inherits desktop when blank.
+  @param {boolean} [bleed] - Extends media past the section gutter (full viewport width). Defaults to false.
+  @param {string} [horizontal_alignment] - Child content `align-items` value. Defaults to `'flex-start'`.
+  @param {string} [vertical_alignment] - Child content `justify-content` value. Defaults to `'flex-end'`.
+  @param {metaobject} [content_width] - `content_width` metaobject. Caps `max-inline-size`. Ignored when `bleed` is true.
+  @param {number} [gap] - Child content gap in px. Defaults to 16.
+  @param {string} [overlay_color] - Tint color (with alpha) painted over the media. No overlay when blank or fully transparent.
+  @param {string} [color_scheme] - Optional `color_scheme` setting value. When set, emits `color-scheme:<id>` modifier so the global scheme rules from `utility--css-variables` apply.
+  @param {number} [mobile_margin_block_start] - Top margin in px below the desktop breakpoint. Defaults to 0.
+  @param {number} [desktop_margin_block_start] - Top margin in px at or above the desktop breakpoint. Defaults to 0.
+
+  @example {% render 'media', section: section, block: block, contents: contents %}
+{% enddoc %}
+
+{% liquid
+  assign media_type = media_type | default: block.settings.media_type | default: 'image'
+  assign image = image | default: block.settings.image
+  assign mobile_image = mobile_image | default: block.settings.mobile_image
+  assign video = video | default: block.settings.video
+  assign mobile_video = mobile_video | default: block.settings.mobile_video
+  assign video_mode = video_mode | default: block.settings.video_mode | default: 'atmosphere'
+  assign video_controls = video_controls | default: block.settings.video_controls | default: 'minimal'
+  assign video_autoplay = video_autoplay | default: block.settings.video_autoplay | default: false
+  assign video_loop = video_loop | default: block.settings.video_loop | default: true
+  assign media_size = media_size | default: block.settings.media_size
+  assign mobile_media_size = mobile_media_size | default: block.settings.mobile_media_size
+  assign bleed = bleed | default: block.settings.bleed | default: false
+  assign horizontal_alignment = horizontal_alignment | default: block.settings.horizontal_alignment | default: 'flex-start'
+  assign vertical_alignment = vertical_alignment | default: block.settings.vertical_alignment | default: 'flex-end'
+  assign content_width = content_width | default: block.settings.content_width | default: ''
+  assign gap = gap | default: block.settings.gap | default: 16
+  assign overlay_color = overlay_color | default: block.settings.overlay_color | default: ''
+  assign color_scheme = color_scheme | default: block.settings.color_scheme | default: ''
+  assign mobile_margin_block_start = mobile_margin_block_start | default: block.settings.mobile_margin_block_start | default: 0
+  assign desktop_margin_block_start = desktop_margin_block_start | default: block.settings.desktop_margin_block_start | default: 0
+
+  assign has_media = false
+  if media_type == 'image' and image != blank
+    assign has_media = true
+  elsif media_type == 'video' and video != blank
+    assign has_media = true
+  endif
+
+  assign has_children = false
+  if contents != blank
+    assign has_children = true
+  endif
+
+  assign has_art_direction = false
+  if media_type == 'image' and mobile_image != blank and image != blank
+    assign has_art_direction = true
+  elsif media_type == 'video' and mobile_video != blank and video != blank
+    assign has_art_direction = true
+  endif
+
+  assign has_overlay = false
+  if overlay_color != blank and overlay_color != 'rgba(0,0,0,0)'
+    assign has_overlay = true
+  endif
+
+  assign modifier_list = 'media-type:' | append: media_type
+  if has_children
+    assign modifier_list = modifier_list | append: ',has-children'
+  endif
+  if has_art_direction
+    assign modifier_list = modifier_list | append: ',art-direction'
+  endif
+  if bleed
+    assign modifier_list = modifier_list | append: ',bleed'
+  endif
+  if color_scheme != blank
+    assign modifier_list = modifier_list | append: ',color-scheme:' | append: color_scheme
+  endif
+  if media_size != blank
+    if media_size.system.handle == 'fill'
+      assign modifier_list = modifier_list | append: ',sizing:fill'
+    elsif media_size.type.value == 'ratio'
+      assign modifier_list = modifier_list | append: ',sizing:ratio'
+    elsif media_size.type.value == 'relative' or media_size.type.value == 'fixed'
+      assign modifier_list = modifier_list | append: ',sizing:height'
+    endif
+  endif
+
+  capture base_selector
+    render 'utility--base-selector', section: section, block: block, identifier: block_id
+  endcapture
+  assign base_selector = base_selector | strip
+
+  capture modifiers
+    render 'utility--modifiers', modifier_list: modifier_list
+  endcapture
+%}
+
+<div class="shopify-block shopify-block--media" id="{{ base_selector }}" {{ modifiers }}>
+  {% if has_media == false %}
+    {{ 'image' | placeholder_svg_tag }}
+  {% elsif media_type == 'video' %}
+    {% render 'video',
+      video: video,
+      mobile_video: mobile_video,
+      video_mode: video_mode,
+      video_controls: video_controls,
+      video_autoplay: video_autoplay,
+      video_loop: video_loop
+    %}
+  {% elsif media_type == 'image' %}
+    {% render 'image',
+      image: image,
+      mobile_image: mobile_image
+    %}
+  {% endif %}
+
+  {% if has_overlay %}
+    <media-overlay></media-overlay>
+  {% endif %}
+
+  {% if has_children %}
+    <media-contents>{{ contents }}</media-contents>
+  {% endif %}
+
+  {% capture dynamic_style %}
+    {% if media_size != blank and media_size.system.handle != 'fill' %}
+      {% if media_size.type.value == 'ratio' %}
+        --media-ratio: {{ media_size.value.value }};
+      {% elsif media_size.type.value == 'relative' or media_size.type.value == 'fixed' %}
+        --media-height: {{ media_size.value.value }};
+      {% endif %}
+    {% endif %}
+
+    {% if mobile_media_size != blank and mobile_media_size.system.handle != 'fill' %}
+      {% if mobile_media_size.type.value == 'ratio' %}
+        --mobile-media-ratio: {{ mobile_media_size.value.value }};
+      {% elsif mobile_media_size.type.value == 'relative' or mobile_media_size.type.value == 'fixed' %}
+        --mobile-media-height: {{ mobile_media_size.value.value }};
+      {% endif %}
+    {% endif %}
+
+    {% if horizontal_alignment != 'flex-start' %}
+      --horizontal-alignment: {{ horizontal_alignment }};
+    {% endif %}
+
+    {% if vertical_alignment != 'flex-end' %}
+      --vertical-alignment: {{ vertical_alignment }};
+    {% endif %}
+
+    {% if gap and gap > 0 %}
+      --gap: {{ gap | divided_by: 16.0 | round: 3 }}rem;
+    {% endif %}
+
+    {% if has_overlay %}
+      --overlay-color: {{ overlay_color }};
+    {% endif %}
+
+    {% if content_width and content_width != blank %}
+      --content-width: {{ content_width.width.value }}px;
+    {% endif %}
+
+    {% if mobile_margin_block_start and mobile_margin_block_start > 0 %}
+      --mobile-margin-block-start: {{ mobile_margin_block_start | divided_by: 16.0 | round: 3 }}rem;
+    {% endif %}
+
+    {% if desktop_margin_block_start and desktop_margin_block_start > 0 %}
+      --desktop-margin-block-start: {{ desktop_margin_block_start | divided_by: 16.0 | round: 3 }}rem;
+    {% endif %}
+  {% endcapture %}
+  {% render 'utility--dynamic-style', base_selector: base_selector, css_content: dynamic_style %}
+</div>
+
+{% stylesheet %}
+  @layer components {
+    .shopify-block--media {
+      position: relative;
+      overflow: hidden;
+      max-inline-size: var(--content-width, 100%);
+      margin-inline: auto;
+      margin-block-start: var(--mobile-margin-block-start, 0rem);
+
+      @media (width >= 48rem) {
+        margin-block-start: var(--desktop-margin-block-start, 0rem);
+      }
+
+      /* Media element fills the block by default */
+      & > picture,
+      & > picture > img,
+      & > img,
+      & > svg,
+      & > media-video,
+      & > media-video > video {
+        display: block;
+        inline-size: 100%;
+        block-size: 100%;
+        object-fit: cover;
+      }
+
+      /* Sizing: aspect-ratio (mobile-overrideable) */
+      &[data-modifiers*='sizing:ratio'] {
+        aspect-ratio: var(--mobile-media-ratio, var(--media-ratio));
+
+        @media (width >= 48rem) {
+          aspect-ratio: var(--media-ratio);
+        }
+      }
+
+      /* Sizing: explicit block-size (relative/fixed metaobject types) */
+      &[data-modifiers*='sizing:height'] {
+        block-size: var(--mobile-media-height, var(--media-height));
+
+        @media (width >= 48rem) {
+          block-size: var(--media-height);
+        }
+      }
+
+      /* Sizing: fill the viewport height — typical hero pattern */
+      &[data-modifiers*='sizing:fill'] {
+        block-size: 100svh;
+      }
+
+      /* Bleed: escape the section gutter, span full viewport */
+      &[data-modifiers*='bleed'] {
+        inline-size: 100vw;
+        max-inline-size: none;
+        margin-inline: calc(50% - 50vw);
+      }
+
+      /* Overlay tint — natural stacking puts it above the media, below contents */
+      & media-overlay {
+        position: absolute;
+        inset: 0;
+        background-color: var(--overlay-color, transparent);
+        pointer-events: none;
+      }
+
+      /* Child content overlay — positioned above the media + overlay tint */
+      & media-contents {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: var(--vertical-alignment, flex-end);
+        align-items: var(--horizontal-alignment, flex-start);
+        gap: var(--gap, 1rem);
+        padding: var(--gutter, 1rem);
+      }
+    }
+  }
+{% endstylesheet %}

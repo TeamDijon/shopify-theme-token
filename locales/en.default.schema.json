@@ -229,6 +229,100 @@
           "category": "Action"
         }
       }
+    },
+    "media": {
+      "name": "Media",
+      "settings": {
+        "media": { "content": "Media" },
+        "media_type": {
+          "label": "Type",
+          "options": {
+            "image": "Image",
+            "video": "Video"
+          }
+        },
+        "image": { "label": "Image" },
+        "mobile_image": {
+          "label": "Mobile image",
+          "info": "Optional. Different image below 768px."
+        },
+        "video": { "label": "Video" },
+        "mobile_video": {
+          "label": "Mobile video",
+          "info": "Optional. Different video below 768px."
+        },
+        "video_mode": {
+          "label": "Video mode",
+          "options": {
+            "atmosphere": "Atmosphere",
+            "content": "Content"
+          }
+        },
+        "video_autoplay": {
+          "label": "Autoplay",
+          "info": "Video will be muted when autoplaying"
+        },
+        "video_controls": {
+          "label": "Controls",
+          "options": {
+            "minimal": "Minimal",
+            "full": "Full"
+          }
+        },
+        "video_loop": { "label": "Loop" },
+        "layout": { "content": "Layout" },
+        "media_size": {
+          "label": "Size",
+          "info": "Leave blank for auto"
+        },
+        "mobile_media_size": {
+          "label": "Mobile size",
+          "info": "Leave blank to inherit from desktop"
+        },
+        "bleed": {
+          "label": "Edge to edge",
+          "info": "Extends media past the section gutter"
+        },
+        "horizontal_alignment": {
+          "label": "Horizontal",
+          "options": {
+            "start": "Start",
+            "center": "Center",
+            "end": "End"
+          }
+        },
+        "vertical_alignment": {
+          "label": "Vertical",
+          "options": {
+            "start": "Start",
+            "center": "Center",
+            "end": "End"
+          }
+        },
+        "content_width": {
+          "label": "Content width",
+          "info": "Leave blank for full width"
+        },
+        "gap": { "label": "Gap" },
+        "appearance": { "content": "Appearance" },
+        "overlay_color": {
+          "label": "Overlay",
+          "info": "Tint painted over the media. Transparent for none."
+        },
+        "color_scheme": {
+          "label": "Color scheme",
+          "info": "Override the section's scheme — useful for light text on dark images"
+        },
+        "top_spacing": { "content": "Top spacing" },
+        "mobile_margin_block_start": { "label": "Mobile" },
+        "desktop_margin_block_start": { "label": "Desktop" }
+      },
+      "presets": {
+        "media": {
+          "name": "Media",
+          "category": "Media"
+        }
+      }
     }
   }
 }
