@@ -21,13 +21,16 @@ Modern CSS nesting is used throughout — `& > *`, `&[data-modifiers*="x"]`, `& 
 
 ## Layers
 
-`assets/core.css` declares `@layer reset, theme, utilities;`. Stylesheets default to **no layer** (highest precedence). Place rules deliberately:
+`assets/core.css` declares `@layer reset, theme, components, utilities;`. Cascade priority runs left → right (later layers win). Place rules deliberately:
 
 - `@layer reset` — universal hygiene applied to everything (UA-default normalizations, media defaults).
 - `@layer theme` — theme-managed roots: `theme-section` today (appearance + layout). Expand to `:is(theme-section, theme-cart, ...)` for the appearance defaults when specialized roots are added.
-- `@layer utilities` — opt-in modifiers (prose, skip-to-content). Lowest specificity within the layer ladder, highest layer precedence.
+- `@layer components` — per-block and per-section stylesheets. Wrap every `{% stylesheet %}` block and `assets/<name>.css` body in `@layer components { ... }`. This puts component styles **above** theme defaults (so blocks override theme appearance) but **below** utilities (so opt-in modifiers like `prose:narrow` cleanly override component defaults without each block needing a `:not()` escape hatch).
+- `@layer utilities` — opt-in modifiers (`prose`, `prose:narrow`, `skip-to-content`). Last in the ladder, so they always win when applied.
 
-Component CSS in `assets/<name>.css` and `{% stylesheet %}` blocks lives **outside layers** (highest precedence) so component styles override theme defaults.
+The four-layer model means: utilities > components > theme > reset. A block's stylesheet can override theme typography or color, and a merchant-toggled utility (e.g. narrow prose) can in turn override the block's max-width — all without `!important` or specificity gymnastics.
+
+Anything still emitted **outside layers** (e.g. inline declarations from `utility--dynamic-style`, which scopes per-instance values to `#<base_selector>`) lives at the highest precedence — above utilities. That's intentional for per-instance Liquid-computed values, which always need to win over both component CSS and utility modifiers.
 
 ## Variables and tokens
 
