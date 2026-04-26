@@ -1,0 +1,81 @@
+{% # Validation - Section - CTA banner v1.0.0 %}
+
+{% comment %}
+  Section-level composition validation for the "cta-banner" pattern: a
+  banner with a top separator, a centered group (title + button row),
+  and a bottom separator. Exercises:
+
+  - Separators at the section level (block context, not collapsed).
+  - Nested groups: an outer column-direction group containing a title
+    and an inner row-direction group with two buttons side-by-side.
+  - Color-scheme cascade through the nested group.
+
+  Button variant styling (button_style metaobject) needs Shopify GIDs
+  in JSON, so both buttons render with the default solid-primary
+  appearance here. The button-style metaobject page exercises variants
+  exhaustively: ?view=validation--metaobject--button-style.
+
+  Block-rhythm spacing between the top-level blocks (separator → group
+  → separator) is currently 0 because of the layer-cascade bug
+  documented on the content composition; the section adds explicit
+  per-block top margins to compensate so the layout reads as intended
+  pending the rhythm fix.
+
+  Reachable only at /?view=validation--section--cta-banner.
+  See `.context/docs/validation.md`.
+{% endcomment %}
+
+{% liquid
+  assign color_scheme = section.settings.color_scheme | default: 'scheme-1'
+  assign base_selector = 'shopify-section-' | append: section.id
+%}
+
+<theme-section data-modifiers="color-scheme:{{ color_scheme }}">
+  {% render 'validation--breadcrumb' %}
+
+  {% content_for 'blocks' %}
+</theme-section>
+
+{% capture dynamic_style %}
+  --block-rhythm-mobile: 1.5rem;
+  --block-rhythm-desktop: 2.5rem;
+{% endcapture %}
+{% render 'utility--dynamic-style', base_selector: base_selector, css_content: dynamic_style %}
+
+{% schema %}
+{
+  "name": "Section: cta-banner",
+  "tag": "section",
+  "class": "shopify-section--validation--section--cta-banner",
+  "blocks": [{ "type": "@theme" }],
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    }
+  ]
+}
+{% endschema %}
+
+{% stylesheet %}
+  @layer components {
+    .shopify-section--validation--section--cta-banner theme-section {
+      display: block;
+      max-inline-size: 56rem;
+      margin-inline: auto;
+      padding-block: 5rem;
+      padding-inline: 1.5rem;
+      text-align: center;
+    }
+
+    /* Centre the inner group on the section's main axis. The block-rhythm
+       bug means the section won't space its direct children automatically;
+       per-block top margins on each child compensate (set in the JSON
+       template). */
+    .shopify-section--validation--section--cta-banner theme-section > .shopify-block--group {
+      margin-inline: auto;
+    }
+  }
+{% endstylesheet %}
