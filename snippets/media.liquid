@@ -261,6 +261,11 @@
         align-items: var(--horizontal-alignment, start);
         gap: var(--gap, 1rem);
         padding: var(--gutter, 1rem);
+
+        /* Inset focus rings for focusable children so the media's overflow: hidden doesn't clip them */
+        & .shopify-block--button:focus-visible {
+          outline-offset: -0.25rem;
+        }
       }
     }
   }
