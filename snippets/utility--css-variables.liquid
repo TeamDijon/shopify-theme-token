@@ -1,7 +1,8 @@
-{% # CSS Variables v1.5.0 %}
+{% # CSS Variables v1.5.1 %}
 
 {% comment %}
   Changelog
+  - v1.5.1 — drop the `.shopify-section:has([data-modifiers*="color-scheme:..."])` selector from the per-scheme rule. The `:has()` matched any descendant, so a nested override block (e.g. a media block with `color-scheme:scheme-3` inside a section using `scheme-2`) silently re-matched the outer `.shopify-section` against scheme-3, clobbering the section's tokens globally. Color tokens now live only on the modifier-bearing element (`theme-section` + override blocks); descendants inherit normally. Also aligns with `section-convention.md`'s "no typography, background, or transitions on `.shopify-section`" rule.
   - v1.5.0 — drop the `--font-heading-color` alias; consumers (currently only `core.css`'s heading-color rule) read `--color-foreground-heading` directly. The alias was a misnomer (it carried a color, not a font property) and split the heading color into two names. Removed the assignment line; coordinate with `core.css` to point the heading rule at the source token.
   - v1.4.1 — rename `--font-heading--color` (double dash) to `--font-heading-color` for naming consistency; coordinate with `core.css` rename
   - v1.4.0 — text_style cleanups: hoist `default_font_family` out of the loop with a `system-ui` terminal fallback (fixes invalid leading comma in `font-family` when `base_text_style` is unset); drop dead `font_fallback_family` assign; switch `line_height` storage from "% × 100" to a direct decimal; `base_text_style != null` → `!= blank`
@@ -59,8 +60,7 @@
     {% if forloop.index == 1 %}
       :root,
     {% endif %}
-    [data-modifiers*="color-scheme:{{ scheme.id }}"],
-    .shopify-section:has([data-modifiers*="color-scheme:{{ scheme.id }}"]) {
+    [data-modifiers*="color-scheme:{{ scheme.id }}"] {
       --color-background: {{ scheme.settings.background }};
       --color-background-rgb: {{ scheme.settings.background.red }}, {{ scheme.settings.background.green }}, {{ scheme.settings.background.blue }};
       --gradient-background: {% if scheme.settings.background_gradient != blank %}{{ scheme.settings.background_gradient }}{% else %}{{ scheme.settings.background }}{% endif %};
