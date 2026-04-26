@@ -1,4 +1,10 @@
-{% # Spacer v1.0.0 %}
+{% # Spacer v1.1.0 %}
+
+{% comment %}
+  Changelog
+  - v1.1.0 — read background color via `var(--color-<handle>)` instead of re-extracting `hex_code.value`; reuses the global theme-color CSS variable
+  - v1.0.0 — initial
+{% endcomment %}
 
 {% doc %}
   @description Renders a spacer div with responsive block-size and optional background color. Either one fixed size (no breakpoint) or a mobile/desktop pair that switches at the selected breakpoint.
@@ -51,7 +57,7 @@
     {% endif %}
 
     {% if background_color and background_color != blank %}
-      --background-color: {{ background_color.hex_code.value }};
+      --background-color: var(--color-{{ background_color.system.handle }});
     {% endif %}
   {% endcapture %}
   {% render 'utility--dynamic-style', base_selector: base_selector, css_content: dynamic_style %}
