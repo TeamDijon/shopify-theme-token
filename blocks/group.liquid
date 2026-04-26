@@ -1,0 +1,124 @@
+{% # Group block v1.0.0 %}
+
+{% capture contents %}{% content_for 'blocks' %}{% endcapture %}
+
+{% render 'group', section: section, block: block, contents: contents %}
+
+{% schema %}
+{
+  "name": "t:blocks.group.name",
+  "tag": null,
+  "blocks": [{ "type": "@theme" }],
+  "settings": [
+    {
+      "type": "header",
+      "content": "t:blocks.group.settings.layout.content"
+    },
+    {
+      "type": "select",
+      "id": "direction",
+      "label": "t:blocks.group.settings.direction.label",
+      "options": [
+        { "value": "column", "label": "t:blocks.group.settings.direction.options.column" },
+        { "value": "row", "label": "t:blocks.group.settings.direction.options.row" }
+      ],
+      "default": "column"
+    },
+    {
+      "type": "select",
+      "id": "stack_below",
+      "label": "t:blocks.group.settings.stack_below.label",
+      "info": "t:blocks.group.settings.stack_below.info",
+      "options": [
+        { "value": "none", "label": "t:blocks.group.settings.stack_below.options.none" },
+        { "value": "40", "label": "t:blocks.group.settings.stack_below.options.sm" },
+        { "value": "60", "label": "t:blocks.group.settings.stack_below.options.md" },
+        { "value": "80", "label": "t:blocks.group.settings.stack_below.options.lg" }
+      ],
+      "default": "60",
+      "visible_if": "{{ block.settings.direction == 'row' }}"
+    },
+    {
+      "type": "select",
+      "id": "horizontal_alignment",
+      "label": "t:blocks.group.settings.horizontal_alignment.label",
+      "options": [
+        { "value": "flex-start", "label": "t:blocks.group.settings.horizontal_alignment.options.start" },
+        { "value": "center", "label": "t:blocks.group.settings.horizontal_alignment.options.center" },
+        { "value": "flex-end", "label": "t:blocks.group.settings.horizontal_alignment.options.end" },
+        { "value": "space-between", "label": "t:blocks.group.settings.horizontal_alignment.options.space_between" }
+      ],
+      "default": "flex-start"
+    },
+    {
+      "type": "select",
+      "id": "vertical_alignment",
+      "label": "t:blocks.group.settings.vertical_alignment.label",
+      "options": [
+        { "value": "flex-start", "label": "t:blocks.group.settings.vertical_alignment.options.start" },
+        { "value": "center", "label": "t:blocks.group.settings.vertical_alignment.options.center" },
+        { "value": "flex-end", "label": "t:blocks.group.settings.vertical_alignment.options.end" }
+      ],
+      "default": "flex-start",
+      "visible_if": "{{ block.settings.direction == 'row' }}"
+    },
+    {
+      "type": "metaobject",
+      "metaobject_type": "content_width",
+      "id": "content_width",
+      "label": "t:blocks.group.settings.content_width.label",
+      "info": "t:blocks.group.settings.content_width.info"
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "label": "t:blocks.group.settings.gap.label",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "header",
+      "content": "t:blocks.group.settings.appearance.content"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:blocks.group.settings.color_scheme.label",
+      "info": "t:blocks.group.settings.color_scheme.info"
+    },
+    {
+      "type": "header",
+      "content": "t:blocks.group.settings.top_spacing.content"
+    },
+    {
+      "type": "range",
+      "id": "mobile_margin_block_start",
+      "label": "t:blocks.group.settings.mobile_margin_block_start.label",
+      "min": 0,
+      "max": 200,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "desktop_margin_block_start",
+      "label": "t:blocks.group.settings.desktop_margin_block_start.label",
+      "min": 0,
+      "max": 200,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:blocks.group.presets.group.name",
+      "category": "t:blocks.group.presets.group.category"
+    }
+  ]
+}
+{% endschema %}

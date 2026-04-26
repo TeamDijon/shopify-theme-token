@@ -1,0 +1,144 @@
+{% # Group v1.0.0 %}
+
+{% doc %}
+  @description Renders a flex container that groups child blocks. Direction (column/row), alignment, gap, and breakpoint stacking are merchant-configurable. Stack-below uses `@container` queries against the group's own width (not the viewport), so a row-direction group placed inside a narrow column stacks correctly without false-positive matches against the viewport breakpoint.
+
+  @param {section} [section] - The section object containing the block
+  @param {block} [block] - Block object containing the settings
+  @param {string} [block_id] - Unique block ID for static renders
+  @param {string} [contents] - Pre-rendered child blocks markup. Skips render when blank.
+  @param {string} [direction] - `'column'` (default) or `'row'`.
+  @param {string} [stack_below] - In `row` direction, switch to column when container is below the breakpoint. One of `'none'`, `'40'`, `'60'`, `'80'` (rem). Defaults to `'60'`.
+  @param {string} [horizontal_alignment] - In `column` direction maps to `align-items`; in `row` direction maps to `justify-content`. One of `'flex-start'` (default), `'center'`, `'flex-end'`, `'space-between'`.
+  @param {string} [vertical_alignment] - In `row` direction maps to `align-items`. One of `'flex-start'` (default), `'center'`, `'flex-end'`. Ignored in `column` direction.
+  @param {metaobject} [content_width] - `content_width` metaobject. Caps `max-inline-size`. Full width when blank.
+  @param {number} [gap] - Gap between children in px. Defaults to 16.
+  @param {string} [color_scheme] - Optional `color_scheme` setting value. When set, emits `color-scheme:<id>` modifier so the global scheme rules from `utility--css-variables` apply.
+  @param {number} [mobile_margin_block_start] - Top margin in px below the desktop breakpoint. Defaults to 0.
+  @param {number} [desktop_margin_block_start] - Top margin in px at or above the desktop breakpoint. Defaults to 0.
+
+  @example {% render 'group', section: section, block: block, contents: contents %}
+{% enddoc %}
+
+{% liquid
+  if contents == blank
+    break
+  endif
+
+  assign direction = direction | default: block.settings.direction | default: 'column'
+  assign stack_below = stack_below | default: block.settings.stack_below | default: '60'
+  assign horizontal_alignment = horizontal_alignment | default: block.settings.horizontal_alignment | default: 'flex-start'
+  assign vertical_alignment = vertical_alignment | default: block.settings.vertical_alignment | default: 'flex-start'
+  assign content_width = content_width | default: block.settings.content_width | default: ''
+  assign gap = gap | default: block.settings.gap | default: 16
+  assign color_scheme = color_scheme | default: block.settings.color_scheme | default: ''
+  assign mobile_margin_block_start = mobile_margin_block_start | default: block.settings.mobile_margin_block_start | default: 0
+  assign desktop_margin_block_start = desktop_margin_block_start | default: block.settings.desktop_margin_block_start | default: 0
+
+  assign modifier_list = 'direction:' | append: direction
+  if direction == 'row' and stack_below != 'none'
+    assign modifier_list = modifier_list | append: ',stack-below:' | append: stack_below
+  endif
+  if color_scheme != blank
+    assign modifier_list = modifier_list | append: ',color-scheme:' | append: color_scheme
+  endif
+
+  capture base_selector
+    render 'utility--base-selector', section: section, block: block, identifier: block_id
+  endcapture
+  assign base_selector = base_selector | strip
+
+  capture modifiers
+    render 'utility--modifiers', modifier_list: modifier_list
+  endcapture
+%}
+
+<div class="shopify-block shopify-block--group" id="{{ base_selector }}" {{ modifiers }}>
+  {{ contents }}
+
+  {% capture dynamic_style %}
+    {% if gap and gap > 0 %}
+      --gap: {{ gap | divided_by: 16.0 | round: 3 }}rem;
+    {% endif %}
+
+    {% if horizontal_alignment != 'flex-start' %}
+      --horizontal-alignment: {{ horizontal_alignment }};
+    {% endif %}
+
+    {% if vertical_alignment != 'flex-start' %}
+      --vertical-alignment: {{ vertical_alignment }};
+    {% endif %}
+
+    {% if content_width and content_width != blank %}
+      --content-width: {{ content_width.width.value }}px;
+    {% endif %}
+
+    {% if mobile_margin_block_start and mobile_margin_block_start > 0 %}
+      --mobile-margin-block-start: {{ mobile_margin_block_start | divided_by: 16.0 | round: 3 }}rem;
+    {% endif %}
+
+    {% if desktop_margin_block_start and desktop_margin_block_start > 0 %}
+      --desktop-margin-block-start: {{ desktop_margin_block_start | divided_by: 16.0 | round: 3 }}rem;
+    {% endif %}
+  {% endcapture %}
+  {% render 'utility--dynamic-style', base_selector: base_selector, css_content: dynamic_style %}
+</div>
+
+{% stylesheet %}
+  @layer components {
+    .shopify-block--group {
+      container-type: inline-size;
+      container-name: group;
+
+      display: flex;
+      gap: var(--gap, 0rem);
+      max-inline-size: var(--content-width, 100%);
+      margin-block-start: var(--mobile-margin-block-start, 0rem);
+
+      @media (width >= 48rem) {
+        margin-block-start: var(--desktop-margin-block-start, 0rem);
+      }
+
+      &[data-modifiers*='direction:column'] {
+        flex-direction: column;
+        align-items: var(--horizontal-alignment, flex-start);
+      }
+
+      &[data-modifiers*='direction:row'] {
+        flex-direction: row;
+        justify-content: var(--horizontal-alignment, flex-start);
+        align-items: var(--vertical-alignment, flex-start);
+      }
+
+      /* Stack-below: collapse to column when container is narrower than the breakpoint */
+      &[data-modifiers*='stack-below'] {
+        flex-direction: column;
+        align-items: var(--horizontal-alignment, flex-start);
+      }
+
+      @container group (inline-size >= 40rem) {
+        &[data-modifiers*='stack-below:40'] {
+          flex-direction: row;
+          justify-content: var(--horizontal-alignment, flex-start);
+          align-items: var(--vertical-alignment, flex-start);
+        }
+      }
+
+      @container group (inline-size >= 60rem) {
+        &[data-modifiers*='stack-below:60'] {
+          flex-direction: row;
+          justify-content: var(--horizontal-alignment, flex-start);
+          align-items: var(--vertical-alignment, flex-start);
+        }
+      }
+
+      @container group (inline-size >= 80rem) {
+        &[data-modifiers*='stack-below:80'] {
+          flex-direction: row;
+          justify-content: var(--horizontal-alignment, flex-start);
+          align-items: var(--vertical-alignment, flex-start);
+        }
+      }
+    }
+  }
+{% endstylesheet %}

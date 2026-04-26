@@ -356,6 +356,65 @@
           "category": "Media"
         }
       }
+    },
+    "group": {
+      "name": "Group",
+      "settings": {
+        "layout": { "content": "Layout" },
+        "direction": {
+          "label": "Direction",
+          "options": {
+            "column": "Stack (vertical)",
+            "row": "Inline (horizontal)"
+          }
+        },
+        "stack_below": {
+          "label": "Stack below",
+          "info": "Stacks vertically when the group is narrower than this",
+          "options": {
+            "none": "Never",
+            "sm": "640px",
+            "md": "960px",
+            "lg": "1280px"
+          }
+        },
+        "horizontal_alignment": {
+          "label": "Horizontal",
+          "options": {
+            "start": "Start",
+            "center": "Center",
+            "end": "End",
+            "space_between": "Space between"
+          }
+        },
+        "vertical_alignment": {
+          "label": "Vertical",
+          "options": {
+            "start": "Start",
+            "center": "Center",
+            "end": "End"
+          }
+        },
+        "content_width": {
+          "label": "Content width",
+          "info": "Leave blank for full width"
+        },
+        "gap": { "label": "Gap" },
+        "appearance": { "content": "Appearance" },
+        "color_scheme": {
+          "label": "Color scheme",
+          "info": "Override the section's scheme for this group and its children"
+        },
+        "top_spacing": { "content": "Top spacing" },
+        "mobile_margin_block_start": { "label": "Mobile" },
+        "desktop_margin_block_start": { "label": "Desktop" }
+      },
+      "presets": {
+        "group": {
+          "name": "Group",
+          "category": "Layout"
+        }
+      }
     }
   }
 }

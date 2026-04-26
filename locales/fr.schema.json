@@ -365,6 +365,65 @@
           "category": "Média"
         }
       }
+    },
+    "group": {
+      "name": "Groupe",
+      "settings": {
+        "layout": { "content": "Mise en page" },
+        "direction": {
+          "label": "Direction",
+          "options": {
+            "column": "Empilé (vertical)",
+            "row": "En ligne (horizontal)"
+          }
+        },
+        "stack_below": {
+          "label": "Empiler en deçà de",
+          "info": "Empile verticalement quand le groupe est plus étroit que cette largeur",
+          "options": {
+            "none": "Jamais",
+            "sm": "640px",
+            "md": "960px",
+            "lg": "1280px"
+          }
+        },
+        "horizontal_alignment": {
+          "label": "Horizontal",
+          "options": {
+            "start": "Début",
+            "center": "Centre",
+            "end": "Fin",
+            "space_between": "Espace entre"
+          }
+        },
+        "vertical_alignment": {
+          "label": "Vertical",
+          "options": {
+            "start": "Début",
+            "center": "Centre",
+            "end": "Fin"
+          }
+        },
+        "content_width": {
+          "label": "Largeur du contenu",
+          "info": "Laisser vide pour la pleine largeur"
+        },
+        "gap": { "label": "Écart" },
+        "appearance": { "content": "Apparence" },
+        "color_scheme": {
+          "label": "Palette de couleurs",
+          "info": "Remplace la palette de la section pour ce groupe et ses enfants"
+        },
+        "top_spacing": { "content": "Espacement supérieur" },
+        "mobile_margin_block_start": { "label": "Mobile" },
+        "desktop_margin_block_start": { "label": "Bureau" }
+      },
+      "presets": {
+        "group": {
+          "name": "Groupe",
+          "category": "Mise en page"
+        }
+      }
     }
   }
 }
