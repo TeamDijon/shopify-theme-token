@@ -1,0 +1,82 @@
+{% # Validation hub v1.0.0 %}
+
+{% comment %}
+  Hub page for the validation suite. Lists every validation section by layer.
+  Reachable only at /?view=validation — never linked from production templates.
+  See `.context/docs/validation.md` for the full convention.
+{% endcomment %}
+
+<theme-section>
+  <h1>Validation</h1>
+
+  <h2>Metaobjects</h2>
+  <ul>
+    <li><a href="?view=validation--metaobject--button-style">Button style</a></li>
+    <li><a href="?view=validation--metaobject--container-style">Container style</a></li>
+    <li><a href="?view=validation--metaobject--content-width">Content width</a></li>
+    <li><a href="?view=validation--metaobject--icon">Icon</a></li>
+    <li><a href="?view=validation--metaobject--media-size">Media size</a></li>
+    <li><a href="?view=validation--metaobject--spacing">Spacing</a></li>
+    <li><a href="?view=validation--metaobject--text-style">Text style</a></li>
+    <li><a href="?view=validation--metaobject--theme-color">Theme color</a></li>
+  </ul>
+
+  <h2>Blocks</h2>
+  <ul>
+    <li><a href="?view=validation--block--button">Button</a></li>
+    <li><a href="?view=validation--block--columns">Columns</a></li>
+    <li><a href="?view=validation--block--embed">Embed</a></li>
+    <li><a href="?view=validation--block--group">Group</a></li>
+    <li><a href="?view=validation--block--media">Media</a></li>
+    <li><a href="?view=validation--block--richtext">Richtext</a></li>
+    <li><a href="?view=validation--block--separator">Separator</a></li>
+    <li><a href="?view=validation--block--spacer">Spacer</a></li>
+    <li><a href="?view=validation--block--title">Title</a></li>
+  </ul>
+
+  <h2>Compositions</h2>
+  <ul>
+    <li><a href="?view=validation--section--content">Content (title + richtext + button)</a></li>
+    <li><a href="?view=validation--section--columns-features">Columns features</a></li>
+    <li><a href="?view=validation--section--cta-banner">CTA banner</a></li>
+    <li><a href="?view=validation--section--hero">Hero (media + overlay)</a></li>
+  </ul>
+</theme-section>
+
+{% schema %}
+{
+  "name": "Validation hub",
+  "tag": "section",
+  "class": "shopify-section--validation",
+  "settings": []
+}
+{% endschema %}
+
+{% stylesheet %}
+  @layer components {
+    .shopify-section--validation {
+      h1 {
+        margin-block-end: 2rem;
+      }
+
+      h2 {
+        margin-block: 2rem 0.5rem;
+      }
+
+      ul {
+        list-style: disc;
+        padding-inline-start: 1.5rem;
+      }
+
+      li {
+        margin-block: 0.25rem;
+      }
+
+      a {
+        color: var(--color-primary);
+        text-decoration: underline;
+        text-underline-offset: 0.2em;
+      }
+    }
+  }
+{% endstylesheet %}
