@@ -62,21 +62,32 @@ Component CSS targets a unique root selector — `.shopify-block--<name>` for bl
 For block-level layout adaptation (a child responding to its container's actual width rather than the viewport), use `@container` queries. Most relevant for the `group` / `columns` / `media` blocks where a child's available width is a function of how the merchant composed the layout, not a global breakpoint.
 
 ```css
-.shopify-block--media {
+/* The element that DEFINES the container only declares it. */
+.shopify-block--columns {
   container-type: inline-size;
-  container-name: media;
+  container-name: columns;
+}
 
-  @container media (inline-size < 24rem) {
-    /* compact layout for narrow containers */
+/* Queries target a DESCENDANT — the element with `container-type` is
+   not itself matched by `@container <name>` (per CSS Containment spec). */
+.shopify-block--columns__inner {
+  display: grid;
+}
+
+@container columns (inline-size >= 40rem) {
+  .shopify-block--columns__inner {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 ```
 
 Prefer container queries over media queries whenever the relevant width is the parent's, not the viewport's. Modern engines all support this.
 
-**Established consumers**: `group` and `columns` declare a container query context (`container-type: inline-size; container-name: <block>`) and emit a `stack-below:40|60|80` modifier; the stylesheet maps each token to a container-width threshold to switch between row/grid and column layout.
+**Established consumers**: `group` and `columns` split into an outer/inner pair — the outer (`.shopify-block--<name>`) declares `container-type: inline-size; container-name: <block>`, the inner (`.shopify-block--<name>__inner`) carries the flex/grid layout and is the target of every `@container` rule. Stack-below tokens (`stack-below:40|60|80`) on the outer's `data-modifiers` switch the inner between row/grid and column layout.
 
-**Caveat**: `@container` queries silently fail when the ancestor doesn't establish a containing block — e.g., a `display: contents` parent removes the size context, so `inline-size >= 40rem` never matches and the unconditional fallback rule stays in place. If a child block looks "stuck" in its small-container state, audit the parent chain.
+**Caveats**:
+- **Don't query the host element.** `@container <name>` only matches descendants of the named container, never the element with `container-type` itself. A rule like `.foo[data-modifiers*='stack-below'] { ... }` placed inside `@container foo (...)` on the same `.foo` element silently never fires. Always target a descendant.
+- **Ancestor must establish a containing block.** A `display: contents` parent removes the size context, so `inline-size >= 40rem` never matches. If a child block looks "stuck" in its small-container fallback, audit the parent chain.
 
 ## `@property` for animatable custom properties
 
