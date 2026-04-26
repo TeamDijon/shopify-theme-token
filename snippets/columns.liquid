@@ -1,0 +1,139 @@
+{% # Columns v1.0.0 %}
+
+{% doc %}
+  @description Renders a CSS Grid container for child blocks. Seven preset column ratios (2/3/4 equal, plus ⅓+⅔, ⅔+⅓, ¼+¾, ¾+¼). Stack-below uses `@container` queries against the columns block's own width, so a columns inside a narrow parent collapses to a single column when its rendered width drops below the breakpoint, regardless of the viewport.
+
+  @param {section} [section] - The section object containing the block
+  @param {block} [block] - Block object containing the settings
+  @param {string} [block_id] - Unique block ID for static renders
+  @param {string} [contents] - Pre-rendered child blocks markup. Skips render when blank.
+  @param {string} [columns] - Column layout. One of `'2'`, `'3'`, `'4'`, `'1-2'`, `'2-1'`, `'1-3'`, `'3-1'`. Defaults to `'2'`.
+  @param {string} [stack_below] - Collapse to single column when container is below the breakpoint. One of `'none'`, `'40'`, `'60'`, `'80'` (rem). Defaults to `'60'`.
+  @param {string} [vertical_alignment] - `align-items` value for grid items. One of `'start'` (default), `'center'`, `'end'`, `'stretch'`.
+  @param {metaobject} [content_width] - `content_width` metaobject. Caps `max-inline-size`. Full width when blank.
+  @param {number} [gap] - Gap between columns in px. Defaults to 16.
+  @param {string} [color_scheme] - Optional `color_scheme` setting value. When set, emits `color-scheme:<id>` modifier so the global scheme rules from `utility--css-variables` apply.
+  @param {number} [mobile_margin_block_start] - Top margin in px below the desktop breakpoint. Defaults to 0.
+  @param {number} [desktop_margin_block_start] - Top margin in px at or above the desktop breakpoint. Defaults to 0.
+
+  @example {% render 'columns', section: section, block: block, contents: contents %}
+{% enddoc %}
+
+{% liquid
+  if contents == blank
+    break
+  endif
+
+  assign columns = columns | default: block.settings.columns | default: '2'
+  assign stack_below = stack_below | default: block.settings.stack_below | default: '60'
+  assign vertical_alignment = vertical_alignment | default: block.settings.vertical_alignment | default: 'start'
+  assign content_width = content_width | default: block.settings.content_width | default: ''
+  assign gap = gap | default: block.settings.gap | default: 16
+  assign color_scheme = color_scheme | default: block.settings.color_scheme | default: ''
+  assign mobile_margin_block_start = mobile_margin_block_start | default: block.settings.mobile_margin_block_start | default: 0
+  assign desktop_margin_block_start = desktop_margin_block_start | default: block.settings.desktop_margin_block_start | default: 0
+
+  assign modifier_list = 'columns:' | append: columns
+  if stack_below != 'none'
+    assign modifier_list = modifier_list | append: ',stack-below:' | append: stack_below
+  endif
+  if color_scheme != blank
+    assign modifier_list = modifier_list | append: ',color-scheme:' | append: color_scheme
+  endif
+
+  capture base_selector
+    render 'utility--base-selector', section: section, block: block, identifier: block_id
+  endcapture
+  assign base_selector = base_selector | strip
+
+  capture modifiers
+    render 'utility--modifiers', modifier_list: modifier_list
+  endcapture
+%}
+
+<div class="shopify-block shopify-block--columns" id="{{ base_selector }}" {{ modifiers }}>
+  {{ contents }}
+
+  {% capture dynamic_style %}
+    {% case columns %}
+      {% when '2' %}
+        --grid-template-columns: repeat(2, 1fr);
+      {% when '3' %}
+        --grid-template-columns: repeat(3, 1fr);
+      {% when '4' %}
+        --grid-template-columns: repeat(4, 1fr);
+      {% when '1-2' %}
+        --grid-template-columns: 1fr 2fr;
+      {% when '2-1' %}
+        --grid-template-columns: 2fr 1fr;
+      {% when '1-3' %}
+        --grid-template-columns: 1fr 3fr;
+      {% when '3-1' %}
+        --grid-template-columns: 3fr 1fr;
+    {% endcase %}
+
+    {% if gap and gap > 0 %}
+      --gap: {{ gap | divided_by: 16.0 | round: 3 }}rem;
+    {% endif %}
+
+    {% if vertical_alignment != 'start' %}
+      --vertical-alignment: {{ vertical_alignment }};
+    {% endif %}
+
+    {% if content_width and content_width != blank %}
+      --content-width: {{ content_width.width.value }}px;
+    {% endif %}
+
+    {% if mobile_margin_block_start and mobile_margin_block_start > 0 %}
+      --mobile-margin-block-start: {{ mobile_margin_block_start | divided_by: 16.0 | round: 3 }}rem;
+    {% endif %}
+
+    {% if desktop_margin_block_start and desktop_margin_block_start > 0 %}
+      --desktop-margin-block-start: {{ desktop_margin_block_start | divided_by: 16.0 | round: 3 }}rem;
+    {% endif %}
+  {% endcapture %}
+  {% render 'utility--dynamic-style', base_selector: base_selector, css_content: dynamic_style %}
+</div>
+
+{% stylesheet %}
+  @layer components {
+    .shopify-block--columns {
+      container-type: inline-size;
+      container-name: columns;
+
+      display: grid;
+      grid-template-columns: var(--grid-template-columns, 1fr);
+      align-items: var(--vertical-alignment, start);
+      gap: var(--gap, 0rem);
+      max-inline-size: var(--content-width, 100%);
+      margin-block-start: var(--mobile-margin-block-start, 0rem);
+
+      @media (width >= 48rem) {
+        margin-block-start: var(--desktop-margin-block-start, 0rem);
+      }
+
+      /* Stack-below: collapse to single column when container is narrower than the breakpoint */
+      &[data-modifiers*='stack-below'] {
+        grid-template-columns: 1fr;
+      }
+
+      @container columns (inline-size >= 40rem) {
+        &[data-modifiers*='stack-below:40'] {
+          grid-template-columns: var(--grid-template-columns);
+        }
+      }
+
+      @container columns (inline-size >= 60rem) {
+        &[data-modifiers*='stack-below:60'] {
+          grid-template-columns: var(--grid-template-columns);
+        }
+      }
+
+      @container columns (inline-size >= 80rem) {
+        &[data-modifiers*='stack-below:80'] {
+          grid-template-columns: var(--grid-template-columns);
+        }
+      }
+    }
+  }
+{% endstylesheet %}

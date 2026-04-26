@@ -415,6 +415,62 @@
           "category": "Layout"
         }
       }
+    },
+    "columns": {
+      "name": "Columns",
+      "settings": {
+        "layout": { "content": "Layout" },
+        "columns": {
+          "label": "Columns",
+          "options": {
+            "two": "2 columns",
+            "three": "3 columns",
+            "four": "4 columns",
+            "one_two": "⅓ + ⅔",
+            "two_one": "⅔ + ⅓",
+            "one_three": "¼ + ¾",
+            "three_one": "¾ + ¼"
+          }
+        },
+        "stack_below": {
+          "label": "Stack below",
+          "info": "Collapses to a single column when the block is narrower than this",
+          "options": {
+            "none": "Never",
+            "sm": "640px",
+            "md": "960px",
+            "lg": "1280px"
+          }
+        },
+        "vertical_alignment": {
+          "label": "Vertical",
+          "options": {
+            "start": "Start",
+            "center": "Center",
+            "end": "End",
+            "stretch": "Stretch"
+          }
+        },
+        "content_width": {
+          "label": "Content width",
+          "info": "Leave blank for full width"
+        },
+        "gap": { "label": "Gap" },
+        "appearance": { "content": "Appearance" },
+        "color_scheme": {
+          "label": "Color scheme",
+          "info": "Override the section's scheme for this block and its children"
+        },
+        "top_spacing": { "content": "Top spacing" },
+        "mobile_margin_block_start": { "label": "Mobile" },
+        "desktop_margin_block_start": { "label": "Desktop" }
+      },
+      "presets": {
+        "columns": {
+          "name": "Columns",
+          "category": "Layout"
+        }
+      }
     }
   }
 }

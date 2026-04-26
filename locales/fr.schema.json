@@ -424,6 +424,62 @@
           "category": "Mise en page"
         }
       }
+    },
+    "columns": {
+      "name": "Colonnes",
+      "settings": {
+        "layout": { "content": "Mise en page" },
+        "columns": {
+          "label": "Colonnes",
+          "options": {
+            "two": "2 colonnes",
+            "three": "3 colonnes",
+            "four": "4 colonnes",
+            "one_two": "⅓ + ⅔",
+            "two_one": "⅔ + ⅓",
+            "one_three": "¼ + ¾",
+            "three_one": "¾ + ¼"
+          }
+        },
+        "stack_below": {
+          "label": "Empiler en deçà de",
+          "info": "Bascule en une seule colonne quand le bloc est plus étroit que cette largeur",
+          "options": {
+            "none": "Jamais",
+            "sm": "640px",
+            "md": "960px",
+            "lg": "1280px"
+          }
+        },
+        "vertical_alignment": {
+          "label": "Vertical",
+          "options": {
+            "start": "Début",
+            "center": "Centre",
+            "end": "Fin",
+            "stretch": "Étiré"
+          }
+        },
+        "content_width": {
+          "label": "Largeur du contenu",
+          "info": "Laisser vide pour la pleine largeur"
+        },
+        "gap": { "label": "Écart" },
+        "appearance": { "content": "Apparence" },
+        "color_scheme": {
+          "label": "Palette de couleurs",
+          "info": "Remplace la palette de la section pour ce bloc et ses enfants"
+        },
+        "top_spacing": { "content": "Espacement supérieur" },
+        "mobile_margin_block_start": { "label": "Mobile" },
+        "desktop_margin_block_start": { "label": "Bureau" }
+      },
+      "presets": {
+        "columns": {
+          "name": "Colonnes",
+          "category": "Mise en page"
+        }
+      }
     }
   }
 }
