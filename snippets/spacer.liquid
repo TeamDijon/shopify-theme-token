@@ -69,30 +69,30 @@
       display: block;
       position: relative;
       inline-size: 100%;
-      block-size: var(--spacer-block-size, 0);
+      block-size: var(--spacer-block-size, 0rem);
       margin-block: 0;
       margin-inline: auto;
       background-color: var(--background-color, transparent);
 
       &[data-modifiers*='breakpoint'] {
-        block-size: var(--mobile-spacer-block-size, 0);
+        block-size: var(--mobile-spacer-block-size, 0rem);
       }
 
       @media (width >= 40rem) {
         &[data-modifiers*='breakpoint:40'] {
-          block-size: var(--desktop-spacer-block-size, 0);
+          block-size: var(--desktop-spacer-block-size, 0rem);
         }
       }
 
       @media (width >= 60rem) {
         &[data-modifiers*='breakpoint:60'] {
-          block-size: var(--desktop-spacer-block-size, 0);
+          block-size: var(--desktop-spacer-block-size, 0rem);
         }
       }
 
       @media (width >= 80rem) {
         &[data-modifiers*='breakpoint:80'] {
-          block-size: var(--desktop-spacer-block-size, 0);
+          block-size: var(--desktop-spacer-block-size, 0rem);
         }
       }
     }
