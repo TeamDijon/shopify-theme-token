@@ -38,31 +38,60 @@
 
   if url contains 'youtu.be/'
     assign provider = 'youtube'
-    assign video_id = url | split: 'youtu.be/' | last | split: '?' | first | split: '&' | first
+    assign video_id = url | split: 'youtu.be/' | last | split: '?' | first | split: '&' | first | split: '#' | first
     assign embed_url = 'https://www.youtube.com/embed/' | append: video_id
   elsif url contains 'youtube.com/embed/'
     assign provider = 'youtube'
     assign embed_url = url
   elsif url contains 'youtube.com/shorts/'
     assign provider = 'youtube'
-    assign video_id = url | split: 'youtube.com/shorts/' | last | split: '?' | first
+    assign video_id = url | split: 'youtube.com/shorts/' | last | split: '?' | first | split: '#' | first
     assign embed_url = 'https://www.youtube.com/embed/' | append: video_id
   elsif url contains 'youtube.com/watch'
-    assign provider = 'youtube'
-    assign video_id = url | split: '?v=' | last | split: '&' | first
-    assign embed_url = 'https://www.youtube.com/embed/' | append: video_id
+    assign video_id = ''
+    if url contains '?v='
+      assign video_id = url | split: '?v=' | last | split: '&' | first | split: '#' | first
+    elsif url contains '&v='
+      assign video_id = url | split: '&v=' | last | split: '&' | first | split: '#' | first
+    endif
+    if video_id != blank
+      assign provider = 'youtube'
+      assign embed_url = 'https://www.youtube.com/embed/' | append: video_id
+    endif
   elsif url contains 'player.vimeo.com/video/'
     assign provider = 'vimeo'
     assign embed_url = url
   elsif url contains 'vimeo.com/'
-    assign provider = 'vimeo'
-    assign vimeo_path = url | split: 'vimeo.com/' | last | split: '?' | first
+    # Vimeo path may be: ID | ID/HASH (unlisted) | channels/<name>/ID | groups/<name>/videos/ID.
+    # Walk segments, take first numeric as video_id; if next is non-numeric and non-blank, treat as unlisted hash.
+    assign vimeo_path = url | split: 'vimeo.com/' | last | split: '?' | first | split: '#' | first
     assign vimeo_parts = vimeo_path | split: '/'
-    assign video_id = vimeo_parts | first
-    if vimeo_parts.size > 1
-      assign embed_url = 'https://player.vimeo.com/video/' | append: video_id | append: '?h=' | append: vimeo_parts[1]
-    else
-      assign embed_url = 'https://player.vimeo.com/video/' | append: video_id
+    assign video_id = ''
+    assign vimeo_hash = ''
+    for part in vimeo_parts
+      if part == blank
+        continue
+      endif
+      assign part_int = part | times: 1
+      if part_int > 0
+        assign video_id = part
+        if vimeo_parts.size > forloop.index
+          assign next_part = vimeo_parts[forloop.index]
+          assign next_int = next_part | times: 1
+          if next_int == 0 and next_part != blank
+            assign vimeo_hash = next_part
+          endif
+        endif
+        break
+      endif
+    endfor
+    if video_id != blank
+      assign provider = 'vimeo'
+      if vimeo_hash != blank
+        assign embed_url = 'https://player.vimeo.com/video/' | append: video_id | append: '?h=' | append: vimeo_hash
+      else
+        assign embed_url = 'https://player.vimeo.com/video/' | append: video_id
+      endif
     endif
   endif
 
