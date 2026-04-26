@@ -314,8 +314,8 @@
       color: var(--color-placeholder);
     }
 
-    /* Block rhythm — inter-block vertical spacing driven by the section's `block_rhythm` spacing-metaobject setting. The :where() keeps specificity at zero so per-block overrides work; the sibling combinator gets margin-collapse for free. Default 0 when no rhythm is configured. */
-    & :where(.shopify-block) + .shopify-block {
+    /* Block rhythm — inter-block vertical spacing driven by the section's `block_rhythm` spacing-metaobject setting. Direct-child scoping (`>`) keeps the rhythm at the section level only; nested containers (group, columns, media-contents) handle their own spacing via `gap`. The :where() keeps specificity at zero so per-block overrides work; the sibling combinator gets margin-collapse for free. Default 0 when no rhythm is configured. */
+    & > :where(.shopify-block) + .shopify-block {
       margin-block-start: var(--block-rhythm-mobile, 0);
 
       @media (width >= 48rem) {
