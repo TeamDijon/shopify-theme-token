@@ -204,6 +204,11 @@
         block-size: 100%;
         border: none;
       }
+
+      /* Inset focus ring so overflow:hidden wrapper doesn't clip it */
+      & > iframe:focus-visible {
+        outline-offset: -0.125rem;
+      }
     }
   }
 {% endstylesheet %}
