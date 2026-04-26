@@ -17,3 +17,7 @@ package-lock.json
 
 # Environment
 .env
+
+# MCP — local instance may carry per-environment paths or future secrets;
+# .mcp.template.json is the committed baseline. Copy to .mcp.json on first setup.
+.mcp.json
