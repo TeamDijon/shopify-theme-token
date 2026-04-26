@@ -9,6 +9,8 @@
 {% doc %}
   @description Renders a spacer div with responsive block-size and optional background color. Either one fixed size (no breakpoint) or a mobile/desktop pair that switches at the selected breakpoint.
 
+  **Intended scope:** vertical-rhythm block at the section level. Don't place inside a row-direction `group` — the spacer's `inline-size: 100%` will claim the full row and squish siblings. (Inside column-direction containers it works fine.)
+
   @param {section} [section] - The section object containing the block
   @param {block} [block] - Block object containing the settings
   @param {string} [block_id] - Unique block ID for static renders

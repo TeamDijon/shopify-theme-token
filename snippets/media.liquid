@@ -3,6 +3,10 @@
 {% doc %}
   @description Renders a media container (image or video) with optional art direction, sizing modes, edge-to-edge bleed, color-scheme override, overlay tint, and overlaid child blocks. Sizing is driven by the `media_size` metaobject (`fill` / `ratio` / `relative` / `fixed`) and emitted as a `sizing:*` modifier consumed by the stylesheet. Child content is captured by the block file via `{% content_for 'blocks' %}` and passed in as `contents`.
 
+  **Known limitations:**
+  - **Bleed assumes centered ancestors.** The `bleed` mode uses `margin-inline: calc(50% - 50dvw)` to escape to the full viewport width. The math anchors against the parent's centerline, so it only renders aligned when every ancestor up to the section is centered. Inside an off-center column (e.g., the narrower track of a `1-3` columns layout), the bleed visually drifts. Avoid `bleed` on a media block placed inside group/columns; use it at the section level.
+  - **`object-fit: cover`** is hardcoded — there's no per-block override yet. Use cases that need `contain` (logos, full-image-visible products) will be addressed by a future `sizing:contain` modifier.
+
   @param {section} [section] - The section object containing the block
   @param {block} [block] - Block object containing the settings
   @param {string} [block_id] - Unique block ID for static renders

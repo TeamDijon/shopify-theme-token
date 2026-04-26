@@ -9,7 +9,7 @@
   @param {string} [content] - Button label. Skips render when blank.
   @param {string} [link] - URL. When blank, renders a `<button type="button">`.
   @param {boolean} [open_in_new_tab] - When true on a linked button, opens in a new tab and announces it to screen readers. Defaults to false.
-  @param {metaobject} [button_style] - `button_style` metaobject. Reads `.system.handle` and emits `button-style:<handle>` modifier. Recognized handles drive variant CSS: `solid-primary` (also the default appearance, no modifier needed), `solid-secondary`, `outline`, `ghost`, `text-link`.
+  @param {metaobject} [button_style] - `button_style` metaobject. Reads `.system.handle` and emits `button-style:<handle>` modifier. Recognized handles drive variant CSS: `solid-primary` (also the default appearance, no modifier needed), `solid-secondary`, `outline`, `ghost`, `text-link`. **Unknown handles fall through to the solid-primary default appearance** — the modifier is still emitted but no CSS rule matches. Acceptable degradation; if a merchant introduces a handle the snippet doesn't ship CSS for, the variant won't appear without a stylesheet update.
   @param {metaobject} [icon] - `icon` metaobject. Inline SVG before the label. No icon when blank.
   @param {metaobject} [content_width] - `content_width` metaobject. Reads `.width.value` (px) and applies as `max-inline-size`. No cap when blank.
   @param {number} [mobile_margin_block_start] - Top margin in px below the desktop breakpoint. Defaults to 0.
