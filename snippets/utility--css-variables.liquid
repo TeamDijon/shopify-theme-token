@@ -1,7 +1,8 @@
-{% # CSS Variables v1.4.1 %}
+{% # CSS Variables v1.5.0 %}
 
 {% comment %}
   Changelog
+  - v1.5.0 — drop the `--font-heading-color` alias; consumers (currently only `core.css`'s heading-color rule) read `--color-foreground-heading` directly. The alias was a misnomer (it carried a color, not a font property) and split the heading color into two names. Removed the assignment line; coordinate with `core.css` to point the heading rule at the source token.
   - v1.4.1 — rename `--font-heading--color` (double dash) to `--font-heading-color` for naming consistency; coordinate with `core.css` rename
   - v1.4.0 — text_style cleanups: hoist `default_font_family` out of the loop with a `system-ui` terminal fallback (fixes invalid leading comma in `font-family` when `base_text_style` is unset); drop dead `font_fallback_family` assign; switch `line_height` storage from "% × 100" to a direct decimal; `base_text_style != null` → `!= blank`
   - v1.3.0 — rename theme-color iteration output from `--<handle>-color` to `--color-<handle>` for consistency with scheme variables (`--color-background`, `--color-primary`, etc.)
@@ -107,8 +108,6 @@
       --color-disabled-border: rgba(var(--color-foreground-rgb), var(--opacity-border-soft));
       --color-focus-ring: var(--color-primary);
       --color-backdrop: rgba(var(--color-shadow-rgb), 0.5);
-
-      --font-heading-color: var(--color-foreground-heading);
 
       --shadow-sm: 0 1px 2px rgba(var(--color-shadow-rgb), 0.06);
       --shadow-md: 0 4px 12px rgba(var(--color-shadow-rgb), 0.10);
