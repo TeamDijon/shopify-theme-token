@@ -448,6 +448,22 @@
     }
 
     /* Icon presets */
+    &[data-name="arrow"] {
+      /* Source SVG points top-right; cardinal presets rotate from there. */
+      &[data-preset="up"] {
+        transform: rotate(-45deg);
+      }
+      &[data-preset="right"] {
+        transform: rotate(45deg);
+      }
+      &[data-preset="down"] {
+        transform: rotate(135deg);
+      }
+      &[data-preset="left"] {
+        transform: rotate(-135deg);
+      }
+    }
+
     &[data-name="chevron"] {
       &[data-preset="left"] {
         transform: rotate(180deg);
