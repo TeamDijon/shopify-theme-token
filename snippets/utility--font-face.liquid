@@ -1,7 +1,10 @@
-{% # Font Face v1.2.0 %}
+{% # Font Face v1.2.3 %}
 
 {% comment %}
   Changelog
+  - v1.2.3 — default `font.style.value` to `'normal'` when blank; previously emitted `font-style: ;` (invalid CSS) on optional-style font entries
+  - v1.2.2 — skip fonts with empty `asset_list` to avoid emitting `@font-face { src: ; ... }` (invalid CSS)
+  - v1.2.1 — fix typo in typeface skip-check: `asset_list` (which doesn't exist on `typeface`) → `font_list`. The dead check was always firing, suppressing every `@font-face` emission.
   - v1.2.0 — map `otf` → `opentype` and `ttf` → `truetype` in the format() descriptor
   - v1.1.0 — quote font-family to handle multi-word names; single-line output
   - v1.0.0 — initial
@@ -17,13 +20,18 @@
 
 {% for typeface in metaobjects.typeface.values %}
   {% liquid
-    if typeface.name.value == blank or typeface.asset_list.value.size == 0
+    if typeface.name.value == blank or typeface.font_list.value.size == 0
       continue
     endif
   %}
 
   {% for font in typeface.font_list.value %}
     {% liquid
+      if font.asset_list.value.size == 0
+        continue
+      endif
+
+      assign font_style = font.style.value | default: 'normal'
       assign font_weight = font.weight.value | plus: 0
 
       if font_weight < 100
@@ -53,6 +61,6 @@
       {%- endfor %}
     {% endcapture %}
 
-    @font-face { src: {{ font_source }}; font-family: "{{ typeface.name.value }}"; font-style: {{ font.style.value }}; font-weight: {{ font_weight }}; font-display: swap; }
+    @font-face { src: {{ font_source }}; font-family: "{{ typeface.name.value }}"; font-style: {{ font_style }}; font-weight: {{ font_weight }}; font-display: swap; }
   {% endfor %}
 {% endfor %}
