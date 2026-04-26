@@ -27,7 +27,7 @@ Interactive elements: 44×44px minimum (iOS guideline). Use `min-block-size`/`mi
 
 ## SR-only text
 
-Strings live under `accessibility.*` in locale files (see `.context/docs/locale-conventions.md`). Render via `| t`; visually hide with a `.visually-hidden` CSS utility (add to `core.css` when first needed: `position: absolute; clip: rect(0,0,0,0); inline-size: 1px; block-size: 1px; overflow: hidden;`).
+Strings live under `accessibility.*` in locale files (see `.context/docs/locale-conventions.md`). Render via `| t`; visually hide with the `.sr-only` utility defined in `assets/core.css` (`@layer utilities`).
 
 ## Existing patterns in the theme
 
