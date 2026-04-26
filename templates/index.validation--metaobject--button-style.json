@@ -1,0 +1,9 @@
+{
+  "sections": {
+    "main": {
+      "type": "validation--metaobject--button-style",
+      "settings": {}
+    }
+  },
+  "order": ["main"]
+}
