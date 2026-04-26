@@ -39,11 +39,11 @@
   assign mobile_video = mobile_video | default: block.settings.mobile_video
   assign video_mode = video_mode | default: block.settings.video_mode | default: 'atmosphere'
   assign video_controls = video_controls | default: block.settings.video_controls | default: 'minimal'
-  assign video_autoplay = video_autoplay | default: block.settings.video_autoplay | default: false
-  assign video_loop = video_loop | default: block.settings.video_loop | default: true
+  assign video_autoplay = video_autoplay | default: block.settings.video_autoplay, allow_false: true | default: false, allow_false: true
+  assign video_loop = video_loop | default: block.settings.video_loop, allow_false: true | default: true, allow_false: true
   assign media_size = media_size | default: block.settings.media_size
   assign mobile_media_size = mobile_media_size | default: block.settings.mobile_media_size
-  assign bleed = bleed | default: block.settings.bleed | default: false
+  assign bleed = bleed | default: block.settings.bleed, allow_false: true | default: false, allow_false: true
   assign horizontal_alignment = horizontal_alignment | default: block.settings.horizontal_alignment | default: 'flex-start'
   assign vertical_alignment = vertical_alignment | default: block.settings.vertical_alignment | default: 'flex-end'
   assign content_width = content_width | default: block.settings.content_width | default: ''

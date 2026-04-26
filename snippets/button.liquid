@@ -25,7 +25,7 @@
   endif
 
   assign link = link | default: block.settings.link
-  assign open_in_new_tab = open_in_new_tab | default: block.settings.open_in_new_tab | default: false
+  assign open_in_new_tab = open_in_new_tab | default: block.settings.open_in_new_tab, allow_false: true | default: false, allow_false: true
   assign button_style = button_style | default: block.settings.button_style
   assign icon = icon | default: block.settings.icon
   assign content_width = content_width | default: block.settings.content_width | default: ''

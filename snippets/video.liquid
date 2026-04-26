@@ -26,8 +26,8 @@
 
   assign video_mode = video_mode | default: 'atmosphere'
   assign video_controls = video_controls | default: 'minimal'
-  assign video_autoplay = video_autoplay | default: false
-  assign video_loop = video_loop | default: true
+  assign video_autoplay = video_autoplay | default: false, allow_false: true
+  assign video_loop = video_loop | default: true, allow_false: true
   assign video_preload = video_preload | default: 'none'
   assign loading = loading | default: 'lazy'
 

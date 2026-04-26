@@ -22,7 +22,7 @@
     break
   endif
 
-  assign narrow = narrow | default: block.settings.narrow | default: false
+  assign narrow = narrow | default: block.settings.narrow, allow_false: true | default: false, allow_false: true
   assign content_width = content_width | default: block.settings.content_width | default: ''
   assign text_color = text_color | default: block.settings.text_color | default: ''
   assign mobile_margin_block_start = mobile_margin_block_start | default: block.settings.mobile_margin_block_start | default: 0

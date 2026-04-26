@@ -22,7 +22,7 @@
   assign sizes_value = sizes_value | default: 'auto, 100vw'
   assign loading = loading | default: 'lazy'
   assign fetchpriority = fetchpriority | default: 'auto'
-  assign preload = preload | default: false
+  assign preload = preload | default: false, allow_false: true
 
   assign desktop_widths = '768,1000,1024,1280,1440,1600,1800,2000,2560'
   assign full_widths = '360,480,640,750,900,1080,1200,1350,1440,1600,1800,2000,2560'
