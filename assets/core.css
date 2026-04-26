@@ -282,7 +282,7 @@
 
     /* Heading color */
     & :where(.h0, h1, .h1, h2, .h2, h3, .h3, h4, .h4, h5, .h5, h6, .h6) {
-      color: var(--font-heading--color, inherit);
+      color: var(--font-heading-color, inherit);
     }
 
     /* Form inputs */
@@ -312,6 +312,15 @@
 
     & :where(input, textarea)::placeholder {
       color: var(--color-placeholder);
+    }
+
+    /* Block rhythm — inter-block vertical spacing driven by the section's `block_rhythm` spacing-metaobject setting. The :where() keeps specificity at zero so per-block overrides work; the sibling combinator gets margin-collapse for free. Default 0 when no rhythm is configured. */
+    & :where(.shopify-block) + .shopify-block {
+      margin-block-start: var(--block-rhythm-mobile, 0);
+
+      @media (width >= 48rem) {
+        margin-block-start: var(--block-rhythm-desktop, 0);
+      }
     }
   }
 }
