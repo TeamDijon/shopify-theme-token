@@ -344,7 +344,7 @@
         "title": {
           "label": "Titre d'accessibilité",
           "info": "Décrit l'intégration pour les lecteurs d'écran",
-          "default": "Vidéo intégrée"
+          "default": "Contenu intégré"
         },
         "layout": { "content": "Mise en page" },
         "media_size": {

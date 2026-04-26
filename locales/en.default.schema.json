@@ -335,7 +335,7 @@
         "title": {
           "label": "Accessibility title",
           "info": "Describes the embed for screen readers",
-          "default": "Embedded video"
+          "default": "Embedded content"
         },
         "layout": { "content": "Layout" },
         "media_size": {
