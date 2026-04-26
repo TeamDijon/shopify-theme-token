@@ -1,6 +1,10 @@
-{% # Validation - Section - CTA banner v1.0.0 %}
+{% # Validation - Section - CTA banner v1.0.1 %}
 
 {% comment %}
+  Changelog
+  - v1.0.1 — drop the per-block top-margin compensation now that block-rhythm cascade is fixed; rhythm spaces the three top-level blocks automatically
+  - v1.0.0 — initial
+
   Section-level composition validation for the "cta-banner" pattern: a
   banner with a top separator, a centered group (title + button row),
   and a bottom separator. Exercises:
@@ -14,12 +18,6 @@
   in JSON, so both buttons render with the default solid-primary
   appearance here. The button-style metaobject page exercises variants
   exhaustively: ?view=validation--metaobject--button-style.
-
-  Block-rhythm spacing between the top-level blocks (separator → group
-  → separator) is currently 0 because of the layer-cascade bug
-  documented on the content composition; the section adds explicit
-  per-block top margins to compensate so the layout reads as intended
-  pending the rhythm fix.
 
   Reachable only at /?view=validation--section--cta-banner.
   See `.context/docs/validation.md`.
@@ -70,10 +68,7 @@
       text-align: center;
     }
 
-    /* Centre the inner group on the section's main axis. The block-rhythm
-       bug means the section won't space its direct children automatically;
-       per-block top margins on each child compensate (set in the JSON
-       template). */
+    /* Centre the inner group on the section's main axis. */
     .shopify-section--validation--section--cta-banner theme-section > .shopify-block--group {
       margin-inline: auto;
     }

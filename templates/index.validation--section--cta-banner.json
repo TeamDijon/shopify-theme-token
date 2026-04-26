@@ -48,17 +48,12 @@
           "settings": {
             "direction": "column",
             "horizontal_alignment": "center",
-            "gap": 24,
-            "mobile_margin_block_start": 24,
-            "desktop_margin_block_start": 40
+            "gap": 24
           }
         },
         "bottom-separator": {
           "type": "separator",
-          "settings": {
-            "mobile_margin_block_start": 24,
-            "desktop_margin_block_start": 40
-          }
+          "settings": {}
         }
       },
       "block_order": ["top-separator", "cta-group", "bottom-separator"],
