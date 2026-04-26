@@ -1,0 +1,81 @@
+{% # Richtext v1.0.0 %}
+
+{% doc %}
+  @description Renders a rich-text container with prose spacing utilities, optional narrow readable column, max-width, color, and responsive top spacing. Always emits the `prose` modifier so the global rich-content spacing rules from `@layer utilities` apply; appending `prose:narrow` opts into a 65ch readable column (via the existing `[data-modifiers*="prose:narrow"]` rule in `core.css`).
+
+  @param {section} [section] - The section object containing the block
+  @param {block} [block] - Block object containing the settings
+  @param {string} [block_id] - Unique block ID for static renders
+  @param {string} [content] - HTML rich-text body. Skips render when blank.
+  @param {boolean} [narrow] - When true, appends `prose:narrow` modifier so the utility caps width at 65ch and centers. Suppresses `content_width` emission.
+  @param {metaobject} [content_width] - `content_width` metaobject. Reads `.width.value` (px). Full width when blank. Ignored when `narrow` is true.
+  @param {metaobject} [text_color] - `theme_color` metaobject. Reads `.system.handle` to consume `var(--color-<handle>)`. Falls back to `--color-foreground` when blank.
+  @param {number} [mobile_margin_block_start] - Top margin in px below the desktop breakpoint. Defaults to 0.
+  @param {number} [desktop_margin_block_start] - Top margin in px at or above the desktop breakpoint. Defaults to 0.
+
+  @example {% render 'richtext', section: section, block: block %}
+{% enddoc %}
+
+{% liquid
+  assign content = content | default: block.settings.content
+  if content == blank
+    break
+  endif
+
+  assign narrow = narrow | default: block.settings.narrow | default: false
+  assign content_width = content_width | default: block.settings.content_width | default: ''
+  assign text_color = text_color | default: block.settings.text_color | default: ''
+  assign mobile_margin_block_start = mobile_margin_block_start | default: block.settings.mobile_margin_block_start | default: 0
+  assign desktop_margin_block_start = desktop_margin_block_start | default: block.settings.desktop_margin_block_start | default: 0
+
+  assign modifier_list = 'prose'
+  if narrow
+    assign modifier_list = modifier_list | append: ',prose:narrow'
+  endif
+
+  capture base_selector
+    render 'utility--base-selector', section: section, block: block, identifier: block_id
+  endcapture
+  assign base_selector = base_selector | strip
+
+  capture modifiers
+    render 'utility--modifiers', modifier_list: modifier_list
+  endcapture
+%}
+
+<div class="shopify-block shopify-block--richtext" id="{{ base_selector }}" {{ modifiers }}>
+  {{ content }}
+
+  {% capture dynamic_style %}
+    {% if content_width and content_width != blank and narrow == false %}
+      --content-width: {{ content_width.width.value }}px;
+    {% endif %}
+
+    {% if text_color and text_color != blank %}
+      --text-color: var(--color-{{ text_color.system.handle }});
+    {% endif %}
+
+    {% if mobile_margin_block_start and mobile_margin_block_start > 0 %}
+      --mobile-margin-block-start: {{ mobile_margin_block_start | divided_by: 16.0 | round: 3 }}rem;
+    {% endif %}
+
+    {% if desktop_margin_block_start and desktop_margin_block_start > 0 %}
+      --desktop-margin-block-start: {{ desktop_margin_block_start | divided_by: 16.0 | round: 3 }}rem;
+    {% endif %}
+  {% endcapture %}
+  {% render 'utility--dynamic-style', base_selector: base_selector, css_content: dynamic_style %}
+</div>
+
+{% stylesheet %}
+  @layer components {
+    .shopify-block--richtext {
+      max-inline-size: var(--content-width, 100%);
+      margin-block-start: var(--mobile-margin-block-start, 0rem);
+      color: var(--text-color, var(--color-foreground));
+
+      @media (width >= 48rem) {
+        margin-block-start: var(--desktop-margin-block-start, 0rem);
+      }
+    }
+  }
+{% endstylesheet %}

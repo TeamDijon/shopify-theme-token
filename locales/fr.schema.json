@@ -180,6 +180,37 @@
           "category": "Texte"
         }
       }
+    },
+    "richtext": {
+      "name": "Texte enrichi",
+      "settings": {
+        "richtext": { "content": "Texte enrichi" },
+        "content": {
+          "label": "Contenu",
+          "default": "<p>Là où votre message prend forme</p>"
+        },
+        "narrow": {
+          "label": "Colonne étroite",
+          "info": "Limite la largeur à 65 caractères pour la lisibilité — remplace la largeur du contenu si activé"
+        },
+        "content_width": {
+          "label": "Largeur du contenu",
+          "info": "Laisser vide pour la pleine largeur"
+        },
+        "text_color": {
+          "label": "Couleur",
+          "info": "Laisser vide pour hériter"
+        },
+        "top_spacing": { "content": "Espacement supérieur" },
+        "mobile_margin_block_start": { "label": "Mobile" },
+        "desktop_margin_block_start": { "label": "Bureau" }
+      },
+      "presets": {
+        "richtext": {
+          "name": "Texte enrichi",
+          "category": "Texte"
+        }
+      }
     }
   }
 }

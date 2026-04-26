@@ -1,0 +1,74 @@
+{% # Richtext block v1.0.0 %}
+
+{% render 'richtext', section: section, block: block %}
+
+{% schema %}
+{
+  "name": "t:blocks.richtext.name",
+  "tag": null,
+  "blocks": [],
+  "settings": [
+    {
+      "type": "header",
+      "content": "t:blocks.richtext.settings.richtext.content"
+    },
+    {
+      "type": "richtext",
+      "id": "content",
+      "label": "t:blocks.richtext.settings.content.label",
+      "default": "t:blocks.richtext.settings.content.default"
+    },
+    {
+      "type": "checkbox",
+      "id": "narrow",
+      "label": "t:blocks.richtext.settings.narrow.label",
+      "info": "t:blocks.richtext.settings.narrow.info",
+      "default": false
+    },
+    {
+      "type": "metaobject",
+      "metaobject_type": "content_width",
+      "id": "content_width",
+      "label": "t:blocks.richtext.settings.content_width.label",
+      "info": "t:blocks.richtext.settings.content_width.info"
+    },
+    {
+      "type": "metaobject",
+      "metaobject_type": "theme_color",
+      "id": "text_color",
+      "label": "t:blocks.richtext.settings.text_color.label",
+      "info": "t:blocks.richtext.settings.text_color.info"
+    },
+    {
+      "type": "header",
+      "content": "t:blocks.richtext.settings.top_spacing.content"
+    },
+    {
+      "type": "range",
+      "id": "mobile_margin_block_start",
+      "label": "t:blocks.richtext.settings.mobile_margin_block_start.label",
+      "min": 0,
+      "max": 200,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "desktop_margin_block_start",
+      "label": "t:blocks.richtext.settings.desktop_margin_block_start.label",
+      "min": 0,
+      "max": 200,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:blocks.richtext.presets.richtext.name",
+      "category": "t:blocks.richtext.presets.richtext.category"
+    }
+  ]
+}
+{% endschema %}

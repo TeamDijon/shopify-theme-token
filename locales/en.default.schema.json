@@ -171,6 +171,37 @@
           "category": "Text"
         }
       }
+    },
+    "richtext": {
+      "name": "Richtext",
+      "settings": {
+        "richtext": { "content": "Richtext" },
+        "content": {
+          "label": "Content",
+          "default": "<p>Where your message takes shape</p>"
+        },
+        "narrow": {
+          "label": "Narrow column",
+          "info": "Caps width at 65 characters for readability — overrides content width when enabled"
+        },
+        "content_width": {
+          "label": "Content width",
+          "info": "Leave blank for full width"
+        },
+        "text_color": {
+          "label": "Color",
+          "info": "Leave blank to inherit"
+        },
+        "top_spacing": { "content": "Top spacing" },
+        "mobile_margin_block_start": { "label": "Mobile" },
+        "desktop_margin_block_start": { "label": "Desktop" }
+      },
+      "presets": {
+        "richtext": {
+          "name": "Richtext",
+          "category": "Text"
+        }
+      }
     }
   }
 }
