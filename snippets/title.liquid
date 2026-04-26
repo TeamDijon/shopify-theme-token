@@ -74,22 +74,24 @@
 </{{ tag }}>
 
 {% stylesheet %}
-  .shopify-block--title {
-    max-inline-size: var(--content-width, 100%);
-    margin-block-start: var(--mobile-margin-block-start, 0rem);
-    color: var(--text-color, var(--color-foreground-heading));
+  @layer components {
+    .shopify-block--title {
+      max-inline-size: var(--content-width, 100%);
+      margin-block-start: var(--mobile-margin-block-start, 0rem);
+      color: var(--text-color, var(--color-foreground-heading));
 
-    @media (width >= 48rem) {
-      margin-block-start: var(--desktop-margin-block-start, 0rem);
-    }
+      @media (width >= 48rem) {
+        margin-block-start: var(--desktop-margin-block-start, 0rem);
+      }
 
-    & svg {
-      display: inline-flex;
-      align-self: center;
-      block-size: 0.75em;
-      min-inline-size: 0.75em;
-      margin-inline-end: 0.25em;
-      vertical-align: -0.05em;
+      & svg {
+        display: inline-flex;
+        align-self: center;
+        block-size: 0.75em;
+        min-inline-size: 0.75em;
+        margin-inline-end: 0.25em;
+        vertical-align: -0.05em;
+      }
     }
   }
 {% endstylesheet %}

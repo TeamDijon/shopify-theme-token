@@ -64,33 +64,35 @@
 </div>
 
 {% stylesheet %}
-  .shopify-block--spacer {
-    display: block;
-    position: relative;
-    inline-size: 100%;
-    block-size: var(--spacer-block-size, 0);
-    margin: 0 auto;
-    background-color: var(--background-color, transparent);
+  @layer components {
+    .shopify-block--spacer {
+      display: block;
+      position: relative;
+      inline-size: 100%;
+      block-size: var(--spacer-block-size, 0);
+      margin: 0 auto;
+      background-color: var(--background-color, transparent);
 
-    &[data-modifiers*='breakpoint'] {
-      block-size: var(--mobile-spacer-block-size, 0);
-    }
-
-    @media (width >= 40rem) {
-      &[data-modifiers*='breakpoint:40'] {
-        block-size: var(--desktop-spacer-block-size, 0);
+      &[data-modifiers*='breakpoint'] {
+        block-size: var(--mobile-spacer-block-size, 0);
       }
-    }
 
-    @media (width >= 60rem) {
-      &[data-modifiers*='breakpoint:60'] {
-        block-size: var(--desktop-spacer-block-size, 0);
+      @media (width >= 40rem) {
+        &[data-modifiers*='breakpoint:40'] {
+          block-size: var(--desktop-spacer-block-size, 0);
+        }
       }
-    }
 
-    @media (width >= 80rem) {
-      &[data-modifiers*='breakpoint:80'] {
-        block-size: var(--desktop-spacer-block-size, 0);
+      @media (width >= 60rem) {
+        &[data-modifiers*='breakpoint:60'] {
+          block-size: var(--desktop-spacer-block-size, 0);
+        }
+      }
+
+      @media (width >= 80rem) {
+        &[data-modifiers*='breakpoint:80'] {
+          block-size: var(--desktop-spacer-block-size, 0);
+        }
       }
     }
   }

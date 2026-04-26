@@ -1,4 +1,4 @@
-@layer reset, theme, utilities;
+@layer reset, theme, components, utilities;
 
 @layer reset {
   *,
