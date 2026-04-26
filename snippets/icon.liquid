@@ -1,7 +1,8 @@
-{% # Icon v1.3.0 %}
+{% # Icon v1.4.0 %}
 
 {% comment %}
   Changelog
+  - v1.4.0 — always inject `aria-hidden="true"` on the emitted SVG so decorative icons next to a labeled parent element aren't announced redundantly. Icons-as-label are still expressed via `aria-label` on the parent (button, link), and the SVG should stay hidden in that case too.
   - v1.3.0 — refine doc block to clarify the two-typology API (metaobject ref vs file_name string), picked by what the caller has on hand
   - v1.2.0 — route asset inlining through `utility--inline-asset` so a missing icon yields empty markup instead of the raw `<!-- inline_asset_content: Asset not found. -->` comment which would otherwise render as an empty SVG
   - v1.1.0 — early exit with `break` when neither file_name nor an icon metaobject is provided
@@ -38,10 +39,12 @@
     render 'utility--inline-asset', asset_name: file_name
   endcapture
 
+  assign attribute_markup = ' aria-hidden="true"'
   if icon_preset != blank
-    assign preset_attribute_markup = ' data-preset="' | append: icon_preset | append: '">'
-    assign icon_markup = icon_markup | replace_first: '>', preset_attribute_markup
+    assign attribute_markup = attribute_markup | append: ' data-preset="' | append: icon_preset | append: '"'
   endif
+  assign attribute_markup = attribute_markup | append: '>'
+  assign icon_markup = icon_markup | replace_first: '>', attribute_markup
 
   echo icon_markup
 %}
