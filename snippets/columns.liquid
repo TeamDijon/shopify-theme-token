@@ -1,4 +1,11 @@
-{% # Columns v1.0.0 %}
+{% # Columns v1.0.2 %}
+
+{% comment %}
+  Changelog
+  - v1.0.2 — wrap contents in `.shopify-block--columns__inner`; container-type stays on the outer so `@container columns` queries actually match (queries never see the element that defines the container per spec). Grid/stack-below rules move to the inner wrapper.
+  - v1.0.1 — chain `--block-rhythm-mobile`/`--block-rhythm-desktop` as inner fallback for `margin-block-start` so section-level block rhythm applies when no per-block margin is authored
+  - v1.0.0 — initial
+{% endcomment %}
 
 {% doc %}
   @description Renders a CSS Grid container for child blocks. Seven preset column ratios (2/3/4 equal, plus ⅓+⅔, ⅔+⅓, ¼+¾, ¾+¼). Stack-below uses `@container` queries against the columns block's own width, so a columns inside a narrow parent collapses to a single column when its rendered width drops below the breakpoint, regardless of the viewport.
@@ -48,7 +55,9 @@
 %}
 
 <div class="shopify-block shopify-block--columns" id="{{ base_selector }}" {{ modifiers }}>
-  {{ contents }}
+  <div class="shopify-block--columns__inner">
+    {{ contents }}
+  </div>
 
   {% capture dynamic_style %}
     {% case columns %}
@@ -93,42 +102,46 @@
 
 {% stylesheet %}
   @layer components {
+    /* Outer wrapper hosts the named container so descendant @container queries can match. The grid layout lives on the inner wrapper — querying the same element that defines the container never matches per spec. */
     .shopify-block--columns {
       container-type: inline-size;
       container-name: columns;
 
+      max-inline-size: var(--content-width, 100%);
+      margin-block-start: var(--mobile-margin-block-start, var(--block-rhythm-mobile, 0rem));
+
+      @media (width >= 48rem) {
+        margin-block-start: var(--desktop-margin-block-start, var(--block-rhythm-desktop, 0rem));
+      }
+    }
+
+    .shopify-block--columns__inner {
       display: grid;
       grid-template-columns: var(--grid-template-columns, 1fr);
       align-items: var(--vertical-alignment, start);
       gap: var(--gap, 0rem);
-      max-inline-size: var(--content-width, 100%);
-      margin-block-start: var(--mobile-margin-block-start, 0rem);
+    }
 
-      @media (width >= 48rem) {
-        margin-block-start: var(--desktop-margin-block-start, 0rem);
+    /* Stack-below: collapse to single column when container is narrower than the breakpoint */
+    .shopify-block--columns[data-modifiers*='stack-below'] > .shopify-block--columns__inner {
+      grid-template-columns: 1fr;
+    }
+
+    @container columns (inline-size >= 40rem) {
+      .shopify-block--columns[data-modifiers*='stack-below:40'] > .shopify-block--columns__inner {
+        grid-template-columns: var(--grid-template-columns);
       }
+    }
 
-      /* Stack-below: collapse to single column when container is narrower than the breakpoint */
-      &[data-modifiers*='stack-below'] {
-        grid-template-columns: 1fr;
+    @container columns (inline-size >= 60rem) {
+      .shopify-block--columns[data-modifiers*='stack-below:60'] > .shopify-block--columns__inner {
+        grid-template-columns: var(--grid-template-columns);
       }
+    }
 
-      @container columns (inline-size >= 40rem) {
-        &[data-modifiers*='stack-below:40'] {
-          grid-template-columns: var(--grid-template-columns);
-        }
-      }
-
-      @container columns (inline-size >= 60rem) {
-        &[data-modifiers*='stack-below:60'] {
-          grid-template-columns: var(--grid-template-columns);
-        }
-      }
-
-      @container columns (inline-size >= 80rem) {
-        &[data-modifiers*='stack-below:80'] {
-          grid-template-columns: var(--grid-template-columns);
-        }
+    @container columns (inline-size >= 80rem) {
+      .shopify-block--columns[data-modifiers*='stack-below:80'] > .shopify-block--columns__inner {
+        grid-template-columns: var(--grid-template-columns);
       }
     }
   }

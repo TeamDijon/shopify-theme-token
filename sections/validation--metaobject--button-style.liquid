@@ -1,7 +1,8 @@
-{% # Validation - Button style v1.2.0 %}
+{% # Validation - Button style v1.2.1 %}
 
 {% comment %}
   Changelog
+  - v1.2.1 — schema `name` shortened to "Button style" (drop "Validation - " prefix; the URL path is the source of truth and the prefix bumped longer names past Shopify's 25-char schema-name limit)
   - v1.2.0 — drop the "recognized/unrecognized" flag (no canonical handle list — off-list handles fall through to the default solid-primary appearance, that's all)
   - v1.1.0 — render `validation--breadcrumb` at the top so the developer can navigate back to the hub
   - v1.0.0 — initial
@@ -132,7 +133,7 @@
 
 {% schema %}
 {
-  "name": "Validation - Button style",
+  "name": "Button style",
   "tag": "section",
   "class": "shopify-section--validation--metaobject--button-style",
   "settings": [

@@ -1,0 +1,27 @@
+{% # Validation block labels v1.0.0 %}
+
+{% doc %}
+  @description Emits an inline `<style>` block that assigns a `--block-label` CSS custom property to each rendered block in `section.blocks`, set to the merchant-facing short id (the JSON key from the template). Consumer pages read it via `content: var(--block-label)` on a `::before` pseudo-element to label each rendered block in the validation matrix.
+
+  Why a Liquid loop + CSS variable rather than `attr(id)`: Shopify wraps each block's id with a random prefix (`<random>__<key>`) and `section.blocks[i].id` further appends a `-1` instance suffix that is stripped at render time. CSS can't substring across either — Liquid does the trimming and emits a clean per-id rule.
+
+  @param {section} section - The section object containing the blocks
+
+  @example {% render 'validation--block-labels', section: section %}
+{% enddoc %}
+
+{%- if section == nil or section.blocks.size == 0 -%}
+  {%- break -%}
+{%- endif -%}
+
+{%- capture per_block_label_css -%}
+  {%- for entry in section.blocks -%}
+    {%- assign id_size = entry.id | size -%}
+    {%- assign trim_size = id_size | minus: 2 -%}
+    {%- assign rendered_id = entry.id | slice: 0, trim_size -%}
+    {%- assign short_label = rendered_id | split: '__' | last -%}
+    #shopify-block-{{ rendered_id }} { --block-label: '{{ short_label }}'; }
+  {%- endfor -%}
+{%- endcapture -%}
+
+<style>{{ per_block_label_css | strip }}</style>

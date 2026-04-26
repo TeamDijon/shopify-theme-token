@@ -1,7 +1,8 @@
-{% # Button v1.1.0 %}
+{% # Button v1.1.1 %}
 
 {% comment %}
   Changelog
+  - v1.1.1 — chain `--block-rhythm-mobile`/`--block-rhythm-desktop` as inner fallback for `margin-block-start` so section-level block rhythm applies when no per-block margin is authored
   - v1.1.0 — replace the ad-hoc `solid-primary`/`solid-secondary`/`outline`/`ghost`/`text-link` variant CSS with a 3×3 family/variant matrix (`solid-`/`outline-`/`link-` × `-primary`/`-secondary`/`-tertiary`). Variant colors compose via CSS custom properties: families set bg/border/decoration, variants set the color token. Selectors anchor on the trailing `-` of the family prefix (e.g. `*='button-style:outline-'`) so substring matches don't leak across handles. Off-list handles fall through to the default solid-primary appearance.
   - v1.0.0 — initial
 {% endcomment %}
@@ -121,7 +122,7 @@
       gap: 0.5em;
 
       max-inline-size: var(--content-width, none);
-      margin-block-start: var(--mobile-margin-block-start, 0rem);
+      margin-block-start: var(--mobile-margin-block-start, var(--block-rhythm-mobile, 0rem));
       padding: var(--button-padding-block) var(--button-padding-inline);
       min-block-size: var(--button-min-size);
       min-inline-size: var(--button-min-size);
@@ -138,7 +139,7 @@
       transition: 0.15s ease-out;
 
       @media (width >= 48rem) {
-        margin-block-start: var(--desktop-margin-block-start, 0rem);
+        margin-block-start: var(--desktop-margin-block-start, var(--block-rhythm-desktop, 0rem));
       }
 
       @media (prefers-reduced-motion) {

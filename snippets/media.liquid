@@ -1,4 +1,10 @@
-{% # Media v1.0.0 %}
+{% # Media v1.0.1 %}
+
+{% comment %}
+  Changelog
+  - v1.0.1 — chain `--block-rhythm-mobile`/`--block-rhythm-desktop` as inner fallback for `margin-block-start` so section-level block rhythm applies when no per-block margin is authored
+  - v1.0.0 — initial
+{% endcomment %}
 
 {% doc %}
   @description Renders a media container (image or video) with optional art direction, sizing modes, edge-to-edge bleed, color-scheme override, overlay tint, and overlaid child blocks. Sizing is driven by the `media_size` metaobject (`fill` / `ratio` / `relative` / `fixed`) and emitted as a `sizing:*` modifier consumed by the stylesheet. Child content is captured by the block file via `{% content_for 'blocks' %}` and passed in as `contents`.
@@ -196,10 +202,10 @@
       overflow: hidden;
       max-inline-size: var(--content-width, 100%);
       margin-inline: auto;
-      margin-block-start: var(--mobile-margin-block-start, 0rem);
+      margin-block-start: var(--mobile-margin-block-start, var(--block-rhythm-mobile, 0rem));
 
       @media (width >= 48rem) {
-        margin-block-start: var(--desktop-margin-block-start, 0rem);
+        margin-block-start: var(--desktop-margin-block-start, var(--block-rhythm-desktop, 0rem));
       }
 
       /* Media element fills the block by default */

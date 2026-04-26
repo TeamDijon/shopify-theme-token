@@ -1,0 +1,50 @@
+{
+  "sections": {
+    "main": {
+      "type": "validation--section--hero",
+      "blocks": {
+        "hero-media": {
+          "type": "media",
+          "blocks": {
+            "hero-title": {
+              "type": "title",
+              "settings": {
+                "tag": "h1",
+                "content": "Built for the long haul"
+              }
+            },
+            "hero-body": {
+              "type": "richtext",
+              "settings": {
+                "narrow": true,
+                "content": "<p>A short paragraph in the overlay describing the hero pitch. Inherits the media block's color-scheme tokens, not the surrounding section's.</p>"
+              }
+            },
+            "hero-cta": {
+              "type": "button",
+              "settings": {
+                "content": "Get started",
+                "link": "/"
+              }
+            }
+          },
+          "block_order": ["hero-title", "hero-body", "hero-cta"],
+          "settings": {
+            "media_type": "image",
+            "bleed": true,
+            "overlay_color": "rgba(0, 0, 0, 0.45)",
+            "color_scheme": "scheme-2",
+            "horizontal_alignment": "center",
+            "vertical_alignment": "center",
+            "gap": 24
+          }
+        }
+      },
+      "block_order": ["hero-media"],
+      "settings": {
+        "color_scheme": "scheme-1"
+      }
+    }
+  },
+  "order": ["main"]
+}

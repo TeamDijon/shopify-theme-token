@@ -1,4 +1,10 @@
-{% # Richtext v1.0.0 %}
+{% # Richtext v1.0.1 %}
+
+{% comment %}
+  Changelog
+  - v1.0.1 — chain `--block-rhythm-mobile`/`--block-rhythm-desktop` as inner fallback for `margin-block-start` so section-level block rhythm applies when no per-block margin is authored
+  - v1.0.0 — initial
+{% endcomment %}
 
 {% doc %}
   @description Renders a rich-text container with prose spacing utilities, optional narrow readable column, max-width, color, and responsive top spacing. Always emits the `prose` modifier so the global rich-content spacing rules from `@layer utilities` apply; appending `prose:narrow` opts into a 65ch readable column (via the existing `[data-modifiers*="prose:narrow"]` rule in `core.css`).
@@ -70,11 +76,11 @@
   @layer components {
     .shopify-block--richtext {
       max-inline-size: var(--content-width, 100%);
-      margin-block-start: var(--mobile-margin-block-start, 0rem);
+      margin-block-start: var(--mobile-margin-block-start, var(--block-rhythm-mobile, 0rem));
       color: var(--text-color, var(--color-foreground));
 
       @media (width >= 48rem) {
-        margin-block-start: var(--desktop-margin-block-start, 0rem);
+        margin-block-start: var(--desktop-margin-block-start, var(--block-rhythm-desktop, 0rem));
       }
     }
   }
