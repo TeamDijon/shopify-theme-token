@@ -11,7 +11,7 @@ Consumers (sections, blocks, other snippets) should always call `{% render 'icon
 
 ## Filename
 
-`icon-<name>.svg` where `<name>` is lowercase kebab-case matching the `data-name` attribute (e.g. `icon-home.svg` → `data-name="home"`, `icon-arrow.svg` → `data-name="arrow"`).
+`icon-<name>.svg` where `<name>` is lowercase kebab-case matching the `data-name` attribute (e.g. `icon-arrow.svg` → `data-name="arrow"`, `icon-chevron.svg` → `data-name="chevron"`).
 
 ## Root `<svg>` attributes
 

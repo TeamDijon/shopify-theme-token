@@ -43,7 +43,14 @@ Every section carries these settings before its custom ones:
   "metaobject_type": "content_width",
   "id": "content_width",
   "label": "Content width",
-  "info": "Leave blank for full width"
+  "info": "Leave blank for the 2000px theme default — full width on most screens (1920px and below)."
+},
+{
+  "type": "metaobject",
+  "metaobject_type": "spacing",
+  "id": "block_rhythm",
+  "label": "Block rhythm",
+  "info": "Vertical space between blocks. Leave blank for none."
 },
 { "type": "header", "content": "Appearance" },
 {
@@ -53,6 +60,20 @@ Every section carries these settings before its custom ones:
   "default": "scheme-1"
 }
 ```
+
+`block_rhythm` emits `--block-rhythm-mobile` / `--block-rhythm-desktop` CSS variables via `utility--dynamic-style`. The matching rule lives in `core.css` under `theme-section`:
+
+```css
+& :where(.shopify-block) + .shopify-block {
+  margin-block-start: var(--block-rhythm-mobile, 0);
+
+  @media (width >= 48rem) {
+    margin-block-start: var(--block-rhythm-desktop, 0);
+  }
+}
+```
+
+The `:where()` keeps specificity at zero so per-block overrides work; the sibling combinator gets margin-collapse semantics for free. Default 0 when no rhythm is configured.
 
 See `.claude/rules/section-convention.md` for the full section structure.
 
