@@ -1,6 +1,6 @@
 # HTML standards
 
-Conventions for theme HTML output. Distilled from Horizon's `html-standards.mdc` and our existing practice. Not exhaustive; deeper patterns reference Horizon (`C:\Users\troph\Downloads\horizon-main\horizon-main\.cursor\rules\html-standards.mdc`).
+Conventions for theme HTML output.
 
 ## Native elements first
 
@@ -51,6 +51,5 @@ Use the input type that matches the data — browsers provide built-in validatio
 
 ## Related
 
-- Horizon `html-standards.mdc` — comprehensive native-first patterns, Shopify form integration, edge cases
 - `.context/rules/a11y-conventions.md` — accessibility principles for HTML
 - `.context/docs/css-standards.md` — visual styling for the elements you choose

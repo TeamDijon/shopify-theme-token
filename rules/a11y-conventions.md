@@ -39,4 +39,4 @@ Existing keys: `accessibility.opens_in_new_tab` (button new-tab links), `accessi
 
 ## When authoring an interactive component
 
-Reference Horizon's per-component rules for ARIA roles, keyboard interactions, and focus management. Path: `C:\Users\troph\Downloads\horizon-main\horizon-main\.cursor\rules\<component>-accessibility.mdc` (e.g., `modal-accessibility.mdc`, `tab-accessibility.mdc`, `form-accessibility.mdc`). Each is 100-700 lines deep — distill the relevant patterns into the component's snippet doc block or `{% stylesheet %}` comments rather than copying wholesale.
+Reference Horizon's per-component rules for ARIA roles, keyboard interactions, and focus management. Path: `../horizon/.cursor/rules/<component>-accessibility.mdc` (e.g., `modal-accessibility.mdc`, `tab-accessibility.mdc`, `form-accessibility.mdc`) — assumes Horizon is checked out as a sibling of this repo. Each rule is 100-700 lines deep — distill the relevant patterns into the component's snippet doc block or `{% stylesheet %}` comments rather than copying wholesale.

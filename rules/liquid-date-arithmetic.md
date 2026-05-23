@@ -62,7 +62,7 @@ Combining timestamp arithmetic with a for loop allows counting business days, fi
 
 - `%e` gives space-padded day (use `| strip` to remove leading space)
 - `%d` gives zero-padded day
-- `%B` gives full month name (always in English — see `.claude/rules/liquid-date-translation.md` for locale support)
+- `%B` gives full month name (always in English — see `.context/rules/liquid-date-translation.md` for locale support)
 - `%Y%m%d` is useful for sort keys (lexicographic ordering matches chronological)
 
 ## When to use

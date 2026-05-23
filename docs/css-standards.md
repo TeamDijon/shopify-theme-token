@@ -1,6 +1,6 @@
 # CSS standards
 
-Conventions for theme CSS. Distilled from Horizon's `css-standards.mdc` and our existing practice. Not exhaustive; deeper patterns reference Horizon (`C:\Users\troph\Downloads\horizon-main\horizon-main\.cursor\rules\css-standards.mdc`).
+Conventions for theme CSS.
 
 ## Specificity discipline
 
@@ -112,7 +112,6 @@ Use whenever a custom property needs to animate (color-scheme transitions, compu
 
 ## Related
 
-- Horizon `css-standards.mdc` — deeper patterns, anti-patterns, and Shopify-specific concerns
 - `.context/rules/a11y-conventions.md` — color contrast, focus management, prefers-reduced-motion details
 - `.context/docs/asset-loading.md` — where component CSS lives (file vs `{% stylesheet %}`)
 - `.context/docs/dynamic-style-pattern.md` — per-instance Liquid-computed CSS

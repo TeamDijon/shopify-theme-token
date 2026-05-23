@@ -1,6 +1,6 @@
 # Versioning and changelog
 
-Every versionable unit (snippet, block, section, JS module) carries a version header and an inline changelog. This doc covers the shared format and policy. File-type-specific rules in `.claude/rules/` specify the syntax of the header, where the changelog lives, and what counts as an "interface change" for that type.
+Every versionable unit (snippet, block, section, JS module) carries a version header and an inline changelog. This doc covers the shared format and policy. File-type-specific rules in `.context/rules/` specify the syntax of the header, where the changelog lives, and what counts as an "interface change" for that type.
 
 ## Versioning
 

@@ -34,4 +34,4 @@ When building a collection of items incrementally inside a loop, especially when
 
 ## Related
 
-- Object construction: `.claude/rules/liquid-object-construction.md`
+- Object construction: `.context/rules/liquid-object-construction.md`

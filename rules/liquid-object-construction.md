@@ -29,4 +29,4 @@ When you need to associate multiple properties with a single entity and later fi
 
 ## Related
 
-- Array building: `.claude/rules/liquid-array-building.md`
+- Array building: `.context/rules/liquid-array-building.md`

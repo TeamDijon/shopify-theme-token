@@ -75,7 +75,7 @@ Every section carries these settings before its custom ones:
 
 The `:where()` keeps specificity at zero so per-block overrides work; the sibling combinator gets margin-collapse semantics for free. Default 0 when no rhythm is configured.
 
-See `.claude/rules/section-convention.md` for the full section structure.
+See `.context/rules/section-convention.md` for the full section structure.
 
 ## Block-level color scheme override
 

@@ -36,7 +36,7 @@ When the section has bespoke JS (cart, header, footer, etc.), the root element i
 3. Custom markup driven by settings/blocks as needed
 4. Dynamic style if per-instance CSS values apply
 
-Examples: `<theme-cart>`, `<theme-header>`, `<theme-footer>`. The corresponding JS class is defined in `assets/<name>.js` and extends `BaseComponent` (see `.claude/rules/js-asset-convention.md`). For the full worked example (Liquid + JS pair, patterns to follow, patterns to avoid), see `.context/docs/specialized-section-pattern.md`.
+Examples: `<theme-cart>`, `<theme-header>`, `<theme-footer>`. The corresponding JS class is defined in `assets/<name>.js` and extends `BaseComponent` (see `.context/rules/js-asset-convention.md`). For the full worked example (Liquid + JS pair, patterns to follow, patterns to avoid), see `.context/docs/specialized-section-pattern.md`.
 
 ## Architecture
 

@@ -134,6 +134,20 @@ mutation Seed {
    - `settings_data.json` → `current.base_text_style` = GID of the `body` text_style entry
 5. Optionally verify by re-querying via `metaobjectDefinitions` + `metaobjects` and asserting against the doc.
 
+## Per-store coupling
+
+`settings_data.json` and any block/section settings of `"type": "metaobject"` reference entries by Shopify GID (`gid://shopify/Metaobject/<numeric-id>`). GIDs are **store-specific** — the same `theme_color` handle (`accent`) gets a different numeric id on every store.
+
+Practical consequence: pushing this theme to a new store (staging, prod, a fresh dev shop) without a rebind step leaves every metaobject-typed setting pointing at GIDs from the source store. The settings resolve to nothing and silently fall back to defaults (system font, no custom colors, etc.). Theme-check doesn't catch it; the editor shows blank pickers.
+
+**Recovery procedure (post-seeding on a new store):**
+
+1. Seed the metaobject definitions and entries per this doc.
+2. Re-bind theme-settings via Shopify admin → **Theme settings**: open every section with metaobject pickers and re-select each entry. Or update `settings_data.json` directly — set `current.base_text_style` to the new store's `body` entry GID and remove any other stale GID references.
+3. Re-bind per-section block settings: any block with metaobject-typed settings (e.g. `media`'s `media_size`, `title`'s `text_style`, `separator`'s `line_color`) needs the entry re-picked in the editor on each page that uses it.
+
+When promoting becomes routine, a script in `bin/` that maps GIDs by handle (query both stores → diff → rewrite `settings_data.json`) is the standard upgrade path. For a single-store setup, the manual rebind is fine.
+
 ## Type definitions
 
 ### `theme_color`

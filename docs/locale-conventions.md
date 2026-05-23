@@ -29,7 +29,7 @@ For content used across 2+ domains:
 | `info` | Descriptive copy, help text, paragraphs |
 | `errors` | Error messages |
 | `accessibility` | SR-only strings |
-| `dates` | Dates subsystem — see `.claude/rules/liquid-date-translation.md` |
+| `dates` | Dates subsystem — see `.context/rules/liquid-date-translation.md` |
 
 Omit a namespace entirely when empty — don't ship `"info": {}`.
 
@@ -66,7 +66,7 @@ Is it accessibility / SR-only?
 - snake_case (matches Shopify's built-in keys)
 - Verbs go under `actions`, nouns under `labels`, paragraphs under `info`
 - Plural-sensitive keys use Shopify's `one` / `other` pattern: `dates.days.one`, `dates.days.other`
-- Dynamic keys (e.g. `'dates.months.' | append: handle | t`) need `theme-check-disable TranslationKeyExists` around them — see `.claude/rules/liquid-date-translation.md`
+- Dynamic keys (e.g. `'dates.months.' | append: handle | t`) need `theme-check-disable TranslationKeyExists` around them — see `.context/rules/liquid-date-translation.md`
 
 ## Dates subsystem
 
@@ -76,7 +76,7 @@ The `dates` namespace follows a special pattern to work around Liquid's English-
 - `dates.days.<handle>` + `dates.days.default.<handle>` — locale + English-source pair for translation-replace
 - `dates.months.<handle>` + `dates.months.default.<handle>` — same
 
-See `.claude/rules/liquid-date-translation.md` for the replacement pattern.
+See `.context/rules/liquid-date-translation.md` for the replacement pattern.
 
 ## Schema file (`*.schema.json`)
 
@@ -133,5 +133,5 @@ The Shopify admin language editor can overwrite `*.schema.json` when merchants e
 
 ## Related
 
-- Date translation pattern: `.claude/rules/liquid-date-translation.md`
+- Date translation pattern: `.context/rules/liquid-date-translation.md`
 - Shopify `t:` docs: https://shopify.dev/docs/storefronts/themes/architecture/locales/schema-locale-files

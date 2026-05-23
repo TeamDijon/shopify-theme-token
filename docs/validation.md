@@ -85,15 +85,15 @@ After authoring a validation section, add an anchor in `sections/validation.liqu
 
 ## The 21-section inventory
 
-Comprehensive first pass:
+All three layers shipped — 21 of 21 pages live. ZAG (`shopify-theme-zag`) was the original reference for the `theme_color` and `icon` patterns; Token's pages are now authored independently and the inventory is closed.
 
 **Layer 1 — Metaobjects (8 sections)**
 
-`theme-color`, `icon`, `text-style`, `button-style`, `container-style`, `media-size`, `content-width`, `spacing`. Iterate `metaobjects.<type>.values` and render a grid showing handle + relevant fields. Port `theme_color` and `icon` patterns from ZAG (`shopify-theme-zag/sections/validation--theme-color.liquid` and `validation--icon.liquid`).
+`theme-color`, `icon`, `text-style`, `button-style`, `container-style`, `media-size`, `content-width`, `spacing`. Each iterates `metaobjects.<type>.values` and renders a card per entry surfacing handle + relevant fields.
 
 **Layer 2 — Blocks (9 sections)**
 
-`spacer`, `separator`, `title`, `richtext`, `button`, `media`, `embed`, `group`, `columns`. Each pairs with a JSON template that bakes the modifier matrix into block instances.
+`spacer`, `separator`, `title`, `richtext`, `button`, `media`, `embed`, `group`, `columns`. Each pairs with a JSON template that bakes the modifier matrix into block instances; the section harness renders them via `{% content_for 'blocks' %}` with the labelling helper.
 
 **Layer 3 — Compositions (4 sections)**
 
@@ -102,7 +102,14 @@ Comprehensive first pass:
 - `columns-features` — columns containing media + title + richtext per column, exercises container queries
 - `cta-banner` — separator + group + button variants
 
-These exercise cross-block bugs caught in wave-2 review (block_rhythm scope, focus-ring inside media-contents, color-scheme cascade). Use them to prevent regressions.
+These exercised the cross-block bugs caught during the initial author pass (block_rhythm layer-cascade collision, separator collapse in flex parents, group/columns self-container-query) — all three were fixed in the validation-triage commits and the pages now serve as regression guards.
+
+## Helper snippets
+
+Two snippets live in `snippets/` to keep the per-topic pages thin:
+
+- **`validation--breadcrumb.liquid`** — renders a back-link to `?view=validation`. Drop into the top of every per-topic page (`{% render 'validation--breadcrumb' %}`). The hub itself skips it.
+- **`validation--block-labels.liquid`** — for the 9 block-validation pages. Iterates `section.blocks` and emits an inline `<style>` block that sets a `--block-label` CSS custom property on each rendered block to its merchant-facing short id. The consuming page's stylesheet reads it via `content: var(--block-label)` on a `::before` pseudo-element so each block in the matrix is labelled. Liquid does the id-cleaning because Shopify wraps each block id as `<random>__<key>` and `section.blocks[i].id` further appends a `-1` instance suffix that's stripped at render time — neither is substringable in pure CSS. Render once per page after `{% content_for 'blocks' %}`: `{% render 'validation--block-labels', section: section %}`.
 
 ## Working with Playwright MCP
 
