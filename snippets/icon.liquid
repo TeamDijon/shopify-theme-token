@@ -1,7 +1,8 @@
-{% # Icon v1.4.0 %}
+{% # Icon v1.4.1 %}
 
 {% comment %}
   Changelog
+  - v1.4.1 — escape `preset` before interpolating into the `data-preset` attribute so callers passing untrusted strings can't break out of the attribute
   - v1.4.0 — always inject `aria-hidden="true"` on the emitted SVG so decorative icons next to a labeled parent element aren't announced redundantly. Icons-as-label are still expressed via `aria-label` on the parent (button, link), and the SVG should stay hidden in that case too.
   - v1.3.0 — refine doc block to clarify the two-typology API (metaobject ref vs file_name string), picked by what the caller has on hand
   - v1.2.0 — route asset inlining through `utility--inline-asset` so a missing icon yields empty markup instead of the raw `<!-- inline_asset_content: Asset not found. -->` comment which would otherwise render as an empty SVG
@@ -34,6 +35,7 @@
 
   assign file_name = 'icon-' | append: file_name | append: '.svg'
   assign icon_preset = preset | default: icon.preset.value
+  assign icon_preset = icon_preset | escape
 
   capture icon_markup
     render 'utility--inline-asset', asset_name: file_name

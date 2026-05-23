@@ -1,7 +1,8 @@
-{% # Embed v1.0.1 %}
+{% # Embed v1.0.2 %}
 
 {% comment %}
   Changelog
+  - v1.0.2 — youtu.be and youtube.com/shorts URL parsers split on `/` before `?`/`&`/`#` so trailing-slash variants resolve to a clean video id
   - v1.0.1 — chain `--block-rhythm-mobile`/`--block-rhythm-desktop` as inner fallback for `margin-block-start` so section-level block rhythm applies when no per-block margin is authored
   - v1.0.0 — initial
 {% endcomment %}
@@ -44,14 +45,14 @@
 
   if url contains 'youtu.be/'
     assign provider = 'youtube'
-    assign video_id = url | split: 'youtu.be/' | last | split: '?' | first | split: '&' | first | split: '#' | first
+    assign video_id = url | split: 'youtu.be/' | last | split: '/' | first | split: '?' | first | split: '&' | first | split: '#' | first
     assign embed_url = 'https://www.youtube.com/embed/' | append: video_id
   elsif url contains 'youtube.com/embed/'
     assign provider = 'youtube'
     assign embed_url = url
   elsif url contains 'youtube.com/shorts/'
     assign provider = 'youtube'
-    assign video_id = url | split: 'youtube.com/shorts/' | last | split: '?' | first | split: '#' | first
+    assign video_id = url | split: 'youtube.com/shorts/' | last | split: '/' | first | split: '?' | first | split: '#' | first
     assign embed_url = 'https://www.youtube.com/embed/' | append: video_id
   elsif url contains 'youtube.com/watch'
     assign video_id = ''
