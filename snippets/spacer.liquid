@@ -2,7 +2,7 @@
 
 {% comment %}
   Changelog
-  - v1.1.1 — split shorthand `margin-block: 0` into separate start/end so section-level block rhythm (`--block-rhythm-mobile`/`--block-rhythm-desktop`) applies as the inner fallback for `margin-block-start`
+  - v1.1.1 — split the `margin-block: 0` shorthand into separate start/end so margin-block-start can chain block-rhythm vars (`--block-rhythm-mobile`/`--block-rhythm-desktop`) as the inner fallback; margin-block-end stays at 0
   - v1.1.0 — read background color via `var(--color-<handle>)` instead of re-extracting `hex_code.value`; reuses the global theme-color CSS variable
   - v1.0.0 — initial
 {% endcomment %}

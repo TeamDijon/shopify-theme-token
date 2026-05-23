@@ -104,6 +104,58 @@
             "gap": 24
           }
         },
+        "vertical-start": {
+          "type": "columns",
+          "blocks": {
+            "tall": { "type": "richtext", "settings": { "content": "<p>Tall column with multiple paragraphs to force a height difference.</p><p>Second paragraph.</p><p>Third paragraph.</p>" } },
+            "short": { "type": "richtext", "settings": { "content": "<p>Short.</p>" } }
+          },
+          "block_order": ["tall", "short"],
+          "settings": {
+            "columns": "2",
+            "stack_below": "none",
+            "vertical_alignment": "start"
+          }
+        },
+        "vertical-center": {
+          "type": "columns",
+          "blocks": {
+            "tall": { "type": "richtext", "settings": { "content": "<p>Tall column with multiple paragraphs to force a height difference.</p><p>Second paragraph.</p><p>Third paragraph.</p>" } },
+            "short": { "type": "richtext", "settings": { "content": "<p>Short.</p>" } }
+          },
+          "block_order": ["tall", "short"],
+          "settings": {
+            "columns": "2",
+            "stack_below": "none",
+            "vertical_alignment": "center"
+          }
+        },
+        "vertical-end": {
+          "type": "columns",
+          "blocks": {
+            "tall": { "type": "richtext", "settings": { "content": "<p>Tall column with multiple paragraphs to force a height difference.</p><p>Second paragraph.</p><p>Third paragraph.</p>" } },
+            "short": { "type": "richtext", "settings": { "content": "<p>Short.</p>" } }
+          },
+          "block_order": ["tall", "short"],
+          "settings": {
+            "columns": "2",
+            "stack_below": "none",
+            "vertical_alignment": "end"
+          }
+        },
+        "vertical-stretch": {
+          "type": "columns",
+          "blocks": {
+            "tall": { "type": "richtext", "settings": { "content": "<p>Tall column with multiple paragraphs to force a height difference.</p><p>Second paragraph.</p><p>Third paragraph.</p>" } },
+            "short": { "type": "richtext", "settings": { "content": "<p>Short.</p>" } }
+          },
+          "block_order": ["tall", "short"],
+          "settings": {
+            "columns": "2",
+            "stack_below": "none",
+            "vertical_alignment": "stretch"
+          }
+        },
         "with-spacing": {
           "type": "columns",
           "blocks": {
@@ -128,6 +180,10 @@
         "one-three",
         "three-one",
         "stack-below-60",
+        "vertical-start",
+        "vertical-center",
+        "vertical-end",
+        "vertical-stretch",
         "with-spacing"
       ],
       "settings": {}

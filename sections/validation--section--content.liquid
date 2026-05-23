@@ -1,40 +1,23 @@
-{% # Validation - Section - Content v1.0.0 %}
+{% # Validation - Section - Content v1.0.1 %}
 
 {% comment %}
+  Changelog
+  - v1.0.1 — drop the original block_rhythm-bug write-up now that the
+    cascade is fixed; replace with a current-behaviour description.
+  - v1.0.0 — initial
+
   Section-level composition validation for the "content" pattern: a
   title + richtext + button stacked vertically inside a centered
   readable column. Exercises:
 
+  - Inter-block rhythm: the section emits `--block-rhythm-mobile` and
+    `--block-rhythm-desktop` on theme-section; each block snippet's
+    `margin-block-start` chains those vars as its inner fallback. The
+    visible gap between the three top-level blocks is the rhythm in
+    action (verify via computed margin-block-start).
   - The color_scheme modifier on the section root cascading into the
     inner blocks (button text/bg, link color in richtext, foreground).
   - content_width capping the inner column for readability.
-
-  Surfaces a real bug in the block_rhythm system. The harness emits
-  `--block-rhythm-mobile/desktop` on theme-section, and core.css's
-  rule (in @layer theme):
-
-      theme-section > :where(.shopify-block) + .shopify-block {
-        margin-block-start: var(--block-rhythm-mobile, 0);
-      }
-
-  …is supposed to apply that gap to every block past the first. But
-  every block snippet sets its OWN margin via @layer components:
-
-      .shopify-block--<name> {
-        margin-block-start: var(--mobile-margin-block-start, 0rem);
-      }
-
-  Layer cascade puts components after theme, so the per-block rule wins
-  with its 0rem fallback even when the per-block setting wasn't
-  authored. Result: block_rhythm never actually applies in practice.
-  Logged to triage; the fix is to chain the fallback in each block's
-  margin rule (`var(--mobile-margin-block-start,
-  var(--block-rhythm-mobile, 0))`).
-
-  The visual on this page shows the bug: zero gap between the title and
-  richtext blocks even with rhythm CSS vars set. Per-block
-  margin_block_start settings still work (they author the per-instance
-  var), so the bug is specifically in the rhythm path.
 
   Reachable only at /?view=validation--section--content.
   See `.context/docs/validation.md`.

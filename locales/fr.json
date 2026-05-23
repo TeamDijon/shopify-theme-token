@@ -3,6 +3,12 @@
  * Non-default locale. The Shopify admin language editor may overwrite
  * this file when merchants translate via the UI. Keep hand-edits
  * minimal and expect them to be replayed.
+ *
+ * `dates.days.default.*` and `dates.months.default.*` deliberately hold
+ * ENGLISH source values — they are the find-and-replace source for the
+ * date-translation pattern (see `.context/rules/liquid-date-translation.md`).
+ * Do NOT translate them. If a translator updates the `default.*` keys to
+ * French, dates will silently fail to localize.
  * ------------------------------------------------------------
  */
 {
