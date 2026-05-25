@@ -84,6 +84,16 @@ Three flows, each with its own strategy:
 
 When adding a specialized section root, add its tag to the `:is(...)` list so it inherits theme defaults.
 
+## Block-level conventions
+
+A few cross-cutting conventions that shape how blocks behave but aren't enforced by the schema:
+
+- **Per-block top-spacing is an escape hatch, not the base rhythm.** Every block carries `mobile_margin_block_start` / `desktop_margin_block_start` as raw px ranges (not metaobject-driven). That's intentional: the section-level `block_rhythm` metaobject sets the baseline rhythm via `--block-rhythm-mobile/desktop`, and per-block margins are instance-specific overrides on top. Snippets chain `var(--mobile-margin-block-start, var(--block-rhythm-mobile, 0rem))` so unset per-block values fall through to the section rhythm. The same applies to `gap` on container blocks. Forcing these through a `spacing` metaobject would either explode the catalog or over-constrain merchants; raw ranges are the right shape for an override.
+
+- **Block-level content blocks self-center capped widths.** When a content block (`title`, `richtext`) has a `content_width` cap, the block self-centers via `margin-inline: auto`. Container blocks (`group`, `columns`) do not — they're responsible for positioning their own children. Inline-level blocks like `button` follow neither rule because `margin-inline: auto` doesn't do anything for inline-level boxes; the parent positions them.
+
+- **Section inter-block rhythm flows through `--block-rhythm-*`.** Sections set `--block-rhythm-mobile` / `--block-rhythm-desktop` once, and every child block's first declaration (`margin-block-start`) consumes it as a fallback when no per-block top spacing is authored. Reach for a `spacer` block only when you need a one-off gap larger than the rhythm — not as a default spacing tool between adjacent blocks.
+
 ## Conventions worth knowing upfront
 
 | Convention | Cross-ref |

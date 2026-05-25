@@ -407,6 +407,10 @@ Standard name field — see [convention](#name-field-convention). Description: *
 | `h5` | H5 | 18 | 20 | 1.4 | 600 |
 | `h6` | H6 | 16 | 18 | 1.5 | 600 |
 | `body` | Body | 16 | 16 | 1.5 | 400 |
+| `eyebrow` | Eyebrow | 12 | 13 | 1.4 | 600 |
+| `fine-print` | Fine print | 13 | 14 | 1.4 | 400 |
+
+The h1–h6 + body set covers the document typography. The two extras cover editorial roles that recur across archetypes: `eyebrow` for small uppercase pre-headings and section labels (consume via `text-transform: uppercase` + `letter-spacing` in the entry); `fine-print` for meta strips (recipe yields, testimonial source, timestamps, attribution). Both are optional — add them when a project calls for them.
 
 All entries point `font_family` at the same typeface (e.g., the merchant's primary sans-serif) and use `font_fallback_family: sans-serif`. Tune per-store post-seed.
 
