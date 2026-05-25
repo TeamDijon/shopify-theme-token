@@ -7,6 +7,8 @@ paths:
 
 Blocks are thin wrappers. They declare the schema and render a matching snippet — they contain no rendering logic.
 
+Before authoring a new block, walk the decision flow in `.context/docs/composition-strategy.md`. Many UI patterns are better expressed as snippets consumed by specialized sections; not everything that looks like a primitive belongs at the theme-block layer.
+
 ## Structure (in order)
 
 1. **Version header** — `{% # <Name> block vX.Y.Z %}`

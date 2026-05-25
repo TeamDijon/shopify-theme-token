@@ -108,6 +108,8 @@ A few cross-cutting conventions that shape how blocks behave but aren't enforced
 
 ## Where to start when adding
 
+Before picking a unit type, walk the decision flow in `.context/docs/composition-strategy.md` — it lays out the five layers (snippet, theme block, preset, Framing-A section, Framing-B section) and the rule for choosing among them. Then come back here for the per-unit conventions.
+
 - **New snippet** — `snippet-convention.md` for structure (header, doc block, liquid, output)
 - **New block** — `block-convention.md` (thin schema wrapper that renders a matching snippet of the same name)
 - **New section** — `section-convention.md` (standard or specialized; specialized roots also need adding to the `:is(...)` list in core.css)

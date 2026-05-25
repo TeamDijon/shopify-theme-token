@@ -5,6 +5,8 @@ paths:
 
 # Section convention
 
+Before authoring a new section, walk the decision flow in `.context/docs/composition-strategy.md`. Many archetypes are presets of existing blocks rather than new sections; the line between standard sections, Framing-A specialized sections (inline blocks), and Framing-B specialized sections (metaobject-driven) is laid out there.
+
 ## Structure
 
 Every section file has:
