@@ -240,6 +240,13 @@
         "open_in_new_tab": { "label": "Ouvrir dans un nouvel onglet" },
         "button_style": { "label": "Style" },
         "icon": { "label": "Icône" },
+        "icon_position": {
+          "label": "Position de l'icône",
+          "options": {
+            "start": "Début",
+            "end": "Fin"
+          }
+        },
         "content_width": {
           "label": "Largeur du contenu",
           "info": "Laisser vide pour la pleine largeur"

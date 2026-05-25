@@ -1,7 +1,8 @@
-{% # Button v1.1.3 %}
+{% # Button v1.2.0 %}
 
 {% comment %}
   Changelog
+  - v1.2.0 — add `icon_position` param emitted as `icon-position:end` modifier; CSS flips flex-direction so the icon trails the label
   - v1.1.3 — secondary/tertiary variants flow through scheme `--color-foreground` / `--color-background` instead of hardcoded `#000000` / `#ffffff`, so the high-contrast pair auto-adapts when the surrounding color scheme inverts
   - v1.1.2 — link-family buttons keep the 2.75rem min-block-size touch target (only the visible padding/border/background is zeroed)
   - v1.1.1 — chain `--block-rhythm-mobile`/`--block-rhythm-desktop` as inner fallback for `margin-block-start` so section-level block rhythm applies when no per-block margin is authored
@@ -20,6 +21,7 @@
   @param {boolean} [open_in_new_tab] - When true on a linked button, opens in a new tab and announces it to screen readers. Defaults to false.
   @param {metaobject} [button_style] - `button_style` metaobject. Reads `.system.handle` and emits `button-style:<handle>` modifier. Variant CSS covers a 3×3 matrix: family `solid-` / `outline-` / `link-` (filled / 1px border + transparent bg / no border + no padding + underlined) × variant `-primary` / `-secondary` / `-tertiary` (accent / black / white). The full handle set is `solid-primary` (default, redundant when set explicitly), `solid-secondary`, `solid-tertiary`, `outline-primary`, `outline-secondary`, `outline-tertiary`, `link-primary`, `link-secondary`, `link-tertiary`. Handles outside this set fall through to the default `solid-primary` appearance. New variants are added by extending this snippet's stylesheet, not the metaobject schema.
   @param {metaobject} [icon] - `icon` metaobject. Inline SVG before the label. No icon when blank.
+  @param {string} [icon_position] - `'start'` (default, icon leads the label) or `'end'` (icon trails). Ignored when no icon is set.
   @param {metaobject} [content_width] - `content_width` metaobject. Reads `.width.value` (px) and applies as `max-inline-size`. No cap when blank.
   @param {number} [mobile_margin_block_start] - Top margin in px below the desktop breakpoint. Defaults to 0.
   @param {number} [desktop_margin_block_start] - Top margin in px at or above the desktop breakpoint. Defaults to 0.
@@ -37,6 +39,7 @@
   assign open_in_new_tab = open_in_new_tab | default: block.settings.open_in_new_tab, allow_false: true | default: false, allow_false: true
   assign button_style = button_style | default: block.settings.button_style
   assign icon = icon | default: block.settings.icon
+  assign icon_position = icon_position | default: block.settings.icon_position | default: 'start'
   assign content_width = content_width | default: block.settings.content_width | default: ''
   assign mobile_margin_block_start = mobile_margin_block_start | default: block.settings.mobile_margin_block_start | default: 0
   assign desktop_margin_block_start = desktop_margin_block_start | default: block.settings.desktop_margin_block_start | default: 0
@@ -55,6 +58,13 @@
 
   if button_style and button_style != blank
     assign modifier_list = 'button-style:' | append: button_style.system.handle
+  endif
+
+  if icon and icon != blank and icon_position == 'end'
+    if modifier_list != blank
+      assign modifier_list = modifier_list | append: ','
+    endif
+    assign modifier_list = modifier_list | append: 'icon-position:end'
   endif
 
   capture base_selector
@@ -151,6 +161,11 @@
       & svg {
         block-size: 0.85em;
         min-inline-size: 0.85em;
+      }
+
+      /* Icon position: end — flip flex order so the icon trails the label */
+      &[data-modifiers*='icon-position:end'] {
+        flex-direction: row-reverse;
       }
 
       &:focus-visible {
