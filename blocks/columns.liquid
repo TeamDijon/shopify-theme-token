@@ -1,7 +1,8 @@
-{% # Columns block v1.1.0 %}
+{% # Columns block v1.2.0 %}
 
 {% comment %}
   Changelog
+  - v1.2.0 — add `sticky_track` setting (none/first/second) to pin one column while the other scrolls; visible only on 2-track layouts; hides `vertical_alignment` when active since sticky forces start alignment
   - v1.1.0 — add `bleed` checkbox to extend the columns past the section gutter to the visible viewport width
   - v1.0.0 — initial
 {% endcomment %}
@@ -50,6 +51,19 @@
     },
     {
       "type": "select",
+      "id": "sticky_track",
+      "label": "t:blocks.columns.settings.sticky_track.label",
+      "info": "t:blocks.columns.settings.sticky_track.info",
+      "options": [
+        { "value": "none", "label": "t:blocks.columns.settings.sticky_track.options.none" },
+        { "value": "first", "label": "t:blocks.columns.settings.sticky_track.options.first" },
+        { "value": "second", "label": "t:blocks.columns.settings.sticky_track.options.second" }
+      ],
+      "default": "none",
+      "visible_if": "{{ block.settings.columns == '2' or block.settings.columns == '1-2' or block.settings.columns == '2-1' or block.settings.columns == '1-3' or block.settings.columns == '3-1' }}"
+    },
+    {
+      "type": "select",
       "id": "vertical_alignment",
       "label": "t:blocks.columns.settings.vertical_alignment.label",
       "options": [
@@ -58,7 +72,8 @@
         { "value": "end", "label": "t:blocks.columns.settings.vertical_alignment.options.end" },
         { "value": "stretch", "label": "t:blocks.columns.settings.vertical_alignment.options.stretch" }
       ],
-      "default": "start"
+      "default": "start",
+      "visible_if": "{{ block.settings.sticky_track == 'none' }}"
     },
     {
       "type": "metaobject",

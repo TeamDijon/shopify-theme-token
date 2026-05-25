@@ -1,7 +1,8 @@
-{% # Columns v1.1.0 %}
+{% # Columns v1.2.0 %}
 
 {% comment %}
   Changelog
+  - v1.2.0 — add `sticky_track` param emitted as `sticky-track:first`/`:second` modifier; CSS applies `position: sticky` to the named child with `align-self: start`. Sticky disables itself when stack-below has collapsed the layout to a single column. Doc block notes that the non-sticky track stays at natural height so the parent grid can grow taller than the sticky child.
   - v1.1.0 — add `bleed` param emitted as `,bleed` modifier; CSS escapes the section gutter to the visible viewport width (same math as media's bleed)
   - v1.0.2 — wrap contents in `.shopify-block--columns__inner`; container-type stays on the outer so `@container columns` queries actually match (queries never see the element that defines the container per spec). Grid/stack-below rules move to the inner wrapper.
   - v1.0.1 — chain `--block-rhythm-mobile`/`--block-rhythm-desktop` as inner fallback for `margin-block-start` so section-level block rhythm applies when no per-block margin is authored
@@ -17,7 +18,8 @@
   @param {string} [contents] - Pre-rendered child blocks markup. Skips render when blank.
   @param {string} [columns] - Column layout. One of `'2'`, `'3'`, `'4'`, `'1-2'`, `'2-1'`, `'1-3'`, `'3-1'`. Defaults to `'2'`.
   @param {string} [stack_below] - Collapse to single column when container is below the breakpoint. One of `'none'`, `'40'`, `'60'`, `'80'` (rem). Defaults to `'60'`.
-  @param {string} [vertical_alignment] - `align-items` value for grid items. One of `'start'` (default), `'center'`, `'end'`, `'stretch'`.
+  @param {string} [vertical_alignment] - `align-items` value for grid items. One of `'start'` (default), `'center'`, `'end'`, `'stretch'`. Ignored when `sticky_track` is set — sticky forces start alignment so the non-sticky track can grow taller than the sticky one.
+  @param {string} [sticky_track] - Pins one track while the other scrolls. `'none'` (default), `'first'`, or `'second'`. Only meaningful for 2-track layouts (`2`, `1-2`, `2-1`, `1-3`, `3-1`). Disabled when stack-below has collapsed the layout to a single column.
   @param {metaobject} [content_width] - `content_width` metaobject. Caps `max-inline-size`. Full width when blank. Ignored when `bleed` is true.
   @param {number} [gap] - Gap between columns in px. Defaults to 16.
   @param {boolean} [bleed] - Extends the columns past the section gutter to the visible viewport width (`margin-inline: calc(50% - 50dvw)`). Same constraint as `media`'s bleed: assumes a centered ancestor chain. Defaults to false.
@@ -32,6 +34,7 @@
   assign columns = columns | default: block.settings.columns | default: '2'
   assign stack_below = stack_below | default: block.settings.stack_below | default: '60'
   assign vertical_alignment = vertical_alignment | default: block.settings.vertical_alignment | default: 'start'
+  assign sticky_track = sticky_track | default: block.settings.sticky_track | default: 'none'
   assign content_width = content_width | default: block.settings.content_width | default: ''
   assign gap = gap | default: block.settings.gap | default: 16
   assign bleed = bleed | default: block.settings.bleed, allow_false: true | default: false, allow_false: true
@@ -42,6 +45,9 @@
   assign modifier_list = 'columns:' | append: columns
   if stack_below != 'none'
     assign modifier_list = modifier_list | append: ',stack-below:' | append: stack_below
+  endif
+  if sticky_track != 'none'
+    assign modifier_list = modifier_list | append: ',sticky-track:' | append: sticky_track
   endif
   if bleed
     assign modifier_list = modifier_list | append: ',bleed'
@@ -156,6 +162,41 @@
     @container columns (inline-size >= 80rem) {
       .shopify-block--columns[data-modifiers*='stack-below:80'] > .shopify-block--columns__inner {
         grid-template-columns: var(--grid-template-columns);
+      }
+    }
+
+    /* Sticky track — pin one column while the other scrolls. `align-self: start` keeps the sticky child at its natural height so the parent grid can grow taller than it; the non-sticky child remains free to size itself, providing the scroll runway. */
+    .shopify-block--columns[data-modifiers*='sticky-track:first'] > .shopify-block--columns__inner > :first-child,
+    .shopify-block--columns[data-modifiers*='sticky-track:second'] > .shopify-block--columns__inner > :last-child {
+      position: sticky;
+      top: var(--sticky-offset, 1rem);
+      align-self: start;
+    }
+
+    /* Disable sticky when stack-below has collapsed the grid to a single column. */
+    .shopify-block--columns[data-modifiers*='stack-below'] > .shopify-block--columns__inner > * {
+      position: static;
+    }
+
+    /* Re-enable sticky inside the same @container queries that re-enable the grid. */
+    @container columns (inline-size >= 40rem) {
+      .shopify-block--columns[data-modifiers*='stack-below:40'][data-modifiers*='sticky-track:first'] > .shopify-block--columns__inner > :first-child,
+      .shopify-block--columns[data-modifiers*='stack-below:40'][data-modifiers*='sticky-track:second'] > .shopify-block--columns__inner > :last-child {
+        position: sticky;
+      }
+    }
+
+    @container columns (inline-size >= 60rem) {
+      .shopify-block--columns[data-modifiers*='stack-below:60'][data-modifiers*='sticky-track:first'] > .shopify-block--columns__inner > :first-child,
+      .shopify-block--columns[data-modifiers*='stack-below:60'][data-modifiers*='sticky-track:second'] > .shopify-block--columns__inner > :last-child {
+        position: sticky;
+      }
+    }
+
+    @container columns (inline-size >= 80rem) {
+      .shopify-block--columns[data-modifiers*='stack-below:80'][data-modifiers*='sticky-track:first'] > .shopify-block--columns__inner > :first-child,
+      .shopify-block--columns[data-modifiers*='stack-below:80'][data-modifiers*='sticky-track:second'] > .shopify-block--columns__inner > :last-child {
+        position: sticky;
       }
     }
   }
