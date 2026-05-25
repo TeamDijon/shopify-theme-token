@@ -441,6 +441,10 @@
           "info": "Laisser vide pour la pleine largeur"
         },
         "gap": { "label": "Écart" },
+        "bleed": {
+          "label": "Bord à bord",
+          "info": "Étend le groupe au-delà de la gouttière de la section jusqu'au bord du viewport"
+        },
         "appearance": { "content": "Apparence" },
         "color_scheme": {
           "label": "Palette de couleurs",
@@ -497,6 +501,10 @@
           "info": "Laisser vide pour la pleine largeur"
         },
         "gap": { "label": "Écart" },
+        "bleed": {
+          "label": "Bord à bord",
+          "info": "Étend les colonnes au-delà de la gouttière de la section jusqu'au bord du viewport"
+        },
         "appearance": { "content": "Apparence" },
         "color_scheme": {
           "label": "Palette de couleurs",

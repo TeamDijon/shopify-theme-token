@@ -1,7 +1,8 @@
-{% # Columns v1.0.2 %}
+{% # Columns v1.1.0 %}
 
 {% comment %}
   Changelog
+  - v1.1.0 — add `bleed` param emitted as `,bleed` modifier; CSS escapes the section gutter to the visible viewport width (same math as media's bleed)
   - v1.0.2 — wrap contents in `.shopify-block--columns__inner`; container-type stays on the outer so `@container columns` queries actually match (queries never see the element that defines the container per spec). Grid/stack-below rules move to the inner wrapper.
   - v1.0.1 — chain `--block-rhythm-mobile`/`--block-rhythm-desktop` as inner fallback for `margin-block-start` so section-level block rhythm applies when no per-block margin is authored
   - v1.0.0 — initial
@@ -17,8 +18,9 @@
   @param {string} [columns] - Column layout. One of `'2'`, `'3'`, `'4'`, `'1-2'`, `'2-1'`, `'1-3'`, `'3-1'`. Defaults to `'2'`.
   @param {string} [stack_below] - Collapse to single column when container is below the breakpoint. One of `'none'`, `'40'`, `'60'`, `'80'` (rem). Defaults to `'60'`.
   @param {string} [vertical_alignment] - `align-items` value for grid items. One of `'start'` (default), `'center'`, `'end'`, `'stretch'`.
-  @param {metaobject} [content_width] - `content_width` metaobject. Caps `max-inline-size`. Full width when blank.
+  @param {metaobject} [content_width] - `content_width` metaobject. Caps `max-inline-size`. Full width when blank. Ignored when `bleed` is true.
   @param {number} [gap] - Gap between columns in px. Defaults to 16.
+  @param {boolean} [bleed] - Extends the columns past the section gutter to the visible viewport width (`margin-inline: calc(50% - 50dvw)`). Same constraint as `media`'s bleed: assumes a centered ancestor chain. Defaults to false.
   @param {string} [color_scheme] - Optional `color_scheme` setting value. When set, emits `color-scheme:<id>` modifier so the global scheme rules from `utility--css-variables` apply.
   @param {number} [mobile_margin_block_start] - Top margin in px below the desktop breakpoint. Defaults to 0.
   @param {number} [desktop_margin_block_start] - Top margin in px at or above the desktop breakpoint. Defaults to 0.
@@ -32,6 +34,7 @@
   assign vertical_alignment = vertical_alignment | default: block.settings.vertical_alignment | default: 'start'
   assign content_width = content_width | default: block.settings.content_width | default: ''
   assign gap = gap | default: block.settings.gap | default: 16
+  assign bleed = bleed | default: block.settings.bleed, allow_false: true | default: false, allow_false: true
   assign color_scheme = color_scheme | default: block.settings.color_scheme | default: ''
   assign mobile_margin_block_start = mobile_margin_block_start | default: block.settings.mobile_margin_block_start | default: 0
   assign desktop_margin_block_start = desktop_margin_block_start | default: block.settings.desktop_margin_block_start | default: 0
@@ -39,6 +42,9 @@
   assign modifier_list = 'columns:' | append: columns
   if stack_below != 'none'
     assign modifier_list = modifier_list | append: ',stack-below:' | append: stack_below
+  endif
+  if bleed
+    assign modifier_list = modifier_list | append: ',bleed'
   endif
   if color_scheme != blank
     assign modifier_list = modifier_list | append: ',color-scheme:' | append: color_scheme
@@ -112,6 +118,14 @@
 
       @media (width >= 48rem) {
         margin-block-start: var(--desktop-margin-block-start, var(--block-rhythm-desktop, 0rem));
+      }
+
+      /* Bleed: escape the section gutter, span the full visible viewport.
+         Same math as media's bleed; assumes a centered ancestor chain. */
+      &[data-modifiers*='bleed'] {
+        inline-size: 100dvw;
+        max-inline-size: none;
+        margin-inline: calc(50% - 50dvw);
       }
     }
 

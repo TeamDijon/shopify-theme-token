@@ -1,7 +1,8 @@
-{% # Group block v1.0.1 %}
+{% # Group block v1.1.0 %}
 
 {% comment %}
   Changelog
+  - v1.1.0 — add `bleed` checkbox to extend the group past the section gutter to the visible viewport width
   - v1.0.1 — `horizontal_alignment.info` clarifies that "Space between" only applies in row direction
   - v1.0.0 — initial
 {% endcomment %}
@@ -85,6 +86,13 @@
       "step": 2,
       "unit": "px",
       "default": 16
+    },
+    {
+      "type": "checkbox",
+      "id": "bleed",
+      "label": "t:blocks.group.settings.bleed.label",
+      "info": "t:blocks.group.settings.bleed.info",
+      "default": false
     },
     {
       "type": "header",

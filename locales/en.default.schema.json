@@ -432,6 +432,10 @@
           "info": "Leave blank for full width"
         },
         "gap": { "label": "Gap" },
+        "bleed": {
+          "label": "Edge to edge",
+          "info": "Extends the group past the section gutter to the viewport edge"
+        },
         "appearance": { "content": "Appearance" },
         "color_scheme": {
           "label": "Color scheme",
@@ -488,6 +492,10 @@
           "info": "Leave blank for full width"
         },
         "gap": { "label": "Gap" },
+        "bleed": {
+          "label": "Edge to edge",
+          "info": "Extends the columns past the section gutter to the viewport edge"
+        },
         "appearance": { "content": "Appearance" },
         "color_scheme": {
           "label": "Color scheme",

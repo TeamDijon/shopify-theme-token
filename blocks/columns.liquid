@@ -1,4 +1,10 @@
-{% # Columns block v1.0.0 %}
+{% # Columns block v1.1.0 %}
+
+{% comment %}
+  Changelog
+  - v1.1.0 — add `bleed` checkbox to extend the columns past the section gutter to the visible viewport width
+  - v1.0.0 — initial
+{% endcomment %}
 
 {% capture contents %}{% content_for 'blocks' %}{% endcapture %}
 
@@ -70,6 +76,13 @@
       "step": 2,
       "unit": "px",
       "default": 16
+    },
+    {
+      "type": "checkbox",
+      "id": "bleed",
+      "label": "t:blocks.columns.settings.bleed.label",
+      "info": "t:blocks.columns.settings.bleed.info",
+      "default": false
     },
     {
       "type": "header",
