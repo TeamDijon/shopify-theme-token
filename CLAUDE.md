@@ -26,7 +26,7 @@ Stay under ~400 lines per Liquid edit (auto-loaded `**/*.liquid` rules + the mat
 
 ### Current measurement (manually maintained — re-tally on any rule edit)
 
-Tally as of 2026-04-27. Update the table when adding/removing/resizing rules in `.context/rules/`.
+Tally as of 2026-05-25. Update the table when adding/removing/resizing rules in `.context/rules/`.
 
 **Always-on for any Liquid edit** (`**/*.liquid` globs):
 
@@ -45,8 +45,8 @@ Tally as of 2026-04-27. Update the table when adding/removing/resizing rules in 
 | Editing | Adds | Total |
 |---|---|---|
 | `snippets/*.liquid` | `snippet-convention.md` (84) | **360** |
-| `blocks/*.liquid` | `block-convention.md` (76) | **352** |
-| `sections/*.liquid` | `section-convention.md` (117) | **393** |
+| `blocks/*.liquid` | `block-convention.md` (78) | **354** |
+| `sections/*.liquid` | `section-convention.md` (119) | **395** |
 
 **Non-Liquid edits** (no `**/*.liquid` group loads):
 
@@ -55,4 +55,4 @@ Tally as of 2026-04-27. Update the table when adding/removing/resizing rules in 
 | `assets/*.js` | `js-asset-convention.md` | 53 |
 | `assets/icon-*.svg` | `icon-convention.md` | 71 |
 
-Section edits sit closest to the cap. Adding to any always-on rule pushes every domain table row up by the same delta.
+Section edits sit closest to the cap (395/~400). Adding to any always-on rule pushes every domain table row up by the same delta.
