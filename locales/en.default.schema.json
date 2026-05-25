@@ -153,6 +153,14 @@
           "info": "Leave blank to use the default style for the selected tag"
         },
         "icon": { "label": "Icon" },
+        "text_align": {
+          "label": "Alignment",
+          "options": {
+            "start": "Start",
+            "center": "Center",
+            "end": "End"
+          }
+        },
         "content_width": {
           "label": "Content width",
           "info": "Leave blank for full width"
@@ -183,6 +191,14 @@
         "narrow": {
           "label": "Narrow column",
           "info": "Caps width at 65 characters for readability — overrides content width when enabled"
+        },
+        "text_align": {
+          "label": "Alignment",
+          "options": {
+            "start": "Start",
+            "center": "Center",
+            "end": "End"
+          }
         },
         "content_width": {
           "label": "Content width",

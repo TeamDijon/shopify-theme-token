@@ -162,6 +162,14 @@
           "info": "Laisser vide pour utiliser le style par défaut de la balise sélectionnée"
         },
         "icon": { "label": "Icône" },
+        "text_align": {
+          "label": "Alignement",
+          "options": {
+            "start": "Début",
+            "center": "Centre",
+            "end": "Fin"
+          }
+        },
         "content_width": {
           "label": "Largeur du contenu",
           "info": "Laisser vide pour la pleine largeur"
@@ -192,6 +200,14 @@
         "narrow": {
           "label": "Colonne étroite",
           "info": "Limite la largeur à 65 caractères pour la lisibilité — remplace la largeur du contenu si activé"
+        },
+        "text_align": {
+          "label": "Alignement",
+          "options": {
+            "start": "Début",
+            "center": "Centre",
+            "end": "Fin"
+          }
         },
         "content_width": {
           "label": "Largeur du contenu",

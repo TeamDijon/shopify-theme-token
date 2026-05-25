@@ -1,7 +1,8 @@
-{% # Title v1.0.1 %}
+{% # Title v1.1.0 %}
 
 {% comment %}
   Changelog
+  - v1.1.0 — add `text_align` param; self-center capped content_width via `margin-inline: auto`; drop no-op `align-self` on the SVG
   - v1.0.1 — chain `--block-rhythm-mobile`/`--block-rhythm-desktop` as inner fallback for `margin-block-start` so section-level block rhythm applies when no per-block margin is authored
   - v1.0.0 — initial
 {% endcomment %}
@@ -16,7 +17,8 @@
   @param {string} [tag] - HTML tag. One of `h1`, `h2`, `h3`, `h4`, `h5`, `h6`, `p`. Defaults to `h2`.
   @param {metaobject} [text_style] - `text_style` metaobject. Reads `.system.handle` and emits `text-style:<handle>` modifier so the global text_style binding (from `utility--css-variables`) applies. Falls back to the bare-tag binding when blank (e.g. `<h2>` auto-binds to the `h2` text_style).
   @param {metaobject} [icon] - `icon` metaobject. Inline SVG prepended to the title. No icon when blank.
-  @param {metaobject} [content_width] - `content_width` metaobject. Reads `.width.value` (px). Full width when blank.
+  @param {string} [text_align] - Inline text alignment. One of `'start'` (default), `'center'`, `'end'`.
+  @param {metaobject} [content_width] - `content_width` metaobject. Reads `.width.value` (px). Full width when blank. Capped width self-centers via `margin-inline: auto`.
   @param {metaobject} [text_color] - `theme_color` metaobject. Reads `.system.handle` to consume `var(--color-<handle>)`. Falls back to `--color-foreground-heading` when blank.
   @param {number} [mobile_margin_block_start] - Top margin in px below the desktop breakpoint. Defaults to 0.
   @param {number} [desktop_margin_block_start] - Top margin in px at or above the desktop breakpoint. Defaults to 0.
@@ -33,6 +35,7 @@
   assign tag = tag | default: block.settings.tag | default: 'h2'
   assign text_style = text_style | default: block.settings.text_style
   assign icon = icon | default: block.settings.icon
+  assign text_align = text_align | default: block.settings.text_align | default: 'start'
   assign content_width = content_width | default: block.settings.content_width | default: ''
   assign text_color = text_color | default: block.settings.text_color | default: ''
   assign mobile_margin_block_start = mobile_margin_block_start | default: block.settings.mobile_margin_block_start | default: 0
@@ -64,6 +67,10 @@
       --content-width: {{ content_width.width.value }}px;
     {% endif %}
 
+    {% if text_align != 'start' %}
+      --text-align: {{ text_align }};
+    {% endif %}
+
     {% if text_color and text_color != blank %}
       --text-color: var(--color-{{ text_color.system.handle }});
     {% endif %}
@@ -83,8 +90,10 @@
   @layer components {
     .shopify-block--title {
       max-inline-size: var(--content-width, 100%);
+      margin-inline: auto;
       margin-block-start: var(--mobile-margin-block-start, var(--block-rhythm-mobile, 0rem));
       color: var(--text-color, var(--color-foreground-heading));
+      text-align: var(--text-align, start);
 
       @media (width >= 48rem) {
         margin-block-start: var(--desktop-margin-block-start, var(--block-rhythm-desktop, 0rem));
@@ -92,7 +101,6 @@
 
       & svg {
         display: inline-flex;
-        align-self: center;
         block-size: 0.75em;
         min-inline-size: 0.75em;
         margin-inline-end: 0.25em;

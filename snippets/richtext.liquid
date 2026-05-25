@@ -1,7 +1,8 @@
-{% # Richtext v1.0.1 %}
+{% # Richtext v1.1.0 %}
 
 {% comment %}
   Changelog
+  - v1.1.0 — add `text_align` param; self-center capped content_width via `margin-inline: auto`
   - v1.0.1 — chain `--block-rhythm-mobile`/`--block-rhythm-desktop` as inner fallback for `margin-block-start` so section-level block rhythm applies when no per-block margin is authored
   - v1.0.0 — initial
 {% endcomment %}
@@ -14,7 +15,8 @@
   @param {string} [block_id] - Unique block ID for static renders
   @param {string} [content] - HTML rich-text body. Skips render when blank.
   @param {boolean} [narrow] - When true, appends `prose:narrow` modifier so the utility caps width at 65ch and centers. Suppresses `content_width` emission.
-  @param {metaobject} [content_width] - `content_width` metaobject. Reads `.width.value` (px). Full width when blank. Ignored when `narrow` is true.
+  @param {string} [text_align] - Inline text alignment. One of `'start'` (default), `'center'`, `'end'`.
+  @param {metaobject} [content_width] - `content_width` metaobject. Reads `.width.value` (px). Full width when blank. Ignored when `narrow` is true. Capped width self-centers via `margin-inline: auto`.
   @param {metaobject} [text_color] - `theme_color` metaobject. Reads `.system.handle` to consume `var(--color-<handle>)`. Falls back to `--color-foreground` when blank.
   @param {number} [mobile_margin_block_start] - Top margin in px below the desktop breakpoint. Defaults to 0.
   @param {number} [desktop_margin_block_start] - Top margin in px at or above the desktop breakpoint. Defaults to 0.
@@ -29,6 +31,7 @@
   endif
 
   assign narrow = narrow | default: block.settings.narrow, allow_false: true | default: false, allow_false: true
+  assign text_align = text_align | default: block.settings.text_align | default: 'start'
   assign content_width = content_width | default: block.settings.content_width | default: ''
   assign text_color = text_color | default: block.settings.text_color | default: ''
   assign mobile_margin_block_start = mobile_margin_block_start | default: block.settings.mobile_margin_block_start | default: 0
@@ -57,6 +60,10 @@
       --content-width: {{ content_width.width.value }}px;
     {% endif %}
 
+    {% if text_align != 'start' %}
+      --text-align: {{ text_align }};
+    {% endif %}
+
     {% if text_color and text_color != blank %}
       --text-color: var(--color-{{ text_color.system.handle }});
     {% endif %}
@@ -76,8 +83,10 @@
   @layer components {
     .shopify-block--richtext {
       max-inline-size: var(--content-width, 100%);
+      margin-inline: auto;
       margin-block-start: var(--mobile-margin-block-start, var(--block-rhythm-mobile, 0rem));
       color: var(--text-color, var(--color-foreground));
+      text-align: var(--text-align, start);
 
       @media (width >= 48rem) {
         margin-block-start: var(--desktop-margin-block-start, var(--block-rhythm-desktop, 0rem));
