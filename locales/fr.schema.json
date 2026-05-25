@@ -413,6 +413,7 @@
         },
         "horizontal_alignment": {
           "label": "Horizontal",
+          "info": "Espace entre s'applique uniquement en direction ligne",
           "options": {
             "start": "Début",
             "center": "Centre",

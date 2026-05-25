@@ -404,6 +404,7 @@
         },
         "horizontal_alignment": {
           "label": "Horizontal",
+          "info": "Space between only applies in row direction",
           "options": {
             "start": "Start",
             "center": "Center",

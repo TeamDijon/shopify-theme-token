@@ -1,7 +1,8 @@
-{% # Group v1.0.2 %}
+{% # Group v1.0.3 %}
 
 {% comment %}
   Changelog
+  - v1.0.3 — normalize `horizontal_alignment: space-between` → `start` in column direction so the invalid `align-items: space-between` value doesn't fall through to the browser
   - v1.0.2 — wrap contents in `.shopify-block--group__inner`; container-type stays on the outer so `@container group` queries actually match (queries never see the element that defines the container per spec). Flex/stack-below rules move to the inner wrapper.
   - v1.0.1 — chain `--block-rhythm-mobile`/`--block-rhythm-desktop` as inner fallback for `margin-block-start` so section-level block rhythm applies when no per-block margin is authored
   - v1.0.0 — initial
@@ -31,6 +32,9 @@
   assign direction = direction | default: block.settings.direction | default: 'column'
   assign stack_below = stack_below | default: block.settings.stack_below | default: '60'
   assign horizontal_alignment = horizontal_alignment | default: block.settings.horizontal_alignment | default: 'start'
+  if direction == 'column' and horizontal_alignment == 'space-between'
+    assign horizontal_alignment = 'start'
+  endif
   assign vertical_alignment = vertical_alignment | default: block.settings.vertical_alignment | default: 'start'
   assign content_width = content_width | default: block.settings.content_width | default: ''
   assign gap = gap | default: block.settings.gap | default: 16

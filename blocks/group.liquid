@@ -1,4 +1,10 @@
-{% # Group block v1.0.0 %}
+{% # Group block v1.0.1 %}
+
+{% comment %}
+  Changelog
+  - v1.0.1 — `horizontal_alignment.info` clarifies that "Space between" only applies in row direction
+  - v1.0.0 — initial
+{% endcomment %}
 
 {% capture contents %}{% content_for 'blocks' %}{% endcapture %}
 
@@ -42,6 +48,7 @@
       "type": "select",
       "id": "horizontal_alignment",
       "label": "t:blocks.group.settings.horizontal_alignment.label",
+      "info": "t:blocks.group.settings.horizontal_alignment.info",
       "options": [
         { "value": "start", "label": "t:blocks.group.settings.horizontal_alignment.options.start" },
         { "value": "center", "label": "t:blocks.group.settings.horizontal_alignment.options.center" },
