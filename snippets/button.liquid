@@ -1,7 +1,8 @@
-{% # Button v1.1.1 %}
+{% # Button v1.1.2 %}
 
 {% comment %}
   Changelog
+  - v1.1.2 — link-family buttons keep the 2.75rem min-block-size touch target (only the visible padding/border/background is zeroed)
   - v1.1.1 — chain `--block-rhythm-mobile`/`--block-rhythm-desktop` as inner fallback for `margin-block-start` so section-level block rhythm applies when no per-block margin is authored
   - v1.1.0 — replace the ad-hoc `solid-primary`/`solid-secondary`/`outline`/`ghost`/`text-link` variant CSS with a 3×3 family/variant matrix (`solid-`/`outline-`/`link-` × `-primary`/`-secondary`/`-tertiary`). Variant colors compose via CSS custom properties: families set bg/border/decoration, variants set the color token. Selectors anchor on the trailing `-` of the family prefix (e.g. `*='button-style:outline-'`) so substring matches don't leak across handles. Off-list handles fall through to the default solid-primary appearance.
   - v1.0.0 — initial
@@ -184,7 +185,9 @@
         --button-fg: var(--button-color);
       }
 
-      /* Family: link */
+      /* Family: link. Keeps the default --button-min-size (2.75rem) so the touch
+         target stays at 44×44 even though the visible padding/border/background
+         are zeroed — the button just *looks* like a text link. */
       &[data-modifiers*='button-style:link-'] {
         --button-bg: transparent;
         --button-fg: var(--button-color);
@@ -193,7 +196,6 @@
         --button-padding-inline: 0;
         --button-radius: 0;
         --button-decoration: underline;
-        --button-min-size: 0;
       }
 
       /* Hover: solid darkens bg; outline tints; link reduces opacity */
