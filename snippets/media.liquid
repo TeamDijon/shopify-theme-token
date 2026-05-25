@@ -1,7 +1,8 @@
-{% # Media v1.0.1 %}
+{% # Media v1.1.0 %}
 
 {% comment %}
   Changelog
+  - v1.1.0 — add `image_fit` param emitted as `image-fit:<cover|contain>` modifier; CSS toggles `object-fit` accordingly
   - v1.0.1 — chain `--block-rhythm-mobile`/`--block-rhythm-desktop` as inner fallback for `margin-block-start` so section-level block rhythm applies when no per-block margin is authored
   - v1.0.0 — initial
 {% endcomment %}
@@ -11,7 +12,6 @@
 
   **Known limitations:**
   - **Bleed assumes centered ancestors.** The `bleed` mode uses `margin-inline: calc(50% - 50dvw)` to escape to the full viewport width. The math anchors against the parent's centerline, so it only renders aligned when every ancestor up to the section is centered. Inside an off-center column (e.g., the narrower track of a `1-3` columns layout), the bleed visually drifts. Avoid `bleed` on a media block placed inside group/columns; use it at the section level.
-  - **`object-fit: cover`** is hardcoded — there's no per-block override yet. Use cases that need `contain` (logos, full-image-visible products) will be addressed by a future `sizing:contain` modifier.
 
   @param {section} [section] - The section object containing the block
   @param {block} [block] - Block object containing the settings
@@ -29,6 +29,7 @@
   @param {metaobject} [media_size] - `media_size` metaobject. Reads `.system.handle` (for `fill` special-case), `.type.value`, and `.value.value`.
   @param {metaobject} [mobile_media_size] - Mobile `media_size` override. Same shape as `media_size`. Inherits desktop when blank.
   @param {boolean} [bleed] - Extends media past the section gutter (full viewport width). Defaults to false.
+  @param {string} [image_fit] - `'cover'` (default, fills the box, cropping as needed) or `'contain'` (full image visible, possibly letterboxed). Applies to both image and video.
   @param {string} [horizontal_alignment] - Child content `align-items` value. Defaults to `'start'`.
   @param {string} [vertical_alignment] - Child content `justify-content` value. Defaults to `'end'`.
   @param {metaobject} [content_width] - `content_width` metaobject. Caps `max-inline-size`. Ignored when `bleed` is true.
@@ -54,6 +55,7 @@
   assign media_size = media_size | default: block.settings.media_size
   assign mobile_media_size = mobile_media_size | default: block.settings.mobile_media_size
   assign bleed = bleed | default: block.settings.bleed, allow_false: true | default: false, allow_false: true
+  assign image_fit = image_fit | default: block.settings.image_fit | default: 'cover'
   assign horizontal_alignment = horizontal_alignment | default: block.settings.horizontal_alignment | default: 'start'
   assign vertical_alignment = vertical_alignment | default: block.settings.vertical_alignment | default: 'end'
   assign content_width = content_width | default: block.settings.content_width | default: ''
@@ -96,6 +98,9 @@
   endif
   if bleed
     assign modifier_list = modifier_list | append: ',bleed'
+  endif
+  if media_type == 'image' and image_fit != 'cover'
+    assign modifier_list = modifier_list | append: ',image-fit:' | append: image_fit
   endif
   if color_scheme != blank
     assign modifier_list = modifier_list | append: ',color-scheme:' | append: color_scheme
@@ -219,6 +224,16 @@
         inline-size: 100%;
         block-size: 100%;
         object-fit: cover;
+      }
+
+      /* Image fit: contain — show the full image, possibly letterboxed. Only emitted for image media_type. */
+      &[data-modifiers*='image-fit:contain'] {
+        & > picture,
+        & > picture > img,
+        & > img,
+        & > svg {
+          object-fit: contain;
+        }
       }
 
       /* Sizing: aspect-ratio (mobile-overrideable) */

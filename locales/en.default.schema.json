@@ -299,6 +299,14 @@
           "label": "Edge to edge",
           "info": "Extends media past the section gutter"
         },
+        "image_fit": {
+          "label": "Image fit",
+          "info": "Cover crops to fill the box; Contain shows the full image (logos, portraits)",
+          "options": {
+            "cover": "Cover",
+            "contain": "Contain"
+          }
+        },
         "horizontal_alignment": {
           "label": "Horizontal",
           "options": {

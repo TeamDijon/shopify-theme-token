@@ -308,6 +308,14 @@
           "label": "Bord à bord",
           "info": "Étend le média au-delà de la gouttière de la section"
         },
+        "image_fit": {
+          "label": "Adaptation de l'image",
+          "info": "Couvrir recadre pour remplir le cadre ; Contenir affiche l'image entière (logos, portraits)",
+          "options": {
+            "cover": "Couvrir",
+            "contain": "Contenir"
+          }
+        },
         "horizontal_alignment": {
           "label": "Horizontal",
           "options": {

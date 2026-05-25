@@ -1,4 +1,10 @@
-{% # Media block v1.0.0 %}
+{% # Media block v1.1.0 %}
+
+{% comment %}
+  Changelog
+  - v1.1.0 — add `image_fit` setting (`cover` default, `contain` for full-image-visible cases — logos, portraits, packshots)
+  - v1.0.0 — initial
+{% endcomment %}
 
 {% capture contents %}{% content_for 'blocks' %}{% endcapture %}
 
@@ -111,6 +117,18 @@
       "label": "t:blocks.media.settings.bleed.label",
       "info": "t:blocks.media.settings.bleed.info",
       "default": false
+    },
+    {
+      "type": "select",
+      "id": "image_fit",
+      "label": "t:blocks.media.settings.image_fit.label",
+      "info": "t:blocks.media.settings.image_fit.info",
+      "options": [
+        { "value": "cover", "label": "t:blocks.media.settings.image_fit.options.cover" },
+        { "value": "contain", "label": "t:blocks.media.settings.image_fit.options.contain" }
+      ],
+      "default": "cover",
+      "visible_if": "{{ block.settings.media_type == 'image' }}"
     },
     {
       "type": "select",
