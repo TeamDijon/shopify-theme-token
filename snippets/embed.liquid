@@ -1,14 +1,16 @@
-{% # Embed v1.0.2 %}
+{% # Embed v1.0.3 %}
 
 {% comment %}
   Changelog
+  - v1.0.3 — when a URL is set but doesn't match a supported provider, surface an editor-only diagnostic so merchants notice the rejection instead of seeing a silent placeholder
   - v1.0.2 — youtu.be and youtube.com/shorts URL parsers split on `/` before `?`/`&`/`#` so trailing-slash variants resolve to a clean video id
   - v1.0.1 — chain `--block-rhythm-mobile`/`--block-rhythm-desktop` as inner fallback for `margin-block-start` so section-level block rhythm applies when no per-block margin is authored
   - v1.0.0 — initial
 {% endcomment %}
 
 {% doc %}
-  @description Renders a third-party video embed (YouTube or Vimeo) as a lazy-loaded iframe inside an aspect-ratio wrapper. URL is parsed in Liquid for known provider patterns; unknown URLs render a placeholder. Iframe carries a `title` attribute for screen readers — schema-level default plus a runtime fallback via `accessibility.embedded_content`.
+  @description
+  Renders a third-party video embed (YouTube or Vimeo) as a lazy-loaded iframe inside an aspect-ratio wrapper. URL is parsed in Liquid for known provider patterns; unknown URLs render a placeholder. Iframe carries a `title` attribute for screen readers — schema-level default plus a runtime fallback via `accessibility.embedded_content`.
 
   Supported URL shapes:
   - YouTube: `youtube.com/watch?v=ID`, `youtu.be/ID`, `youtube.com/embed/ID`, `youtube.com/shorts/ID`
@@ -130,27 +132,32 @@
   endcapture
 %}
 
-<div class="shopify-block shopify-block--embed" id="{{ base_selector }}" {{ modifiers }}>
+<div class='shopify-block shopify-block--embed' id='{{ base_selector }}' {{ modifiers }}>
   {% if embed_url != blank %}
     {% if provider == 'youtube' %}
       <iframe
-        src="{{ embed_url | escape }}"
-        title="{{ title | escape }}"
-        loading="lazy"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        src='{{ embed_url | escape }}'
+        title='{{ title | escape }}'
+        loading='lazy'
+        allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share'
         allowfullscreen
       ></iframe>
     {% elsif provider == 'vimeo' %}
       <iframe
-        src="{{ embed_url | escape }}"
-        title="{{ title | escape }}"
-        loading="lazy"
-        allow="autoplay; fullscreen; picture-in-picture"
+        src='{{ embed_url | escape }}'
+        title='{{ title | escape }}'
+        loading='lazy'
+        allow='autoplay; fullscreen; picture-in-picture'
         allowfullscreen
       ></iframe>
     {% endif %}
   {% else %}
     {{ 'image' | placeholder_svg_tag }}
+    {% if url != blank %}
+      <p class='shopify-block--embed__diagnostic' role='status'>
+        {{ 'blocks.embed.diagnostic.unrecognized_url' | t }}
+      </p>
+    {% endif %}
   {% endif %}
 
   {% capture dynamic_style %}
@@ -212,10 +219,29 @@
         border: none;
       }
 
+      & > .shopify-block--embed__diagnostic {
+        display: none;
+        position: absolute;
+        inset: auto 0 0 0;
+        margin: 0;
+        padding: 0.5rem 0.75rem;
+        background-color: rgb(0 0 0 / 0.75);
+        color: white;
+        font-size: 0.875rem;
+        text-align: center;
+      }
+
       /* Inset focus ring so overflow:hidden wrapper doesn't clip it */
       & > iframe:focus-visible {
         outline-offset: -0.125rem;
       }
+    }
+
+    /* Editor-only diagnostic for unparseable URLs. Hidden by default; revealed
+        only when the document carries the `shopify-design-mode` modifier emitted
+        by `utility--document-modifiers`. */
+    html[data-modifiers*='shopify-design-mode'] .shopify-block--embed__diagnostic {
+      display: block;
     }
   }
 {% endstylesheet %}

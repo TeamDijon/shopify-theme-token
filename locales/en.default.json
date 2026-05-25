@@ -6,6 +6,13 @@
   "actions": {
     "skip_to_content": "Skip to content"
   },
+  "blocks": {
+    "embed": {
+      "diagnostic": {
+        "unrecognized_url": "Unrecognized URL. Supported providers: YouTube, Vimeo."
+      }
+    }
+  },
   "dates": {
     "formats": {
       "default": "%Y-%m-%d"

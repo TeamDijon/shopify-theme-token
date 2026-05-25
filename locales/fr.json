@@ -19,6 +19,13 @@
   "actions": {
     "skip_to_content": "Passer au contenu"
   },
+  "blocks": {
+    "embed": {
+      "diagnostic": {
+        "unrecognized_url": "URL non reconnue. Fournisseurs pris en charge : YouTube, Vimeo."
+      }
+    }
+  },
   "dates": {
     "formats": {
       "default": "%d/%m/%Y"
