@@ -1,0 +1,26 @@
+# Specs index
+
+Forward-looking specs for ECOM elements not yet implemented in the theme. Organized by composition layer (see `.context/docs/composition-strategy.md`). Each spec describes the API, output shape, and behavior contract that will drive implementation.
+
+Sourced from the EXPLORATION-2 inventory pass (May 2026).
+
+## Layer 0 — Snippets
+
+- [star-rating](./specs/star-rating.md) — 5-star visual using `icon-star` full/half/empty presets
+- [price-with-compare](./specs/price-with-compare.md) — current price + optional compare-at + optional save pill, with raw `data-*` for JS update path
+
+## Layer 1 — Theme blocks
+
+(none yet)
+
+## Layer 2 — Presets
+
+(none yet)
+
+## Layer 3 — Framing-A sections
+
+(none yet)
+
+## Layer 4 — Framing-B sections
+
+(none yet)
