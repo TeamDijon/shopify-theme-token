@@ -65,7 +65,7 @@ The snippet's doc block specifies which fields the metaobject path reads, so the
 
 Most field references resolve by GID, so handle renames are safe. A few patterns *do* couple to the entry's `system.handle` directly — renaming the entry in admin will silently break them. Keep these handle sets stable:
 
-- `theme_color` — handles drive `--color-<handle>` CSS variable names; consumed by every CSS rule that uses `var(--color-X)`
+- `theme_color` — handles drive `--color-<handle>` CSS variable names; consumed by every CSS rule that uses `var(--color-X)`. Semantic seeds (`success`, `warning`, `error`, `info`) are referenced from component CSS for state-driven styling — renaming silently breaks consumers
 - `text_style` — handles `h1`–`h6` auto-bind to bare HTML headings (`utility--css-variables`); other handles drive `[data-text-style="<handle>"]` and `[data-modifiers*="text-style:<handle>"]` selectors
 - `media_size` — handle `fill` is a special-case branch in the media block (no type/value, emits `block-size: 100%`)
 - `button_style`, `container_style` — handles drive `[data-modifiers*='button-style:<handle>']` / `[data-modifiers*='container-style:<handle>']` CSS rules in the respective block stylesheets

@@ -53,10 +53,10 @@ Per `.context/docs/css-standards.md` — component-rooted, no BEM:
   font-size: var(--status-size, 0.75rem);
   color: var(--status-color, currentColor);
 
-  &[data-modifiers*='state:in-stock']     { --status-color: var(--in-stock-color, var(--color-foreground)); }
-  &[data-modifiers*='state:low-stock']    { --status-color: var(--low-stock-color, var(--color-foreground)); }
-  &[data-modifiers*='state:pre-order']    { --status-color: var(--pre-order-color, var(--color-foreground)); }
-  &[data-modifiers*='state:out-of-stock'] { --status-color: var(--out-of-stock-color, var(--color-foreground-secondary)); }
+  &[data-modifiers*='state:in-stock']     { --status-color: var(--in-stock-color, var(--color-success)); }
+  &[data-modifiers*='state:low-stock']    { --status-color: var(--low-stock-color, var(--color-warning)); }
+  &[data-modifiers*='state:pre-order']    { --status-color: var(--pre-order-color, var(--color-info)); }
+  &[data-modifiers*='state:out-of-stock'] { --status-color: var(--out-of-stock-color, var(--color-foreground-muted)); }
 }
 ```
 
@@ -67,12 +67,12 @@ Per `.context/docs/css-standards.md` — component-rooted, no BEM:
 | `--status-color` | Resolved state color (set internally per modifier) | per-state default below |
 | `--status-size` | Label font size | `0.75rem` |
 | `--status-gap` | Gap between child elements | `0.25rem` |
-| `--in-stock-color` | In-stock state color | `var(--color-foreground)` |
-| `--low-stock-color` | Low-stock state color | `var(--color-foreground)` |
-| `--pre-order-color` | Pre-order state color | `var(--color-foreground)` |
-| `--out-of-stock-color` | Out-of-stock state color | `var(--color-foreground-secondary)` |
+| `--in-stock-color` | In-stock state color | `var(--color-success)` |
+| `--low-stock-color` | Low-stock state color | `var(--color-warning)` |
+| `--pre-order-color` | Pre-order state color | `var(--color-info)` |
+| `--out-of-stock-color` | Out-of-stock state color | `var(--color-foreground-muted)` |
 
-Per-state defaults stay subtle (no hardcoded red/green/amber) since Token has no semantic warning/success/error tokens yet. Merchants override via the exposed hooks. **Pending** — these defaults will firm up once the semantic-colors decision lands (see Implementation-time decisions).
+Defaults reference the semantic `theme_color` seeds (see `.context/docs/metaobject-definitions.md`). Merchants override via the exposed hooks when brand colors should diverge.
 
 ## Behavior
 
@@ -96,7 +96,6 @@ Per-state defaults stay subtle (no hardcoded red/green/amber) since Token has no
 
 ## Implementation-time decisions
 
-- **Per-state color defaults pending semantic-colors decision** — Token currently has no semantic color slots (warning/success/error). Once these land (likely as scheme-driven slots, standalone theme_color seeds, or hybrid), update `--in-stock-color` / `--low-stock-color` / etc. defaults to reference them.
 - JS update of label text on variant change — leans toward emitting all four labels as a `data-labels` JSON attr so the JS module swaps the right one without re-translating client-side. Decide with `variant-display.js` module.
 - Optional decorative dot/icon prefix — per-consumer composition, not a snippet arg.
 - Whether `pre-order` warrants a separate state from a generic "backorder" — usually merchant-determined via product tag or metafield; leave the snippet as policy-based and let consumers swap labels via theme settings if needed.

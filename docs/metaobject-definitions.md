@@ -189,6 +189,12 @@ Standard name field — see [convention](#name-field-convention). Description: *
 | `black` | Black | `#1a1a1a` |
 | `muted` | Muted | `#6b6b6b` |
 | `accent` | Accent | `#c2410c` |
+| `success` | Success | `#16a34a` |
+| `warning` | Warning | `#d97706` |
+| `error` | Error | `#dc2626` |
+| `info` | Info | `#2563eb` |
+
+Semantic seeds (`success`/`warning`/`error`/`info`) are referenced by component CSS as `var(--color-<handle>)` for state-driven styling (e.g. inventory pills, form errors, alerts). Treat these handles as stable — renaming them in admin will break consumer rules silently.
 
 ### `typeface`
 
