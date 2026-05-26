@@ -55,7 +55,35 @@ Logical properties handle RTL/vertical flow correctly without per-locale overrid
 
 ## Component scoping
 
-Component CSS targets a unique root selector — `.shopify-block--<name>` for blocks, the custom element tag for sections (`theme-cart`, `theme-header`). Avoid bare element selectors that could leak (`button { ... }` in a block stylesheet styles every `<button>` on the page once the block is rendered, not just the block's own).
+Component CSS targets a unique root selector — `.shopify-block--<name>` for blocks, the custom element tag for sections (`theme-cart`, `theme-header`), plain `<name>` for snippet-only components (e.g. `.star-rating`, `.skip-to-content`). Avoid bare element selectors that could leak (`button { ... }` in a block stylesheet styles every `<button>` on the page once the block is rendered, not just the block's own).
+
+## Inner element naming
+
+Style descendants of the component root with short, semantic class names — no BEM `__element` suffixes. `.card-link`, `.media-container`, `.rating-count`, not `.product-card__card-link`. The root scopes them.
+
+```css
+.star-rating {
+  & > svg { /* terminal structural children */ }
+  & .rating-count { /* named slots */ }
+  &:hover { /* state */ }
+  &[data-modifiers*='size:large'] { /* variants via modifier system */ }
+}
+```
+
+This is rscss-adjacent (Reasonable System for CSS Stylesheet Structure) + the modifier system in place of BEM `--modifier` chains. See `.context/docs/modifier-system.md` for the modifier authoring contract.
+
+Use tag selectors (`& > svg`, `& > img`) for terminal structural slots unlikely to grow a wrapper. Use class selectors when the slot may gain a wrapper, or when multiple instances of the tag are present.
+
+Existing components mix patterns — some early code uses `.shopify-block--<name>__element` BEM-style (`.shopify-block--columns__inner`, `.shopify-block--embed__diagnostic`). New components follow the inner-naming rule above; existing holdouts migrate opportunistically when touched.
+
+## Cross-component overrides
+
+When a consuming component needs to tweak a nested component's appearance:
+
+1. **CSS custom properties** the inner component exposes (`--icon-size`, `--rating-color`) — set on the consumer's root, inherited down. No specificity battle.
+2. **One level of consumer-root descendant** — `.product-card .star-rating { ... }`. Works when the inner component didn't expose the right hook.
+
+Avoid stacking more than one consumer scope (`.featured-product .product-card .star-rating > svg`) — past two levels, specificity becomes brittle. Reach for custom properties.
 
 ## Container queries
 

@@ -18,7 +18,7 @@ Every section file has:
 
 ## Body patterns
 
-Section CSS and JS live in dedicated `assets/<name>.css` and `assets/<name>.js` files, loaded via `{% render 'utility--asset-loader', name: '<name>' %}`. Per-instance Liquid-computed values go through `utility--dynamic-style`. See `.context/docs/asset-loading.md` for the file-vs-inline rule across consumer types.
+Section CSS and JS live in dedicated `assets/<name>.css` and `assets/<name>.js` files, loaded via `{% render 'utility--asset-loader', name: '<name>' %}`. Per-instance Liquid-computed values go through `utility--dynamic-style`. See `.context/docs/asset-loading.md` for the file-vs-inline rule across consumer types, and `.context/docs/css-standards.md` for component-rooted CSS naming (no BEM `__element`, descendants via `& .name` / `& > tag`).
 
 ### Standard section
 

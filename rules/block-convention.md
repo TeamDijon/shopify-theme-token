@@ -41,7 +41,7 @@ See `.context/docs/versioning-and-changelog.md` for format and policy.
 
 ## Styles and scripts
 
-Block CSS lives in a `{% stylesheet %}` block inside the matching snippet (the block file itself contains only the schema + render call). Block JS lives in a `{% javascript %}` block in the same snippet. For Liquid-computed per-instance values, render `utility--dynamic-style`. See `.context/docs/asset-loading.md` for the file-vs-inline decision rule across all consumer types.
+Block CSS lives in a `{% stylesheet %}` block inside the matching snippet (the block file itself contains only the schema + render call). Block JS lives in a `{% javascript %}` block in the same snippet. For Liquid-computed per-instance values, render `utility--dynamic-style`. See `.context/docs/asset-loading.md` for the file-vs-inline decision rule across all consumer types, and `.context/docs/css-standards.md` for component-rooted CSS naming (no BEM `__element`, descendants via `& .name` / `& > tag`).
 
 ## Example
 

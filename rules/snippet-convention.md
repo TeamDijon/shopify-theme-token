@@ -22,7 +22,7 @@ Every snippet in `snippets/*.liquid` follows this structure.
 
 4. **Logic block** — `{% liquid %}` for assign/capture/control flow. Resolve each param with a `| default:` chain: explicit arg → `block.settings.x` → literal default. Early-exit with `break` when a required input is blank (works outside `for` blocks; chosen over `continue` for "escape this snippet" semantics).
 
-5. **Output** — HTML markup, followed by optional `{% stylesheet %}` and/or `{% javascript %}` blocks scoped to `.shopify-block--<name>` or the component's root class. See `.context/docs/asset-loading.md` for the file-vs-inline decision rule (renderable snippets inline; pure `utility--*` snippets typically don't carry style/script blocks).
+5. **Output** — HTML markup, followed by optional `{% stylesheet %}` and/or `{% javascript %}` blocks scoped to `.shopify-block--<name>` or the component's root class. See `.context/docs/asset-loading.md` for the file-vs-inline decision rule (renderable snippets inline; pure `utility--*` snippets typically don't carry style/script blocks). Component-rooted CSS naming (no BEM `__element`, descendants via `& .name` / `& > tag`): `.context/docs/css-standards.md`.
 
 ## Changelog
 
