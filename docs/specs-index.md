@@ -8,6 +8,8 @@ Sourced from the EXPLORATION-2 inventory pass (May 2026).
 
 - [star-rating](./specs/star-rating.md) — 5-star visual using `icon-star` full/half/empty presets
 - [price-with-compare](./specs/price-with-compare.md) — current price + optional compare-at + optional save pill, with raw `data-*` for JS update path
+- [inventory-status](./specs/inventory-status.md) — variant inventory state pill (in-stock / low-stock / pre-order / out-of-stock) with threshold + JS update path
+- [pagination](./specs/pagination.md) — numbered (SEO-friendly) or load-more (JS-driven) pagination with shared markup contract
 
 ## Layer 1 — Theme blocks
 
