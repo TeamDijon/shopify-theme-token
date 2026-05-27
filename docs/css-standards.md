@@ -133,6 +133,8 @@ Prefer container queries over media queries whenever the relevant width is the p
 - **Don't query the host element.** `@container <name>` only matches descendants of the named container, never the element with `container-type` itself. A rule like `.foo[data-modifiers*='stack-below'] { ... }` placed inside `@container foo (...)` on the same `.foo` element silently never fires. Always target a descendant.
 - **Ancestor must establish a containing block.** A `display: contents` parent removes the size context, so `inline-size >= 40rem` never matches. If a child block looks "stuck" in its small-container fallback, audit the parent chain.
 
+**Container-query units**: inside a named container, `cqi` (inline-size), `cqb`, `cqw`, `cqh` size relative to the container, not the viewport — preferable to viewport `clamp()` for content composed into `group`/`columns`. Pattern: `clamp(<min>, <value>cqi, <max>)` for fluid-but-bounded sizing such as card/slide widths. Supported in all current engines.
+
 ## `@property` for animatable custom properties
 
 Untyped CSS custom properties don't animate — `transition: --my-color 0.3s` is a no-op because CSS treats the value as a string. Declare the property with `@property` to enable smooth animation and type safety:
