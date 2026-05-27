@@ -10,6 +10,7 @@
     {% render 'utility--meta-theme-color' %}
 
     {% # Preload hints — add <link rel="preload"> / preconnect / dns-prefetch hints here when a critical-path resource needs them %}
+    {% render 'utility--font-preload' %}
 
     {% # Core assets %}
     {% render 'utility--core-assets' %}
@@ -24,6 +25,9 @@
     {% if canonical_url != blank %}
       <link rel="canonical" href="{{ canonical_url | escape }}">
     {% endif %}
+
+    {% # hreflang alternates (multi-language Markets) %}
+    {% render 'utility--hreflang' %}
 
     {% # Favicon %}
     {% if settings.favicon %}

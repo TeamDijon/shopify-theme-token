@@ -1,0 +1,36 @@
+{% # hreflang v1.0.0 %}
+
+{% doc %}
+  @description Emits `<link rel="alternate" hreflang>` tags per available language plus `x-default` (the primary language), for multi-language Markets SEO. Emits nothing for single-language stores.
+
+  Builds each URL from the current path with the active language's `root_url` prefix swapped for the target's. The primary language's `root_url` is `/` (no prefix), handled explicitly so the leading slash isn't mangled.
+
+  Verify against a live Markets/translated preview before relying on it — cross-locale path rewriting is the fragile part.
+
+  @example {% render 'utility--hreflang' %}
+{% enddoc %}
+
+{% liquid
+  if localization.available_languages.size <= 1
+    break
+  endif
+
+  assign current_root = localization.language.root_url
+  if current_root == '/'
+    assign bare_path = request.path
+  else
+    assign bare_path = request.path | remove_first: current_root
+  endif
+  if bare_path == blank
+    assign bare_path = '/'
+  endif
+%}
+{%- for language in localization.available_languages -%}
+  {%- if language.root_url == '/' -%}
+    {%- assign target_path = bare_path -%}
+  {%- else -%}
+    {%- assign target_path = language.root_url | append: bare_path -%}
+  {%- endif -%}
+  <link rel="alternate" hreflang="{{ language.iso_code }}" href="{{ request.origin }}{{ target_path }}">
+  {%- if language.primary %}<link rel="alternate" hreflang="x-default" href="{{ request.origin }}{{ target_path }}">{% endif -%}
+{%- endfor -%}

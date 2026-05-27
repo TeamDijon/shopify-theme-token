@@ -1,0 +1,35 @@
+{% # Font Preload v1.0.0 %}
+
+{% doc %}
+  @description Preloads the base typeface's first woff2 so the browser starts the font fetch before the inlined @font-face block parses, cutting the FOUT swap delay. Emits nothing when no base typeface / woff2 is configured. `crossorigin` matches the @font-face fetch (Shopify's font CDN serves with CORS) so there's no double download, and the URL is the same `asset.url` that `utility--font-face` emits.
+
+  Depends on: `settings.base_text_style` → `typeface` → `font` → `asset_list` (see `utility--font-face`).
+
+  @example {% render 'utility--font-preload' %}
+{% enddoc %}
+
+{% liquid
+  assign base_typeface = settings.base_text_style.font_family.value
+  assign preload_url = ''
+
+  for font in base_typeface.font_list.value
+    if font.asset_list.value.size == 0
+      continue
+    endif
+    for asset in font.asset_list.value
+      assign asset_ext = asset.url | split: '.' | last | split: '?' | first
+      if asset_ext == 'woff2'
+        assign preload_url = asset.url
+        break
+      endif
+    endfor
+    if preload_url != blank
+      break
+    endif
+  endfor
+
+  if preload_url == blank
+    break
+  endif
+%}
+<link rel="preload" as="font" type="font/woff2" href="{{ preload_url }}" crossorigin>
