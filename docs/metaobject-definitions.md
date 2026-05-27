@@ -196,6 +196,55 @@ Standard name field — see [convention](#name-field-convention). Description: *
 
 Semantic seeds (`success`/`warning`/`error`/`info`) are referenced by component CSS as `var(--color-<handle>)` for state-driven styling (e.g. inventory pills, form errors, alerts). Treat these handles as stable — renaming them in admin will break consumer rules silently.
 
+### `gradient`
+
+**Type:**
+
+| Setting | Value |
+|---|---|
+| Type key | `gradient` |
+| Display name | Gradient |
+| Description | Scheme-adaptive linear gradient built from two color-scheme roles |
+
+Type-level metadata: follows [convention](#type-level-metadata-convention), no deviations.
+
+**Fields:**
+
+#### `name` — Name
+
+Standard name field — see [convention](#name-field-convention). Description: *"Name used to reference the gradient"*.
+
+#### `angle` — Angle (required)
+
+- Type: Integer
+- Cardinality: One
+- Description: Gradient angle in degrees
+- Validation: 0–360
+- Default: 135
+
+#### `color_start` — Start color (required)
+
+- Type: Single line text
+- Cardinality: One
+- Description: Color-scheme role for the first stop
+- Validation: List of allowed values — `background`, `foreground`, `primary`
+
+#### `color_end` — End color (required)
+
+- Type: Single line text
+- Cardinality: One
+- Description: Color-scheme role for the second stop
+- Validation: List of allowed values — `background`, `foreground`, `primary`
+
+**Runtime notes:**
+
+- Iterated by `utility--css-variables`, which emits `--gradient-<system.handle>: linear-gradient(<angle>deg, var(--color-<color_start>), var(--color-<color_end>))` in `:root`.
+- Stops reference per-scheme `--color-<role>` variables, so one definition re-resolves against whichever color scheme the consuming element sits in — no per-scheme gradient emission. Consume as `background: var(--gradient-<handle>)`.
+- **Reserved handle:** `background` — the color-scheme system owns `--gradient-background` (each scheme's background gradient). A `gradient` entry with that handle is skipped at emit time; don't use it.
+- Linear only; a `type` (linear/radial) field can be added later if needed.
+
+**Recommended entries:** none — gradients are project-specific. Example: a `hero` entry (`angle: 135`, `color_start: primary`, `color_end: background`) yields `--gradient-hero`.
+
 ### `typeface`
 
 **Type:**
