@@ -3,7 +3,7 @@
 **Layer**: 0
 **Type**: snippet (`snippets/article-card.liquid`)
 **Status**: spec (not yet implemented)
-**Depends on**: Shopify `article` object, `image_tag` filter (built-in), localized-date pattern (`.context/rules/liquid-date-translation.md`)
+**Depends on**: Shopify `article` object, `snippets/image.liquid` (responsive image renderer, already shipped), localized-date pattern (`.context/rules/liquid-date-translation.md`)
 **Consumers**: `blog-index` section, featured-articles strip, related-articles (all planned)
 
 ## Purpose
@@ -28,7 +28,7 @@ Renders a blog article tile — image, date, title, excerpt, optional author. Wh
 <article class="article-card">
   {% if show_image and article.image %}
     <div class="card-media">
-      {{ article.image | image_url: width: 800 | image_tag: loading: 'lazy', widths: '300,500,800,1000', alt: article.title }}
+      {% render 'image', image: article.image, sizes_value: card_sizes, loading: 'lazy' %}
     </div>
   {% endif %}
   <div class="card-body">
@@ -137,7 +137,7 @@ Per `.context/docs/css-standards.md` — component-rooted, no BEM:
 - Date localized via the `liquid-date-translation` pattern (English month names replaced with locale equivalents); `datetime` attr carries ISO `%Y-%m-%d` for machines
 - `heading_level` interpolated into the title tag — caller sets it to nest correctly under the section heading
 - Pseudo-overlay link: whole card clickable, accessible name is the title only
-- Image lazy-loaded with responsive `widths`; skipped entirely when the article has no image
+- Image rendered via `image.liquid` (lazy-loaded, responsive srcset); skipped entirely when the article has no image. `card_sizes` is the `sizes` attribute value reflecting the card's rendered column width (passed by the consumer or a sensible default like `(min-width: 48rem) 33vw, 100vw`)
 - Hover (pointer devices only): title color shift + subtle image zoom, both respecting `prefers-reduced-motion` via the theme's reset-layer transition guards
 - Early exit (`break`) when `article` is blank
 
@@ -157,7 +157,7 @@ Per `.context/docs/css-standards.md` — component-rooted, no BEM:
 
 ## Out of scope
 
-- Image rendering helper — renders via `image_tag` directly for now; routes through a shared lightweight image helper once extracted in the post-batch-1 primitive pass
+- Image rendering — consumes the existing `snippets/image.liquid` (responsive srcset/widths). The crop is the card's concern: `.card-media` owns the `aspect-ratio` box and the `<img>` fills it via `object-fit: cover`. `image.liquid` stays a pure renderer — no `aspect_ratio` param added (it would force a double wrapper inside `.card-media`)
 - Tag/category pills on the card — compose with the `badge` snippet at consume-site if wanted
 - Reading-time meta ("5 min read") — content calc, defer
 - Comment count — defer
