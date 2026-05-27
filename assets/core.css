@@ -24,6 +24,19 @@
   --focus-ring-offset: 0.125rem;
 }
 
+/* Cross-document view transitions — progressive enhancement (Chromium, Safari 18.2+; ignored elsewhere) */
+@view-transition {
+  navigation: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none;
+  }
+}
+
 @layer reset {
   *,
   *::before,
