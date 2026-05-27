@@ -21,6 +21,8 @@ Populate as metaobjects are added; an undocumented metaobject should not be cons
 | `media_size` | individual reference per media block | `.system.handle` (for the `fill` special), `.type.value` (`ratio` / `relative` / `fixed`), `.value.value` (CSS value: `16/9`, `100svh`, `400px`) | Sizing constraint for a media block; consumed by `media` and `embed` |
 | `spacing` | section-level `block_rhythm`, optional per-block override | `.mobile_value.value` (px), `.desktop_value.value` (px) | Vertical-rhythm spacing token with mobile + desktop values; emitted as `--block-rhythm-*` CSS variables |
 
+Fonts are self-hosted via the `typeface`/`font` metaobjects, rendered as `@font-face` by `utility--font-face` — not Shopify's `font_picker`/`font_modify` pipeline. The three `font_picker` theme settings (`mono_font`, `sans_serif_font`, `serif_font`) are hidden from merchants (`visible_if: false`) and supply only the generic fallback-family stack that `text_style.font_fallback_family` appends after the custom font; they don't select the loaded webfonts.
+
 ## Schema usage
 
 ```json

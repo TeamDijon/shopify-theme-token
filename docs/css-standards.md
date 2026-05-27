@@ -39,6 +39,16 @@ Anything still emitted **outside layers** (e.g. inline declarations from `utilit
 - **Spacing/typography tokens come from theme settings + `text_style`/`content_width` metaobjects.** Same rule: use the variable, not the literal.
 - **Component-local custom properties** are fine — declare on the component's root selector; reference via `var(--name, fallback)`.
 
+## Design constants
+
+`core.css` declares scheme-independent invariants in a top-level `:root`. Consume these rather than hardcoding:
+
+- **Z-index** — `--layer-below` (−1), `--layer-base` (0), `--layer-raised` (100), `--layer-sticky` (200), `--layer-overlay` (300), `--layer-drawer` (400), `--layer-temporary` (500). Gaps of 100 leave room for intermediate layers; third-party overlays sit above the scale.
+- **Motion** — `--duration-fast` (120ms), `--duration-base` (200ms), `--duration-slow` (320ms); `--ease-standard`, `--ease-emphasized`, `--ease-out`.
+- **Focus ring** — `--focus-ring-width`, `--focus-ring-offset` (color is scheme-driven via `--color-focus-ring`).
+
+Scheme-dependent tokens (colors, opacity, shadow) are emitted per-scheme by `utility--css-variables`; these constants are not.
+
 ## Logical properties
 
 Always prefer logical over physical:
@@ -137,12 +147,14 @@ Untyped CSS custom properties don't animate — `transition: --my-color 0.3s` is
 
 Use whenever a custom property needs to animate (color-scheme transitions, computed gutter changes, etc.). Supported in Safari 16.4+, Firefox 128+.
 
+Token declares no `@property` rules yet — nothing transitions a custom property directly (the scheme crossfade animates real `background-color`/`color`, which only read the changed token). Type a token when a component first transitions it.
+
 ## Focus and motion
 
-- `:focus-visible` for outline rules; never `outline: none` without a replacement.
-- `outline-offset` to keep focus indicators clear of the element edge.
-- All animations include a `@media (prefers-reduced-motion: reduce)` branch that disables or shortens motion.
-- Color rules respect `@media (forced-colors: active)` — don't override system color decisions in high-contrast mode.
+- `:focus-visible` outlines use `--focus-ring-width` / `--focus-ring-offset` + `--color-focus-ring`; never `outline: none` without a replacement.
+- Transitions and animations use the motion tokens (`--duration-*`, `--ease-*`). The reset's `prefers-reduced-motion: reduce` branch neutralizes motion globally.
+- `forced-colors: active` maps the focus outline to the system `Highlight` and keeps `forced-color-adjust: auto` on form controls. Don't override system color decisions beyond restoring affordances.
+- Light/dark is merchant-driven through color schemes; the `prefers-color-scheme` media query is intentionally absent.
 
 ## Related
 
