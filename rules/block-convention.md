@@ -39,6 +39,17 @@ See `.context/docs/versioning-and-changelog.md` for format and policy.
 - Prefer metaobjects over free-form values when a matching one exists — see `.context/docs/design-system-metaobjects.md`
 - For recurring schema shapes (top-spacing pair, etc.), see `.context/docs/schema-conventions.md`
 
+## Block-backed snippet root
+
+The matching snippet — not the block file — renders the block's root element (`"tag": null` means Shopify adds no wrapper, so the snippet owns the root). That root must carry:
+
+- `class="shopify-block shopify-block--<name>"` — base + identity class (the identity class is the CSS style hook)
+- `{{ block.shopify_attributes }}` — Shopify editor integration (block select/insert). Emit directly on the root; in a non-block (direct `{% render %}`) call `block` is nil, so it renders blank — safe. (Don't alias it to a bare `shopify_attributes` variable — theme-check flags the standalone read.)
+- `id="{{ base_selector }}"` — unique id from `utility--base-selector`, for `utility--dynamic-style` scoping
+- `{{ modifiers }}` — rendered `data-modifiers`, when the block emits any
+
+Sub-component primitives (no block — e.g. `star-rating`, `badge`) carry none of these; they use a clean `.<name>` root. See `.context/docs/composition-strategy.md`.
+
 ## Styles and scripts
 
 Block CSS lives in a `{% stylesheet %}` block inside the matching snippet (the block file itself contains only the schema + render call). Block JS lives in a `{% javascript %}` block in the same snippet. For Liquid-computed per-instance values, render `utility--dynamic-style`. See `.context/docs/asset-loading.md` for the file-vs-inline decision rule across all consumer types, and `.context/docs/css-standards.md` for component-rooted CSS naming (no BEM `__element`, descendants via `& .name` / `& > tag`).
