@@ -1,4 +1,9 @@
-{% # Font Preload v1.0.0 %}
+{% # Font Preload v1.0.1 %}
+
+{% comment %}
+  Changelog
+  - v1.0.1 — suppress AssetPreload theme-check: `preload_tag` needs an asset_url-family input and emits no `crossorigin`, but this font URL is metaobject-hosted and fonts require `crossorigin` to avoid a double fetch — the manual link is correct here
+{% endcomment %}
 
 {% doc %}
   @description Preloads the base typeface's first woff2 so the browser starts the font fetch before the inlined @font-face block parses, cutting the FOUT swap delay. Emits nothing when no base typeface / woff2 is configured. `crossorigin` matches the @font-face fetch (Shopify's font CDN serves with CORS) so there's no double download, and the URL is the same `asset.url` that `utility--font-face` emits.
@@ -32,4 +37,6 @@
     break
   endif
 %}
+{% comment %} theme-check-disable AssetPreload {% endcomment %}
 <link rel="preload" as="font" type="font/woff2" href="{{ preload_url }}" crossorigin>
+{% comment %} theme-check-enable AssetPreload {% endcomment %}
