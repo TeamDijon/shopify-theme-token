@@ -250,7 +250,6 @@
 
   /* Inner section container — appearance + layout. When authoring a specialized section root (theme-cart, theme-header, etc.), expand the selector to `:is(theme-section, theme-cart, ...)` so it inherits these defaults; section-specific layout stays in its own selector. */
   theme-section {
-    background-color: var(--color-background);
     background: var(--gradient-background);
     color: var(--color-foreground);
 
@@ -264,7 +263,7 @@
     text-decoration: var(--base-text-decoration);
     text-wrap: pretty;
 
-    transition: 0.15s ease-out;
+    transition: background-color 0.15s ease-out, color 0.15s ease-out;
 
     @media (prefers-reduced-motion) {
       transition-duration: 0s;
@@ -382,8 +381,8 @@
       block-size: auto;
       margin: 0;
       padding: 0.5rem 1rem;
-      left: 0.75rem;
-      top: 0.75rem;
+      inset-inline-start: 0.75rem;
+      inset-block-start: 0.75rem;
 
       font-family: sans-serif;
       font-style: normal;
