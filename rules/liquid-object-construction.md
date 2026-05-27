@@ -15,7 +15,7 @@ Liquid has no native object type. The `default` filter applied to `null` creates
 {{ entry.label }}    → "Hello"
 ```
 
-## Why it matters
+## What it enables
 
 Named property access enables `where`, `find`, and `sort` filters on arrays of objects. Without this pattern, structured data falls back to delimited strings (fragile, positional indexing) or parallel arrays (must stay synchronized, no filter support).
 

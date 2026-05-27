@@ -16,7 +16,7 @@ Every snippet in `snippets/*.liquid` follows this structure.
 2. **Changelog block** — `{% comment %}` with interface changes (see "Changelog" below). Omit on v1.0.0 only; required from any subsequent version.
 
 3. **`{% doc %}` block**
-   - `@description` — concise purpose. One line when possible; multi-line (with structure — numbered steps, `Depends on:` callouts, etc.) when the description naturally warrants it. Keep it meaningful — the doc block is cheap but important.
+   - `@description` — concise purpose. One line when possible; multi-line (with structure — numbered steps, `Depends on:` callouts, etc.) when the description naturally warrants it.
    - `@param {type} [name] - <description>` — one line per param. Types: `string`, `boolean`, `number`, `metaobject`, `section`, `block`, `object`. Brackets `[name]` mark optional params. Describe default and blank-behavior.
    - `@example {% render '<name>', ... %}` — at least one usage. Multiple allowed for variants.
 

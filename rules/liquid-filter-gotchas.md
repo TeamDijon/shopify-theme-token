@@ -5,7 +5,7 @@ paths:
 
 # Liquid filter gotchas
 
-Filters whose documented behavior diverges from what we observe in this Shopify Liquid runtime. Verified empirically; see references for the supporting test.
+Filters whose documented behavior diverges from their actual behavior in this Shopify Liquid runtime. Verified empirically; see references for the supporting test.
 
 ## `squish` is a no-op
 
@@ -13,8 +13,8 @@ Filters whose documented behavior diverges from what we observe in this Shopify 
 
 **Use instead** — `strip_newlines | split: ' ' | join: ' '` collapses runs of any whitespace (Liquid's `split: ' '` inherits Ruby's special-case behavior of treating any whitespace as the separator and dropping empty splits). `strip | split: ' ' | join: ' '` produces the identical result, since `split: ' '` already collapses newlines.
 
-**Why it matters** — `utility--css-minifier` v1.1.0 silently regressed when its whitespace pass migrated to `squish`; the bug went unnoticed for the entire v1.1.x–v1.2.x window because the comment-strip and token-collapse passes still produced visible savings on test inputs. Restored to the working chain in v2.0.0.
+Prior regression: `utility--css-minifier` v1.1.0 migrated its whitespace pass to `squish` and silently stopped collapsing; restored to the `split`/`join` chain in v2.0.0.
 
-## When you reach for a filter you "remember works"
+## Verifying filter behavior
 
-Run a 30-second sanity check (`{{ '  a   b  ' | <filter> | prepend: '[' | append: ']' }}`) before relying on it. Filter documentation is not a guarantee in this runtime.
+Before relying on a filter, run a 30-second sanity check: `{{ '  a   b  ' | <filter> | prepend: '[' | append: ']' }}`.
