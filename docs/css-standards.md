@@ -55,7 +55,13 @@ Logical properties handle RTL/vertical flow correctly without per-locale overrid
 
 ## Component scoping
 
-Component CSS targets a unique root selector — `.shopify-block--<name>` for blocks, the custom element tag for sections (`theme-cart`, `theme-header`), plain `<name>` for snippet-only components (e.g. `.star-rating`, `.skip-to-content`). Avoid bare element selectors that could leak (`button { ... }` in a block stylesheet styles every `<button>` on the page once the block is rendered, not just the block's own).
+Component CSS targets a unique root selector, picked by the primitive's consumption mode (see `.context/docs/composition-strategy.md` — block-backed vs sub-component):
+
+- **Block-backed primitive** — the snippet *is* a theme-block root (schema `"tag": null`), so it renders the root itself and emits `class="shopify-block shopify-block--<name>"` + `{{ shopify_attributes }}`. Style via `.shopify-block--<name>`. (`title`, `button`, `media`, …)
+- **Sub-component primitive** — nested inside other blocks/sections, never a block root. Style via a clean `.<name>` (`.star-rating`, `.badge`, `.skip-to-content`).
+- **Specialized section** — the custom element tag (`theme-cart`, `theme-header`).
+
+Avoid bare element selectors that could leak (`button { ... }` in a block stylesheet styles every `<button>` on the page once the block is rendered, not just the block's own).
 
 ## Inner element naming
 
