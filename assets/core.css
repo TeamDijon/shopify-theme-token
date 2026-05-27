@@ -1,5 +1,29 @@
 @layer reset, theme, components, utilities;
 
+/* Design constants — theme-wide invariants (scheme-independent). Scheme-dependent tokens are emitted by utility--css-variables. */
+:root {
+  /* Z-index scale — gaps of 100 leave room to insert layers; theme-internal only (third-party overlays intentionally sit above) */
+  --layer-below: -1;
+  --layer-base: 0;
+  --layer-raised: 100;
+  --layer-sticky: 200;
+  --layer-overlay: 300;
+  --layer-drawer: 400;
+  --layer-temporary: 500;
+
+  /* Motion */
+  --duration-fast: 120ms;
+  --duration-base: 200ms;
+  --duration-slow: 320ms;
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-emphasized: cubic-bezier(0.3, 0, 0, 1);
+  --ease-out: cubic-bezier(0.33, 1, 0.68, 1);
+
+  /* Focus ring (color is scheme-driven via --color-focus-ring) */
+  --focus-ring-width: 0.125rem;
+  --focus-ring-offset: 0.125rem;
+}
+
 @layer reset {
   *,
   *::before,
@@ -152,8 +176,8 @@
   }
 
   :where(:focus-visible) {
-    outline: 0.125rem solid var(--color-focus-ring, currentcolor);
-    outline-offset: 0.125rem;
+    outline: var(--focus-ring-width) solid var(--color-focus-ring, currentcolor);
+    outline-offset: var(--focus-ring-offset);
   }
 
   :where(:focus:not(:focus-visible)) {
@@ -228,6 +252,11 @@
     :where(button, input, select, textarea) {
       forced-color-adjust: auto;
     }
+
+    /* Brand-colored focus rings can fail contrast in forced-colors — use the system highlight */
+    :where(:focus-visible) {
+      outline-color: Highlight;
+    }
   }
 
   :where(#root, #__next) {
@@ -263,7 +292,7 @@
     text-decoration: var(--base-text-decoration);
     text-wrap: pretty;
 
-    transition: background-color 0.15s ease-out, color 0.15s ease-out;
+    transition: background-color var(--duration-base) var(--ease-standard), color var(--duration-base) var(--ease-standard);
 
     @media (prefers-reduced-motion) {
       transition-duration: 0s;
@@ -398,7 +427,7 @@
       overflow: visible;
       clip: auto;
       white-space: normal;
-      z-index: 1000;
+      z-index: var(--layer-temporary);
     }
   }
 
@@ -505,7 +534,7 @@
   /* Details animation */
   @media (prefers-reduced-motion: no-preference) {
     details {
-      transition: 0.3s ease-in-out;
+      transition: var(--duration-slow) var(--ease-standard);
 
       @supports (interpolate-size: allow-keywords) {
         interpolate-size: allow-keywords;
@@ -514,7 +543,7 @@
           block-size: 0;
           opacity: 0;
 
-          transition: 0.3s ease-in-out allow-discrete;
+          transition: var(--duration-slow) var(--ease-standard) allow-discrete;
           overflow-y: hidden;
         }
 
