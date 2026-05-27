@@ -1,7 +1,8 @@
-{% # Media v1.2.0 %}
+{% # Media v1.2.1 %}
 
 {% comment %}
   Changelog
+  - v1.2.1 — route content_width + top-margin vars through `utility--block-layout-vars`; output unchanged
   - v1.2.0 — route `media_size`/`mobile_media_size` interpretation through `utility--media-sizing` (modifier + vars modes) instead of inline branching; behavior unchanged. Centralizes the fill/ratio/height classification so `media` and `embed` can't drift.
   - v1.1.0 — add `image_fit` param emitted as `image-fit:<cover|contain>` modifier; CSS toggles `object-fit` accordingly
   - v1.0.1 — chain `--block-rhythm-mobile`/`--block-rhythm-desktop` as inner fallback for `margin-block-start` so section-level block rhythm applies when no per-block margin is authored
@@ -170,17 +171,7 @@
       --overlay-color: {{ overlay_color }};
     {% endif %}
 
-    {% if content_width and content_width != blank %}
-      --content-width: {{ content_width.width.value }}px;
-    {% endif %}
-
-    {% if mobile_margin_block_start and mobile_margin_block_start > 0 %}
-      --mobile-margin-block-start: {{ mobile_margin_block_start | divided_by: 16.0 | round: 3 }}rem;
-    {% endif %}
-
-    {% if desktop_margin_block_start and desktop_margin_block_start > 0 %}
-      --desktop-margin-block-start: {{ desktop_margin_block_start | divided_by: 16.0 | round: 3 }}rem;
-    {% endif %}
+    {% render 'utility--block-layout-vars', content_width: content_width, mobile_margin_block_start: mobile_margin_block_start, desktop_margin_block_start: desktop_margin_block_start %}
   {% endcapture %}
   {% render 'utility--dynamic-style', base_selector: base_selector, css_content: dynamic_style %}
 </div>

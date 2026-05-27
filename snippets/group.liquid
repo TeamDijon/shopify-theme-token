@@ -1,7 +1,8 @@
-{% # Group v1.1.0 %}
+{% # Group v1.1.1 %}
 
 {% comment %}
   Changelog
+  - v1.1.1 — route content_width + top-margin vars through `utility--block-layout-vars`; output unchanged
   - v1.1.0 — add `bleed` param emitted as `,bleed` modifier; CSS escapes the section gutter to the visible viewport width (same math as media's bleed)
   - v1.0.3 — normalize `horizontal_alignment: space-between` → `start` in column direction so the invalid `align-items: space-between` value doesn't fall through to the browser
   - v1.0.2 — wrap contents in `.shopify-block--group__inner`; container-type stays on the outer so `@container group` queries actually match (queries never see the element that defines the container per spec). Flex/stack-below rules move to the inner wrapper.
@@ -84,17 +85,7 @@
       --vertical-alignment: {{ vertical_alignment }};
     {% endif %}
 
-    {% if content_width and content_width != blank %}
-      --content-width: {{ content_width.width.value }}px;
-    {% endif %}
-
-    {% if mobile_margin_block_start and mobile_margin_block_start > 0 %}
-      --mobile-margin-block-start: {{ mobile_margin_block_start | divided_by: 16.0 | round: 3 }}rem;
-    {% endif %}
-
-    {% if desktop_margin_block_start and desktop_margin_block_start > 0 %}
-      --desktop-margin-block-start: {{ desktop_margin_block_start | divided_by: 16.0 | round: 3 }}rem;
-    {% endif %}
+    {% render 'utility--block-layout-vars', content_width: content_width, mobile_margin_block_start: mobile_margin_block_start, desktop_margin_block_start: desktop_margin_block_start %}
   {% endcapture %}
   {% render 'utility--dynamic-style', base_selector: base_selector, css_content: dynamic_style %}
 </div>

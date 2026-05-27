@@ -1,7 +1,8 @@
-{% # Title v1.1.0 %}
+{% # Title v1.1.1 %}
 
 {% comment %}
   Changelog
+  - v1.1.1 — route content_width + top-margin vars through `utility--block-layout-vars`; output unchanged
   - v1.1.0 — add `text_align` param; self-center capped content_width via `margin-inline: auto`; drop no-op `align-self` on the SVG
   - v1.0.1 — chain `--block-rhythm-mobile`/`--block-rhythm-desktop` as inner fallback for `margin-block-start` so section-level block rhythm applies when no per-block margin is authored
   - v1.0.0 — initial
@@ -63,10 +64,6 @@
   {{ content }}
 
   {% capture dynamic_style %}
-    {% if content_width and content_width != blank %}
-      --content-width: {{ content_width.width.value }}px;
-    {% endif %}
-
     {% if text_align != 'start' %}
       --text-align: {{ text_align }};
     {% endif %}
@@ -75,13 +72,7 @@
       --text-color: var(--color-{{ text_color.system.handle }});
     {% endif %}
 
-    {% if mobile_margin_block_start and mobile_margin_block_start > 0 %}
-      --mobile-margin-block-start: {{ mobile_margin_block_start | divided_by: 16.0 | round: 3 }}rem;
-    {% endif %}
-
-    {% if desktop_margin_block_start and desktop_margin_block_start > 0 %}
-      --desktop-margin-block-start: {{ desktop_margin_block_start | divided_by: 16.0 | round: 3 }}rem;
-    {% endif %}
+    {% render 'utility--block-layout-vars', content_width: content_width, mobile_margin_block_start: mobile_margin_block_start, desktop_margin_block_start: desktop_margin_block_start %}
   {% endcapture %}
   {% render 'utility--dynamic-style', base_selector: base_selector, css_content: dynamic_style %}
 </{{ tag }}>

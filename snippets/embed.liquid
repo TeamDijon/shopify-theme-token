@@ -1,7 +1,8 @@
-{% # Embed v1.1.0 %}
+{% # Embed v1.1.1 %}
 
 {% comment %}
   Changelog
+  - v1.1.1 — route content_width + top-margin vars through `utility--block-layout-vars`; output unchanged
   - v1.1.0 — route `media_size` interpretation through `utility--media-sizing` (modifier + vars modes), fixing drift with `media`: embed now honors a `fill`-handle media_size (renders 100svh via a new `sizing:fill` CSS rule) instead of silently falling back to 16/9. Ratio/height behavior unchanged.
   - v1.0.3 — when a URL is set but doesn't match a supported provider, surface an editor-only diagnostic so merchants notice the rejection instead of seeing a silent placeholder
   - v1.0.2 — youtu.be and youtube.com/shorts URL parsers split on `/` before `?`/`&`/`#` so trailing-slash variants resolve to a clean video id
@@ -162,17 +163,7 @@
   {% capture dynamic_style %}
     {% render 'utility--media-sizing', media_size: media_size, output: 'vars' %}
 
-    {% if content_width and content_width != blank %}
-      --content-width: {{ content_width.width.value }}px;
-    {% endif %}
-
-    {% if mobile_margin_block_start and mobile_margin_block_start > 0 %}
-      --mobile-margin-block-start: {{ mobile_margin_block_start | divided_by: 16.0 | round: 3 }}rem;
-    {% endif %}
-
-    {% if desktop_margin_block_start and desktop_margin_block_start > 0 %}
-      --desktop-margin-block-start: {{ desktop_margin_block_start | divided_by: 16.0 | round: 3 }}rem;
-    {% endif %}
+    {% render 'utility--block-layout-vars', content_width: content_width, mobile_margin_block_start: mobile_margin_block_start, desktop_margin_block_start: desktop_margin_block_start %}
   {% endcapture %}
   {% render 'utility--dynamic-style', base_selector: base_selector, css_content: dynamic_style %}
 </div>
