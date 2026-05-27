@@ -1,7 +1,8 @@
-{% # CSS Variables v1.7.0 %}
+{% # CSS Variables v1.8.0 %}
 
 {% comment %}
   Changelog
+  - v1.8.0 — emit `--gradient-<handle>` from the `gradient` metaobject (linear, scheme-adaptive: stops reference per-scheme `--color-<role>` vars so one definition re-resolves per scheme). Skips the reserved `background` handle and incomplete entries.
   - v1.7.0 — emit `--color-foreground-heading-rgb` for translucent heading treatments; document that button/input sub-role colors are opaque-only (add `-rgb` on demand)
   - v1.6.0 — drop the hardcoded `--color-error/success/warning` block left over from `shopify-theme-experience`. Semantic colors now flow through the normal `theme_color` metaobject loop — seed `success`, `warning`, `error`, `info` entries per `.context/docs/metaobject-definitions.md`. The hardcoded values were emitted but never consumed; now consumers that reference `var(--color-warning)` etc. resolve via the standard pipeline like every other color token.
   - v1.5.1 — drop the `.shopify-section:has([data-modifiers*="color-scheme:..."])` selector from the per-scheme rule. The `:has()` matched any descendant, so a nested override block (e.g. a media block with `color-scheme:scheme-3` inside a section using `scheme-2`) silently re-matched the outer `.shopify-section` against scheme-3, clobbering the section's tokens globally. Color tokens now live only on the modifier-bearing element (`theme-section` + override blocks); descendants inherit normally. Also aligns with `section-convention.md`'s "no typography, background, or transitions on `.shopify-section`" rule.
@@ -32,6 +33,14 @@
   :root {
     {% for theme_color in metaobjects.theme_color.values %}
       --color-{{ theme_color.system.handle }}: {{ theme_color.hex_code.value }};
+    {% endfor %}
+
+    {% # Gradients — scheme-adaptive: color stops reference per-scheme role vars, so one definition re-resolves per scheme. `background` handle is reserved for the scheme background-gradient. %}
+    {% for gradient in metaobjects.gradient.values %}
+      {% if gradient.system.handle == 'background' or gradient.color_start.value == blank or gradient.color_end.value == blank %}
+        {% continue %}
+      {% endif %}
+      --gradient-{{ gradient.system.handle }}: linear-gradient({{ gradient.angle.value | default: 135 }}deg, var(--color-{{ gradient.color_start.value }}), var(--color-{{ gradient.color_end.value }}));
     {% endfor %}
   }
 

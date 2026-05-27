@@ -40,6 +40,9 @@
     {% # Open Graph %}
     {% render 'utility--open-graph' %}
 
+    {% # Speculation rules — prefetch likely-next pages for instant navigation %}
+    {% render 'utility--speculation-rules' %}
+
     {% # Shopify data %}
     {{ content_for_header }}
   </head>

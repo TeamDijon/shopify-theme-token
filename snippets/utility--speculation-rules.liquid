@@ -1,0 +1,26 @@
+{% # Speculation Rules v1.0.0 %}
+
+{% doc %}
+  @description Emits a Speculation Rules script that prefetches likely-next same-origin documents on hover/pointerdown (`eagerness: moderate`), excluding cart/checkout/account routes and any link marked `[data-no-speculate]`. Prefetch (not prerender) avoids premature JS execution and analytics / Web-Pixel misfires on commerce pages. Browsers auto-suppress speculation under Data Saver / metered connections, so no manual reduced-data guard is needed.
+
+  @example {% render 'utility--speculation-rules' %}
+{% enddoc %}
+
+<script type="speculationrules">
+  {
+    "prefetch": [
+      {
+        "where": {
+          "and": [
+            { "href_matches": "/*" },
+            { "not": { "href_matches": "/cart*" } },
+            { "not": { "href_matches": "/checkout*" } },
+            { "not": { "href_matches": "/account*" } },
+            { "not": { "selector_matches": "[data-no-speculate]" } }
+          ]
+        },
+        "eagerness": "moderate"
+      }
+    ]
+  }
+</script>
