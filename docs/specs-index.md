@@ -13,6 +13,8 @@ Sourced from the EXPLORATION-2 inventory pass (May 2026).
 - [badge](./specs/badge.md) — generic tone-colored pill (label + optional icon), tint/solid styles driven by semantic color tokens
 - [article-card](./specs/article-card.md) — blog article tile (image / date / title / excerpt / author) with pseudo-overlay whole-card link
 - [form-field](./specs/form-field.md) — label + control + help + error unit (text-family / textarea / select / checkbox) with full ARIA wiring
+- [payment-icons-strip](./specs/payment-icons-strip.md) — row of accepted payment-method icons from `shop.enabled_payment_types`
+- [tooltip](./specs/tooltip.md) — popover-API toggletip (pointer / keyboard / touch), non-interactive content, JS-enhanced hover + placement
 
 ## Layer 1 — Theme blocks
 
