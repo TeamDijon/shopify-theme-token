@@ -77,13 +77,13 @@ The `ModifiersManager` class (`assets/modifiers-manager.js`) reads and mutates `
 - **Per-instance values** (width, color, margin): use CSS custom properties via `utility--dynamic-style` instead
 - **Pure JS state that does not drive styling**: use standard attributes (`aria-*`, `data-<name>`) or classes
 
-## Authoring guardrails
+## Authoring rules
 
-Three discipline rules that prevent silent footguns. None violated by current usage; documented forward-looking.
+Three rules, not violated by current usage; documented for future authoring.
 
 ### Categorical only — not continuous
 
-Use `data-modifiers` for **finite, named** enum values (`button-style:solid-secondary`, `state:loading`, `template:product`). For continuous/numeric values (margins, sizes, computed offsets), use CSS custom properties via `utility--dynamic-style` instead. ZAG's `top-margin:0` through `top-margin:22` is the anti-pattern: 23 individual CSS selectors instead of one variable.
+Use `data-modifiers` for **finite, named** enum values (`button-style:solid-secondary`, `state:loading`, `template:product`). For continuous/numeric values (margins, sizes, computed offsets), use CSS custom properties via `utility--dynamic-style` instead. ZAG's `top-margin:0` through `top-margin:22` generates 23 individual CSS selectors where one variable would do.
 
 Discrete numeric labels tied to a fixed enum (e.g. our `breakpoint:40` / `:60` / `:80` mapping to media queries) are categorical, not continuous.
 

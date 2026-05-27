@@ -41,7 +41,7 @@ The three rows aren't mutually exclusive: a section with `assets/<name>.css` can
 | `inline` | `<script>inline JS</script>` | Small, critical-path scripts that must run before external JS finishes loading. Inline JS is emitted **as-is** — it is NOT minified or stripped of newlines (ASI and `//` comments would break). Keep inline JS short and comment-free, or wrap it in an IIFE. |
 | `false` | (nothing) | Component ships CSS only. |
 
-## Defaults are opinionated
+## Defaults
 
 A call with just `name` ships both channels: `css: 'link', js: 'module'`. If the component is CSS-only or JS-only, pass `false` explicitly.
 

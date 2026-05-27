@@ -39,7 +39,7 @@ Validation files commit to `main` but **never link from production templates or 
 2. **Hub is unlinked too** — `?view=validation` is a known URL only to authors.
 3. **Pre-deploy strip (future)** — when CI deploys the theme to Shopify staging/production, strip `validation--*.{liquid,json}` before push. Document this when CI is set up.
 
-For v1, accept that validation files ship with the published theme. Footprint is minor and they're inert without the URL.
+For v1, validation files ship with the published theme. They are inert without the querystring URL.
 
 ## Section schema conventions
 
@@ -85,7 +85,7 @@ After authoring a validation section, add an anchor in `sections/validation.liqu
 
 ## The 21-section inventory
 
-All three layers shipped — 21 of 21 pages live. ZAG (`shopify-theme-zag`) was the original reference for the `theme_color` and `icon` patterns; Token's pages are now authored independently and the inventory is closed.
+21 of 21 pages live across all three layers.
 
 **Layer 1 — Metaobjects (8 sections)**
 
@@ -102,7 +102,7 @@ All three layers shipped — 21 of 21 pages live. ZAG (`shopify-theme-zag`) was 
 - `columns-features` — columns containing media + title + richtext per column, exercises container queries
 - `cta-banner` — separator + group + button variants
 
-These exercised the cross-block bugs caught during the initial author pass (block_rhythm layer-cascade collision, separator collapse in flex parents, group/columns self-container-query) — all three were fixed in the validation-triage commits and the pages now serve as regression guards.
+These compositions cover the cross-block interactions: block_rhythm layer-cascade collision, separator collapse in flex parents, group/columns self-container-query. They serve as regression guards.
 
 ## Helper snippets
 

@@ -4,8 +4,8 @@ Conventions for theme CSS.
 
 ## Specificity discipline
 
-- **Cap at `0 4 0`** — never need more. If you do, the structure is wrong (excessive nesting, DOM-too-deep).
-- **No `!important`.** Specificity exists to be respected; bypassing it leaks fragility.
+- **Cap at `0 4 0`.** Higher specificity signals excessive nesting or DOM depth — restructure instead.
+- **No `!important`.**
 - **No ID selectors except for `utility--dynamic-style`'s scoping.** That snippet emits `#<base_selector> { ... }` to scope per-instance values; everywhere else, use class or attribute selectors.
 - **`:where()` to keep grouped selectors low-specificity.** Examples in `core.css`: `:where(*, ::before, ::after) { box-sizing: border-box }`, `:where(input, textarea, select) { ... }`.
 
@@ -115,7 +115,7 @@ For block-level layout adaptation (a child responding to its container's actual 
 }
 ```
 
-Prefer container queries over media queries whenever the relevant width is the parent's, not the viewport's. Modern engines all support this.
+Prefer container queries over media queries whenever the relevant width is the parent's, not the viewport's.
 
 **Established consumers**: `group` and `columns` split into an outer/inner pair — the outer (`.shopify-block--<name>`) declares `container-type: inline-size; container-name: <block>`, the inner (`.shopify-block--<name>__inner`) carries the flex/grid layout and is the target of every `@container` rule. Stack-below tokens (`stack-below:40|60|80`) on the outer's `data-modifiers` switch the inner between row/grid and column layout.
 
@@ -135,7 +135,7 @@ Untyped CSS custom properties don't animate — `transition: --my-color 0.3s` is
 }
 ```
 
-Use whenever a custom property needs to animate (color-scheme transitions, computed gutter changes, etc.). All modern engines support `@property` (Safari since 16.4, Firefox since 128).
+Use whenever a custom property needs to animate (color-scheme transitions, computed gutter changes, etc.). Supported in Safari 16.4+, Firefox 128+.
 
 ## Focus and motion
 
