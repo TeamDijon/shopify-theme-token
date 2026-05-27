@@ -54,5 +54,6 @@ Tally as of 2026-05-27. Update the table when adding/removing/resizing rules in 
 |---|---|---|
 | `assets/*.js` | `js-asset-convention.md` | 53 |
 | `assets/icon-*.svg` | `icon-convention.md` | 71 |
+| `.context/docs/**`, `.context/rules/**` (`.md`) | `reference-voice.md` | 21 |
 
 Section edits sit closest to the cap (395/~400). Adding to any always-on rule pushes every domain table row up by the same delta.
