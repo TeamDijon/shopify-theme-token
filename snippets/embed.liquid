@@ -1,7 +1,8 @@
-{% # Embed v1.0.3 %}
+{% # Embed v1.1.0 %}
 
 {% comment %}
   Changelog
+  - v1.1.0 — route `media_size` interpretation through `utility--media-sizing` (modifier + vars modes), fixing drift with `media`: embed now honors a `fill`-handle media_size (renders 100svh via a new `sizing:fill` CSS rule) instead of silently falling back to 16/9. Ratio/height behavior unchanged.
   - v1.0.3 — when a URL is set but doesn't match a supported provider, surface an editor-only diagnostic so merchants notice the rejection instead of seeing a silent placeholder
   - v1.0.2 — youtu.be and youtube.com/shorts URL parsers split on `/` before `?`/`&`/`#` so trailing-slash variants resolve to a clean video id
   - v1.0.1 — chain `--block-rhythm-mobile`/`--block-rhythm-desktop` as inner fallback for `margin-block-start` so section-level block rhythm applies when no per-block margin is authored
@@ -108,18 +109,16 @@
   if provider != blank
     assign modifier_list = 'provider:' | append: provider
   endif
-  if media_size != blank
-    if media_size.type.value == 'ratio'
-      if modifier_list != blank
-        assign modifier_list = modifier_list | append: ','
-      endif
-      assign modifier_list = modifier_list | append: 'sizing:ratio'
-    elsif media_size.type.value == 'relative' or media_size.type.value == 'fixed'
-      if modifier_list != blank
-        assign modifier_list = modifier_list | append: ','
-      endif
-      assign modifier_list = modifier_list | append: 'sizing:height'
+
+  capture sizing_modifier
+    render 'utility--media-sizing', media_size: media_size, output: 'modifier'
+  endcapture
+  assign sizing_modifier = sizing_modifier | strip
+  if sizing_modifier != blank
+    if modifier_list != blank
+      assign modifier_list = modifier_list | append: ','
     endif
+    assign modifier_list = modifier_list | append: sizing_modifier
   endif
 
   capture base_selector
@@ -161,13 +160,7 @@
   {% endif %}
 
   {% capture dynamic_style %}
-    {% if media_size != blank %}
-      {% if media_size.type.value == 'ratio' %}
-        --media-ratio: {{ media_size.value.value }};
-      {% elsif media_size.type.value == 'relative' or media_size.type.value == 'fixed' %}
-        --media-height: {{ media_size.value.value }};
-      {% endif %}
-    {% endif %}
+    {% render 'utility--media-sizing', media_size: media_size, output: 'vars' %}
 
     {% if content_width and content_width != blank %}
       --content-width: {{ content_width.width.value }}px;
@@ -207,6 +200,12 @@
       &[data-modifiers*='sizing:height'] {
         aspect-ratio: auto;
         block-size: var(--media-height);
+      }
+
+      /* Sizing override: fill the viewport height (fill-handle media_size) */
+      &[data-modifiers*='sizing:fill'] {
+        aspect-ratio: auto;
+        block-size: 100svh;
       }
 
       & > iframe,

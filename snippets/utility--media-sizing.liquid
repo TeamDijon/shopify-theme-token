@@ -1,0 +1,55 @@
+{% # Media sizing v1.0.0 %}
+
+{% doc %}
+  @description Centralizes `media_size` / `mobile_media_size` metaobject interpretation for media-like blocks (media, embed, cards). Classifies the size into `fill` / `ratio` / `height` and emits either the `sizing:*` modifier token or the matching CSS custom properties, selected by `output`. Keeps the fill special-case + mobile override in one place so consumers don't drift.
+
+  Emits a bare token (no leading comma) in `modifier` mode — the caller seeds it into its `modifier_list`. Returns nothing when `media_size` is blank or its type is unrecognized.
+
+  @param {metaobject} [media_size] - `media_size` metaobject. Reads `.system.handle` (fill special-case), `.type.value` (`ratio` / `relative` / `fixed`), `.value.value`.
+  @param {metaobject} [mobile_media_size] - Optional mobile override. Same shape. Only consulted in `vars` mode.
+  @param {string} [output] - `'modifier'` emits the `sizing:<fill|ratio|height>` token; `'vars'` emits `--media-ratio` / `--media-height` (+ `--mobile-*` variants). Required.
+
+  @example {% capture sizing_modifier %}{% render 'utility--media-sizing', media_size: media_size, output: 'modifier' %}{% endcapture %}
+  @example {% render 'utility--media-sizing', media_size: media_size, mobile_media_size: mobile_media_size, output: 'vars' %}
+{% enddoc %}
+
+{% liquid
+  if media_size == blank
+    break
+  endif
+
+  if output == 'modifier'
+    if media_size.system.handle == 'fill'
+      echo 'sizing:fill'
+    elsif media_size.type.value == 'ratio'
+      echo 'sizing:ratio'
+    elsif media_size.type.value == 'relative' or media_size.type.value == 'fixed'
+      echo 'sizing:height'
+    endif
+
+  elsif output == 'vars'
+    if media_size.system.handle != 'fill'
+      if media_size.type.value == 'ratio'
+        echo '--media-ratio: '
+        echo media_size.value.value
+        echo ';'
+      elsif media_size.type.value == 'relative' or media_size.type.value == 'fixed'
+        echo '--media-height: '
+        echo media_size.value.value
+        echo ';'
+      endif
+    endif
+
+    if mobile_media_size != blank and mobile_media_size.system.handle != 'fill'
+      if mobile_media_size.type.value == 'ratio'
+        echo '--mobile-media-ratio: '
+        echo mobile_media_size.value.value
+        echo ';'
+      elsif mobile_media_size.type.value == 'relative' or mobile_media_size.type.value == 'fixed'
+        echo '--mobile-media-height: '
+        echo mobile_media_size.value.value
+        echo ';'
+      endif
+    endif
+  endif
+%}
