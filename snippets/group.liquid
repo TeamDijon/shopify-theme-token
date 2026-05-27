@@ -1,7 +1,8 @@
-{% # Group v1.1.1 %}
+{% # Group v1.1.2 %}
 
 {% comment %}
   Changelog
+  - v1.1.2 — emit `{{ block.shopify_attributes }}` on the root for theme-editor block selection (was missing)
   - v1.1.1 — route content_width + top-margin vars through `utility--block-layout-vars`; output unchanged
   - v1.1.0 — add `bleed` param emitted as `,bleed` modifier; CSS escapes the section gutter to the visible viewport width (same math as media's bleed)
   - v1.0.3 — normalize `horizontal_alignment: space-between` → `start` in column direction so the invalid `align-items: space-between` value doesn't fall through to the browser
@@ -67,7 +68,7 @@
   endcapture
 %}
 
-<div class="shopify-block shopify-block--group" id="{{ base_selector }}" {{ modifiers }}>
+<div class="shopify-block shopify-block--group" id="{{ base_selector }}" {{ block.shopify_attributes }} {{ modifiers }}>
   <div class="shopify-block--group__inner">
     {{ contents }}
   </div>

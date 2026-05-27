@@ -1,7 +1,8 @@
-{% # Media v1.2.1 %}
+{% # Media v1.2.2 %}
 
 {% comment %}
   Changelog
+  - v1.2.2 — emit `{{ block.shopify_attributes }}` on the root for theme-editor block selection (was missing)
   - v1.2.1 — route content_width + top-margin vars through `utility--block-layout-vars`; output unchanged
   - v1.2.0 — route `media_size`/`mobile_media_size` interpretation through `utility--media-sizing` (modifier + vars modes) instead of inline branching; behavior unchanged. Centralizes the fill/ratio/height classification so `media` and `embed` can't drift.
   - v1.1.0 — add `image_fit` param emitted as `image-fit:<cover|contain>` modifier; CSS toggles `object-fit` accordingly
@@ -125,7 +126,7 @@
   endcapture
 %}
 
-<div class="shopify-block shopify-block--media" id="{{ base_selector }}" {{ modifiers }}>
+<div class="shopify-block shopify-block--media" id="{{ base_selector }}" {{ block.shopify_attributes }} {{ modifiers }}>
   {% if has_media == false %}
     {{ 'image' | placeholder_svg_tag }}
   {% elsif media_type == 'video' %}

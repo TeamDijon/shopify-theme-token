@@ -1,7 +1,8 @@
-{% # Columns v1.2.1 %}
+{% # Columns v1.2.2 %}
 
 {% comment %}
   Changelog
+  - v1.2.2 — emit `{{ block.shopify_attributes }}` on the root for theme-editor block selection (was missing)
   - v1.2.1 — route content_width + top-margin vars through `utility--block-layout-vars`; output unchanged
   - v1.2.0 — add `sticky_track` param emitted as `sticky-track:first`/`:second` modifier; CSS applies `position: sticky` to the named child with `align-self: start`. Sticky disables itself when stack-below has collapsed the layout to a single column. Doc block notes that the non-sticky track stays at natural height so the parent grid can grow taller than the sticky child.
   - v1.1.0 — add `bleed` param emitted as `,bleed` modifier; CSS escapes the section gutter to the visible viewport width (same math as media's bleed)
@@ -67,7 +68,7 @@
   endcapture
 %}
 
-<div class="shopify-block shopify-block--columns" id="{{ base_selector }}" {{ modifiers }}>
+<div class="shopify-block shopify-block--columns" id="{{ base_selector }}" {{ block.shopify_attributes }} {{ modifiers }}>
   <div class="shopify-block--columns__inner">
     {{ contents }}
   </div>

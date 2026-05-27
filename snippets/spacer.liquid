@@ -1,7 +1,8 @@
-{% # Spacer v1.1.1 %}
+{% # Spacer v1.1.2 %}
 
 {% comment %}
   Changelog
+  - v1.1.2 — emit `{{ block.shopify_attributes }}` on the root for theme-editor block selection (was missing)
   - v1.1.1 — split the `margin-block: 0` shorthand into separate start/end so margin-block-start can chain block-rhythm vars (`--block-rhythm-mobile`/`--block-rhythm-desktop`) as the inner fallback; margin-block-end stays at 0
   - v1.1.0 — read background color via `var(--color-<handle>)` instead of re-extracting `hex_code.value`; reuses the global theme-color CSS variable
   - v1.0.0 — initial
@@ -45,7 +46,7 @@
   endcapture
 %}
 
-<div class="shopify-block shopify-block--spacer" id="{{ base_selector }}" {{ modifiers }}>
+<div class="shopify-block shopify-block--spacer" id="{{ base_selector }}" {{ block.shopify_attributes }} {{ modifiers }}>
   {% capture dynamic_style %}
     {% if spacer_block_size and spacer_block_size > 0 and breakpoint == 'none' %}
       --spacer-block-size: {{ spacer_block_size | divided_by: 16.0 | round: 3 }}rem;

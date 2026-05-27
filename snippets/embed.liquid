@@ -1,7 +1,8 @@
-{% # Embed v1.1.1 %}
+{% # Embed v1.1.2 %}
 
 {% comment %}
   Changelog
+  - v1.1.2 — emit `{{ block.shopify_attributes }}` on the root for theme-editor block selection (was missing)
   - v1.1.1 — route content_width + top-margin vars through `utility--block-layout-vars`; output unchanged
   - v1.1.0 — route `media_size` interpretation through `utility--media-sizing` (modifier + vars modes), fixing drift with `media`: embed now honors a `fill`-handle media_size (renders 100svh via a new `sizing:fill` CSS rule) instead of silently falling back to 16/9. Ratio/height behavior unchanged.
   - v1.0.3 — when a URL is set but doesn't match a supported provider, surface an editor-only diagnostic so merchants notice the rejection instead of seeing a silent placeholder
@@ -132,7 +133,7 @@
   endcapture
 %}
 
-<div class='shopify-block shopify-block--embed' id='{{ base_selector }}' {{ modifiers }}>
+<div class='shopify-block shopify-block--embed' id='{{ base_selector }}' {{ block.shopify_attributes }} {{ modifiers }}>
   {% if embed_url != blank %}
     {% if provider == 'youtube' %}
       <iframe

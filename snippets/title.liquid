@@ -1,7 +1,8 @@
-{% # Title v1.1.1 %}
+{% # Title v1.1.2 %}
 
 {% comment %}
   Changelog
+  - v1.1.2 — emit `{{ block.shopify_attributes }}` on the root for theme-editor block selection (was missing)
   - v1.1.1 — route content_width + top-margin vars through `utility--block-layout-vars`; output unchanged
   - v1.1.0 — add `text_align` param; self-center capped content_width via `margin-inline: auto`; drop no-op `align-self` on the SVG
   - v1.0.1 — chain `--block-rhythm-mobile`/`--block-rhythm-desktop` as inner fallback for `margin-block-start` so section-level block rhythm applies when no per-block margin is authored
@@ -56,7 +57,7 @@
   endcapture
 %}
 
-<{{ tag }} class="shopify-block shopify-block--title" id="{{ base_selector }}" {{ modifiers }}>
+<{{ tag }} class="shopify-block shopify-block--title" id="{{ base_selector }}" {{ block.shopify_attributes }} {{ modifiers }}>
   {% if icon and icon != blank %}
     {% render 'icon', icon: icon %}
   {% endif %}
