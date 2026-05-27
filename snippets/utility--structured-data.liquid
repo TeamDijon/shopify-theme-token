@@ -1,7 +1,8 @@
-{% # Structured Data v2.0.0 %}
+{% # Structured Data v2.1.0 %}
 
 {% comment %}
   Changelog
+  - v2.1.0 — route script-tag wrapping through `utility--json-ld` (content-safe minify: strips newlines without collapsing spaces inside string values, which the prior `split`/`join` pass mangled). The helper is now available for section-scoped schemas (Article, FAQPage).
   - v2.0.0 — pass strict schema.org validation; switch multi-variant products to `ProductGroup` with per-variant `Product`/`Offer` nodes; emit `WebSite` on every page; add `@id` to all top-level entities for graph-merge; drop judge.me augmentation
   - v1.0.0 — initial
 {% endcomment %}
@@ -16,7 +17,7 @@
 
   All top-level entities carry an absolute `@id` so crawlers can graph-merge nodes emitted across pages. Per-Offer `seller` references the Organization `@id`.
 
-  Each schema is built via `{% capture %}` with readable JSON, then squished and wrapped in a script tag. Entries accumulate into `schema_list` which is iterated once at the end — adding a new schema is one capture + one concat.
+  Each schema is built via `{% capture %}` with readable JSON, then wrapped via `utility--json-ld` and accumulated into `schema_list`, which is iterated once at the end — adding a new schema is one capture + one render + one concat.
 
   Section- or block-scoped schemas (e.g. Article, Event) can be emitted inline by those files; multiple JSON-LD blocks on a single page is valid per the schema.org spec.
 
@@ -53,14 +54,8 @@
     "url": "{{ request.origin }}"
   }
 {% endcapture %}
-{% assign schema_list = organization_schema
-  | strip
-  | split: ' '
-  | join: ' '
-  | prepend: '<script type="application/ld+json">'
-  | append: '</script>'
-  | uniq
-%}
+{% capture organization_ld %}{% render 'utility--json-ld', schema: organization_schema %}{% endcapture %}
+{% assign schema_list = organization_ld | strip | uniq %}
 
 {% # Website schema %}
 {% capture website_schema %}
@@ -84,15 +79,8 @@
     }
   }
 {% endcapture %}
-{% assign schema_list = website_schema
-  | strip
-  | split: ' '
-  | join: ' '
-  | prepend: '<script type="application/ld+json">'
-  | append: '</script>'
-  | uniq
-  | concat: schema_list
-%}
+{% capture website_ld %}{% render 'utility--json-ld', schema: website_schema %}{% endcapture %}
+{% assign schema_list = website_ld | strip | uniq | concat: schema_list %}
 
 {% # Breadcrumb schema %}
 {% capture breadcrumb_schema %}
@@ -177,15 +165,8 @@
     ]
   }
 {% endcapture %}
-{% assign schema_list = breadcrumb_schema
-  | strip
-  | split: ' '
-  | join: ' '
-  | prepend: '<script type="application/ld+json">'
-  | append: '</script>'
-  | uniq
-  | concat: schema_list
-%}
+{% capture breadcrumb_ld %}{% render 'utility--json-ld', schema: breadcrumb_schema %}{% endcapture %}
+{% assign schema_list = breadcrumb_ld | strip | uniq | concat: schema_list %}
 
 {% # Product / ProductGroup schema %}
 {% if request.page_type == 'product' %}
@@ -299,15 +280,8 @@
       {% endif %}
     }
   {% endcapture %}
-  {% assign schema_list = product_schema
-    | strip
-    | split: ' '
-    | join: ' '
-    | prepend: '<script type="application/ld+json">'
-    | append: '</script>'
-    | uniq
-    | concat: schema_list
-  %}
+  {% capture product_ld %}{% render 'utility--json-ld', schema: product_schema %}{% endcapture %}
+  {% assign schema_list = product_ld | strip | uniq | concat: schema_list %}
 {% endif %}
 
 {% for schema in schema_list reversed %}

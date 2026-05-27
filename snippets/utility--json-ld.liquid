@@ -1,0 +1,19 @@
+{% # JSON-LD v1.0.0 %}
+
+{% doc %}
+  @description Wraps a captured JSON-LD body in a `<script type="application/ld+json">` tag. Strips newlines for a compact payload without collapsing whitespace inside string values, so merchant copy (titles, descriptions) stays intact. Returns nothing when `schema` is blank.
+
+  @param {string} schema - The JSON-LD object/graph as a string, typically from a `{% capture %}`.
+
+  @example
+    {% capture faq %}{ "@context": "https://schema.org", "@type": "FAQPage" }{% endcapture %}
+    {% render 'utility--json-ld', schema: faq %}
+{% enddoc %}
+
+{% liquid
+  if schema == blank
+    break
+  endif
+  assign output = schema | strip_newlines | strip
+%}
+<script type="application/ld+json">{{ output }}</script>
