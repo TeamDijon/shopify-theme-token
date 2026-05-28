@@ -10,13 +10,18 @@ Visual + integration test pages for metaobjects, blocks, and section composition
 
 ## File structure
 
-Three layers, each with its own naming prefix:
+Four tiers per `validation-contract.md`, each with its own naming prefix:
 
-| Layer | Section path | Template path |
+| Tier | Section path | Template path |
 |---|---|---|
-| Metaobject | `sections/validation--metaobject--<type>.liquid` | `templates/index.validation--metaobject--<type>.json` |
-| Block | `sections/validation--block--<name>.liquid` | `templates/index.validation--block--<name>.json` |
-| Section | `sections/validation--section--<scenario>.liquid` | `templates/index.validation--section--<scenario>.json` |
+| Substrate — metaobject | `sections/validation--substrate--<type>.liquid` | `templates/index.validation--substrate--<type>.json` |
+| Substrate — utility snippet | `sections/validation--utility-snippet--<name>.liquid` | `templates/index.validation--utility-snippet--<name>.json` |
+| Substrate — utility CSS | `sections/validation--utility-css--<concern>.liquid` | `templates/index.validation--utility-css--<concern>.json` |
+| Theme-primitive (L0 + L1) | `sections/validation--primitive--<name>.liquid` | `templates/index.validation--primitive--<name>.json` |
+| Preset (L2) | `sections/validation--preset--<name>.liquid` | `templates/index.validation--preset--<name>.json` |
+| Specialized section (L3 + L4) | `sections/validation--section--<name>.liquid` | `templates/index.validation--section--<name>.json` |
+
+Substrate — utility JS runs in Vitest under `tests/unit/`, not on a Liquid page; see `validation-contract.md` for the future-state harness.
 
 The hub at `sections/validation.liquid` (template `templates/index.validation.json`) lists anchors to every variant — manually maintained.
 
@@ -52,17 +57,19 @@ Validation sections aren't merchant-addable. Differences from standard section c
 - **Literal English labels** — these never ship to merchants. Skip `t:` keys to keep the locale files lean.
 - Each section owns its `{% stylesheet %}` block, wrapped in `@layer components` like every other component CSS.
 
-## Block validation: schema-driven matrix
+## Schema-driven matrix
 
-Block-layer validation sections (`validation--block--<name>`) accept `@theme` blocks as children, and the **template JSON** at `templates/index.validation--block--<name>.json` bakes the modifier matrix into block instances. The JSON IS the test spec — diffing it tells you what scenarios changed.
+Tiers 2, 3, and 4 share one pattern: the validation section accepts `@theme` blocks (Tiers 2 + 3) or declares its own inline-block schema (Tier 4 / Framing-A), and the **template JSON** bakes the test matrix into block instances. The JSON IS the test spec — diffing it tells you what scenarios changed.
 
-Pattern (sketch):
+Tier 1a (metaobject) iterates `metaobjects.<type>.values` directly; the JSON template carries only section settings, no per-entry matrix.
+
+Pattern (Tier 2 sketch):
 
 ```json
 {
   "sections": {
     "main": {
-      "type": "validation--block--button",
+      "type": "validation--primitive--button",
       "blocks": {
         "primary": { "type": "button", "settings": { ... } },
         "secondary": { "type": "button", "settings": { "button_style": "..." } },
@@ -77,7 +84,7 @@ Pattern (sketch):
 }
 ```
 
-The validation section itself just renders `{% content_for 'blocks' %}` inside a labelled grid wrapper — it's a presentation harness for the matrix.
+The validation section renders `{% content_for 'blocks' %}` inside a labelled wrapper — a presentation harness for the matrix.
 
 ## Hub registration
 
@@ -85,17 +92,17 @@ After authoring a validation section, add an anchor in `sections/validation.liqu
 
 ## The 21-section inventory
 
-21 of 21 pages live across all three layers.
+21 of 21 pages live. File names predate the four-tier contract; renames pending retrofit per `BACKLOG.md`.
 
-**Layer 1 — Metaobjects (8 sections)**
+**Metaobjects — Tier 1a / substrate (8 sections, `--metaobject--*` today)**
 
 `theme-color`, `icon`, `text-style`, `button-style`, `container-style`, `media-size`, `content-width`, `spacing`. Each iterates `metaobjects.<type>.values` and renders a card per entry surfacing handle + relevant fields.
 
-**Layer 2 — Blocks (9 sections)**
+**Blocks — Tier 2 / primitive (9 sections, `--block--*` today)**
 
 `spacer`, `separator`, `title`, `richtext`, `button`, `media`, `embed`, `group`, `columns`. Each pairs with a JSON template that bakes the modifier matrix into block instances; the section harness renders them via `{% content_for 'blocks' %}` with the labelling helper.
 
-**Layer 3 — Compositions (4 sections)**
+**Compositions — Tier 3 / preset (4 sections, `--section--*` today)**
 
 - `hero` — media + overlaid title + button + bleed
 - `content` — title + richtext + button stacked, exercises block_rhythm + top spacing
@@ -126,6 +133,7 @@ If no MCP available, fallback: author asks the user to load the URL and report f
 
 ## Related
 
+- `validation-contract.md` — per-tier functional contract (what each tier validates, harness shape, current-state gaps)
 - `block-convention.md` — block structure (validation sections compose them)
 - `section-convention.md` — section structure (validation sections are simplified standard sections)
 - `design-system-metaobjects.md` — metaobject types and consumption fields

@@ -2,6 +2,10 @@
 
 Every new UI need maps to one layer in the stack below — from the design-system substrate up to specialized sections. Walk the decision flow before writing code for a new pattern.
 
+## Spec as source of truth
+
+Every element ships from a spec at `.context/docs/specs/<name>.md` (template: `specs/_template.md`) — the functional source of truth for what the element does, its API, variations, and its validation suite (per `validation-contract.md`). This file says *where* each element fits; the spec says *what* the element does; `.context/rules/` and the other `.context/docs/` files carry the technical *how*. The end-to-end workflow from ticket to shipped component lives in `spec-to-component.md`.
+
 ## The foundation: substrate + HTML elements
 
 Two layers sit below the five, applied ambiently.
