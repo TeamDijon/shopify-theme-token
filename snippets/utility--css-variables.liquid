@@ -1,7 +1,8 @@
-{% # CSS Variables v1.8.0 %}
+{% # CSS Variables v1.8.1 %}
 
 {% comment %}
   Changelog
+  - v1.8.1 — drop the empty-output guard. `::selection`, the per-scheme rules, and the gutter `:root` always emit, so `final_content` is never blank — the guard never fires its early-skip path. Direct `{{ css_variables }}` instead.
   - v1.8.0 — emit `--gradient-<handle>` from the `gradient` metaobject (linear, scheme-adaptive: stops reference per-scheme `--color-<role>` vars so one definition re-resolves per scheme). Skips the reserved `background` handle and incomplete entries.
   - v1.7.0 — emit `--color-foreground-heading-rgb` for translucent heading treatments; document that button/input sub-role colors are opaque-only (add `-rgb` on demand)
   - v1.6.0 — drop the hardcoded `--color-error/success/warning` block left over from `shopify-theme-experience`. Semantic colors now flow through the normal `theme_color` metaobject loop — seed `success`, `warning`, `error`, `info` entries per `.context/docs/metaobject-definitions.md`. The hardcoded values were emitted but never consumed; now consumers that reference `var(--color-warning)` etc. resolve via the standard pipeline like every other color token.
@@ -245,9 +246,4 @@
   }
 {% endcapture %}
 
-{% liquid
-  assign final_content = css_variables | remove: ':root {' | remove: '}' | strip
-  if final_content != blank
-    echo css_variables
-  endif
-%}
+{{ css_variables }}
