@@ -72,6 +72,7 @@ Most field references resolve by GID, so handle renames are safe. A few patterns
 - `text_style` — handles `h1`–`h6` auto-bind to bare HTML headings (`utility--css-variables`); other handles drive `[data-text-style="<handle>"]` and `[data-modifiers*="text-style:<handle>"]` selectors
 - `media_size` — handle `fill` is a special-case branch in the media block (no type/value, emits `block-size: 100%`)
 - `button_style`, `container_style` — handles drive `[data-modifiers*='button-style:<handle>']` / `[data-modifiers*='container-style:<handle>']` CSS rules in the respective block stylesheets
+- `gradient` — handles drive `--gradient-<handle>` CSS variable names. The `background` handle is reserved (the per-scheme `--gradient-background` from the color-scheme system owns it) and is skipped at emit time in `utility--css-variables`
 
 If you need to rename one of these, audit consumers first.
 
