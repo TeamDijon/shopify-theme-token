@@ -24,3 +24,6 @@ package-lock.json
 
 # Playwright MCP — local debug artifacts (snapshots, console logs, screenshots)
 .playwright-mcp/
+
+# Local backlog scaffolding — never committed
+BACKLOG.md
