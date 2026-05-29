@@ -1,4 +1,10 @@
-{% # Media sizing v1.0.0 %}
+{% # Media sizing v1.1.0 %}
+
+{% comment %}
+  Changelog
+  - v1.1.0 — guard against blank `output` param with an early `break`. Previously a missing `output` arg silently fell through the if/elsif chain with no signal; now matches the early-exit convention used by every other required-param utility.
+  - v1.0.0 — initial
+{% endcomment %}
 
 {% doc %}
   @description Centralizes `media_size` / `mobile_media_size` metaobject interpretation for media-like blocks (media, embed, cards). Classifies the size into `fill` / `ratio` / `height` and emits either the `sizing:*` modifier token or the matching CSS custom properties, selected by `output`. Keeps the fill special-case + mobile override in one place so consumers don't drift.
@@ -7,14 +13,14 @@
 
   @param {metaobject} [media_size] - `media_size` metaobject. Reads `.system.handle` (fill special-case), `.type.value` (`ratio` / `relative` / `fixed`), `.value.value`.
   @param {metaobject} [mobile_media_size] - Optional mobile override. Same shape. Only consulted in `vars` mode.
-  @param {string} [output] - `'modifier'` emits the `sizing:<fill|ratio|height>` token; `'vars'` emits `--media-ratio` / `--media-height` (+ `--mobile-*` variants). Required.
+  @param {string} [output] - `'modifier'` emits the `sizing:<fill|ratio|height>` token; `'vars'` emits `--media-ratio` / `--media-height` (+ `--mobile-*` variants). Required — blank exits early.
 
   @example {% capture sizing_modifier %}{% render 'utility--media-sizing', media_size: media_size, output: 'modifier' %}{% endcapture %}
   @example {% render 'utility--media-sizing', media_size: media_size, mobile_media_size: mobile_media_size, output: 'vars' %}
 {% enddoc %}
 
 {% liquid
-  if media_size == blank
+  if media_size == blank or output == blank
     break
   endif
 
