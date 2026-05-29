@@ -1,7 +1,8 @@
-{% # Section v1.1.0 %}
+{% # Section v1.2.0 %}
 
 {% comment %}
   Changelog
+  - v1.2.0 — replace `@theme` blocks wildcard with an explicit whitelist of the 9 shipped L1 blocks (+ `@app`) per the block-whitelisting convention in `composition-strategy.md`
   - v1.1.0 — add `block_rhythm` setting (spacing metaobject) + emit `--block-rhythm-{mobile,desktop}` variables for the inter-block margin rule in `core.css`
   - v1.0.0 — initial
 {% endcomment %}
@@ -32,7 +33,18 @@
   "name": "t:sections.section.name",
   "tag": "section",
   "class": "shopify-section--section",
-  "blocks": [{ "type": "@theme" }, { "type": "@app" }],
+  "blocks": [
+    { "type": "spacer" },
+    { "type": "separator" },
+    { "type": "title" },
+    { "type": "richtext" },
+    { "type": "button" },
+    { "type": "media" },
+    { "type": "embed" },
+    { "type": "group" },
+    { "type": "columns" },
+    { "type": "@app" }
+  ],
   "disabled_on": {
     "groups": ["header", "footer"]
   },

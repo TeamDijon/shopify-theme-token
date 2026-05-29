@@ -1,7 +1,8 @@
-{% # Columns block v1.2.0 %}
+{% # Columns block v1.3.0 %}
 
 {% comment %}
   Changelog
+  - v1.3.0 — replace `@theme` blocks wildcard with an explicit whitelist of the 9 shipped L1 blocks per the block-whitelisting convention in `composition-strategy.md`
   - v1.2.0 — add `sticky_track` setting (none/first/second) to pin one column while the other scrolls; visible only on 2-track layouts; hides `vertical_alignment` when active since sticky forces start alignment
   - v1.1.0 — add `bleed` checkbox to extend the columns past the section gutter to the visible viewport width
   - v1.0.0 — initial
@@ -15,7 +16,17 @@
 {
   "name": "t:blocks.columns.name",
   "tag": null,
-  "blocks": [{ "type": "@theme" }],
+  "blocks": [
+    { "type": "spacer" },
+    { "type": "separator" },
+    { "type": "title" },
+    { "type": "richtext" },
+    { "type": "button" },
+    { "type": "media" },
+    { "type": "embed" },
+    { "type": "group" },
+    { "type": "columns" }
+  ],
   "settings": [
     {
       "type": "header",
