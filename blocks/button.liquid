@@ -1,7 +1,8 @@
-{% # Button block v1.1.0 %}
+{% # Button block v1.2.0 %}
 
 {% comment %}
   Changelog
+  - v1.2.0 — `visible_if`-gate `open_in_new_tab` on `link != blank` (the setting had no effect on unlinked buttons; now hidden in that case)
   - v1.1.0 — add `icon_position` setting (start/end), visible only when an icon is selected
   - v1.0.0 — initial
 {% endcomment %}
@@ -33,7 +34,8 @@
       "type": "checkbox",
       "id": "open_in_new_tab",
       "label": "t:blocks.button.settings.open_in_new_tab.label",
-      "default": false
+      "default": false,
+      "visible_if": "{{ block.settings.link != blank }}"
     },
     {
       "type": "metaobject",
