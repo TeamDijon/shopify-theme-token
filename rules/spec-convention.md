@@ -39,7 +39,13 @@ A spec that exists for an unshipped element is `spec`. A spec written as a retro
 
 ## Implementation pin format
 
-A bulleted list of `` `path/to/file` vX.Y.Z (role) `` entries. The role parenthetical names the file's job inside the contract (e.g. `emitter`, `render surface`, `block schema`, `head tag emitter`).
+Each entry is `` `path/to/file` vX.Y.Z (role) ``. The role parenthetical names the file's job inside the contract (e.g. `emitter`, `render surface`, `block schema`, `head tag emitter`).
+
+Inline when single-entry; bulleted list when 2+. Same rule applies to the `Consumers` field — keeps the header block reading as uniform `**Key**: value` pairs in the common single-entry case.
+
+```markdown
+**Implementation**: `snippets/utility--color-contrast.liquid` v1.0.0 (render surface)
+```
 
 ```markdown
 **Implementation**:
