@@ -152,6 +152,8 @@ When promoting becomes routine, a script in `bin/` that maps GIDs by handle (que
 
 ### `theme_color`
 
+Consumer contract, runtime behavior, load-bearing handles, and canonical seed entries live in `specs/theme-color.md`. This section covers setup-time definition only.
+
 **Type:**
 
 | Setting | Value |
@@ -174,27 +176,6 @@ Standard name field — see [convention](#name-field-convention). Description: *
 - Cardinality: One
 - Description: The hex code associated with the color
 - Validation: *(none)*
-
-**Runtime notes:**
-
-- `hex_code.value` is read by `utility--css-variables` and emitted as `--color-<system.handle>`.
-- Consumers reading a single entry (block/section settings) should reference the global CSS variable `var(--color-<system.handle>)` rather than re-extracting `hex_code.value`. The hex is only re-extracted in non-CSS contexts (e.g. the `<meta name="theme-color">` tag).
-
-**Recommended entries** (palette is intentionally tame — extend per-store as needed):
-
-| Handle | Name | hex_code |
-|---|---|---|
-| `white` | White | `#ffffff` |
-| `off-white` | Off white | `#faf8f5` |
-| `black` | Black | `#1a1a1a` |
-| `muted` | Muted | `#6b6b6b` |
-| `accent` | Accent | `#c2410c` |
-| `success` | Success | `#16a34a` |
-| `warning` | Warning | `#d97706` |
-| `error` | Error | `#dc2626` |
-| `info` | Info | `#2563eb` |
-
-Semantic seeds (`success`/`warning`/`error`/`info`) are referenced by component CSS as `var(--color-<handle>)` for state-driven styling (e.g. inventory pills, form errors, alerts). Treat these handles as stable — renaming them in admin will break consumer rules silently.
 
 ### `gradient`
 
