@@ -76,7 +76,7 @@ Per `.context/docs/css-standards.md` — component-rooted, no BEM:
   & .card-date,
   & .card-meta {
     font-size: var(--card-meta-size, 0.8125rem);
-    color: var(--card-meta-color, var(--color-foreground-muted));
+    color: var(--card-meta-color, var(--color-role-foreground-muted));
   }
 
   & .card-title {
@@ -105,7 +105,7 @@ Per `.context/docs/css-standards.md` — component-rooted, no BEM:
   }
 
   @media (hover: hover) {
-    & .card-link:hover { color: var(--card-title-hover-color, var(--color-primary)); }
+    & .card-link:hover { color: var(--card-title-hover-color, var(--color-role-primary)); }
     &:has(.card-link:hover) .card-media img { scale: var(--card-media-hover-scale, 1.03); }
   }
 
@@ -124,9 +124,9 @@ Per `.context/docs/css-standards.md` — component-rooted, no BEM:
 | `--card-radius` | Media border radius | `0.5rem` |
 | `--card-media-aspect` | Media aspect ratio | `3 / 2` |
 | `--card-title-size` | Title font size | `1.125rem` |
-| `--card-title-hover-color` | Title color on hover | `var(--color-primary)` |
+| `--card-title-hover-color` | Title color on hover | `var(--color-role-primary)` |
 | `--card-meta-size` | Date/author font size | `0.8125rem` |
-| `--card-meta-color` | Date/author color | `var(--color-foreground-muted)` |
+| `--card-meta-color` | Date/author color | `var(--color-role-foreground-muted)` |
 | `--card-excerpt-color` | Excerpt text color | inherits |
 | `--card-excerpt-lines` | Visual line clamp (opt-in) | `none` |
 | `--card-media-hover-scale` | Image zoom on hover | `1.03` |

@@ -39,7 +39,7 @@ Per `.context/docs/css-standards.md` — component-rooted, no BEM:
   & > svg { color: var(--star-color, inherit); }
   & .rating-count {
     font-size: var(--count-size, 0.875rem);
-    color: var(--count-color, var(--color-foreground-secondary));
+    color: var(--count-color, var(--color-role-foreground-secondary));
   }
 }
 ```
@@ -51,7 +51,7 @@ Per `.context/docs/css-standards.md` — component-rooted, no BEM:
 | `--star-size` | Star inline/block size (re-scoped to `--icon-size` internally) | `1rem` |
 | `--star-color` | Star color | inherits from `color` on consumer |
 | `--count-size` | Review count font size | `0.875rem` |
-| `--count-color` | Review count text color | `var(--color-foreground-secondary)` |
+| `--count-color` | Review count text color | `var(--color-role-foreground-secondary)` |
 
 ## Behavior
 

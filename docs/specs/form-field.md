@@ -91,12 +91,12 @@ Per `.context/docs/css-standards.md` — component-rooted, no BEM:
 
   /* .field-control inherits theme input styling from core.css; only invalid state overridden here */
   & .field-control[aria-invalid='true'] {
-    --color-input-border: var(--color-error);
+    --color-role-input-border: var(--color-error);
   }
 
   & .field-help {
     font-size: var(--field-help-size, 0.8125rem);
-    color: var(--field-help-color, var(--color-foreground-muted));
+    color: var(--field-help-color, var(--color-role-foreground-muted));
   }
 
   & .field-error {
@@ -127,7 +127,7 @@ Per `.context/docs/css-standards.md` — component-rooted, no BEM:
 | `--field-label-color` | Label color | inherits |
 | `--field-required-color` | Required asterisk color | `var(--color-error)` |
 | `--field-help-size` | Help text font size | `0.8125rem` |
-| `--field-help-color` | Help text color | `var(--color-foreground-muted)` |
+| `--field-help-color` | Help text color | `var(--color-role-foreground-muted)` |
 | `--field-error-size` | Error text font size | `0.8125rem` |
 | `--field-error-color` | Error text color | `var(--color-error)` |
 | `--field-checkbox-gap` | Gap between checkbox and label | `0.5rem` |
@@ -138,7 +138,7 @@ Per `.context/docs/css-standards.md` — component-rooted, no BEM:
 - `id` defaults to `field-{{ name }}`; consumer passes an explicit id when the same name appears more than once on a page
 - `describedby` assembled from the present help/error ids (space-joined) so screen readers announce both when present
 - `required` adds the `required` attr + `aria-required="true"` + a visual `*` (the asterisk is `aria-hidden` — `required` already conveys it to assistive tech)
-- `error` adds `aria-invalid="true"`, a `role="alert"` error span, and an error-colored input border via `--color-input-border` override
+- `error` adds `aria-invalid="true"`, a `role="alert"` error span, and an error-colored input border via `--color-role-input-border` override
 - `select` loops `options` (objects `{ value, label }`) into `<option>`; pre-selects when `value` matches
 - Early exit (`break`) when `name` or `label` is blank
 
@@ -162,4 +162,4 @@ Per `.context/docs/css-standards.md` — component-rooted, no BEM:
 
 - Select placeholder option (disabled empty `<option>` shown first) — add when the first `select` consumer lands
 - Whether to support `type:date` / `type:file` in the input branch — trivial to add, defer until needed
-- Error-state border override approach — currently re-points `--color-input-border` to `--color-error`; confirm against the actual `core.css` input rules when implementing
+- Error-state border override approach — currently re-points `--color-role-input-border` to `--color-error`; confirm against the actual `core.css` input rules when implementing

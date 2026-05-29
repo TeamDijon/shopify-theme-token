@@ -249,7 +249,7 @@ Standard name field — see [convention](#name-field-convention). Description: *
 |---|---|---|---|---|
 | `hero` | Hero | 135 | `primary` | `background` |
 
-Yields `--gradient-hero: linear-gradient(135deg, var(--color-primary), var(--color-background))`. The gradient re-resolves per scheme — same definition, different visual per consuming element's color scheme.
+Yields `--gradient-hero: linear-gradient(135deg, var(--color-role-primary), var(--color-role-background))`. The gradient re-resolves per scheme — same definition, different visual per consuming element's color scheme.
 
 ### `typeface`
 

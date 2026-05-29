@@ -34,7 +34,7 @@ Per `.context/docs/css-standards.md` — component-rooted, no BEM:
 
 ```css
 .badge {
-  --badge-tone: var(--color-foreground);
+  --badge-tone: var(--color-role-foreground);
 
   display: inline-flex;
   align-items: center;
@@ -45,7 +45,7 @@ Per `.context/docs/css-standards.md` — component-rooted, no BEM:
   font-weight: var(--badge-weight, 500);
 
   color: var(--badge-text-color, var(--badge-tone));
-  background: var(--badge-background, color-mix(in oklab, var(--badge-tone), var(--color-background) 88%));
+  background: var(--badge-background, color-mix(in oklab, var(--badge-tone), var(--color-role-background) 88%));
 
   & > svg { --icon-size: var(--badge-icon-size, 0.875rem); }
 
@@ -56,7 +56,7 @@ Per `.context/docs/css-standards.md` — component-rooted, no BEM:
   &[data-modifiers*='tone:accent']  { --badge-tone: var(--color-accent); }
 
   &[data-modifiers*='badge-style:solid'] {
-    color: var(--badge-solid-text, var(--color-background));
+    color: var(--badge-solid-text, var(--color-role-background));
     background: var(--badge-tone);
   }
 }
@@ -68,10 +68,10 @@ Default **tint** — tone-tinted background (12% tone over the scheme background
 
 | Variable | Purpose | Default |
 |---|---|---|
-| `--badge-tone` | Resolved tone color (set internally per modifier) | `var(--color-foreground)` |
+| `--badge-tone` | Resolved tone color (set internally per modifier) | `var(--color-role-foreground)` |
 | `--badge-text-color` | Text color (tint mode) | `var(--badge-tone)` |
 | `--badge-background` | Background (tint mode) | tone-tinted via `color-mix` |
-| `--badge-solid-text` | Text color (solid mode) | `var(--color-background)` |
+| `--badge-solid-text` | Text color (solid mode) | `var(--color-role-background)` |
 | `--badge-size` | Font size | `0.75rem` |
 | `--badge-weight` | Font weight | `500` |
 | `--badge-padding` | Padding | `0.125rem 0.5rem` |
@@ -81,7 +81,7 @@ Default **tint** — tone-tinted background (12% tone over the scheme background
 
 ## Behavior
 
-- Tone maps to a semantic color via the `tone:<value>` modifier; `neutral` falls back to `--color-foreground`
+- Tone maps to a semantic color via the `tone:<value>` modifier; `neutral` falls back to `--color-role-foreground`
 - Default tint style; `badge-style:solid` modifier for solid fill
 - Icon optional, rendered before label via the `icon` snippet
 - Early exit (`break`) when `label` is blank

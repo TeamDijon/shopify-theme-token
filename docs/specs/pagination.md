@@ -76,13 +76,13 @@ Per `.context/docs/css-standards.md` — component-rooted, no BEM:
     text-decoration: none;
 
     &[aria-current='page'] {
-      color: var(--current-page-color, var(--color-foreground));
+      color: var(--current-page-color, var(--color-role-foreground));
       font-weight: var(--current-page-weight, 600);
     }
   }
 
   & .page-ellipsis {
-    color: var(--ellipsis-color, var(--color-foreground-secondary));
+    color: var(--ellipsis-color, var(--color-role-foreground-secondary));
   }
 
   &[data-modifiers*='type:load-more'] {
@@ -96,7 +96,7 @@ Per `.context/docs/css-standards.md` — component-rooted, no BEM:
 
   & .pagination-progress {
     font-size: var(--progress-size, 0.875rem);
-    color: var(--progress-color, var(--color-foreground-secondary));
+    color: var(--progress-color, var(--color-role-foreground-secondary));
   }
 }
 ```
@@ -109,11 +109,11 @@ Per `.context/docs/css-standards.md` — component-rooted, no BEM:
 | `--load-more-gap` | Gap between button and progress (load-more) | `1rem` |
 | `--page-link-color` | Page link text color | inherits |
 | `--page-link-padding` | Page link tap-target padding | `0.5rem 0.75rem` |
-| `--current-page-color` | Current page indicator color | `var(--color-foreground)` |
+| `--current-page-color` | Current page indicator color | `var(--color-role-foreground)` |
 | `--current-page-weight` | Current page font weight | `600` |
-| `--ellipsis-color` | Ellipsis color | `var(--color-foreground-secondary)` |
+| `--ellipsis-color` | Ellipsis color | `var(--color-role-foreground-secondary)` |
 | `--progress-size` | Progress text font size | `0.875rem` |
-| `--progress-color` | Progress text color | `var(--color-foreground-secondary)` |
+| `--progress-color` | Progress text color | `var(--color-role-foreground-secondary)` |
 
 ## Behavior
 

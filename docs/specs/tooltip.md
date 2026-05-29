@@ -57,7 +57,7 @@ Per `.context/docs/css-standards.md` — component-rooted, no BEM:
     justify-content: center;
     min-inline-size: var(--tooltip-trigger-size, 1.5rem);
     min-block-size: var(--tooltip-trigger-size, 1.5rem);
-    color: var(--tooltip-trigger-color, var(--color-foreground-muted));
+    color: var(--tooltip-trigger-color, var(--color-role-foreground-muted));
     cursor: help;
 
     & > svg { --icon-size: var(--tooltip-icon-size, 1rem); }
@@ -67,10 +67,10 @@ Per `.context/docs/css-standards.md` — component-rooted, no BEM:
     margin: 0;
     max-inline-size: var(--tooltip-max-width, 16rem);
     padding: var(--tooltip-padding, 0.5rem 0.75rem);
-    border: 1px solid var(--color-border);
+    border: 1px solid var(--color-role-border);
     border-radius: var(--tooltip-radius, 0.375rem);
-    background: var(--tooltip-background, var(--color-background));
-    color: var(--tooltip-color, var(--color-foreground));
+    background: var(--tooltip-background, var(--color-role-background));
+    color: var(--tooltip-color, var(--color-role-foreground));
     font-size: var(--tooltip-size, 0.8125rem);
     box-shadow: var(--shadow-md);
     /* Placement set by tooltip.js (top, left) until anchor positioning is baseline */
@@ -83,13 +83,13 @@ Per `.context/docs/css-standards.md` — component-rooted, no BEM:
 | Variable | Purpose | Default |
 |---|---|---|
 | `--tooltip-trigger-size` | Trigger min touch target | `1.5rem` |
-| `--tooltip-trigger-color` | Trigger icon/text color | `var(--color-foreground-muted)` |
+| `--tooltip-trigger-color` | Trigger icon/text color | `var(--color-role-foreground-muted)` |
 | `--tooltip-icon-size` | Trigger icon size | `1rem` |
 | `--tooltip-max-width` | Content max width | `16rem` |
 | `--tooltip-padding` | Content padding | `0.5rem 0.75rem` |
 | `--tooltip-radius` | Content border radius | `0.375rem` |
-| `--tooltip-background` | Content background | `var(--color-background)` |
-| `--tooltip-color` | Content text color | `var(--color-foreground)` |
+| `--tooltip-background` | Content background | `var(--color-role-background)` |
+| `--tooltip-color` | Content text color | `var(--color-role-foreground)` |
 | `--tooltip-size` | Content font size | `0.8125rem` |
 
 ## Behavior

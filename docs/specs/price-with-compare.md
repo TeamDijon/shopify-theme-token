@@ -51,7 +51,7 @@ Per `.context/docs/css-standards.md` — component-rooted, no BEM:
 
   & .compare-at-price {
     text-decoration: line-through;
-    color: var(--compare-color, var(--color-foreground-secondary));
+    color: var(--compare-color, var(--color-role-foreground-secondary));
     font-size: var(--compare-size, inherit);
     &:empty { display: none; }
   }
@@ -62,7 +62,7 @@ Per `.context/docs/css-standards.md` — component-rooted, no BEM:
   }
 
   & .save-pill {
-    color: var(--save-color, var(--color-background));
+    color: var(--save-color, var(--color-role-background));
     background: var(--save-background, var(--color-accent));
     padding: 0.125rem 0.5rem;
     border-radius: var(--save-radius, 999px);
@@ -78,9 +78,9 @@ Per `.context/docs/css-standards.md` — component-rooted, no BEM:
 | `--price-color` | Current price color | inherits from `color` |
 | `--price-weight` | Current price font weight | `500` |
 | `--price-gap` | Gap between price elements | `0.5rem` |
-| `--compare-color` | Compare-at price color | `var(--color-foreground-secondary)` |
+| `--compare-color` | Compare-at price color | `var(--color-role-foreground-secondary)` |
 | `--compare-size` | Compare-at font size | inherits |
-| `--save-color` | Save pill text color | `var(--color-background)` |
+| `--save-color` | Save pill text color | `var(--color-role-background)` |
 | `--save-background` | Save pill background | `var(--color-accent)` |
 | `--save-size` | Save pill font size | `0.75rem` |
 | `--save-radius` | Save pill border radius | `999px` |

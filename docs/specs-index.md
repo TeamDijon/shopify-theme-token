@@ -4,6 +4,10 @@ Specs for elements in the theme — shipped (retrofit) and planned. Organized by
 
 Originally sourced from the EXPLORATION-2 inventory pass (May 2026); retrofits added as shipped elements get documented.
 
+## Substrate
+
+- [theme-color](./specs/theme-color.md) — named color tokens emitted as `--color-<handle>` in `:root`; scheme-role tokens (`--color-role-<role>`) live in a disjoint namespace *(shipped — retrofit)*
+
 ## Layer 0 — Snippets
 
 - [star-rating](./specs/star-rating.md) — 5-star visual using `icon-star` full/half/empty presets *(planned)*

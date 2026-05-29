@@ -56,7 +56,7 @@ Per `.context/docs/css-standards.md` — component-rooted, no BEM:
   &[data-modifiers*='state:in-stock']     { --status-color: var(--in-stock-color, var(--color-success)); }
   &[data-modifiers*='state:low-stock']    { --status-color: var(--low-stock-color, var(--color-warning)); }
   &[data-modifiers*='state:pre-order']    { --status-color: var(--pre-order-color, var(--color-info)); }
-  &[data-modifiers*='state:out-of-stock'] { --status-color: var(--out-of-stock-color, var(--color-foreground-muted)); }
+  &[data-modifiers*='state:out-of-stock'] { --status-color: var(--out-of-stock-color, var(--color-role-foreground-muted)); }
 }
 ```
 
@@ -70,7 +70,7 @@ Per `.context/docs/css-standards.md` — component-rooted, no BEM:
 | `--in-stock-color` | In-stock state color | `var(--color-success)` |
 | `--low-stock-color` | Low-stock state color | `var(--color-warning)` |
 | `--pre-order-color` | Pre-order state color | `var(--color-info)` |
-| `--out-of-stock-color` | Out-of-stock state color | `var(--color-foreground-muted)` |
+| `--out-of-stock-color` | Out-of-stock state color | `var(--color-role-foreground-muted)` |
 
 Defaults reference the semantic `theme_color` seeds (see `.context/docs/metaobject-definitions.md`). Merchants override via the exposed hooks when brand colors should diverge.
 

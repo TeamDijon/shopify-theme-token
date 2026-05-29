@@ -45,7 +45,7 @@ Anything still emitted **outside layers** (e.g. inline declarations from `utilit
 
 - **Z-index** — `--layer-below` (−1), `--layer-base` (0), `--layer-raised` (100), `--layer-sticky` (200), `--layer-overlay` (300), `--layer-drawer` (400), `--layer-temporary` (500). Gaps of 100 leave room for intermediate layers; third-party overlays sit above the scale.
 - **Motion** — `--duration-fast` (120ms), `--duration-base` (200ms), `--duration-slow` (320ms); `--ease-standard`, `--ease-emphasized`, `--ease-out`.
-- **Focus ring** — `--focus-ring-width`, `--focus-ring-offset` (color is scheme-driven via `--color-focus-ring`).
+- **Focus ring** — `--focus-ring-width`, `--focus-ring-offset` (color is scheme-driven via `--color-role-focus-ring`).
 
 Scheme-dependent tokens (colors, opacity, shadow) are emitted per-scheme by `utility--css-variables`; these constants are not.
 
@@ -153,7 +153,7 @@ Token declares no `@property` rules yet — nothing transitions a custom propert
 
 ## Focus and motion
 
-- `:focus-visible` outlines use `--focus-ring-width` / `--focus-ring-offset` + `--color-focus-ring`; never `outline: none` without a replacement.
+- `:focus-visible` outlines use `--focus-ring-width` / `--focus-ring-offset` + `--color-role-focus-ring`; never `outline: none` without a replacement.
 - Transitions and animations use the motion tokens (`--duration-*`, `--ease-*`). The reset's `prefers-reduced-motion: reduce` branch neutralizes motion globally.
 - `forced-colors: active` maps the focus outline to the system `Highlight` and keeps `forced-color-adjust: auto` on form controls. Don't override system color decisions beyond restoring affordances.
 - Light/dark is merchant-driven through color schemes; the `prefers-color-scheme` media query is intentionally absent.
