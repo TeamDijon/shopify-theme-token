@@ -7,7 +7,7 @@
 **Status**: shipped
 
 **Implementation**:
-- `snippets/button.liquid` v1.2.3 (render surface)
+- `snippets/button.liquid` v1.3.0 (render surface)
 - `blocks/button.liquid` v1.2.0 (block schema + render call)
 
 **Reconciled**: 2026-05-29
@@ -92,8 +92,8 @@ Component-rooted on `.shopify-block--button`. Layered in `@layer components`. Va
   --button-color-rgb: var(--color-role-primary-rgb);
   --button-on-color: var(--color-role-primary-button-text);
 
-  --button-bg: var(--button-color);
-  --button-fg: var(--button-on-color);
+  --button-background: var(--button-color);
+  --button-foreground: var(--button-on-color);
   --button-border-color: var(--button-color);
   --button-padding-block: 0.75rem;
   --button-padding-inline: 1.5rem;
@@ -113,14 +113,14 @@ Component-rooted on `.shopify-block--button`. Layered in `@layer components`. Va
 
   /* Family: outline — transparent fill, colored text */
   &[data-modifiers*='button-style:outline-'] {
-    --button-bg: transparent;
-    --button-fg: var(--button-color);
+    --button-background: transparent;
+    --button-foreground: var(--button-color);
   }
 
   /* Family: link — zero out shape, keep touch target */
   &[data-modifiers*='button-style:link-'] {
-    --button-bg: transparent;
-    --button-fg: var(--button-color); <!-- REVIEW: Usually, I prefer to use full names foreground / background rather than shorthands, your thoughts on that, knowing that agents author first -->
+    --button-background: transparent;
+    --button-foreground: var(--button-color);
     --button-border-color: transparent;
     --button-padding-block: 0;
     --button-padding-inline: 0;
@@ -150,8 +150,8 @@ Button-specific vars defined in the snippet's stylesheet (overridable by per-pro
 | `--button-color` | Variant color token (drives bg + border for solid; fg for outline/link) | `var(--color-role-primary)` |
 | `--button-color-rgb` | Same token, rgb triplet form for `rgba()` hover/focus surfaces | `var(--color-role-primary-rgb)` |
 | `--button-on-color` | Foreground when sitting *on* the button color (solid family) | `var(--color-role-primary-button-text)` |
-| `--button-bg` | Resolved background (family-controlled) | `var(--button-color)` |
-| `--button-fg` | Resolved text/icon color (family-controlled) | `var(--button-on-color)` |
+| `--button-background` | Resolved background (family-controlled) | `var(--button-color)` |
+| `--button-foreground` | Resolved text/icon color (family-controlled) | `var(--button-on-color)` |
 | `--button-border-color` | Border color | `var(--button-color)` |
 | `--button-padding-block` / `--button-padding-inline` | Vertical / horizontal padding | `0.75rem` / `1.5rem` |
 | `--button-radius` | Border radius | `0.25rem` |
@@ -161,12 +161,12 @@ Button-specific vars defined in the snippet's stylesheet (overridable by per-pro
 ## Behavior
 
 - **Tag selection.** `link != blank` → `<a href="…">`; `link == blank` → `<button type="button">`. The branch is the only structural decision; everything else (variants, icon, modifiers) overlays on either tag.
-- **New-tab branch.** When `open_in_new_tab` is true AND the tag is `<a>`, the snippet appends `target="_blank" rel="noopener noreferrer"` to the behavior attribute and emits a sibling `<span class="sr-only">{{ 'accessibility.opens_in_new_tab' | t }}</span>` after the content for screen readers. The `rel` includes both `noopener` (security) and `noreferrer` (privacy); both are non-negotiable on external links from a Shopify storefront. The block schema `visible_if`-hides the setting when `link` is blank, so the unlinked-but-checked branch isn't reachable from the editor. <!-- REVIEW: Same, update here -->
+- **New-tab branch.** When `open_in_new_tab` is true AND the tag is `<a>`, the snippet appends `target="_blank" rel="noopener noreferrer"` to the behavior attribute and emits a sibling `<span class="sr-only">{{ 'accessibility.opens_in_new_tab' | t }}</span>` after the content for screen readers. The `rel` includes both `noopener` (security) and `noreferrer` (privacy); both are non-negotiable on external links from a Shopify storefront. The block schema `visible_if`-hides the setting when `link` is blank, so the unlinked-but-checked branch isn't reachable from the editor.
 - **Modifier composition.** `data-modifiers` carries up to two tokens — `button-style:<handle>` (when `button_style` is set) and `icon-position:end` (when icon is set AND position is `end`). The default `start` icon position emits no modifier; the absence is the default. Both tokens accumulate via the `modifier_list` builder, then route through `utility--modifiers` for emission. Blank list → no attribute (not `data-modifiers=""`).
-- **Per-project handle extension.** Token's base ship includes the 3×3 family/variant CSS in this snippet's stylesheet. Per-project, new handles are added in pairs: a `button_style` metaobject entry (gets the merchant a picker option) AND a matching `[data-modifiers*='button-style:<new-handle>']` rule (gets the merchant the styling). A handle present in the metaobject but missing CSS still emits the modifier on `data-modifiers`; with no variant override matching, the cascade leaves defaults in place and the button visually equals solid-primary — a development-time diagnostic signalling "CSS not yet added for this handle." In a properly-paired extension this state is transient (between adding the entry and authoring the rule); in production it indicates an incomplete extension. <!-- REVIEW: Ok this is clearer here and the good explanation -->
+- **Per-project handle extension.** Token's base ship includes the 3×3 family/variant CSS in this snippet's stylesheet. Per-project, new handles are added in pairs: a `button_style` metaobject entry (gets the merchant a picker option) AND a matching `[data-modifiers*='button-style:<new-handle>']` rule (gets the merchant the styling). A handle present in the metaobject but missing CSS still emits the modifier on `data-modifiers`; with no variant override matching, the cascade leaves defaults in place and the button visually equals solid-primary — a development-time diagnostic signalling "CSS not yet added for this handle." In a properly-paired extension this state is transient (between adding the entry and authoring the rule); in production it indicates an incomplete extension.
 - **Touch target preservation in `link-*`.** The link family zeroes padding, border, and background — but keeps `--button-min-size: 2.75rem`. The visible footprint is text-link, but the *hit target* stays at 44×44, satisfying WCAG 2.5.5 (Target Size). Documented because a casual CSS reader sees padding zeroed and might assume the target shrinks too.
-- **Hover treatments per family.** `solid-*` darkens the bg via `color-mix(in oklab, var(--button-bg), black 12%)`. `outline-*` adds a translucent tint of `--button-color` (uses the `-rgb` companion + `--opacity-subtle` fallback `0.05`). `link-*` reduces opacity to `0.75`, no background. All three differ deliberately — same intent (signal hover), shape-appropriate execution. <!-- REVIEW: Let me know if you think there is a better way, it's minimal by design, the per project button styles are usually applied so the seeded styles are modified -->
-- **Reduced motion.** `transition: 0.15s ease-out` zeroes to `0s` under `@media (prefers-reduced-motion)`. The hover treatment still fires; only the animation is suppressed. <!-- REVIEW: Transition should leverage the CSS variables for transition -->
+- **Hover treatments per family.** `solid-*` darkens the bg via `color-mix(in oklab, var(--button-background), black 12%)`. `outline-*` adds a translucent tint of `--button-color` (uses the `-rgb` companion + `--opacity-subtle` fallback `0.05`). `link-*` reduces opacity to `0.75`, no background. All three differ deliberately — same intent (signal hover), shape-appropriate execution. Minimal by design — per-project button styles typically override the base ruleset wholesale; a future hover-state custom-property layer (`--button-background-hover`, `--button-foreground-hover`) is the additive path if "override hover only, keep base" becomes a real pattern.
+- **Reduced motion.** `transition: var(--duration-fast) var(--ease-out)` (substrate motion vars defined in `core.css`) zeroes to `0s` under `@media (prefers-reduced-motion)`. The hover treatment still fires; only the animation is suppressed.
 - **Focus ring.** `:focus-visible` outlines via `var(--color-role-focus-ring)` with `0.125rem` outline + `0.25rem` offset. Inherited from the scheme; no per-instance override.
 - **Block-rhythm integration.** The block's `margin-block-start` chain falls through per-instance settings → section's `--block-rhythm-*` cascade → 0, courtesy of `utility--block-layout-vars`. A button placed without explicit top spacing inherits the section's rhythm; an authored value overrides it.
 - **`{{ block.shopify_attributes }}` emission.** Renders the theme-editor block-selection hook directly on the root. On a direct `{% render %}` outside a block context, `block` is nil and the expression resolves to blank — safe no-op.
@@ -222,10 +222,10 @@ Per `validation-contract.md` Tier 2 (theme-primitive).
 
 ## Out of scope
 
-- **`type="submit"` form-submit buttons** — the snippet always emits `type="button"`. Form submission is the form primitive's domain (Bucket 2 + L0 form-field). When forms ship, the form block owns its own submit primitive — this `button` block stays no-submission. <!-- REVIEW: For business logic / interactivity needs, the strategy is to either use button HTML primitive or use part of all of the snippet as a blueprint, depends on the needs and most probably a per project discussion, what are your thoughts on this ? Any cases where we should need a form-submit outside of basic ECOM functionality which should inherit their own theme primitives/blocks to account for the needs -->
-- **Disabled state** — no `disabled` attribute, no `aria-disabled` setting. Buttons that need a disabled state today must be driven by per-project CSS or per-project JS on top of `data-modifiers`. Revisit when the first stateful consumer (form, cart drawer) needs it. <!-- REVIEW: Might be a gap, we need to check what needs to be shipped and disabled state is a classic -->
-- **Loading state** — no built-in `state:loading` modifier or spinner slot. A JS consumer (e.g. cart add) wires its own state via `ModifiersManager` and styles via per-project CSS. The primitive intentionally stops at static appearance. <!-- REVIEW: Agreed, same for you ? -->
-- **Icon-only buttons** — `content` is required; passing only an `icon` produces nothing (snippet breaks on blank content). Icon-only buttons need an a11y-label arg + a different a11y contract (`aria-label`); ship as `icon-button` primitive if a consumer demands it. <!-- REVIEW: I think that's the good approach, there's nothing that forbids per project parallel button blocks with specialized icon needs -->
+- **`type="submit"` form-submit buttons** — the snippet always emits `type="button"`. Form submission is the form primitive's domain (Bucket 2 + L0 form-field). When forms ship, the form block owns its own submit primitive — this `button` block stays no-submission. Per-project form needs outside the basic-ECOM surface (newsletter / contact / search / faceted-filter / account) reach for either a raw `<button type="submit">` or fork this snippet as a blueprint.
+- **Disabled state** — no `disabled` attribute, no `aria-disabled` setting. The right shape is a snippet `disabled` arg propagating to the `disabled` HTML attribute on `<button>` (and `aria-disabled="true"` + a JS click-handler for `<a>`), plus a dimmed visual via `:disabled` and `[aria-disabled='true']` CSS hooks. Deferred until the first stateful consumer demands it (form primitive submit-state, cart drawer ATC during unavailable variant, pagination at first/last page). Tracked under Bucket C in `BACKLOG.md`.
+- **Loading state** — no built-in `state:loading` modifier or spinner slot. A JS consumer (e.g. cart add) wires its own state via `ModifiersManager` (`modifier-system.md` covers the convention) and styles via per-project CSS. The primitive intentionally stops at static appearance.
+- **Icon-only buttons** — `content` is required; passing only an `icon` produces nothing (snippet breaks on blank content). Icon-only buttons need an a11y-label arg + a different a11y contract (`aria-label`); ship as a separate per-project `icon-button` block when a project demands it. Token's general ship stays content-first.
 - **Dropdown / menu buttons** — separate primitive (paired with `popup` or `disclosure` once those land); the button block stays single-action.
 - **Cap on the base set** — the 3×3 family/variant matrix is Token's base ship, not an architectural ceiling. Projects extend by adding `button_style` metaobject entries paired with matching CSS rules. The constraint that keeps appearance authored (rather than open-ended for merchants) is the CSS-rule requirement, not the metaobject schema.
 - **Per-button background override** beyond what `button_style` exposes — the variant matrix is the agreed customization surface. Off-axis tweaks (e.g. "make this button red on this page only") belong in per-project block-style CSS, not in the spec's API.
