@@ -1,7 +1,8 @@
-{% # Button v1.2.3 %}
+{% # Button v1.3.0 %}
 
 {% comment %}
   Changelog
+  - v1.3.0 — rename exposed `--button-bg` / `--button-fg` custom properties to `--button-background` / `--button-foreground` for naming consistency with the substrate's full-word convention; transition now uses substrate motion vars (`var(--duration-fast) var(--ease-out)`) instead of hardcoded `0.15s ease-out`. Per-project overrides of `--button-bg` / `--button-fg` must rename.
   - v1.2.3 — internal: scheme-role var refs migrate to `--color-role-*` namespace (no API change)
   - v1.2.2 — emit `{{ block.shopify_attributes }}` on the root for theme-editor block selection (was missing)
   - v1.2.1 — route content_width + top-margin vars through `utility--block-layout-vars`; output unchanged
@@ -113,8 +114,8 @@
       --button-color-rgb: var(--color-role-primary-rgb);
       --button-on-color: var(--color-role-primary-button-text);
 
-      --button-bg: var(--button-color);
-      --button-fg: var(--button-on-color);
+      --button-background: var(--button-color);
+      --button-foreground: var(--button-on-color);
       --button-border-color: var(--button-color);
       --button-padding-block: 0.75rem;
       --button-padding-inline: 1.5rem;
@@ -132,8 +133,8 @@
       min-block-size: var(--button-min-size);
       min-inline-size: var(--button-min-size);
 
-      background-color: var(--button-bg);
-      color: var(--button-fg);
+      background-color: var(--button-background);
+      color: var(--button-foreground);
       border: 0.0625rem solid var(--button-border-color);
       border-radius: var(--button-radius);
 
@@ -141,7 +142,7 @@
       text-underline-offset: 0.2em;
       appearance: none;
       cursor: pointer;
-      transition: 0.15s ease-out;
+      transition: var(--duration-fast) var(--ease-out);
 
       @media (prefers-reduced-motion) {
         transition-duration: 0s;
@@ -188,16 +189,16 @@
 
       /* Family: outline */
       &[data-modifiers*='button-style:outline-'] {
-        --button-bg: transparent;
-        --button-fg: var(--button-color);
+        --button-background: transparent;
+        --button-foreground: var(--button-color);
       }
 
       /* Family: link. Keeps the default --button-min-size (2.75rem) so the touch
          target stays at 44×44 even though the visible padding/border/background
          are zeroed — the button just *looks* like a text link. */
       &[data-modifiers*='button-style:link-'] {
-        --button-bg: transparent;
-        --button-fg: var(--button-color);
+        --button-background: transparent;
+        --button-foreground: var(--button-color);
         --button-border-color: transparent;
         --button-padding-block: 0;
         --button-padding-inline: 0;
@@ -207,7 +208,7 @@
 
       /* Hover: solid darkens bg; outline tints; link reduces opacity */
       &:hover {
-        background-color: color-mix(in oklab, var(--button-bg), black 12%);
+        background-color: color-mix(in oklab, var(--button-background), black 12%);
       }
 
       &[data-modifiers*='button-style:outline-']:hover {
