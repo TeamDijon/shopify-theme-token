@@ -335,13 +335,13 @@
 
     /* Form inputs */
     & :where(input, textarea, select) {
-      background-color: var(--color-role-input-bg);
+      background-color: var(--color-role-input-background);
       color: var(--color-role-input-text);
       border: 0.0625rem solid var(--color-role-input-border);
     }
 
     & :where(input, textarea, select):hover {
-      background-color: var(--color-role-input-bg-hover);
+      background-color: var(--color-role-input-background-hover);
       border-color: var(--color-role-input-border-hover);
     }
 
@@ -352,7 +352,7 @@
     }
 
     & :where(input, textarea, select):disabled {
-      background-color: var(--color-role-disabled-bg);
+      background-color: var(--color-role-disabled-background);
       color: var(--color-role-disabled-text);
       border-color: var(--color-role-disabled-border);
       cursor: not-allowed;
