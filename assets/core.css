@@ -399,11 +399,6 @@
     & > :has(+ style:last-child) {
       margin-block-end: 0rem;
     }
-
-    &[data-modifiers*="prose:narrow"] {
-      max-inline-size: 65ch;
-      margin-inline: auto;
-    }
   }
 
   /* Skip to content */

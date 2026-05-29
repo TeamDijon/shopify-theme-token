@@ -188,10 +188,6 @@
           "label": "Content",
           "default": "<p>Where your message takes shape</p>"
         },
-        "narrow": {
-          "label": "Narrow column",
-          "info": "Caps width at 65 characters for readability — overrides content width when enabled"
-        },
         "text_align": {
           "label": "Alignment",
           "options": {

@@ -1,7 +1,8 @@
-{% # Richtext block v1.1.0 %}
+{% # Richtext block v1.2.0 %}
 
 {% comment %}
   Changelog
+  - v1.2.0 — drop `narrow` checkbox. Same concern (max-width cap) now expressed by the `content_width` metaobject alone — merchants seed a `text-narrow` entry (~65ch) and pick it on richtext blocks that should be narrow. Removes the overlapping `narrow` vs `content_width` editor surface.
   - v1.1.0 — add `text_align` setting (start/center/end)
   - v1.0.0 — initial
 {% endcomment %}
@@ -23,13 +24,6 @@
       "id": "content",
       "label": "t:blocks.richtext.settings.content.label",
       "default": "t:blocks.richtext.settings.content.default"
-    },
-    {
-      "type": "checkbox",
-      "id": "narrow",
-      "label": "t:blocks.richtext.settings.narrow.label",
-      "info": "t:blocks.richtext.settings.narrow.info",
-      "default": false
     },
     {
       "type": "select",

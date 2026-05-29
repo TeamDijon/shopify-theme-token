@@ -197,10 +197,6 @@
           "label": "Contenu",
           "default": "<p>Là où votre message prend forme</p>"
         },
-        "narrow": {
-          "label": "Colonne étroite",
-          "info": "Limite la largeur à 65 caractères pour la lisibilité — remplace la largeur du contenu si activé"
-        },
         "text_align": {
           "label": "Alignement",
           "options": {

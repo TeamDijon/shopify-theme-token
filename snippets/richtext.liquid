@@ -1,7 +1,8 @@
-{% # Richtext v1.1.2 %}
+{% # Richtext v1.2.0 %}
 
 {% comment %}
   Changelog
+  - v1.2.0 — drop `narrow` param. Same concern (max-width cap) is now expressed by `content_width` alone — merchants pick a `text-narrow` `content_width` metaobject entry (~65ch) when they want a narrow column. The `prose:narrow` modifier and the corresponding `core.css` rule are gone.
   - v1.1.2 — emit `{{ block.shopify_attributes }}` on the root for theme-editor block selection (was missing)
   - v1.1.1 — route content_width + top-margin vars through `utility--block-layout-vars` (content_width blanked in narrow mode to preserve suppression); output unchanged
   - v1.1.0 — add `text_align` param; self-center capped content_width via `margin-inline: auto`
@@ -10,15 +11,14 @@
 {% endcomment %}
 
 {% doc %}
-  @description Renders a rich-text container with prose spacing utilities, optional narrow readable column, max-width, color, and responsive top spacing. Always emits the `prose` modifier so the global rich-content spacing rules from `@layer utilities` apply; appending `prose:narrow` opts into a 65ch readable column (via the existing `[data-modifiers*="prose:narrow"]` rule in `core.css`).
+  @description Renders a rich-text container with prose spacing utilities, max-width, color, and responsive top spacing. Always emits the `prose` modifier so the global rich-content spacing rules from `@layer utilities` apply. For narrow readable columns, pick a `content_width` metaobject entry sized for prose (~65ch).
 
   @param {section} [section] - The section object containing the block
   @param {block} [block] - Block object containing the settings
   @param {string} [block_id] - Unique block ID for static renders
   @param {string} [content] - HTML rich-text body. Skips render when blank.
-  @param {boolean} [narrow] - When true, appends `prose:narrow` modifier so the utility caps width at 65ch and centers. Suppresses `content_width` emission.
   @param {string} [text_align] - Inline text alignment. One of `'start'` (default), `'center'`, `'end'`.
-  @param {metaobject} [content_width] - `content_width` metaobject. Reads `.width.value` (px). Full width when blank. Ignored when `narrow` is true. Capped width self-centers via `margin-inline: auto`.
+  @param {metaobject} [content_width] - `content_width` metaobject. Reads `.width.value` (px). Full width when blank. Capped width self-centers via `margin-inline: auto`.
   @param {metaobject} [text_color] - `theme_color` metaobject. Reads `.system.handle` to consume `var(--color-<handle>)`. Falls back to `--color-foreground` when blank.
   @param {number} [mobile_margin_block_start] - Top margin in px below the desktop breakpoint. Defaults to 0.
   @param {number} [desktop_margin_block_start] - Top margin in px at or above the desktop breakpoint. Defaults to 0.
@@ -32,7 +32,6 @@
     break
   endif
 
-  assign narrow = narrow | default: block.settings.narrow, allow_false: true | default: false, allow_false: true
   assign text_align = text_align | default: block.settings.text_align | default: 'start'
   assign content_width = content_width | default: block.settings.content_width | default: ''
   assign text_color = text_color | default: block.settings.text_color | default: ''
@@ -40,10 +39,6 @@
   assign desktop_margin_block_start = desktop_margin_block_start | default: block.settings.desktop_margin_block_start | default: 0
 
   assign modifier_list = 'prose'
-  if narrow
-    assign modifier_list = modifier_list | append: ',prose:narrow'
-    assign content_width = ''
-  endif
 
   capture base_selector
     render 'utility--base-selector', section: section, block: block, identifier: block_id
