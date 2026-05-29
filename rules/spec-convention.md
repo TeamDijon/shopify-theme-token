@@ -92,6 +92,7 @@ Specs are the source of truth for an element's contract. When information overla
 - **Metaobject seed entries + load-bearing handles + runtime behavior** live in the spec, not in `metaobject-definitions.md` (that doc carries only the type/field schema for setup).
 - **Consumer patterns + Liquid usage** live in `design-system-metaobjects.md` (catalog-wide patterns) only when they generalize across types; per-type specifics live in the spec.
 - **Locale keys** introduced for an element are listed in its spec; locale-file structure lives in `locale-conventions.md`.
+- **API surface of an element documented by a pattern doc** (e.g. `modifier-system.md` documenting the `data-modifiers` attribute, which `modifiers-manager.js` implements) lives in the element's spec, not the pattern doc. Pattern docs describe *when* and *why* — when to reach for the pattern, naming rules, CSS hooks, prefix collisions. Specs describe *the API*. Restating API in a pattern doc creates drift without a pin to catch it; cross-reference the spec instead.
 
 When a spec absorbs material from a global doc, the global doc cross-references back to the spec. No content lives in two places.
 

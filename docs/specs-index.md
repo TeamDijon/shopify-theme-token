@@ -8,6 +8,7 @@ Originally sourced from the EXPLORATION-2 inventory pass (May 2026); retrofits a
 
 - [theme-color](./specs/theme-color.md) — named color tokens emitted as `--color-<handle>` in `:root`; scheme-role tokens (`--color-role-<role>`) live in a disjoint namespace *(shipped — retrofit)*
 - [utility--color-contrast](./specs/utility--color-contrast.md) — two-choice contrast picker wrapping Liquid's `color_contrast` filter; echoes the higher-contrast reference between two candidates against a background *(shipped — retrofit)*
+- [modifiers-manager](./specs/modifiers-manager.md) — class that reads and mutates the `data-modifiers` attribute on a target element; lazy-instantiated per theme-* element via `BaseComponent` + singleton on `documentElement` *(shipped — retrofit)*
 
 ## Layer 0 — Snippets
 

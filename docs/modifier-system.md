@@ -93,17 +93,13 @@ The substring-match nature of `*=` selectors means a token can shadow a longer o
 
 Forward-looking: if we ever add hierarchical template paths (e.g. `template:product.bundle`), the existing `template:product` would silently match. Audit before adding.
 
-### API preference: add/remove over setValue
+### Swapping a key's value
 
-ZAG's runtime usage data showed `add` (24×) and `remove` (28×) dominate; `setValue` (2×) is rarely reached for. Prefer the granular API:
+No atomic replace operation exists — the manager intentionally does not provide one. To swap a dimension's value (`step:validating` → `step:submitting`), `remove("step")` then `add("step:submitting")`:
 
 ```js
-// Preferred — explicit add/remove
-this.modifiers.add("state:loading");
-this.modifiers.remove("state:loading");
-
-// Use only when swapping a dimension's value
-this.modifiers.setValue("step", "validating"); // replaces any existing step:* value
+this.modifiers.remove("step");
+this.modifiers.add("step:submitting");
 ```
 
-`add`/`remove` is explicit about what's happening; `setValue` is the "replace this dimension's value, whatever it was" operation — useful but rarely needed.
+The explicit two-step makes the swap intent visible at the call site. See `specs/modifiers-manager.md` for the full API surface and design rationale.
