@@ -130,11 +130,11 @@ Honest accounting:
 | 1b | Utility snippet | 0 | All utility-snippets uncovered |
 | 1c | Utility CSS | 0 | Substrate rules uncovered |
 | 1d | Utility JS | 0 | Awaits Vitest |
-| 2 | Theme-primitive | 9 (existing `--block--` pages cover L1 only; no snippet-half group, no L0 sub-component coverage) | Add snippet-half groups; ship pages for the 9 written L0 specs |
-| 3 | Preset | 4 (current `--section--` pages are proto-presets) | Rename at retrofit; no other gaps |
+| 2 | Theme-primitive | 9 `--primitive--` pages cover L1 blocks only; no snippet-half group, no L0 sub-component coverage | Add snippet-half groups; ship pages for the 9 written L0 specs |
+| 3 | Preset | 4 `--preset--` pages (proto-presets: hero, content, columns-features, cta-banner) | No other gaps |
 | 4 | Specialized section | 0 | Awaits specialized-section work (general-theme: FAQ, collection grid, featured product; per-project: cart-upsell, recently-viewed, …) |
 
-Retrofit of the 9 existing `--block--` pages and the 4 existing `--section--` pages is deferred per `BACKLOG.md`'s strategic direction. New specs authored from Batch 2 onward apply the contract directly.
+File-prefix rename to the contracted names landed 2026-05-29 (`--metaobject--` → `--substrate--`, `--block--` → `--primitive--`, `--section--` → `--preset--`). Snippet-half coverage on Tier 2 and Playwright assertions are still deferred per `BACKLOG.md`'s strategic direction. New specs authored from Batch 2 onward apply the contract directly.
 
 ## Related
 

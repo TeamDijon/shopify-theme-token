@@ -104,7 +104,7 @@ None at the type level. Consumers (block settings, theme settings) carry their o
 Per `validation-contract.md` Tier 1a (substrate / metaobject).
 
 - **Tier**: substrate — metaobject sub-shape
-- **Page**: `sections/validation--substrate--theme-color.liquid` + `templates/index.validation--substrate--theme-color.json` (current file is `validation--metaobject--theme-color.liquid`; the implementation pass renames per the new contract).
+- **Page**: `sections/validation--substrate--theme-color.liquid` + `templates/index.validation--substrate--theme-color.json`.
 - **Surface**: every entry of `metaobjects.theme_color.values` × three contexts (on-self with computed contrast foreground, on-light `#ffffff`, on-dark `#000000`).
 - **Edge cases**:
   - Empty catalog (zero entries) → empty-state row renders, no malformed CSS emitted.

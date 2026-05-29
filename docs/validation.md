@@ -30,9 +30,9 @@ The hub at `sections/validation.liquid` (template `templates/index.validation.js
 Shopify auto-matches `?view=<suffix>` to `templates/index.<suffix>.json`. So:
 
 - `/?view=validation` → hub page
-- `/?view=validation--metaobject--theme-color` → theme_color validation
-- `/?view=validation--block--button` → button validation matrix
-- `/?view=validation--section--hero` → hero composition test
+- `/?view=validation--substrate--theme-color` → theme_color validation
+- `/?view=validation--primitive--button` → button validation matrix
+- `/?view=validation--preset--hero` → hero composition test
 
 No layout-level includes; validation pages are reachable only via explicit query strings.
 
