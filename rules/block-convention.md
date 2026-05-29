@@ -56,7 +56,13 @@ Sub-component primitives (no block — e.g. `star-rating`, `badge`) carry none o
 
 ## Styles and scripts
 
-Block CSS lives in a `{% stylesheet %}` block inside the matching snippet (the block file itself contains only the schema + render call). Block JS lives in a `{% javascript %}` block in the same snippet. For Liquid-computed per-instance values, render `utility--dynamic-style`. See `.context/docs/asset-loading.md` for the file-vs-inline decision rule across all consumer types, and `.context/docs/css-standards.md` for component-rooted CSS naming (no BEM `__element`, descendants via `& .name` / `& > tag`).
+Block CSS lives in a `{% stylesheet %}` block inside the matching snippet (the block file itself contains only the schema + render call). Block JS lives in a `{% javascript %}` block in the same snippet. For Liquid-computed per-instance values, render the dynamic-style trio:
+
+- `utility--base-selector` — computes the unique DOM `id` used as the scoping selector.
+- `utility--block-layout-vars` — emits the shared per-instance variables every block exposes (`--content-width`, `--mobile-margin-block-start`, `--desktop-margin-block-start`) with the canonical px→rem conversion.
+- `utility--dynamic-style` — wraps the captured CSS in `#<base-selector> { … }` and routes it through the asset loader.
+
+All three are mandatory companions in every shipped L1 block snippet — calling them together avoids drift on px-to-rem divisors, breakpoint thresholds, and scoping conventions. See `.context/docs/asset-loading.md` for the file-vs-inline decision rule across all consumer types, and `.context/docs/css-standards.md` for component-rooted CSS naming (no BEM `__element`, descendants via `& .name` / `& > tag`).
 
 ## Example
 
