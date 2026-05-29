@@ -27,3 +27,6 @@ package-lock.json
 
 # Local backlog scaffolding — never committed
 BACKLOG.md
+
+# Foundational audit scaffolding — never committed
+FOUNDATIONAL-AUDIT.md
