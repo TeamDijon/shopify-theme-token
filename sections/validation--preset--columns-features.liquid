@@ -1,0 +1,71 @@
+{% # Validation - Section - Columns features v1.0.0 %}
+
+{% comment %}
+  Section-level composition validation for the "columns-features"
+  pattern: a 3-column layout where each column contains a feature
+  group (media + title + richtext stacked vertically).
+
+  Structure: section → columns(3) → 3 × group(column) → media + title +
+  richtext.
+
+  Exercises:
+
+  - Columns block at section level with 3 equal tracks.
+  - Per-column group nesting: each column's group stacks the feature
+    media/title/richtext.
+  - Container query stack-below behaviour at narrow viewports
+    (carries the same suspected self-container bug logged on the
+    columns-block matrix; the row-direction columns may collapse to a
+    single track at certain widths).
+  - Color-scheme cascade through the entire compositional tree.
+  - Media block placeholder fallback inside each feature card.
+
+  Reachable only at /?view=validation--preset--columns-features.
+  See `.context/docs/validation.md`.
+{% endcomment %}
+
+{% liquid
+  assign color_scheme = section.settings.color_scheme | default: 'scheme-1'
+  assign base_selector = 'shopify-section-' | append: section.id
+%}
+
+<theme-section data-modifiers="color-scheme:{{ color_scheme }}">
+  {% render 'validation--breadcrumb' %}
+
+  {% content_for 'blocks' %}
+</theme-section>
+
+{% capture dynamic_style %}
+  --block-rhythm-mobile: 0;
+  --block-rhythm-desktop: 0;
+{% endcapture %}
+{% render 'utility--dynamic-style', base_selector: base_selector, css_content: dynamic_style %}
+
+{% schema %}
+{
+  "name": "Section: columns-features",
+  "tag": "section",
+  "class": "shopify-section--validation--preset--columns-features",
+  "blocks": [{ "type": "@theme" }],
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    }
+  ]
+}
+{% endschema %}
+
+{% stylesheet %}
+  @layer components {
+    .shopify-section--validation--preset--columns-features theme-section {
+      display: block;
+      max-inline-size: 80rem;
+      margin-inline: auto;
+      padding-block: 4rem;
+      padding-inline: 1.5rem;
+    }
+  }
+{% endstylesheet %}

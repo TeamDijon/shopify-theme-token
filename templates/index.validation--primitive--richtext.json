@@ -1,0 +1,58 @@
+{
+  "sections": {
+    "main": {
+      "type": "validation--primitive--richtext",
+      "blocks": {
+        "plain": {
+          "type": "richtext",
+          "settings": {
+            "content": "<p>Plain paragraph. The quick brown fox jumps over the lazy dog while a verbose narrator describes the entire scene in unnecessary detail.</p>"
+          }
+        },
+        "multi-paragraph": {
+          "type": "richtext",
+          "settings": {
+            "content": "<p>First paragraph in a sequence. Tests the paragraph-to-paragraph spacing emitted by the prose utility rules.</p><p>Second paragraph follows. The gap between paragraphs should be consistent with the design-system rhythm.</p><p>Third paragraph closes the sequence.</p>"
+          }
+        },
+        "with-list": {
+          "type": "richtext",
+          "settings": {
+            "content": "<p>Lead paragraph introducing a list of items below.</p><ul><li>First unordered item</li><li>Second unordered item with longer text that may wrap to a second line</li><li>Third unordered item</li></ul><p>Followed by an ordered list:</p><ol><li>Step one</li><li>Step two</li><li>Step three</li></ol>"
+          }
+        },
+        "with-emphasis": {
+          "type": "richtext",
+          "settings": {
+            "content": "<p>This paragraph carries <em>italic emphasis</em>, <strong>bold weight</strong>, and an <a href=\"#\">inline link</a> to validate inline-element rendering inside prose.</p>"
+          }
+        },
+        "narrow": {
+          "type": "richtext",
+          "settings": {
+            "narrow": true,
+            "content": "<p>This paragraph renders inside a narrow readable column (capped at 65ch via the <strong>prose:narrow</strong> modifier). Width is enforced regardless of the parent's content width. Useful for long-form body copy where line length affects readability.</p>"
+          }
+        },
+        "with-spacing": {
+          "type": "richtext",
+          "settings": {
+            "content": "<p>This block carries 64px desktop top margin (0px on mobile). Validate the breakpoint swap by resizing across 768px.</p>",
+            "mobile_margin_block_start": 0,
+            "desktop_margin_block_start": 64
+          }
+        }
+      },
+      "block_order": [
+        "plain",
+        "multi-paragraph",
+        "with-list",
+        "with-emphasis",
+        "narrow",
+        "with-spacing"
+      ],
+      "settings": {}
+    }
+  },
+  "order": ["main"]
+}

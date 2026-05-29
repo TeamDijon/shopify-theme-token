@@ -1,0 +1,156 @@
+{% # Validation - Block - Separator v1.0.1 %}
+
+{% comment %}
+  Changelog
+  - v1.0.1 — drop the local `inline-size: 100%` workaround now that the snippet sets it itself
+  - v1.0.0 — initial
+
+  Block-validation harness for `separator`. The JSON template at
+  `templates/index.validation--primitive--separator.json` bakes the test
+  matrix as block instances; the section just renders them in a
+  labelled list via `validation--block-labels`.
+
+  Diagnostic intent:
+  1. Each instance exercises a different combination of top-spacing
+     numbers. Resize across 768px to validate the desktop margin swap.
+  2. Faint outline on the `.shopify-block--separator` wrapper so the
+     line's positioning + max-inline-size is visible.
+
+  Note: `content_width` and `line_color` settings take metaobject
+  references whose JSON values are Shopify GIDs (store-specific) — the
+  matrix here only covers JSON-portable settings. Verify those two
+  settings interactively in the editor or via dedicated metaobject
+  pages (`?view=validation--substrate--content-width`,
+  `?view=validation--substrate--theme-color`).
+
+  Reachable only at /?view=validation--primitive--separator.
+  See `.context/docs/validation.md`.
+{% endcomment %}
+
+{% liquid
+  assign max_inline_size = section.settings.max_inline_size
+  assign base_selector = 'shopify-section-' | append: section.id
+%}
+
+<theme-section>
+  {% render 'validation--breadcrumb' %}
+
+  <header class="validation__intro">
+    <h1>Block: separator</h1>
+    <p>
+      Matrix in
+      <code>templates/index.validation--primitive--separator.json</code>.
+      Each entry below is one block instance, labelled by its block id.
+      Resize across the 768px breakpoint to validate the desktop margin
+      swap. <code>content_width</code> and <code>line_color</code>
+      settings are metaobject-typed (store-specific GIDs) so the matrix
+      only covers JSON-portable settings — verify those interactively or
+      via the metaobject validation pages.
+    </p>
+  </header>
+
+  {% if section.blocks.size > 0 %}
+    <div class="block-validation-suite">
+      {% content_for 'blocks' %}
+    </div>
+
+    {% render 'validation--block-labels', section: section %}
+  {% else %}
+    <p class="block-validation-suite__empty">No blocks declared in the template.</p>
+  {% endif %}
+</theme-section>
+
+{% capture dynamic_style %}
+  {% if max_inline_size and max_inline_size != blank %}
+    --max-inline-size: {{ max_inline_size }}px;
+  {% endif %}
+{% endcapture %}
+{% render 'utility--dynamic-style', base_selector: base_selector, css_content: dynamic_style %}
+
+{% schema %}
+{
+  "name": "Block: separator",
+  "tag": "section",
+  "class": "shopify-section--validation--primitive--separator",
+  "blocks": [{ "type": "@theme" }],
+  "settings": [
+    {
+      "type": "range",
+      "id": "max_inline_size",
+      "label": "Max width",
+      "min": 800,
+      "max": 1920,
+      "step": 20,
+      "unit": "px",
+      "default": 1280
+    }
+  ]
+}
+{% endschema %}
+
+{% stylesheet %}
+  @layer components {
+    .shopify-section--validation--primitive--separator {
+      theme-section {
+        display: block;
+        max-inline-size: var(--max-inline-size, 80rem);
+        margin-inline: auto;
+        padding-block: 2rem;
+        padding-inline: 1.5rem;
+      }
+
+      .validation__intro {
+        margin-block-end: 2rem;
+
+        h1 {
+          margin-block-end: 0.5rem;
+        }
+
+        p {
+          max-inline-size: 65ch;
+          opacity: 0.75;
+        }
+
+        code {
+          font-family: ui-monospace, monospace;
+          font-size: 0.95em;
+        }
+      }
+
+      /* Render each separator at its true size; float the DOM-id label
+         above each via absolute positioning. Generous gap + top padding
+         gives labels room. */
+      .block-validation-suite {
+        display: flex;
+        flex-direction: column;
+        gap: 2.5rem;
+        padding-block-start: 1.5rem;
+      }
+
+      .block-validation-suite__empty {
+        padding: 1.5rem;
+        border: 1px dashed currentColor;
+        border-radius: 0.5rem;
+        text-align: center;
+        opacity: 0.7;
+      }
+
+      /* Outline the separator wrapper so the inline-size + applied
+         margins are visible (the <hr> line itself is just 1px). */
+      .block-validation-suite > .shopify-block--separator {
+        position: relative;
+        outline: 1px dashed rgba(0, 0, 0, 0.18);
+      }
+
+      .block-validation-suite > .shopify-block--separator::before {
+        content: var(--block-label, '');
+        position: absolute;
+        inset-block-end: calc(100% + 0.375rem);
+        inset-inline-start: 0;
+        font-family: ui-monospace, monospace;
+        font-size: 0.8125rem;
+        font-weight: 600;
+      }
+    }
+  }
+{% endstylesheet %}

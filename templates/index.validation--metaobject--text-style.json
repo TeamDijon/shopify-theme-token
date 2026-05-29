@@ -1,9 +1,0 @@
-{
-  "sections": {
-    "main": {
-      "type": "validation--metaobject--text-style",
-      "settings": {}
-    }
-  },
-  "order": ["main"]
-}

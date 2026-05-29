@@ -1,0 +1,9 @@
+{
+  "sections": {
+    "main": {
+      "type": "validation--substrate--text-style",
+      "settings": {}
+    }
+  },
+  "order": ["main"]
+}

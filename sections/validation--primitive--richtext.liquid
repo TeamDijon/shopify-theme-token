@@ -1,0 +1,148 @@
+{% # Validation - Block - Richtext v1.0.0 %}
+
+{% comment %}
+  Block-validation harness for `richtext`. The JSON template at
+  `templates/index.validation--primitive--richtext.json` bakes the test
+  matrix; the section just renders them in a labelled list via
+  `validation--block-labels`.
+
+  Diagnostic intent:
+  1. The snippet always emits a `prose` modifier so the global rich-
+     content rules from `@layer utilities` apply (paragraph rhythm,
+     list bullets, link styling).
+  2. `narrow: true` appends `prose:narrow` and caps width at 65ch.
+  3. Content variants (paragraphs, lists, emphasis, links) all render
+     with the right typography.
+
+  Not covered (metaobject settings — store-specific GIDs): content_width,
+  text_color. Verify via metaobject pages.
+
+  Reachable only at /?view=validation--primitive--richtext.
+  See `.context/docs/validation.md`.
+{% endcomment %}
+
+{% liquid
+  assign max_inline_size = section.settings.max_inline_size
+  assign base_selector = 'shopify-section-' | append: section.id
+%}
+
+<theme-section>
+  {% render 'validation--breadcrumb' %}
+
+  <header class="validation__intro">
+    <h1>Block: richtext</h1>
+    <p>
+      Matrix in
+      <code>templates/index.validation--primitive--richtext.json</code>.
+      Each entry below is one block instance, labelled by its block id.
+      The snippet always emits the <code>prose</code> modifier;
+      <code>narrow:true</code> adds <code>prose:narrow</code> and caps
+      width at 65ch. content_width / text_color settings are
+      metaobject-typed and tested via their dedicated pages.
+    </p>
+  </header>
+
+  {% if section.blocks.size > 0 %}
+    <div class="block-validation-suite">
+      {% content_for 'blocks' %}
+    </div>
+
+    {% render 'validation--block-labels', section: section %}
+  {% else %}
+    <p class="block-validation-suite__empty">No blocks declared in the template.</p>
+  {% endif %}
+</theme-section>
+
+{% capture dynamic_style %}
+  {% if max_inline_size and max_inline_size != blank %}
+    --max-inline-size: {{ max_inline_size }}px;
+  {% endif %}
+{% endcapture %}
+{% render 'utility--dynamic-style', base_selector: base_selector, css_content: dynamic_style %}
+
+{% schema %}
+{
+  "name": "Block: richtext",
+  "tag": "section",
+  "class": "shopify-section--validation--primitive--richtext",
+  "blocks": [{ "type": "@theme" }],
+  "settings": [
+    {
+      "type": "range",
+      "id": "max_inline_size",
+      "label": "Max width",
+      "min": 800,
+      "max": 1920,
+      "step": 20,
+      "unit": "px",
+      "default": 1280
+    }
+  ]
+}
+{% endschema %}
+
+{% stylesheet %}
+  @layer components {
+    .shopify-section--validation--primitive--richtext {
+      theme-section {
+        display: block;
+        max-inline-size: var(--max-inline-size, 80rem);
+        margin-inline: auto;
+        padding-block: 2rem;
+        padding-inline: 1.5rem;
+      }
+
+      .validation__intro {
+        margin-block-end: 2rem;
+
+        h1 {
+          margin-block-end: 0.5rem;
+        }
+
+        p {
+          max-inline-size: 65ch;
+          opacity: 0.75;
+        }
+
+        code {
+          font-family: ui-monospace, monospace;
+          font-size: 0.95em;
+        }
+      }
+
+      .block-validation-suite {
+        display: flex;
+        flex-direction: column;
+        gap: 2.5rem;
+        padding-block-start: 1.5rem;
+      }
+
+      .block-validation-suite__empty {
+        padding: 1.5rem;
+        border: 1px dashed currentColor;
+        border-radius: 0.5rem;
+        text-align: center;
+        opacity: 0.7;
+      }
+
+      /* Outline the richtext wrapper so the bounded box (especially when
+         narrow:true caps at 65ch) is visible against the page. */
+      .block-validation-suite > .shopify-block--richtext {
+        position: relative;
+        outline: 1px dashed rgba(0, 0, 0, 0.18);
+        outline-offset: 0.5rem;
+      }
+
+      .block-validation-suite > .shopify-block--richtext::before {
+        content: var(--block-label, '');
+        position: absolute;
+        inset-block-end: calc(100% + 1rem);
+        inset-inline-start: 0;
+        font-family: ui-monospace, monospace;
+        font-size: 0.8125rem;
+        font-weight: 600;
+        opacity: 0.7;
+      }
+    }
+  }
+{% endstylesheet %}

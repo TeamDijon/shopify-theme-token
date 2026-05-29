@@ -1,0 +1,87 @@
+{
+  "sections": {
+    "main": {
+      "type": "validation--primitive--title",
+      "blocks": {
+        "h1": {
+          "type": "title",
+          "settings": {
+            "tag": "h1",
+            "content": "Heading level 1 — display"
+          }
+        },
+        "h2": {
+          "type": "title",
+          "settings": {
+            "tag": "h2",
+            "content": "Heading level 2"
+          }
+        },
+        "h3": {
+          "type": "title",
+          "settings": {
+            "tag": "h3",
+            "content": "Heading level 3"
+          }
+        },
+        "h4": {
+          "type": "title",
+          "settings": {
+            "tag": "h4",
+            "content": "Heading level 4"
+          }
+        },
+        "h5": {
+          "type": "title",
+          "settings": {
+            "tag": "h5",
+            "content": "Heading level 5"
+          }
+        },
+        "h6": {
+          "type": "title",
+          "settings": {
+            "tag": "h6",
+            "content": "Heading level 6"
+          }
+        },
+        "p-tag": {
+          "type": "title",
+          "settings": {
+            "tag": "p",
+            "content": "Paragraph tag — body text style"
+          }
+        },
+        "richtext": {
+          "type": "title",
+          "settings": {
+            "tag": "h2",
+            "content": "Heading with <em>italic</em>, <strong>bold</strong>, and a <a href=\"#\">link</a>"
+          }
+        },
+        "with-spacing": {
+          "type": "title",
+          "settings": {
+            "tag": "h2",
+            "content": "After 64px desktop top margin",
+            "mobile_margin_block_start": 16,
+            "desktop_margin_block_start": 64
+          }
+        }
+      },
+      "block_order": [
+        "h1",
+        "h2",
+        "h3",
+        "h4",
+        "h5",
+        "h6",
+        "p-tag",
+        "richtext",
+        "with-spacing"
+      ],
+      "settings": {}
+    }
+  },
+  "order": ["main"]
+}

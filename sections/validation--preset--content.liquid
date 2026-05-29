@@ -1,0 +1,71 @@
+{% # Validation - Section - Content v1.0.1 %}
+
+{% comment %}
+  Changelog
+  - v1.0.1 — drop the original block_rhythm-bug write-up now that the
+    cascade is fixed; replace with a current-behaviour description.
+  - v1.0.0 — initial
+
+  Section-level composition validation for the "content" pattern: a
+  title + richtext + button stacked vertically inside a centered
+  readable column. Exercises:
+
+  - Inter-block rhythm: the section emits `--block-rhythm-mobile` and
+    `--block-rhythm-desktop` on theme-section; each block snippet's
+    `margin-block-start` chains those vars as its inner fallback. The
+    visible gap between the three top-level blocks is the rhythm in
+    action (verify via computed margin-block-start).
+  - The color_scheme modifier on the section root cascading into the
+    inner blocks (button text/bg, link color in richtext, foreground).
+  - content_width capping the inner column for readability.
+
+  Reachable only at /?view=validation--preset--content.
+  See `.context/docs/validation.md`.
+{% endcomment %}
+
+{% liquid
+  assign color_scheme = section.settings.color_scheme | default: 'scheme-1'
+  assign base_selector = 'shopify-section-' | append: section.id
+%}
+
+<theme-section data-modifiers="color-scheme:{{ color_scheme }}">
+  {% render 'validation--breadcrumb' %}
+
+  {% content_for 'blocks' %}
+</theme-section>
+
+{% capture dynamic_style %}
+  /* Hardcoded block_rhythm — see comment in section file. */
+  --block-rhythm-mobile: 1rem;
+  --block-rhythm-desktop: 1.5rem;
+{% endcapture %}
+{% render 'utility--dynamic-style', base_selector: base_selector, css_content: dynamic_style %}
+
+{% schema %}
+{
+  "name": "Section: content",
+  "tag": "section",
+  "class": "shopify-section--validation--preset--content",
+  "blocks": [{ "type": "@theme" }],
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    }
+  ]
+}
+{% endschema %}
+
+{% stylesheet %}
+  @layer components {
+    .shopify-section--validation--preset--content theme-section {
+      display: block;
+      max-inline-size: 65ch;
+      margin-inline: auto;
+      padding-block: 4rem;
+      padding-inline: 1.5rem;
+    }
+  }
+{% endstylesheet %}

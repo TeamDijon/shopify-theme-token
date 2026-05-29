@@ -1,0 +1,66 @@
+{
+  "sections": {
+    "main": {
+      "type": "validation--preset--cta-banner",
+      "blocks": {
+        "top-separator": {
+          "type": "separator",
+          "settings": {}
+        },
+        "cta-group": {
+          "type": "group",
+          "blocks": {
+            "cta-title": {
+              "type": "title",
+              "settings": {
+                "tag": "h3",
+                "content": "Ready to ship?"
+              }
+            },
+            "cta-buttons": {
+              "type": "group",
+              "blocks": {
+                "primary-cta": {
+                  "type": "button",
+                  "settings": {
+                    "content": "Get started",
+                    "link": "/"
+                  }
+                },
+                "secondary-cta": {
+                  "type": "button",
+                  "settings": {
+                    "content": "Learn more",
+                    "link": "/"
+                  }
+                }
+              },
+              "block_order": ["primary-cta", "secondary-cta"],
+              "settings": {
+                "direction": "row",
+                "horizontal_alignment": "center",
+                "stack_below": "40",
+                "gap": 16
+              }
+            }
+          },
+          "block_order": ["cta-title", "cta-buttons"],
+          "settings": {
+            "direction": "column",
+            "horizontal_alignment": "center",
+            "gap": 24
+          }
+        },
+        "bottom-separator": {
+          "type": "separator",
+          "settings": {}
+        }
+      },
+      "block_order": ["top-separator", "cta-group", "bottom-separator"],
+      "settings": {
+        "color_scheme": "scheme-1"
+      }
+    }
+  },
+  "order": ["main"]
+}

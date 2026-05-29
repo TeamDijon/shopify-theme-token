@@ -1,0 +1,182 @@
+{% # Validation - Content width v1.0.0 %}
+
+{% comment %}
+  Visual test page for the `content_width` metaobject. Iterates every
+  entry and renders a real `title` snippet per entry with long content
+  and the entry's `content_width` passed in — the title's wrap point
+  is the visible signal that the constraint resolved.
+
+  Diagnostic intent:
+  1. The metaobject's `.width.value` (px) reaches the consumer's
+     `--content-width` CSS variable, which the title's stylesheet
+     applies as `max-inline-size: var(--content-width, 100%)`.
+  2. The metadata strip surfaces the inputs (handle / width px) so a
+     mismatch between the metric and the visual wrap point flags the
+     pipeline broken.
+  3. Faint outline on the title element so the bounded box is visible
+     even before the text wraps.
+
+  Reachable only at /?view=validation--substrate--content-width.
+  See `.context/docs/validation.md` for the validation-suite convention.
+{% endcomment %}
+
+{% liquid
+  assign max_inline_size = section.settings.max_inline_size
+  assign base_selector = 'shopify-section-' | append: section.id
+  assign sample_content = 'The quick brown fox jumps over the lazy dog while a verbose narrator describes the entire scene in unnecessary detail.'
+%}
+
+<theme-section>
+  {% render 'validation--breadcrumb' %}
+
+  <header class="validation__intro">
+    <h1>Content width</h1>
+    <p>
+      Source: <code>metaobjects.content_width.values</code>. Read by
+      consumers as <code>.width.value</code> (px) and emitted as the
+      <code>--content-width</code> CSS variable, which constrains the
+      element's <code>max-inline-size</code>. Each row renders a real
+      <code>title</code> snippet with the entry's <code>content_width</code>
+      and a long sample line; the wrap point is the visible signal.
+    </p>
+  </header>
+
+  <ol class="content-width-suite">
+    {% for content_width in metaobjects.content_width.values %}
+      {% liquid
+        assign handle = content_width.system.handle
+        assign width = content_width.width.value | default: 0 | round
+      %}
+
+      <li class="content-width-row">
+        <header class="content-width-row__head">
+          <code class="content-width-row__handle">{{ handle }}</code>
+          <code class="content-width-row__metric">width:{{ width }}px</code>
+        </header>
+
+        <div class="content-width-row__sample">
+          {% render 'title',
+            section: section,
+            block_id: handle,
+            content: sample_content,
+            tag: 'h3',
+            content_width: content_width
+          %}
+        </div>
+      </li>
+    {% else %}
+      <li class="content-width-suite__empty">
+        No <code>content_width</code> metaobject entries defined.
+      </li>
+    {% endfor %}
+  </ol>
+</theme-section>
+
+{% capture dynamic_style %}
+  {% if max_inline_size and max_inline_size != blank %}
+    --max-inline-size: {{ max_inline_size }}px;
+  {% endif %}
+{% endcapture %}
+{% render 'utility--dynamic-style', base_selector: base_selector, css_content: dynamic_style %}
+
+{% schema %}
+{
+  "name": "Content width",
+  "tag": "section",
+  "class": "shopify-section--validation--substrate--content-width",
+  "settings": [
+    {
+      "type": "range",
+      "id": "max_inline_size",
+      "label": "Max width",
+      "min": 800,
+      "max": 1920,
+      "step": 20,
+      "unit": "px",
+      "default": 1280
+    }
+  ]
+}
+{% endschema %}
+
+{% stylesheet %}
+  @layer components {
+    .shopify-section--validation--substrate--content-width {
+      theme-section {
+        display: block;
+        max-inline-size: var(--max-inline-size, 80rem);
+        margin-inline: auto;
+        padding-block: 2rem;
+        padding-inline: 1.5rem;
+      }
+
+      .validation__intro {
+        margin-block-end: 2rem;
+
+        h1 {
+          margin-block-end: 0.5rem;
+        }
+
+        p {
+          max-inline-size: 65ch;
+          opacity: 0.75;
+        }
+
+        code {
+          font-family: ui-monospace, monospace;
+          font-size: 0.95em;
+        }
+      }
+
+      .content-width-suite {
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+
+      .content-width-suite__empty {
+        padding: 1.5rem;
+        border: 1px dashed currentColor;
+        border-radius: 0.5rem;
+        text-align: center;
+        opacity: 0.7;
+      }
+
+      .content-width-row {
+        display: flex;
+        flex-direction: column;
+        gap: 0.875rem;
+        padding: 1rem;
+        border: 1px solid rgba(0, 0, 0, 0.12);
+        border-radius: 0.5rem;
+      }
+
+      .content-width-row__head {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: baseline;
+        gap: 0.375rem 0.75rem;
+        font-family: ui-monospace, monospace;
+        font-size: 0.8125rem;
+      }
+
+      .content-width-row__handle {
+        font-weight: 600;
+      }
+
+      .content-width-row__metric {
+        opacity: 0.55;
+      }
+
+      /* Outline the title element so the bounded box is visible even at
+         widths wider than the line of text. */
+      .content-width-row__sample .shopify-block--title {
+        outline: 1px dashed rgba(0, 0, 0, 0.18);
+        outline-offset: 0.25rem;
+      }
+    }
+  }
+{% endstylesheet %}

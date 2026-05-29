@@ -1,0 +1,145 @@
+{% # Validation - Block - Spacer v1.0.0 %}
+
+{% comment %}
+  Block-validation harness for `spacer`. Iterates `section.blocks`
+  (defined in `templates/index.validation--primitive--spacer.json` — the
+  template IS the test spec) and renders each with a label drawn from
+  the block id.
+
+  Diagnostic intent:
+  1. Each block instance exercises a different setting combination
+     (fixed sizes, breakpoint pairs, with/without background). The
+     visual height of each rendered spacer should match its declared
+     settings.
+  2. Faint dashed outline on each spacer so its bounds are visible
+     even when no background_color is set or when the size is 0.
+
+  Reachable only at /?view=validation--primitive--spacer.
+  See `.context/docs/validation.md` for the validation-suite convention.
+{% endcomment %}
+
+{% liquid
+  assign max_inline_size = section.settings.max_inline_size
+  assign base_selector = 'shopify-section-' | append: section.id
+%}
+
+<theme-section>
+  {% render 'validation--breadcrumb' %}
+
+  <header class='validation__intro'>
+    <h1>Block: spacer</h1>
+    <p>
+      The block matrix is baked into the JSON template at
+      <code>templates/index.validation--primitive--spacer.json</code>. Each entry below is one block instance from that
+      file, labelled by its block id. Resize the viewport across the 640/960/1280px breakpoints to validate the
+      breakpoint-driven entries.
+    </p>
+  </header>
+
+  {% if section.blocks.size > 0 %}
+    <div class="block-validation-suite">
+      {% content_for 'blocks' %}
+    </div>
+
+    {% render 'validation--block-labels', section: section %}
+  {% else %}
+    <p class="block-validation-suite__empty">No blocks declared in the template.</p>
+  {% endif %}
+</theme-section>
+
+{% capture dynamic_style %}
+  {% if max_inline_size and max_inline_size != blank %}
+    --max-inline-size: {{ max_inline_size }}px;
+  {% endif %}
+{% endcapture %}
+{% render 'utility--dynamic-style', base_selector: base_selector, css_content: dynamic_style %}
+
+{% schema %}
+{
+  "name": "Block: spacer",
+  "tag": "section",
+  "class": "shopify-section--validation--primitive--spacer",
+  "blocks": [{ "type": "@theme" }],
+  "settings": [
+    {
+      "type": "range",
+      "id": "max_inline_size",
+      "label": "Max width",
+      "min": 800,
+      "max": 1920,
+      "step": 20,
+      "unit": "px",
+      "default": 1280
+    }
+  ]
+}
+{% endschema %}
+
+{% stylesheet %}
+  @layer components {
+    .shopify-section--validation--primitive--spacer {
+      theme-section {
+        display: block;
+        max-inline-size: var(--max-inline-size, 80rem);
+        margin-inline: auto;
+        padding-block: 2rem;
+        padding-inline: 1.5rem;
+      }
+
+      .validation__intro {
+        margin-block-end: 2rem;
+
+        h1 {
+          margin-block-end: 0.5rem;
+        }
+
+        p {
+          max-inline-size: 65ch;
+          opacity: 0.75;
+        }
+
+        code {
+          font-family: ui-monospace, monospace;
+          font-size: 0.95em;
+        }
+      }
+
+      /* Render each spacer at its true height so the diagnostic isn't
+         distorted; float the DOM-id label above each via absolute
+         positioning. Generous gap + top padding gives labels room. */
+      .block-validation-suite {
+        display: flex;
+        flex-direction: column;
+        gap: 2.5rem;
+        padding-block-start: 1.5rem;
+      }
+
+      .block-validation-suite__empty {
+        padding: 1.5rem;
+        border: 1px dashed currentColor;
+        border-radius: 0.5rem;
+        text-align: center;
+        opacity: 0.7;
+      }
+
+      /* Each spacer carries `id="shopify-block-<block-id>"`. Outline
+         shows bounds even at 0 height; ::before floats the id as a
+         label above the spacer. */
+      .block-validation-suite > .shopify-block--spacer {
+        position: relative;
+        outline: 1px dashed rgba(0, 0, 0, 0.18);
+        outline-offset: -1px;
+      }
+
+      .block-validation-suite > .shopify-block--spacer::before {
+        content: var(--block-label, '');
+        position: absolute;
+        inset-block-end: calc(100% + 0.375rem);
+        inset-inline-start: 0;
+        font-family: ui-monospace, monospace;
+        font-size: 0.8125rem;
+        font-weight: 600;
+      }
+    }
+  }
+{% endstylesheet %}

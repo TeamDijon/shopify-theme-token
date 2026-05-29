@@ -1,0 +1,64 @@
+{
+  "sections": {
+    "main": {
+      "type": "validation--primitive--spacer",
+      "blocks": {
+        "fixed-small": {
+          "type": "spacer",
+          "settings": {
+            "breakpoint": "none",
+            "spacer_block_size": 8
+          }
+        },
+        "fixed-medium": {
+          "type": "spacer",
+          "settings": {
+            "breakpoint": "none",
+            "spacer_block_size": 24
+          }
+        },
+        "fixed-large": {
+          "type": "spacer",
+          "settings": {
+            "breakpoint": "none",
+            "spacer_block_size": 64
+          }
+        },
+        "breakpoint-40": {
+          "type": "spacer",
+          "settings": {
+            "breakpoint": "40",
+            "mobile_spacer_block_size": 16,
+            "desktop_spacer_block_size": 48
+          }
+        },
+        "breakpoint-60": {
+          "type": "spacer",
+          "settings": {
+            "breakpoint": "60",
+            "mobile_spacer_block_size": 16,
+            "desktop_spacer_block_size": 48
+          }
+        },
+        "breakpoint-80": {
+          "type": "spacer",
+          "settings": {
+            "breakpoint": "80",
+            "mobile_spacer_block_size": 16,
+            "desktop_spacer_block_size": 48
+          }
+        }
+      },
+      "block_order": [
+        "fixed-small",
+        "fixed-medium",
+        "fixed-large",
+        "breakpoint-40",
+        "breakpoint-60",
+        "breakpoint-80"
+      ],
+      "settings": {}
+    }
+  },
+  "order": ["main"]
+}
