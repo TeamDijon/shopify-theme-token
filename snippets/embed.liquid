@@ -176,12 +176,7 @@
       overflow: hidden;
       max-inline-size: var(--content-width, 100%);
       margin-inline: auto;
-      margin-block-start: var(--mobile-margin-block-start, var(--block-rhythm-mobile, 0rem));
       aspect-ratio: 16 / 9;
-
-      @media (width >= 48rem) {
-        margin-block-start: var(--desktop-margin-block-start, var(--block-rhythm-desktop, 0rem));
-      }
 
       /* Sizing override: aspect ratio from media_size metaobject */
       &[data-modifiers*='sizing:ratio'] {

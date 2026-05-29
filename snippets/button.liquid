@@ -127,7 +127,6 @@
       gap: 0.5em;
 
       max-inline-size: var(--content-width, none);
-      margin-block-start: var(--mobile-margin-block-start, var(--block-rhythm-mobile, 0rem));
       padding: var(--button-padding-block) var(--button-padding-inline);
       min-block-size: var(--button-min-size);
       min-inline-size: var(--button-min-size);
@@ -142,10 +141,6 @@
       appearance: none;
       cursor: pointer;
       transition: 0.15s ease-out;
-
-      @media (width >= 48rem) {
-        margin-block-start: var(--desktop-margin-block-start, var(--block-rhythm-desktop, 0rem));
-      }
 
       @media (prefers-reduced-motion) {
         transition-duration: 0s;

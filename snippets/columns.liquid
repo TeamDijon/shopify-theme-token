@@ -112,11 +112,6 @@
       container-name: columns;
 
       max-inline-size: var(--content-width, 100%);
-      margin-block-start: var(--mobile-margin-block-start, var(--block-rhythm-mobile, 0rem));
-
-      @media (width >= 48rem) {
-        margin-block-start: var(--desktop-margin-block-start, var(--block-rhythm-desktop, 0rem));
-      }
 
       /* Bleed: escape the section gutter, span the full visible viewport.
          Same math as media's bleed; assumes a centered ancestor chain. */

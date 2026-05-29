@@ -74,13 +74,8 @@
       position: relative;
       inline-size: 100%;
       block-size: var(--spacer-block-size, 0rem);
-      margin-block-start: var(--mobile-margin-block-start, var(--block-rhythm-mobile, 0rem));
       margin-block-end: 0;
       margin-inline: auto;
-
-      @media (width >= 48rem) {
-        margin-block-start: var(--desktop-margin-block-start, var(--block-rhythm-desktop, 0rem));
-      }
       background-color: var(--background-color, transparent);
 
       &[data-modifiers*='breakpoint'] {

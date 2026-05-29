@@ -354,14 +354,14 @@
     & :where(input, textarea)::placeholder {
       color: var(--color-placeholder);
     }
+  }
 
-    /* Block rhythm — inter-block vertical spacing driven by the section's `block_rhythm` spacing-metaobject setting. Direct-child scoping (`>`) keeps the rhythm at the section level only; nested containers (group, columns, media-contents) handle their own spacing via `gap`. The :where() keeps specificity at zero so per-block overrides work; the sibling combinator gets margin-collapse for free. Default 0 when no rhythm is configured. */
-    & > :where(.shopify-block) + .shopify-block {
-      margin-block-start: var(--block-rhythm-mobile, 0);
+  /* Block rhythm — inter-block vertical spacing for any .shopify-block that isn't its parent's first child. Reads per-instance override first (--mobile/desktop-margin-block-start), falls through to the section's --block-rhythm-* cascade, defaults to 0. First-child relies on the container's padding/gap for top spacing. */
+  .shopify-block:not(:first-child) {
+    margin-block-start: var(--mobile-margin-block-start, var(--block-rhythm-mobile, 0rem));
 
-      @media (width >= 48rem) {
-        margin-block-start: var(--block-rhythm-desktop, 0);
-      }
+    @media (width >= 48rem) {
+      margin-block-start: var(--desktop-margin-block-start, var(--block-rhythm-desktop, 0rem));
     }
   }
 }
