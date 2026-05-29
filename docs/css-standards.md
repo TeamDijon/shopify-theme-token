@@ -38,6 +38,7 @@ Anything still emitted **outside layers** (e.g. inline declarations from `utilit
 - **Color tokens come from `theme_color` metaobjects** via `utility--css-variables`. Don't hardcode colors in component CSS; use `var(--color-<token>)`.
 - **Spacing/typography tokens come from theme settings + `text_style`/`content_width` metaobjects.** Same rule: use the variable, not the literal.
 - **Component-local custom properties** are fine — declare on the component's root selector; reference via `var(--name, fallback)`.
+- **Full-word names, no shorthand suffixes** — `--button-background` not `--button-bg`, `--icon-foreground` not `--icon-fg`. Agent-first authoring; shorthand suffixes force context-loading where full words don't. Exempt: established CSS conventions universally readable across the ecosystem — size tokens (`-sm` / `-md` / `-lg` / `-xs` / `-xl`), color-format suffixes (`-rgb` / `-hsl` / `-oklch`), logical-property dimensions (`-inline` / `-block`).
 
 ## Design constants
 
