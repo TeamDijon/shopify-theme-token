@@ -1,7 +1,11 @@
 /**
  * Pure utility functions for the theme library.
  * @module @theme/utils
- * @version 1.0.0
+ * @version 1.1.0
+ *
+ * Changelog
+ * - v1.1.0 — `debounce` returns a function with `.cancel()` for symmetry with `throttle.cancel()` (resolves BACKLOG D5)
+ * - v1.0.0 — initial
  */
 
 /**
@@ -53,10 +57,17 @@ export const throttle = (callback) => {
 export const debounce = (callback, delay = 100) => {
   let timer = null;
 
-  return (...args) => {
+  const debounced = (...args) => {
     clearTimeout(timer);
     timer = setTimeout(() => {
       callback(...args);
     }, delay);
   };
+
+  debounced.cancel = () => {
+    clearTimeout(timer);
+    timer = null;
+  };
+
+  return debounced;
 };

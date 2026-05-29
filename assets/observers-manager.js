@@ -1,9 +1,10 @@
 /**
  * Centralized observer management with cleanup.
  * @module @theme/observers-manager
- * @version 2.0.0
+ * @version 3.0.0
  *
  * Changelog
+ * - v3.0.0 — drop the per-type sugar methods (`resize`, `intersection`, `mutation`); callers use the canonical `add(element, type, handler, options)` form. Reduces surface area + matches CacheManager's no-sugar design.
  * - v2.0.0 — drop debug methods (getCount, getAllObservers); private state via #observers; remove try/catch error swallowing
  * - v1.0.0 — initial
  */
@@ -49,15 +50,6 @@ export class ObserversManager {
 
     return observer;
   };
-
-  /** @returns {ResizeObserver} */
-  resize = (element, handler, options = {}) => this.add(element, "resize", handler, options);
-
-  /** @returns {IntersectionObserver} */
-  intersection = (element, handler, options = {}) => this.add(element, "intersection", handler, options);
-
-  /** @returns {MutationObserver} */
-  mutation = (element, handler, options = {}) => this.add(element, "mutation", handler, options);
 
   /**
    * Checks whether a specific observer is registered.

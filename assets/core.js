@@ -4,7 +4,11 @@
  * `window.theme` namespace for use in inline scripts and Liquid templates.
  *
  * @module @theme/core
- * @version 1.0.0
+ * @version 1.1.0
+ *
+ * Changelog
+ * - v1.1.0 — extract document-level singletons (documentModifiers, documentScroll, documentScrollbar) into @theme/document-utils so this file stays focused on entry-point + namespace duties
+ * - v1.0.0 — initial
  */
 
 // Utilities
@@ -12,6 +16,9 @@ export { getRootFontSize, throttle, debounce } from "@theme/utils";
 
 // DOM
 export { dom } from "@theme/dom";
+
+// Document-level singletons
+export { documentModifiers, documentScroll, documentScrollbar } from "@theme/document-utils";
 
 // Managers
 export { EventsManager } from "@theme/events-manager";
@@ -26,6 +33,7 @@ export { BaseComponent } from "@theme/base-component";
 
 import { getRootFontSize, throttle, debounce } from "@theme/utils";
 import { dom } from "@theme/dom";
+import { documentModifiers, documentScroll, documentScrollbar } from "@theme/document-utils";
 import { EventsManager } from "@theme/events-manager";
 import { ObserversManager } from "@theme/observers-manager";
 import { CacheManager } from "@theme/cache-manager";
@@ -38,6 +46,9 @@ window.theme.utils = window.theme.utils || {};
 window.theme.utils.getRootFontSize = getRootFontSize;
 window.theme.utils.throttle = throttle;
 window.theme.utils.debounce = debounce;
+window.theme.utils.documentModifiers = documentModifiers;
+window.theme.utils.documentScroll = documentScroll;
+window.theme.utils.documentScrollbar = documentScrollbar;
 
 window.theme.dom = dom;
 
@@ -49,90 +60,6 @@ window.theme.managers.ModifiersManager = ModifiersManager;
 
 window.theme.components = window.theme.components || {};
 window.theme.components.BaseComponent = BaseComponent;
-
-// ---- Document-level singletons ----
-
-/**
- * A singleton ModifiersManager for document.documentElement.
- */
-(() => {
-  let _documentModifiers = null;
-  Object.defineProperty(window.theme.utils, "documentModifiers", {
-    get: () => {
-      if (!_documentModifiers) {
-        _documentModifiers = new ModifiersManager(document.documentElement);
-      }
-
-      return _documentModifiers;
-    },
-  });
-})();
-
-/**
- * Namespace for managing scroll-related functionality for document.documentElement.
- * @property {boolean} isLocked - Getter and setter for the `locked-scroll` modifier.
- */
-window.theme.utils.documentScroll = {
-  get isLocked() {
-    return window.theme.utils.documentModifiers.has("locked-scroll");
-  },
-
-  set isLocked(value) {
-    if (value) {
-      document.documentElement.style.scrollBehavior = "auto";
-      document.documentElement.style.insetBlockStart = `-${window.scrollY}px`;
-
-      window.theme.utils.documentModifiers.add("locked-scroll");
-    } else {
-      window.theme.utils.documentModifiers.remove("locked-scroll");
-
-      window.scrollTo(
-        0,
-        -1 * parseInt(document.documentElement.style.insetBlockStart)
-      );
-      document.documentElement.style.insetBlockStart = null;
-      document.documentElement.style.scrollBehavior = null;
-    }
-  },
-};
-
-/**
- * Namespace for managing the scrollbar width and related functionality on document.documentElement.
- */
-window.theme.utils.documentScrollbar = (() => {
-  let widthObserver = null;
-
-  return {
-    get width() {
-      const scrollbarWidth =
-        window.innerWidth - document.documentElement.clientWidth;
-      return Math.max(scrollbarWidth, 0);
-    },
-
-    updateWidth() {
-      document.documentElement.style.setProperty(
-        "--scrollbar-width",
-        `${this.width}px`
-      );
-    },
-    observeWidth() {
-      if (!widthObserver) {
-        widthObserver = new ResizeObserver(() => {
-          this.updateWidth();
-        });
-        widthObserver.observe(document.documentElement);
-      }
-
-      return widthObserver;
-    },
-    disconnectObserver() {
-      if (widthObserver) {
-        widthObserver.disconnect();
-        widthObserver = null;
-      }
-    },
-  };
-})();
 
 // ---- Initialization ----
 
