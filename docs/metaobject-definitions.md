@@ -243,7 +243,13 @@ Standard name field — see [convention](#name-field-convention). Description: *
 - **Reserved handle:** `background` — the color-scheme system owns `--gradient-background` (each scheme's background gradient). A `gradient` entry with that handle is skipped at emit time; don't use it.
 - Linear only; a `type` (linear/radial) field can be added later if needed.
 
-**Recommended entries:** none — gradients are project-specific. Example: a `hero` entry (`angle: 135`, `color_start: primary`, `color_end: background`) yields `--gradient-hero`.
+**Recommended entries** (one starter seed; extend per-project):
+
+| Handle | Name | angle | color_start | color_end |
+|---|---|---|---|---|
+| `hero` | Hero | 135 | `primary` | `background` |
+
+Yields `--gradient-hero: linear-gradient(135deg, var(--color-primary), var(--color-background))`. The gradient re-resolves per scheme — same definition, different visual per consuming element's color scheme.
 
 ### `typeface`
 
@@ -610,12 +616,22 @@ Standard name field — see [convention](#name-field-convention). Description: *
 
 **Runtime notes:**
 
-- Currently has no consumers in this theme — the container/group block is not yet implemented.
-- Same named-selector pattern as [`button_style`](#button_style): the entry's `system.handle` is appended to a `data-modifiers` attribute as `container-style:<handle>`, which CSS rules in the container snippet target via `[data-modifiers*='container-style:<handle>']`.
-- Conventional handle suggestions: `card`, `outlined`, `elevated`, `flat`. Final set will be settled when the container block is built.
+- Consumed by the three container blocks (`group`, `columns`, `media`) via a `container_style` metaobject setting. Each entry's `system.handle` is appended to the block's `data-modifiers` as `container-style:<handle>`. CSS rules live centrally in `assets/core.css` `@layer theme`, scoped to `:where(.shopify-block--group, .shopify-block--columns, .shopify-block--media)[data-modifiers*='container-style:<handle>']` so all three consumers share the same visual treatment.
+- Same named-selector pattern as [`button_style`](#button_style). Adding a new variant means extending `core.css` with a new rule, then seeding the metaobject entry — no field changes.
 - **No additional fields needed** — the named-variant pattern bundles its visual configuration (border, radius, shadow, padding) into the CSS rule, not into field values.
 
-**Recommended entries:** none yet — defer until the container/group block defines the canonical variant set.
+**Recommended entries** (3 starter seeds; extend per-project for project-specific variants like `panel`, `bordered-dashed`, etc.):
+
+| Handle | Name |
+|---|---|
+| `card` | Card |
+| `outlined` | Outlined |
+| `elevated` | Elevated |
+
+Default CSS for each:
+- `card` — soft padding + `--radius-default` + scheme background + subtle shadow
+- `outlined` — padding + `--radius-default` + foreground-color border, no fill
+- `elevated` — padding + `--radius-default` + scheme background + stronger shadow
 
 ### `media_size`
 

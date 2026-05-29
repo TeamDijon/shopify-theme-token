@@ -112,7 +112,7 @@ None of the three ship today; they will land alongside their first consumer.
 
 | Layer | Shipped |
 |---|---|
-| Substrate | metaobjects (10 types + gradient), color schemes, `utility--*` snippets, `core.css`, JS modules (`base-component`, 4 managers, `utils`, `dom`, `core`) |
+| Substrate | metaobjects (11 types — `theme_color`, `gradient`, `typeface`, `font`, `text_style`, `content_width`, `icon`, `button_style`, `container_style`, `media_size`, `spacing`), color schemes, `utility--*` snippets, `core.css`, JS modules (`base-component`, 4 managers, `utils`, `dom`, `core`) |
 | L0 — Theme-primitive | shipped: `image`, `icon`, `video`, `skip-to-content`, `validation--*`; render side of every L1 block. earmarked specs: `star-rating`, `badge`, `price-with-compare`, `form-field`, `article-card`, `inventory-status`, `pagination`, `payment-icons-strip`, `tooltip` |
 | L1 — Theme block | `title`, `richtext`, `button`, `media`, `group`, `columns`, `separator`, `spacer`, `embed` |
 | L2 — Preset on `section.liquid` | `Section` (default empty composition) |

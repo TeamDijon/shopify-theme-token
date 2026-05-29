@@ -51,7 +51,7 @@ Module imports use `@theme/<name>` specifiers via the import map (`snippets/util
 
 ## Design system via metaobjects
 
-Reusable design decisions (colors, typography, dimensions, icons, button styles, container styles, media sizes, spacing) come from metaobjects, not hardcoded values. Ten types: `theme_color`, `text_style`, `typeface` + nested `font`, `content_width`, `icon`, `button_style`, `container_style`, `media_size`, `spacing`.
+Reusable design decisions (colors, gradients, typography, dimensions, icons, button styles, container styles, media sizes, spacing) come from metaobjects, not hardcoded values. Eleven types: `theme_color`, `gradient`, `text_style`, `typeface` + nested `font`, `content_width`, `icon`, `button_style`, `container_style`, `media_size`, `spacing`.
 
 Two docs, separated by audience:
 
