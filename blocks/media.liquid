@@ -1,7 +1,8 @@
-{% # Media block v1.2.0 %}
+{% # Media block v1.3.0 %}
 
 {% comment %}
   Changelog
+  - v1.3.0 — add `container_style` setting (metaobject ref). Emits `container-style:<handle>` modifier; centralized CSS for card/outlined/elevated variants lives in `core.css` `@layer theme`.
   - v1.2.0 — replace `@theme` blocks wildcard with an explicit whitelist for overlay content (title, richtext, button, group). Was missed in the section.liquid/group/columns whitelist refactor; media is the third container block.
   - v1.1.0 — add `image_fit` setting (`cover` default, `contain` for full-image-visible cases — logos, portraits, packshots)
   - v1.0.0 — initial
@@ -178,6 +179,13 @@
     {
       "type": "header",
       "content": "t:blocks.media.settings.appearance.content"
+    },
+    {
+      "type": "metaobject",
+      "metaobject_type": "container_style",
+      "id": "container_style",
+      "label": "t:blocks.media.settings.container_style.label",
+      "info": "t:blocks.media.settings.container_style.info"
     },
     {
       "type": "color",

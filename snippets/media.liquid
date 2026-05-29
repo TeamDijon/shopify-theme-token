@@ -1,7 +1,8 @@
-{% # Media v1.2.2 %}
+{% # Media v1.3.0 %}
 
 {% comment %}
   Changelog
+  - v1.3.0 — read `container_style` metaobject and emit `container-style:<handle>` modifier when set. Centralized variant CSS (card / outlined / elevated) lives in `core.css` `@layer theme`.
   - v1.2.2 — emit `{{ block.shopify_attributes }}` on the root for theme-editor block selection (was missing)
   - v1.2.1 — route content_width + top-margin vars through `utility--block-layout-vars`; output unchanged
   - v1.2.0 — route `media_size`/`mobile_media_size` interpretation through `utility--media-sizing` (modifier + vars modes) instead of inline branching; behavior unchanged. Centralizes the fill/ratio/height classification so `media` and `embed` can't drift.
@@ -38,6 +39,7 @@
   @param {metaobject} [content_width] - `content_width` metaobject. Caps `max-inline-size`. Ignored when `bleed` is true.
   @param {number} [gap] - Child content gap in px. Defaults to 16.
   @param {string} [overlay_color] - Tint color (with alpha) painted over the media. No overlay when blank or fully transparent.
+  @param {metaobject} [container_style] - `container_style` metaobject. Reads `.system.handle`; emits `container-style:<handle>` modifier. Centralized CSS in `core.css` handles card / outlined / elevated.
   @param {string} [color_scheme] - Optional `color_scheme` setting value. When set, emits `color-scheme:<id>` modifier so the global scheme rules from `utility--css-variables` apply.
   @param {number} [mobile_margin_block_start] - Top margin in px below the desktop breakpoint. Defaults to 0.
   @param {number} [desktop_margin_block_start] - Top margin in px at or above the desktop breakpoint. Defaults to 0.
@@ -64,6 +66,7 @@
   assign content_width = content_width | default: block.settings.content_width | default: ''
   assign gap = gap | default: block.settings.gap | default: 16
   assign overlay_color = overlay_color | default: block.settings.overlay_color | default: ''
+  assign container_style = container_style | default: block.settings.container_style | default: ''
   assign color_scheme = color_scheme | default: block.settings.color_scheme | default: ''
   assign mobile_margin_block_start = mobile_margin_block_start | default: block.settings.mobile_margin_block_start | default: 0
   assign desktop_margin_block_start = desktop_margin_block_start | default: block.settings.desktop_margin_block_start | default: 0
@@ -104,6 +107,9 @@
   endif
   if media_type == 'image' and image_fit != 'cover'
     assign modifier_list = modifier_list | append: ',image-fit:' | append: image_fit
+  endif
+  if container_style != blank
+    assign modifier_list = modifier_list | append: ',container-style:' | append: container_style.system.handle
   endif
   if color_scheme != blank
     assign modifier_list = modifier_list | append: ',color-scheme:' | append: color_scheme

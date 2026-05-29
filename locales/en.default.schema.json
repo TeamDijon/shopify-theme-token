@@ -38,7 +38,8 @@
     "fonts": {
       "mono_label": "Monospace font",
       "sans_serif_label": "Sans Serif font",
-      "serif_label": "Serif font"
+      "serif_label": "Serif font",
+      "workaround_info": "Hidden from merchants (visible_if: false). The picker's value is not used for webfont loading — Token self-hosts via the typeface/font metaobjects. These three settings exist only so text_style.font_fallback_family can append a Shopify-curated generic-family stack after the custom typeface. See design-system-metaobjects.md."
     }
   },
   "favicon": {
@@ -332,6 +333,10 @@
         },
         "gap": { "label": "Gap" },
         "appearance": { "content": "Appearance" },
+        "container_style": {
+          "label": "Container style",
+          "info": "Named variant (card / outlined / elevated). Leave blank for no styling."
+        },
         "overlay_color": {
           "label": "Overlay",
           "info": "Tint painted over the media. Transparent for none."
@@ -433,6 +438,10 @@
           "info": "Extends the group past the section gutter to the viewport edge"
         },
         "appearance": { "content": "Appearance" },
+        "container_style": {
+          "label": "Container style",
+          "info": "Named variant (card / outlined / elevated). Leave blank for no styling."
+        },
         "color_scheme": {
           "label": "Color scheme",
           "info": "Override the section's scheme for this block and its children"
@@ -502,6 +511,10 @@
           "info": "Extends the columns past the section gutter to the viewport edge"
         },
         "appearance": { "content": "Appearance" },
+        "container_style": {
+          "label": "Container style",
+          "info": "Named variant (card / outlined / elevated). Leave blank for no styling."
+        },
         "color_scheme": {
           "label": "Color scheme",
           "info": "Override the section's scheme for this block and its children"

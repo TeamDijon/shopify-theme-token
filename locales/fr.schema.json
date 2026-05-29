@@ -47,7 +47,8 @@
     "fonts": {
       "mono_label": "Police monospace",
       "sans_serif_label": "Police sans empattement",
-      "serif_label": "Police à empattement"
+      "serif_label": "Police à empattement",
+      "workaround_info": "Masqué des marchands (visible_if: false). La valeur du sélecteur n'est pas utilisée pour le chargement des polices — Token auto-héberge via les métaobjets typeface/font. Ces trois paramètres existent uniquement pour que text_style.font_fallback_family puisse ajouter une pile de famille générique fournie par Shopify après la police personnalisée. Voir design-system-metaobjects.md."
     }
   },
   "favicon": {
@@ -341,6 +342,10 @@
         },
         "gap": { "label": "Écart" },
         "appearance": { "content": "Apparence" },
+        "container_style": {
+          "label": "Style de conteneur",
+          "info": "Variante nommée (card / outlined / elevated). Laisser vide pour aucun style."
+        },
         "overlay_color": {
           "label": "Superposition",
           "info": "Teinte appliquée sur le média. Transparent pour aucune."
@@ -442,6 +447,10 @@
           "info": "Étend le groupe au-delà de la gouttière de la section jusqu'au bord du viewport"
         },
         "appearance": { "content": "Apparence" },
+        "container_style": {
+          "label": "Style de conteneur",
+          "info": "Variante nommée (card / outlined / elevated). Laisser vide pour aucun style."
+        },
         "color_scheme": {
           "label": "Palette de couleurs",
           "info": "Remplace la palette de la section pour ce bloc et ses enfants"
@@ -511,6 +520,10 @@
           "info": "Étend les colonnes au-delà de la gouttière de la section jusqu'au bord du viewport"
         },
         "appearance": { "content": "Apparence" },
+        "container_style": {
+          "label": "Style de conteneur",
+          "info": "Variante nommée (card / outlined / elevated). Laisser vide pour aucun style."
+        },
         "color_scheme": {
           "label": "Palette de couleurs",
           "info": "Remplace la palette de la section pour ce bloc et ses enfants"

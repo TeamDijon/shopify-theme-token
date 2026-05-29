@@ -1,7 +1,8 @@
-{% # Columns block v1.3.0 %}
+{% # Columns block v1.4.0 %}
 
 {% comment %}
   Changelog
+  - v1.4.0 — add `container_style` setting (metaobject ref). Emits `container-style:<handle>` modifier; centralized CSS for card/outlined/elevated variants lives in `core.css` `@layer theme`.
   - v1.3.0 — replace `@theme` blocks wildcard with an explicit whitelist of the 9 shipped L1 blocks per the block-whitelisting convention in `composition-strategy.md`
   - v1.2.0 — add `sticky_track` setting (none/first/second) to pin one column while the other scrolls; visible only on 2-track layouts; hides `vertical_alignment` when active since sticky forces start alignment
   - v1.1.0 — add `bleed` checkbox to extend the columns past the section gutter to the visible viewport width
@@ -113,6 +114,13 @@
     {
       "type": "header",
       "content": "t:blocks.columns.settings.appearance.content"
+    },
+    {
+      "type": "metaobject",
+      "metaobject_type": "container_style",
+      "id": "container_style",
+      "label": "t:blocks.columns.settings.container_style.label",
+      "info": "t:blocks.columns.settings.container_style.info"
     },
     {
       "type": "color_scheme",

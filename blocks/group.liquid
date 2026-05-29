@@ -1,7 +1,8 @@
-{% # Group block v1.2.0 %}
+{% # Group block v1.3.0 %}
 
 {% comment %}
   Changelog
+  - v1.3.0 — add `container_style` setting (metaobject ref). Emits `container-style:<handle>` modifier; centralized CSS for card/outlined/elevated variants lives in `core.css` `@layer theme`.
   - v1.2.0 — replace `@theme` blocks wildcard with an explicit whitelist of the 9 shipped L1 blocks per the block-whitelisting convention in `composition-strategy.md`
   - v1.1.0 — add `bleed` checkbox to extend the group past the section gutter to the visible viewport width
   - v1.0.1 — `horizontal_alignment.info` clarifies that "Space between" only applies in row direction
@@ -108,6 +109,13 @@
     {
       "type": "header",
       "content": "t:blocks.group.settings.appearance.content"
+    },
+    {
+      "type": "metaobject",
+      "metaobject_type": "container_style",
+      "id": "container_style",
+      "label": "t:blocks.group.settings.container_style.label",
+      "info": "t:blocks.group.settings.container_style.info"
     },
     {
       "type": "color_scheme",

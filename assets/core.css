@@ -22,6 +22,13 @@
   /* Focus ring (color is scheme-driven via --color-focus-ring) */
   --focus-ring-width: 0.125rem;
   --focus-ring-offset: 0.125rem;
+
+  /* Border-radius scale — consumed by button_style / container_style variant CSS and any per-project surface that wants brand-roundness. Per-project overrides via custom property cascade. */
+  --radius-none: 0;
+  --radius-small: 0.25rem;
+  --radius-default: 0.5rem;
+  --radius-large: 1rem;
+  --radius-pill: 9999px;
 }
 
 /* Cross-document view transitions — progressive enhancement (Chromium, Safari 18.2+; ignored elsewhere) */
@@ -363,6 +370,27 @@
     @media (width >= 48rem) {
       margin-block-start: var(--desktop-margin-block-start, var(--block-rhythm-desktop, 0rem));
     }
+  }
+
+  /* Container style variants — applied to any container block (group, columns, media) carrying data-modifiers="container-style:<handle>". Centralized here so the three consumers share the same visual treatment; per-project CSS can extend or override. */
+  :where(.shopify-block--group, .shopify-block--columns, .shopify-block--media)[data-modifiers*='container-style:card'] {
+    padding: 1.5rem;
+    border-radius: var(--radius-default);
+    background-color: var(--color-background);
+    box-shadow: 0 0.0625rem 0.1875rem rgba(0, 0, 0, 0.08);
+  }
+
+  :where(.shopify-block--group, .shopify-block--columns, .shopify-block--media)[data-modifiers*='container-style:outlined'] {
+    padding: 1.5rem;
+    border-radius: var(--radius-default);
+    border: 0.0625rem solid var(--color-foreground);
+  }
+
+  :where(.shopify-block--group, .shopify-block--columns, .shopify-block--media)[data-modifiers*='container-style:elevated'] {
+    padding: 1.5rem;
+    border-radius: var(--radius-default);
+    background-color: var(--color-background);
+    box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.1);
   }
 }
 

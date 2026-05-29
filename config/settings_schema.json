@@ -214,6 +214,7 @@
         "type": "font_picker",
         "id": "mono_font",
         "label": "t:typography.fonts.mono_label",
+        "info": "t:typography.fonts.workaround_info",
         "default": "mono",
         "visible_if": "{{ false }}"
       },
@@ -221,6 +222,7 @@
         "type": "font_picker",
         "id": "sans_serif_font",
         "label": "t:typography.fonts.sans_serif_label",
+        "info": "t:typography.fonts.workaround_info",
         "default": "sans-serif",
         "visible_if": "{{ false }}"
       },
@@ -228,6 +230,7 @@
         "type": "font_picker",
         "id": "serif_font",
         "label": "t:typography.fonts.serif_label",
+        "info": "t:typography.fonts.workaround_info",
         "default": "serif",
         "visible_if": "{{ false }}"
       }

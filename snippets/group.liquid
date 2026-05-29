@@ -1,7 +1,8 @@
-{% # Group v1.1.2 %}
+{% # Group v1.2.0 %}
 
 {% comment %}
   Changelog
+  - v1.2.0 — read `container_style` metaobject and emit `container-style:<handle>` modifier when set. Centralized variant CSS (card / outlined / elevated) lives in `core.css` `@layer theme`.
   - v1.1.2 — emit `{{ block.shopify_attributes }}` on the root for theme-editor block selection (was missing)
   - v1.1.1 — route content_width + top-margin vars through `utility--block-layout-vars`; output unchanged
   - v1.1.0 — add `bleed` param emitted as `,bleed` modifier; CSS escapes the section gutter to the visible viewport width (same math as media's bleed)
@@ -25,6 +26,7 @@
   @param {metaobject} [content_width] - `content_width` metaobject. Caps `max-inline-size`. Full width when blank. Ignored when `bleed` is true.
   @param {number} [gap] - Gap between children in px. Defaults to 16.
   @param {boolean} [bleed] - Extends the group past the section gutter to the visible viewport width (`margin-inline: calc(50% - 50dvw)`). Same constraint as `media`'s bleed: assumes a centered ancestor chain. Defaults to false.
+  @param {metaobject} [container_style] - `container_style` metaobject. Reads `.system.handle`; emits `container-style:<handle>` modifier. Centralized CSS in `core.css` handles card / outlined / elevated.
   @param {string} [color_scheme] - Optional `color_scheme` setting value. When set, emits `color-scheme:<id>` modifier so the global scheme rules from `utility--css-variables` apply.
   @param {number} [mobile_margin_block_start] - Top margin in px below the desktop breakpoint. Defaults to 0.
   @param {number} [desktop_margin_block_start] - Top margin in px at or above the desktop breakpoint. Defaults to 0.
@@ -43,6 +45,7 @@
   assign content_width = content_width | default: block.settings.content_width | default: ''
   assign gap = gap | default: block.settings.gap | default: 16
   assign bleed = bleed | default: block.settings.bleed, allow_false: true | default: false, allow_false: true
+  assign container_style = container_style | default: block.settings.container_style | default: ''
   assign color_scheme = color_scheme | default: block.settings.color_scheme | default: ''
   assign mobile_margin_block_start = mobile_margin_block_start | default: block.settings.mobile_margin_block_start | default: 0
   assign desktop_margin_block_start = desktop_margin_block_start | default: block.settings.desktop_margin_block_start | default: 0
@@ -53,6 +56,9 @@
   endif
   if bleed
     assign modifier_list = modifier_list | append: ',bleed'
+  endif
+  if container_style != blank
+    assign modifier_list = modifier_list | append: ',container-style:' | append: container_style.system.handle
   endif
   if color_scheme != blank
     assign modifier_list = modifier_list | append: ',color-scheme:' | append: color_scheme
