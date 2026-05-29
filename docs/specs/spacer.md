@@ -42,14 +42,9 @@ Scope constraint — vertical-rhythm at the section level. Inside a row-directio
   position: relative;
   inline-size: 100%;
   block-size: var(--spacer-block-size, 0rem);
-  margin-block-start: var(--mobile-margin-block-start, var(--block-rhythm-mobile, 0rem));
   margin-block-end: 0;
   margin-inline: auto;
   background-color: var(--background-color, transparent);
-
-  @media (width >= 48rem) {
-    margin-block-start: var(--desktop-margin-block-start, var(--block-rhythm-desktop, 0rem));
-  }
 
   &[data-modifiers*='breakpoint'] {
     block-size: var(--mobile-spacer-block-size, 0rem);
@@ -66,6 +61,8 @@ Scope constraint — vertical-rhythm at the section level. Inside a row-directio
   }
 }
 ```
+
+`margin-block-start` chain (per-instance override → section rhythm → 0) is applied via `assets/core.css` `@layer theme` `.shopify-block:not(:first-child)`.
 
 ## CSS custom properties (exposed)
 

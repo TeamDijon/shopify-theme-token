@@ -11,11 +11,11 @@ Companion doc: `validation.md` describes the current implementation state (the 2
 | 1 | Substrate | Design-system tokens, utility snippets, utility CSS, utility JS — each in its own sub-shape | `validation--substrate--*`, `validation--utility-snippet--*`, `validation--utility-css--*`, `validation--utility-js--*` |
 | 2 | Theme-primitive (L0 + L1) | The primitive's snippet API and, when block-backed, the block API. One page per primitive name | `validation--primitive--*` |
 | 3 | Preset (L2) | Preset configuration robustness and cross-block cascade integration on `section.liquid` | `validation--preset--*` |
-| 4 | Specialized section (L3 + L4) | Section configuration robustness, inline-block / metaobject data states, empty- and partial-data fixtures | `validation--section--*` |
+| 4 | Specialized section (Beyond L2) | Section configuration robustness, inline-block / metaobject / dynamic-data states, empty- and partial-data fixtures | `validation--section--*` |
 
-The `validation` filename pattern stays per `validation.md`. Layer 3 and Layer 4 share Tier 4; the spec records which framing applies.
+The `validation` filename pattern stays per `validation.md`. Specialized sections may ship via either implementation route (private theme block host, or bespoke section file); the spec records the route.
 
-**Preset vs section terminology.** Tier 3 validates *preset entries* of `section.liquid` — each preset gets its own page even though they share `section.liquid` as host. Tier 4 validates *specialized section files*; the section is the validated unit regardless of whether it ships zero presets (pinned sections like header/footer), one preset (most L4 sections expose themselves to the editor this way), or multiple presets (variations of the same section appear as fixtures within the section's single validation page, not separate pages).
+**Preset vs section terminology.** Tier 3 validates *preset entries* of `section.liquid` — each preset gets its own page even though they share `section.liquid` as host. Tier 4 validates *specialized section files*; the section is the validated unit regardless of whether it ships zero presets (pinned sections like header/footer), one preset (most specialized sections expose themselves to the editor this way), or multiple presets (variations of the same section appear as fixtures within the section's single validation page, not separate pages).
 
 ## Tier 1 — Substrate
 
@@ -84,13 +84,15 @@ A primitive with only one surface (sub-component-only or block-only) renders one
 
 The 4 current "composition" pages (`hero`, `content`, `columns-features`, `cta-banner`) are proto-presets; they slot here at retrofit time.
 
-## Tier 4 — Specialized section (L3 + L4)
+## Tier 4 — Specialized section (Beyond L2)
 
-**Validates:** the same robustness + cascade concerns as Tier 3, plus the section's own settings × inline-block (Framing A) or dynamic-data (Framing B) input states. Empty data, partial data, and malformed-entry fixtures are required.
+**Validates:** the same robustness + cascade concerns as Tier 3, plus the section's own settings × inline-block, metaobject, or dynamic-data input states. Empty data, partial data, and malformed-entry fixtures are required.
 
-**Harness:** the JSON template bakes the section's settings + inline blocks (Framing A) or fixture references (Framing B); the section renders against each fixture. Empty-state branches render the section's empty fallback.
+**Harness:** the JSON template bakes the section's settings + inline blocks (for inline-authored content) or fixture references (for dynamic-data sources); the section renders against each fixture. Empty-state branches render the section's empty fallback.
 
 **Files:** `sections/validation--section--<name>.liquid` + `templates/index.validation--section--<name>.json`.
+
+Covers both implementation routes from `composition-strategy.md` Beyond-L2: bespoke section files and sections hosting private theme blocks. The spec records which route applies.
 
 No specialized-section validation pages exist today.
 
@@ -130,7 +132,7 @@ Honest accounting:
 | 1d | Utility JS | 0 | Awaits Vitest |
 | 2 | Theme-primitive | 9 (existing `--block--` pages cover L1 only; no snippet-half group, no L0 sub-component coverage) | Add snippet-half groups; ship pages for the 9 written L0 specs |
 | 3 | Preset | 4 (current `--section--` pages are proto-presets) | Rename at retrofit; no other gaps |
-| 4 | Specialized section | 0 | Awaits Batch 4/5 |
+| 4 | Specialized section | 0 | Awaits specialized-section work (general-theme: FAQ, collection grid, featured product; per-project: cart-upsell, recently-viewed, …) |
 
 Retrofit of the 9 existing `--block--` pages and the 4 existing `--section--` pages is deferred per `BACKLOG.md`'s strategic direction. New specs authored from Batch 2 onward apply the contract directly.
 
