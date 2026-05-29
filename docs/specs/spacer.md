@@ -1,13 +1,19 @@
 # spacer
 
 **Layer**: 1
+
 **Type**: block (`blocks/spacer.liquid`) + matching snippet (`snippets/spacer.liquid`)
+
 **Status**: shipped
+
 **Implementation**:
 - `snippets/spacer.liquid` v1.1.2 (render surface)
 - `blocks/spacer.liquid` v1.0.0 (block schema + theme-editor wrapper)
+
 **Reconciled**: 2026-05-29
+
 **Depends on**: `snippets/utility--base-selector.liquid`, `snippets/utility--modifiers.liquid`, `snippets/utility--dynamic-style.liquid`, `theme_color` metaobject entries (optional, for background)
+
 **Whitelisted by**: `sections/section.liquid`, `blocks/group.liquid`, `blocks/columns.liquid`
 
 ## Purpose

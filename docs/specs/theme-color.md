@@ -1,14 +1,20 @@
 # theme_color
 
 **Layer**: substrate
+
 **Type**: metaobject (`theme_color`)
+
 **Status**: shipped (retrofit)
+
 **Implementation**:
 - `snippets/utility--css-variables.liquid` v1.9.0 (CSS variable emitter — `:root` `--color-<handle>` lines)
 - `snippets/utility--meta-theme-color.liquid` v1.1.0 (head meta tag emitter)
 - Metaobject definition itself — created per `metaobject-definitions.md` § `theme_color`
+
 **Reconciled**: 2026-05-29
+
 **Depends on**: none — substrate-root token type
+
 **Consumers**:
 - `snippets/utility--css-variables.liquid` — iterates `metaobjects.theme_color.values`, emits `--color-<handle>` in `:root`
 - `snippets/utility--meta-theme-color.liquid` — re-extracts `hex_code.value` for the `<meta name="theme-color">` head tag

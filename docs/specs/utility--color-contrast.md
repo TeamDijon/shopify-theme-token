@@ -1,13 +1,18 @@
 # utility--color-contrast
 
 **Layer**: substrate
-**Type**: utility-snippet (`snippets/utility--color-contrast.liquid`)
-**Status**: shipped
-**Implementation**: `snippets/utility--color-contrast.liquid` v1.0.0 (render surface)
-**Reconciled**: 2026-05-29
-**Depends on**: Liquid built-in `color_contrast` filter
-**Consumers**: `sections/validation--substrate--theme-color.liquid` — picks the legible foreground for the "on-self" swatch per `theme_color` entry
 
+**Type**: utility-snippet (`snippets/utility--color-contrast.liquid`)
+
+**Status**: shipped
+
+**Implementation**: `snippets/utility--color-contrast.liquid` v1.0.0 (render surface)
+
+**Reconciled**: 2026-05-29
+
+**Depends on**: Liquid built-in `color_contrast` filter
+
+**Consumers**: `sections/validation--substrate--theme-color.liquid` — picks the legible foreground for the "on-self" swatch per `theme_color` entry
 
 No production consumers yet; the only user today is the theme_color validation page. Future foreground-on-arbitrary-background contexts (sections sourcing a background hex from a `theme_color` setting and wanting auto-legible text) are the next likely consumers.
 

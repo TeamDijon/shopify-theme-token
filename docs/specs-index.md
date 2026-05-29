@@ -26,6 +26,7 @@ Originally sourced from the EXPLORATION-2 inventory pass (May 2026); retrofits a
 
 - [rating](./specs/rating.md) — metafield-first rating display with override-checkbox safeguard; consumes `star-rating` L0; emits AggregateRating JSON-LD *(planned)*
 - [spacer](./specs/spacer.md) — empty vertical-spacer block with fixed or breakpoint-paired sizing, optional `theme_color` background *(shipped — retrofit)*
+- [button](./specs/button.md) — call-to-action primitive rendering `<a>` or `<button type="button">` depending on `link`; styled via the 3×3 `button_style` family/variant matrix; optional icon, content_width, top spacing *(shipped — retrofit)*
 
 ## Layer 2 — Presets
 

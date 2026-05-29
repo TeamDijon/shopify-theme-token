@@ -1,11 +1,17 @@
 # modifiers-manager
 
 **Layer**: substrate
+
 **Type**: utility-js (`assets/modifiers-manager.js`)
+
 **Status**: shipped
+
 **Implementation**: `assets/modifiers-manager.js` v2.0.0 (class)
+
 **Reconciled**: 2026-05-29
+
 **Depends on**: none — leaf module, no `@theme/*` imports
+
 **Consumers**:
 - `assets/base-component.js` v1.0.0 — every theme-* custom element exposes a lazy `.modifiers` getter that instantiates one manager per element; `disconnectedCallback` calls `.clear()`
 - `assets/document-utils.js` v1.0.0 — exports `documentModifiers`, a module-level singleton bound to `document.documentElement` for html-level state (locked-scroll, theme switches, locale flags)

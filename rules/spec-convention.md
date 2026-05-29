@@ -19,14 +19,23 @@ A spec is the contract. It describes the element's API, output, behavior, valida
 
 ```
 **Layer**: <0 | 1 | 2 | 3 | 4 | substrate>
+
 **Type**: <snippet | block | preset on `section.liquid` | specialized section | metaobject | utility-css | utility-js> (`<filepath>` for shipped)
+
 **Status**: <spec | shipped>
+
 **Implementation**: <pin or `pending`>
+
 **Reconciled**: <YYYY-MM-DD; omit when `Implementation: pending`>
+
 **Depends on**: <files, primitives, metaobjects, utilities the element consumes>
+
 **Consumers**: <where the element gets used>
+
 **Whitelisted by** (L1 blocks only): <section + container block files whose schemas include this block type>
 ```
+
+Each header field is its own paragraph — a blank line separates every field. Without the blank lines, CommonMark renderers attach the bulleted Implementation/Consumers sub-lists to adjacent fields visually, breaking the header block's flow. The blank-line rule applies regardless of whether the field is inline or bulleted.
 
 ## Status states
 
