@@ -1,7 +1,8 @@
-{% # Richtext v1.2.0 %}
+{% # Richtext v1.2.1 %}
 
 {% comment %}
   Changelog
+  - v1.2.1 — internal: scheme-role var refs migrate to `--color-role-*` namespace (no API change)
   - v1.2.0 — drop `narrow` param. Same concern (max-width cap) is now expressed by `content_width` alone — merchants pick a `text-narrow` `content_width` metaobject entry (~65ch) when they want a narrow column. The `prose:narrow` modifier and the corresponding `core.css` rule are gone.
   - v1.1.2 — emit `{{ block.shopify_attributes }}` on the root for theme-editor block selection (was missing)
   - v1.1.1 — route content_width + top-margin vars through `utility--block-layout-vars` (content_width blanked in narrow mode to preserve suppression); output unchanged
@@ -19,7 +20,7 @@
   @param {string} [content] - HTML rich-text body. Skips render when blank.
   @param {string} [text_align] - Inline text alignment. One of `'start'` (default), `'center'`, `'end'`.
   @param {metaobject} [content_width] - `content_width` metaobject. Reads `.width.value` (px). Full width when blank. Capped width self-centers via `margin-inline: auto`.
-  @param {metaobject} [text_color] - `theme_color` metaobject. Reads `.system.handle` to consume `var(--color-<handle>)`. Falls back to `--color-foreground` when blank.
+  @param {metaobject} [text_color] - `theme_color` metaobject. Reads `.system.handle` to consume `var(--color-<handle>)`. Falls back to `--color-role-foreground` when blank.
   @param {number} [mobile_margin_block_start] - Top margin in px below the desktop breakpoint. Defaults to 0.
   @param {number} [desktop_margin_block_start] - Top margin in px at or above the desktop breakpoint. Defaults to 0.
 
@@ -72,7 +73,7 @@
     .shopify-block--richtext {
       max-inline-size: var(--content-width, 100%);
       margin-inline: auto;
-      color: var(--text-color, var(--color-foreground));
+      color: var(--text-color, var(--color-role-foreground));
       text-align: var(--text-align, start);
     }
   }

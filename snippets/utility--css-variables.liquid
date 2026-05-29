@@ -1,16 +1,17 @@
-{% # CSS Variables v1.8.1 %}
+{% # CSS Variables v1.9.0 %}
 
 {% comment %}
   Changelog
+  - v1.9.0 — rename scheme-role variables from `--color-<role>` → `--color-role-<role>` (background, foreground, foreground-heading, foreground-muted, primary, border, shadow, primary-button-*, secondary-button-*, input-*, placeholder, disabled-*, focus-ring, backdrop + their `-rgb` companions). Disjoint namespace from `theme_color`'s `--color-<handle>`: a theme_color entry handled `background` no longer collides with the scheme role. Gradient stop interpolation also renamed (`var(--color-role-<role>)`). Touches every consumer; see `.context/docs/specs/theme-color.md` for the contract.
   - v1.8.1 — drop the empty-output guard. `::selection`, the per-scheme rules, and the gutter `:root` always emit, so `final_content` is never blank — the guard never fires its early-skip path. Direct `{{ css_variables }}` instead.
   - v1.8.0 — emit `--gradient-<handle>` from the `gradient` metaobject (linear, scheme-adaptive: stops reference per-scheme `--color-<role>` vars so one definition re-resolves per scheme). Skips the reserved `background` handle and incomplete entries.
-  - v1.7.0 — emit `--color-foreground-heading-rgb` for translucent heading treatments; document that button/input sub-role colors are opaque-only (add `-rgb` on demand)
+  - v1.7.0 — emit `--color-role-foreground-heading-rgb` for translucent heading treatments; document that button/input sub-role colors are opaque-only (add `-rgb` on demand)
   - v1.6.0 — drop the hardcoded `--color-error/success/warning` block left over from `shopify-theme-experience`. Semantic colors now flow through the normal `theme_color` metaobject loop — seed `success`, `warning`, `error`, `info` entries per `.context/docs/metaobject-definitions.md`. The hardcoded values were emitted but never consumed; now consumers that reference `var(--color-warning)` etc. resolve via the standard pipeline like every other color token.
   - v1.5.1 — drop the `.shopify-section:has([data-modifiers*="color-scheme:..."])` selector from the per-scheme rule. The `:has()` matched any descendant, so a nested override block (e.g. a media block with `color-scheme:scheme-3` inside a section using `scheme-2`) silently re-matched the outer `.shopify-section` against scheme-3, clobbering the section's tokens globally. Color tokens now live only on the modifier-bearing element (`theme-section` + override blocks); descendants inherit normally. Also aligns with `section-convention.md`'s "no typography, background, or transitions on `.shopify-section`" rule.
-  - v1.5.0 — drop the `--font-heading-color` alias; consumers (currently only `core.css`'s heading-color rule) read `--color-foreground-heading` directly. The alias was a misnomer (it carried a color, not a font property) and split the heading color into two names. Removed the assignment line; coordinate with `core.css` to point the heading rule at the source token.
+  - v1.5.0 — drop the `--font-heading-color` alias; consumers (currently only `core.css`'s heading-color rule) read `--color-role-foreground-heading` directly. The alias was a misnomer (it carried a color, not a font property) and split the heading color into two names. Removed the assignment line; coordinate with `core.css` to point the heading rule at the source token.
   - v1.4.1 — rename `--font-heading--color` (double dash) to `--font-heading-color` for naming consistency; coordinate with `core.css` rename
   - v1.4.0 — text_style cleanups: hoist `default_font_family` out of the loop with a `system-ui` terminal fallback (fixes invalid leading comma in `font-family` when `base_text_style` is unset); drop dead `font_fallback_family` assign; switch `line_height` storage from "% × 100" to a direct decimal; `base_text_style != null` → `!= blank`
-  - v1.3.0 — rename theme-color iteration output from `--<handle>-color` to `--color-<handle>` for consistency with scheme variables (`--color-background`, `--color-primary`, etc.)
+  - v1.3.0 — rename theme-color iteration output from `--<handle>-color` to `--color-<handle>` for consistency with scheme variables (`--color-role-background`, `--color-role-primary`, etc.)
   - v1.2.1 — inline the media queries inside :root via native CSS nesting; no behavior change, cleaner output
   - v1.2.0 — replace clamp-based responsive snap with explicit `@media (width >= 48rem)` overrides for font-size and gutter; clearer intent, no stealth ramp math
   - v1.1.0 — drop `experience-section` :has selector in favor of `.shopify-section`; use `base_text_style` as the default-font-family fallback (was `settings.text_style`, which does not exist in the settings schema)
@@ -41,13 +42,13 @@
       {% if gradient.system.handle == 'background' or gradient.color_start.value == blank or gradient.color_end.value == blank %}
         {% continue %}
       {% endif %}
-      --gradient-{{ gradient.system.handle }}: linear-gradient({{ gradient.angle.value | default: 135 }}deg, var(--color-{{ gradient.color_start.value }}), var(--color-{{ gradient.color_end.value }}));
+      --gradient-{{ gradient.system.handle }}: linear-gradient({{ gradient.angle.value | default: 135 }}deg, var(--color-role-{{ gradient.color_start.value }}), var(--color-role-{{ gradient.color_end.value }}));
     {% endfor %}
   }
 
   ::selection {
-    background-color: rgba(var(--color-primary-rgb), 0.3);
-    color: var(--color-foreground);
+    background-color: rgba(var(--color-role-primary-rgb), 0.3);
+    color: var(--color-role-foreground);
   }
 
   {% # Color schemes %}
@@ -69,59 +70,59 @@
       :root,
     {% endif %}
     [data-modifiers*="color-scheme:{{ scheme.id }}"] {
-      --color-background: {{ scheme.settings.background }};
-      --color-background-rgb: {{ scheme.settings.background.red }}, {{ scheme.settings.background.green }}, {{ scheme.settings.background.blue }};
+      --color-role-background: {{ scheme.settings.background }};
+      --color-role-background-rgb: {{ scheme.settings.background.red }}, {{ scheme.settings.background.green }}, {{ scheme.settings.background.blue }};
       --gradient-background: {% if scheme.settings.background_gradient != blank %}{{ scheme.settings.background_gradient }}{% else %}{{ scheme.settings.background }}{% endif %};
 
-      --color-foreground: {{ scheme.settings.foreground }};
-      --color-foreground-rgb: {{ scheme.settings.foreground.red }}, {{ scheme.settings.foreground.green }}, {{ scheme.settings.foreground.blue }};
+      --color-role-foreground: {{ scheme.settings.foreground }};
+      --color-role-foreground-rgb: {{ scheme.settings.foreground.red }}, {{ scheme.settings.foreground.green }}, {{ scheme.settings.foreground.blue }};
 
-      --color-foreground-heading: {{ scheme.settings.foreground_heading }};
-      --color-foreground-heading-rgb: {{ scheme.settings.foreground_heading.red }}, {{ scheme.settings.foreground_heading.green }}, {{ scheme.settings.foreground_heading.blue }};
-      --color-primary: {{ scheme.settings.primary }};
-      --color-primary-rgb: {{ scheme.settings.primary.red }}, {{ scheme.settings.primary.green }}, {{ scheme.settings.primary.blue }};
-      --color-border: {{ scheme.settings.border }};
-      --color-border-rgb: {{ scheme.settings.border.red }}, {{ scheme.settings.border.green }}, {{ scheme.settings.border.blue }};
-      --color-shadow: {{ scheme.settings.shadow }};
-      --color-shadow-rgb: {{ scheme.settings.shadow.red }}, {{ scheme.settings.shadow.green }}, {{ scheme.settings.shadow.blue }};
+      --color-role-foreground-heading: {{ scheme.settings.foreground_heading }};
+      --color-role-foreground-heading-rgb: {{ scheme.settings.foreground_heading.red }}, {{ scheme.settings.foreground_heading.green }}, {{ scheme.settings.foreground_heading.blue }};
+      --color-role-primary: {{ scheme.settings.primary }};
+      --color-role-primary-rgb: {{ scheme.settings.primary.red }}, {{ scheme.settings.primary.green }}, {{ scheme.settings.primary.blue }};
+      --color-role-border: {{ scheme.settings.border }};
+      --color-role-border-rgb: {{ scheme.settings.border.red }}, {{ scheme.settings.border.green }}, {{ scheme.settings.border.blue }};
+      --color-role-shadow: {{ scheme.settings.shadow }};
+      --color-role-shadow-rgb: {{ scheme.settings.shadow.red }}, {{ scheme.settings.shadow.green }}, {{ scheme.settings.shadow.blue }};
 
       {% comment %} Button + input sub-role colors are opaque-only; add a -rgb companion here on demand for translucent treatments. {% endcomment %}
-      --color-primary-button-bg: {{ scheme.settings.primary_button_background }};
-      --color-primary-button-text: {{ scheme.settings.primary_button_text }};
-      --color-primary-button-border: {{ scheme.settings.primary_button_border }};
-      --color-secondary-button-bg: {{ scheme.settings.secondary_button_background }};
-      --color-secondary-button-text: {{ scheme.settings.secondary_button_text }};
-      --color-secondary-button-border: {{ scheme.settings.secondary_button_border }};
+      --color-role-primary-button-bg: {{ scheme.settings.primary_button_background }};
+      --color-role-primary-button-text: {{ scheme.settings.primary_button_text }};
+      --color-role-primary-button-border: {{ scheme.settings.primary_button_border }};
+      --color-role-secondary-button-bg: {{ scheme.settings.secondary_button_background }};
+      --color-role-secondary-button-text: {{ scheme.settings.secondary_button_text }};
+      --color-role-secondary-button-border: {{ scheme.settings.secondary_button_border }};
 
-      --color-input-bg: {{ scheme.settings.input_background }};
-      --color-input-text: {{ scheme.settings.input_text }};
-      --color-input-text-rgb: {{ scheme.settings.input_text.red }}, {{ scheme.settings.input_text.green }}, {{ scheme.settings.input_text.blue }};
-      --color-input-border: {{ scheme.settings.input_border }};
+      --color-role-input-bg: {{ scheme.settings.input_background }};
+      --color-role-input-text: {{ scheme.settings.input_text }};
+      --color-role-input-text-rgb: {{ scheme.settings.input_text.red }}, {{ scheme.settings.input_text.green }}, {{ scheme.settings.input_text.blue }};
+      --color-role-input-border: {{ scheme.settings.input_border }};
 
       --opacity-subtle: {{ opacity_subtle }};
       --opacity-muted: {{ opacity_muted }};
       --opacity-border-soft: {{ opacity_border_soft }};
 
-      --color-primary-button-bg-hover: color-mix(in oklab, var(--color-primary-button-bg), black 12%);
-      --color-primary-button-text-hover: var(--color-primary-button-text);
-      --color-primary-button-border-hover: color-mix(in oklab, var(--color-primary-button-border), black 12%);
-      --color-secondary-button-bg-hover: color-mix(in oklab, var(--color-secondary-button-bg), var(--color-foreground) 8%);
-      --color-secondary-button-text-hover: var(--color-secondary-button-text);
-      --color-secondary-button-border-hover: color-mix(in oklab, var(--color-secondary-button-border), black 12%);
-      --color-input-bg-hover: color-mix(in oklab, var(--color-input-bg), var(--color-foreground) 4%);
-      --color-input-border-hover: color-mix(in oklab, var(--color-input-border), var(--color-foreground) 20%);
+      --color-role-primary-button-bg-hover: color-mix(in oklab, var(--color-role-primary-button-bg), black 12%);
+      --color-role-primary-button-text-hover: var(--color-role-primary-button-text);
+      --color-role-primary-button-border-hover: color-mix(in oklab, var(--color-role-primary-button-border), black 12%);
+      --color-role-secondary-button-bg-hover: color-mix(in oklab, var(--color-role-secondary-button-bg), var(--color-role-foreground) 8%);
+      --color-role-secondary-button-text-hover: var(--color-role-secondary-button-text);
+      --color-role-secondary-button-border-hover: color-mix(in oklab, var(--color-role-secondary-button-border), black 12%);
+      --color-role-input-bg-hover: color-mix(in oklab, var(--color-role-input-bg), var(--color-role-foreground) 4%);
+      --color-role-input-border-hover: color-mix(in oklab, var(--color-role-input-border), var(--color-role-foreground) 20%);
 
-      --color-foreground-muted: rgba(var(--color-foreground-rgb), var(--opacity-muted));
-      --color-placeholder: rgba(var(--color-input-text-rgb), 0.5);
-      --color-disabled-bg: rgba(var(--color-foreground-rgb), var(--opacity-subtle));
-      --color-disabled-text: rgba(var(--color-foreground-rgb), 0.4);
-      --color-disabled-border: rgba(var(--color-foreground-rgb), var(--opacity-border-soft));
-      --color-focus-ring: var(--color-primary);
-      --color-backdrop: rgba(var(--color-shadow-rgb), 0.5);
+      --color-role-foreground-muted: rgba(var(--color-role-foreground-rgb), var(--opacity-muted));
+      --color-role-placeholder: rgba(var(--color-role-input-text-rgb), 0.5);
+      --color-role-disabled-bg: rgba(var(--color-role-foreground-rgb), var(--opacity-subtle));
+      --color-role-disabled-text: rgba(var(--color-role-foreground-rgb), 0.4);
+      --color-role-disabled-border: rgba(var(--color-role-foreground-rgb), var(--opacity-border-soft));
+      --color-role-focus-ring: var(--color-role-primary);
+      --color-role-backdrop: rgba(var(--color-role-shadow-rgb), 0.5);
 
-      --shadow-sm: 0 1px 2px rgba(var(--color-shadow-rgb), 0.06);
-      --shadow-md: 0 4px 12px rgba(var(--color-shadow-rgb), 0.10);
-      --shadow-lg: 0 8px 24px rgba(var(--color-shadow-rgb), 0.14);
+      --shadow-sm: 0 1px 2px rgba(var(--color-role-shadow-rgb), 0.06);
+      --shadow-md: 0 4px 12px rgba(var(--color-role-shadow-rgb), 0.10);
+      --shadow-lg: 0 8px 24px rgba(var(--color-role-shadow-rgb), 0.14);
     }
   {% endfor %}
 

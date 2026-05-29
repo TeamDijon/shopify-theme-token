@@ -1,7 +1,8 @@
-{% # Separator v1.0.4 %}
+{% # Separator v1.0.5 %}
 
 {% comment %}
   Changelog
+  - v1.0.5 — internal: scheme-role var refs migrate to `--color-role-*` namespace (no API change)
   - v1.0.4 — emit `{{ block.shopify_attributes }}` on the root for theme-editor block selection (was missing)
   - v1.0.3 — route content_width + top-margin vars through `utility--block-layout-vars`; output unchanged
   - v1.0.2 — add `inline-size: 100%` so the wrapper doesn't shrink-to-fit to 0 inside flex parents (the inner `<hr>` has no intrinsic width, and `margin-inline: auto` + `max-inline-size` alone left no resolved size on a flex item)
@@ -16,7 +17,7 @@
   @param {block} [block] - Block object containing the settings
   @param {string} [block_id] - Unique block ID for static renders
   @param {metaobject} [content_width] - `content_width` metaobject. Reads `.width.value` (px). Full width if blank.
-  @param {metaobject} [line_color] - `theme_color` metaobject. Reads `.system.handle` to consume `var(--color-<handle>)`. Falls back to `--color-border` if blank.
+  @param {metaobject} [line_color] - `theme_color` metaobject. Reads `.system.handle` to consume `var(--color-<handle>)`. Falls back to `--color-role-border` if blank.
   @param {number} [mobile_margin_block_start] - Top margin in px below the desktop breakpoint. Defaults to 0.
   @param {number} [desktop_margin_block_start] - Top margin in px at or above the desktop breakpoint. Defaults to 0.
 
@@ -58,7 +59,7 @@
       & hr {
         margin: 0;
         border: none;
-        border-block-start: 0.0625rem solid var(--line-color, var(--color-border));
+        border-block-start: 0.0625rem solid var(--line-color, var(--color-role-border));
       }
     }
   }
