@@ -8,7 +8,7 @@
 
 ## Purpose
 
-One paragraph: what this element is, when to reach for it, what distinguishes it from adjacent options.
+One paragraph: what this element is, when to reach for it, what distinguishes it from sibling primitives at the same layer. The spec describes the element's contract at the layer triage has assigned — layer placement and rationale live upstream.
 
 ## API
 
@@ -49,9 +49,9 @@ Component-rooted per `css-standards.md`. Sketch the structural rules; full imple
 - A11y notes (semantic element choice, keyboard, focus, SR-only text)
 - Edge-case handling (blank inputs, malformed data, missing dependencies)
 
-## Locale keys to add
+## Locale keys
 
-- `namespace.key` — `"value"` (purpose; locale keys live in `en.default.json` + `fr.json` per `locale-conventions.md`)
+For new elements, list keys to add: `namespace.key` — `"value"` (purpose; locale keys live in `en.default.json` + `fr.json` per `locale-conventions.md`). For retrofits, list the keys the element already uses as the contract.
 
 ## Validation
 
@@ -67,7 +67,7 @@ Per `validation-contract.md`:
 
 ## Implementation-time decisions
 
-Open questions deferred to the build pass — small choices that don't gate spec sign-off but need a call before the file ships.
+Open questions deferred to the build pass — small choices that don't gate spec sign-off but need a call before the file ships. Omit the section when none apply (typical for retrofit specs of shipped elements).
 
 ## Out of scope
 

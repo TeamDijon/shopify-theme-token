@@ -2,15 +2,15 @@
 
 **Layer**: 1
 **Type**: block (`blocks/spacer.liquid`) + matching snippet (`snippets/spacer.liquid`)
-**Status**: shipped (retrofit spec; snippet v1.1.2, block v1.0.0)
+**Status**: shipped
 **Depends on**: `snippets/utility--base-selector.liquid`, `snippets/utility--modifiers.liquid`, `snippets/utility--dynamic-style.liquid`, `theme_color` metaobject entries (optional, for background)
 **Consumers**: any section accepting `@theme` children
 
 ## Purpose
 
-Empty vertical-spacer block with configurable block-size (height). One fixed size, or a mobile/desktop pair that switches at a selected breakpoint. Optional background color via `theme_color`. Used by merchants to insert deliberate gaps in a section's block flow when `block_rhythm` defaults don't match the intended composition.
+Vertical-space block with configurable block-size (height). Two modes — one fixed size, or a mobile/desktop pair that switches at a selected breakpoint. An optional `theme_color` background turns the spacer into a colored band, serving as a section divider between same-scheme sections, a brand-color stripe, or a framed accent above or below a hero.
 
-Scope constraint — vertical-rhythm at the section level. Placing the spacer inside a row-direction `group` makes its `inline-size: 100%` claim the full row and squish siblings. Inside column-direction containers (the default for `group`/`columns`), it works fine.
+Scope constraint — vertical-rhythm at the section level. Inside a row-direction `group`, the spacer's `inline-size: 100%` claims the full row and squishes siblings. Inside column-direction containers (the default for `group` and `columns`), it works as intended.
 
 ## API
 
@@ -86,9 +86,7 @@ All emitted per-instance via `utility--dynamic-style`, only when the source sett
 - **A11y**: block is semantically empty (`<div>` with no children); no label needed — invisible to assistive technology by virtue of having no content
 - **Reduced motion / forced colors**: no animations, no interactive states — nothing to honor
 
-## Locale keys to add
-
-Existing keys (shipped):
+## Locale keys
 
 - `blocks.spacer.name`
 - `blocks.spacer.settings.spacer.content`
@@ -99,14 +97,12 @@ Existing keys (shipped):
 - `blocks.spacer.settings.background_color.{label,info}`
 - `blocks.spacer.presets.spacer.{name,category}`
 
-No new keys for retrofit.
-
 ## Validation
 
 Per `validation-contract.md`:
 
 - **Tier**: primitive (Tier 2)
-- **Page**: `sections/validation--primitive--spacer.liquid` + `templates/index.validation--primitive--spacer.json` *(currently shipped as `validation--block--spacer.liquid`; rename pending retrofit)*
+- **Page**: `sections/validation--primitive--spacer.liquid` + `templates/index.validation--primitive--spacer.json`
 - **API surface** (block-backed only):
   - `breakpoint=none` × spacer_block_size ∈ {0, 24, 100, 200}
   - `breakpoint=40` × mobile=16 × desktop=64
@@ -121,10 +117,6 @@ Per `validation-contract.md`:
 - **Visual showcase**: matrix of cells per breakpoint mode × size, with and without background. Reader confirms vertical gaps render at the expected heights and switch at the expected viewports.
 - **Assertions**: prose — each cell's computed `block-size` matches setting × viewport, correct background, modifier attribute present/absent per mode. Selectors + expectations once Playwright lands.
 - **Unit scope**: none (no JS)
-
-## Implementation-time decisions
-
-None outstanding — block is shipped.
 
 ## Out of scope
 
