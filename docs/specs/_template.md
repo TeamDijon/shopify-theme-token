@@ -5,6 +5,7 @@
 **Status**: <spec | shipped>
 **Depends on**: <files, primitives, metaobjects, utilities this element consumes>
 **Consumers**: <where this element gets used>
+**Whitelisted by** (L1 blocks only): <sections and container blocks whose schemas include this block type, e.g. `section.liquid`, `group`, `columns`. The implementation step updates each of these schemas; this line is the checklist.>
 
 ## Purpose
 

@@ -13,7 +13,7 @@ Before authoring a new block, walk the decision flow in `.context/docs/compositi
 
 1. **Version header** — `{% # <Name> block vX.Y.Z %}`
 2. **Changelog block** — `{% comment %}` with schema/setting changes (see "Changelog" below). Omit on v1.0.0 only; required from any subsequent version.
-3. **Render call** — `{% render '<same-name>', section: section, block: block %}` where `<same-name>` is the matching file in `snippets/`. Blocks accepting `@theme` children precede this with `{% capture contents %}{% content_for 'blocks' %}{% endcapture %}` and pass `contents: contents` as an extra render argument.
+3. **Render call** — `{% render '<same-name>', section: section, block: block %}` where `<same-name>` is the matching file in `snippets/`. Container blocks accepting nested children precede this with `{% capture contents %}{% content_for 'blocks' %}{% endcapture %}` and pass `contents: contents` as an extra render argument.
 4. **`{% schema %}` block**
 
 A block file's only Liquid is what's described above — no conditionals, no HTML, no rendering logic.
@@ -29,9 +29,13 @@ See `.context/docs/versioning-and-changelog.md` for format and policy.
 
 - `"name"` — short title shown in the editor
 - `"tag": null` — the snippet controls the outer element
-- `"blocks": []` — unless the block intentionally nests children
+- `"blocks"` — `[]` for leaf blocks; for container blocks (`group`, `columns`), an **explicit whitelist** of nested block types plus `{ "type": "@app" }`. No `@theme` wildcards. See `.context/docs/composition-strategy.md` Block whitelisting.
 - `"settings"` — see patterns below
 - `"presets"` — at least one, with `"name"` and a `"category"`
+
+## Naming
+
+Block filenames are flat with no underscore prefix. Token does not use Shopify's underscore-prefixed private-block convention — visibility is determined by whitelist membership in each consumer's schema, not by filename. A block intended for a single consumer lives in `blocks/<name>.liquid` like any other and is listed only in that consumer's whitelist.
 
 ## Settings patterns
 

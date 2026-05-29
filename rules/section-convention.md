@@ -5,7 +5,7 @@ paths:
 
 # Section convention
 
-Before authoring a new section, walk the decision flow in `.context/docs/composition-strategy.md`. Many archetypes are presets of existing blocks rather than new sections; the line between standard sections, Framing-A specialized sections (inline blocks), and Framing-B specialized sections (metaobject-driven) is laid out there.
+Before authoring a new section, walk the decision flow in `.context/docs/composition-strategy.md`. Many archetypes are L2 presets of existing blocks rather than new sections; the distinction between L2 presets on `section.liquid` and Beyond-L2 specialized sections is laid out there.
 
 ## Structure
 
@@ -67,7 +67,7 @@ The split keeps app sections un-themed by default (since they only get the outer
 ## Schema requirements
 
 - `"tag": "section"`, `"class": "shopify-section--<name>"` — per-section outer hook. Reserved for outer-level overrides only (e.g. `position: sticky` for the header section). Theme-wide content styling goes on the inner `theme-*` root, not here — see Architecture.
-- `"blocks"` — `[{ "type": "@theme" }, { "type": "@app" }]` for standard sections accepting any block; custom lists or `[]` for specialized/static sections
+- `"blocks"` — **explicit whitelist** of block types the section accepts, plus `{ "type": "@app" }` when app blocks should compose. No `@theme` wildcards. The general theme's `section.liquid` whitelists the 9 shipped L1 blocks (`spacer`, `separator`, `title`, `richtext`, `button`, `media`, `embed`, `group`, `columns`) + `@app`. Specialized sections own narrower whitelists naming the blocks they compose. See `.context/docs/composition-strategy.md` Block whitelisting for the convention's full rationale.
 - `"disabled_on"` — restrict where the section can appear (e.g. `{ "groups": ["header", "footer"] }` for content sections)
 - Base settings (Layout + Appearance) — see `.context/docs/schema-conventions.md#section-base-settings`. Required for merchant-addable standard sections; optional for specialized or static sections
 - `"presets"` — include one or more when the section is merchant-addable via the editor. Omit (or use `[]`) when the section is pinned via section groups (header, footer, etc.) or set via code
@@ -104,7 +104,18 @@ The split keeps app sections un-themed by default (since they only get the outer
   "name": "Section",
   "tag": "section",
   "class": "shopify-section--section",
-  "blocks": [{ "type": "@theme" }, { "type": "@app" }],
+  "blocks": [
+    { "type": "spacer" },
+    { "type": "separator" },
+    { "type": "title" },
+    { "type": "richtext" },
+    { "type": "button" },
+    { "type": "media" },
+    { "type": "embed" },
+    { "type": "group" },
+    { "type": "columns" },
+    { "type": "@app" }
+  ],
   "disabled_on": { "groups": ["header", "footer"] },
   "settings": [ ... ],
   "presets": [{ "name": "Section" }]

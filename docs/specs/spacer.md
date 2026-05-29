@@ -4,7 +4,7 @@
 **Type**: block (`blocks/spacer.liquid`) + matching snippet (`snippets/spacer.liquid`)
 **Status**: shipped
 **Depends on**: `snippets/utility--base-selector.liquid`, `snippets/utility--modifiers.liquid`, `snippets/utility--dynamic-style.liquid`, `theme_color` metaobject entries (optional, for background)
-**Consumers**: any section accepting `@theme` children
+**Whitelisted by**: `sections/section.liquid`, `blocks/group.liquid`, `blocks/columns.liquid`
 
 ## Purpose
 

@@ -8,7 +8,7 @@ Five stages. Each produces an artifact that gates the next.
 
 ### 1. Triage
 
-Ticket appears (Linear or equivalent). Classify the element against `composition-strategy.md` — which composition layer (L0–L4), which validation tier (per `validation-contract.md`). Layer placement settles here; the downstream spec stage describes the contract at the assigned layer, not the layer choice itself. Confirm scope: one element per ticket. Substrate changes get their own lane and never bundle into a primitive ticket.
+Ticket appears (Linear or equivalent). Classify the element against `composition-strategy.md` — which composition layer (L0, L1, L2, or Beyond L2), which validation tier (per `validation-contract.md`). Layer placement settles here; the downstream spec stage describes the contract at the assigned layer, not the layer choice itself. Confirm scope: one element per ticket. Substrate changes get their own lane and never bundle into a primitive ticket.
 
 **Foundational track exception.** Substrate elements (metaobjects, utility snippets, JS modules) and retrofits of pre-existing primitives don't enter via tickets. Layer assignment comes from architectural design (substrate) or from existing code (retrofits). These skip Triage formally; the spec stage records the contract at the inhabited layer. Layer-tension observations live in the spec's Purpose or Implementation-time decisions section.
 
@@ -18,7 +18,7 @@ Author the spec at `.context/docs/specs/<name>.md` per `specs/_template.md`. The
 
 ### 3. Implement
 
-Per-ticket branch off `main`. Produce snippets / blocks / sections / assets / locales per the spec. Theme-check passes; pre-commit hooks pass. Implementation matches the spec exactly — divergences trigger a spec amendment, not silent drift.
+Per-ticket branch off `main`. Produce snippets / blocks / sections / assets / locales per the spec. For new L1 blocks, update each whitelist named in the spec's `Whitelisted by` field (`section.liquid`, `group`, `columns`, etc.) — the spec is the checklist. Theme-check passes; pre-commit hooks pass. Implementation matches the spec exactly — divergences trigger a spec amendment, not silent drift.
 
 ### 4. Validate
 
