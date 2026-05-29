@@ -3,6 +3,8 @@
 **Layer**: <0 | 1 | 2 | 3 | 4>
 **Type**: <snippet | block | preset on `section.liquid` | specialized section> (`<filepath>`)
 **Status**: <spec | shipped>
+**Implementation**: <file:version pairs implementing this contract, or `pending` when `Status: spec`. Format: bulleted list of `` `path/to/file` vX.Y.Z (role) ``. The pin is the spec's anchor to the file state it was last reconciled against; on file version bumps, either bump this pin (spec still accurate) or amend the spec (then bump). Commit-time discipline: a file change touching contract-described surface requires either a spec amendment + pin bump OR an explicit no-op note in the commit message.>
+**Reconciled**: <YYYY-MM-DD — date the spec was last verified against the pinned implementation file(s). Omit the line when `Implementation: pending`.>
 **Depends on**: <files, primitives, metaobjects, utilities this element consumes>
 **Consumers**: <where this element gets used>
 **Whitelisted by** (L1 blocks only): <sections and container blocks whose schemas include this block type, e.g. `section.liquid`, `group`, `columns`. The implementation step updates each of these schemas; this line is the checklist.>
