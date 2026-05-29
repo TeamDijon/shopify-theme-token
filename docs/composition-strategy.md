@@ -1,6 +1,6 @@
 # Composition strategy
 
-Every new UI need maps to one layer in the stack below — from the substrate up through preset compositions, and beyond to specialized sections when L2 can't express what's needed cleanly. Walk the decision flow before writing code for a new pattern.
+Every new UI need maps to one layer in the stack below — from the substrate up through preset compositions, and beyond to specialized sections when L2 can't express what's needed cleanly.
 
 ## Spec as source of truth
 
@@ -54,8 +54,8 @@ A section earns a specialized treatment when one or more applies:
 
 - **Statefulness needs** — a dynamic source on a leaf node has no graceful hide path; blocks can't conditionally vanish themselves cleanly
 - **Repeater needs** — `paginate` doesn't propagate to nested blocks (collection grid is the canonical example)
-- **Business-logic concentration** — too much state in one place for L2 to express without contortion (featured product)
-- **Identity** — the section ships as a single configurable concept (FAQ, store-locator), clearer as one section than as a preset that pretends to be composable
+- **Business-logic concentration** — too much state concentrated in one place for L2 to express (featured product)
+- **Identity** — the section is a single configurable concept (FAQ, store-locator) rather than a composition of smaller blocks
 
 The trigger applies whether the specialized section ships in Token's general theme (FAQ, collection grid, featured product) or per-project (cart-upsell, recently-viewed, store-specific layouts).
 
@@ -82,7 +82,7 @@ Extract a shared snippet at 2+ consumers; below that, inline the markup in the s
 
 ## Decision flow
 
-Walk the stack bottom-up:
+Bottom-up order:
 
 0. **Substrate-only need?** New metaobject, utility snippet, CSS rule, or JS module. → Substrate. Spec at Tier 1.
 1. **Fixed developer content using an existing primitive or raw element?** → No new layer. Inline the element or render the primitive.
