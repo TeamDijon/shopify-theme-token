@@ -59,9 +59,9 @@ The trigger applies whether the specialized section ships in Token's general the
 
 ## Block whitelisting
 
-Sections and container blocks (`group`, `columns`) declare which theme blocks they accept via an explicit list in the `blocks` schema array — no `@theme` wildcards, no underscore-prefixed private blocks. Visibility of a block in any given context is determined solely by inclusion in that context's whitelist.
+Sections and container blocks (`group`, `columns`, `media`) declare which theme blocks they accept via an explicit list in the `blocks` schema array — no `@theme` wildcards, no underscore-prefixed private blocks. Visibility of a block in any given context is determined solely by inclusion in that context's whitelist.
 
-Token's general theme whitelists the 9 shipped L1 blocks (`spacer`, `separator`, `title`, `richtext`, `button`, `media`, `embed`, `group`, `columns`) in `section.liquid`, `group`, and `columns`, plus `{ "type": "@app" }` for app block compatibility. Per-project specialized sections own their own whitelists, naming the blocks they compose plus any project-specific blocks they introduce.
+Token's general theme whitelists the 9 shipped L1 blocks (`spacer`, `separator`, `title`, `richtext`, `button`, `media`, `embed`, `group`, `columns`) in `section.liquid`, `group`, and `columns`, plus `{ "type": "@app" }` for app block compatibility. The `media` block carries a narrower whitelist (`title`, `richtext`, `button`, `group`) for hero-style overlay content. Per-project specialized sections own their own whitelists, naming the blocks they compose plus any project-specific blocks they introduce.
 
 Each L1 block spec carries a `Whitelisted by` field naming the sections and container blocks whose schemas include the block. Adding a new L1 block to the theme means updating each of those schemas in the same change — the spec is the checklist.
 

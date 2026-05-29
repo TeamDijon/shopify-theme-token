@@ -29,7 +29,7 @@ See `.context/docs/versioning-and-changelog.md` for format and policy.
 
 - `"name"` — short title shown in the editor
 - `"tag": null` — the snippet controls the outer element
-- `"blocks"` — `[]` for leaf blocks; for container blocks (`group`, `columns`), an **explicit whitelist** of nested block types plus `{ "type": "@app" }`. No `@theme` wildcards. See `.context/docs/composition-strategy.md` Block whitelisting.
+- `"blocks"` — `[]` for leaf blocks; for container blocks (`group`, `columns`, `media`), an **explicit whitelist** of nested block types. No `@theme` wildcards. The set varies by container — `group` and `columns` accept the full L1 roster; `media` accepts a narrower set for overlay content. See `.context/docs/composition-strategy.md` Block whitelisting.
 - `"settings"` — see patterns below
 - `"presets"` — at least one, with `"name"` and a `"category"`
 
