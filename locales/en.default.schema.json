@@ -53,7 +53,18 @@
     "section": {
       "name": "Section",
       "settings": {
-        "layout": { "content": "Layout" },
+        "layout": {
+          "content": "Layout",
+          "label": "Layout",
+          "info": "Picks the section's implicit-container layout. For finer control, wrap children in a group or columns block.",
+          "options": {
+            "column": "Stacked",
+            "row": "Side-by-side",
+            "columns_2": "Two columns",
+            "columns_3": "Three columns",
+            "columns_4": "Four columns"
+          }
+        },
         "content_width": {
           "label": "Content width",
           "info": "Leave blank for the 2000px theme default — full width on most screens (1920px and below)."

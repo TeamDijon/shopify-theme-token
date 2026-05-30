@@ -27,7 +27,7 @@
   assign base_selector = 'shopify-section-' | append: section.id
 %}
 
-<theme-section>
+<theme-section data-modifiers="theme-root,layout:column">
   {% render 'exploration--breadcrumb' %}
 
   <header class='exploration__intro'>

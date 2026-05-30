@@ -11,8 +11,8 @@
     }
   }
 
-  /* Inner section container — appearance + layout. When authoring a specialized section root (theme-cart, theme-header, etc.), expand the selector to `:is(theme-section, theme-cart, ...)` so it inherits these defaults; section-specific layout stays in its own selector. */
-  theme-section {
+  /* Theme-root: appearance defaults. Matches any theme-owned custom-element root carrying `theme-root` in `data-modifiers` (theme-section today; theme-cart, theme-header, theme-footer as they ship). See `.context/docs/theme-root.md` for the contract. */
+  [data-modifiers*='theme-root'] {
     background: var(--gradient-background);
     color: var(--color-role-foreground);
 
@@ -32,15 +32,7 @@
       transition-duration: 0s;
     }
 
-    display: flow-root;
     position: relative;
-    max-inline-size: var(--content-width, 125rem);
-    margin-inline: auto;
-    padding-inline: var(--gutter);
-
-    @media (width < 48rem) {
-      padding-inline: var(--mobile-gutter, var(--gutter));
-    }
 
     /* Heading color */
     & :where(.h0, h1, .h1, h2, .h2, h3, .h3, h4, .h4, h5, .h5, h6, .h6) {
@@ -77,8 +69,63 @@
     }
   }
 
-  /* Block rhythm — inter-block vertical spacing for any .shopify-block that isn't its parent's first child. Reads per-instance override first (--mobile/desktop-margin-block-start), falls through to the section's --block-rhythm-* cascade, defaults to 0. First-child relies on the container's padding/gap for top spacing. */
-  .shopify-block:not(:first-child) {
+  /* Theme-root: shared layout base. Applies to any theme-root carrying a layout:<preset> modifier — content cap, centering, section gutter. Specialized sections that omit the layout modifier skip this entirely and own their own layout via per-section CSS. */
+  [data-modifiers*='theme-root']:where([data-modifiers*='layout:']) {
+    max-inline-size: var(--content-width, 125rem);
+    margin-inline: auto;
+    padding-inline: var(--gutter);
+
+    @media (width < 48rem) {
+      padding-inline: var(--mobile-gutter, var(--gutter));
+    }
+  }
+
+  /* Theme-root: layout = column. Default merchant section composition — direct block children stack vertically via the block-rhythm cascade. */
+  [data-modifiers*='theme-root'][data-modifiers*='layout:column'] {
+    display: flow-root;
+  }
+
+  /* Theme-root: layout = row. Direct block children flow horizontally; wrap when content exceeds available width. Gap = section gutter. */
+  [data-modifiers*='theme-root'][data-modifiers*='layout:row'] {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: var(--gutter);
+  }
+
+  /* Theme-root: layout = columns_2 / columns_3 / columns_4. Grid with N tracks; stacks to single column below the stack-below breakpoint. Theme defaults: 40rem for columns_2, 60rem for columns_3 / columns_4. */
+  [data-modifiers*='theme-root'][data-modifiers*='layout:columns_2'] {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--gutter);
+
+    @media (width < 40rem) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  [data-modifiers*='theme-root'][data-modifiers*='layout:columns_3'] {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--gutter);
+
+    @media (width < 60rem) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  [data-modifiers*='theme-root'][data-modifiers*='layout:columns_4'] {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--gutter);
+
+    @media (width < 60rem) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* Block rhythm — inter-block vertical spacing for direct children of any theme-root that aren't the first. Reads per-instance override first (--mobile/desktop-margin-block-start), falls through to the section's --block-rhythm-* cascade, defaults to 0. Scoped to direct children so nested blocks (inside group, columns, media) use the parent's gap, not the section's rhythm — see `.context/docs/theme-root.md` § Rhythm scope. */
+  [data-modifiers*='theme-root'] > .shopify-block:not(:first-child) {
     margin-block-start: var(--mobile-margin-block-start, var(--block-rhythm-mobile, 0rem));
 
     @media (width >= 48rem) {

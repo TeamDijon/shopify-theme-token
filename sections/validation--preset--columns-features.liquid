@@ -29,7 +29,7 @@
   assign base_selector = 'shopify-section-' | append: section.id
 %}
 
-<theme-section data-modifiers="color-scheme:{{ color_scheme }}">
+<theme-section data-modifiers="theme-root,layout:column,color-scheme:{{ color_scheme }}">
   {% render 'validation--breadcrumb' %}
 
   {% content_for 'blocks' %}

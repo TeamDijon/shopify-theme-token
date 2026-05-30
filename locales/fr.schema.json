@@ -62,7 +62,18 @@
     "section": {
       "name": "Section",
       "settings": {
-        "layout": { "content": "Mise en page" },
+        "layout": {
+          "content": "Mise en page",
+          "label": "Mise en page",
+          "info": "Choisit la mise en page implicite de la section. Pour un contrôle plus fin, encapsulez les enfants dans un bloc group ou columns.",
+          "options": {
+            "column": "Empilée",
+            "row": "Côte à côte",
+            "columns_2": "Deux colonnes",
+            "columns_3": "Trois colonnes",
+            "columns_4": "Quatre colonnes"
+          }
+        },
         "content_width": {
           "label": "Largeur du contenu",
           "info": "Laisser vide pour le défaut du thème (2000px) — pleine largeur sur la plupart des écrans (1920px et moins)."

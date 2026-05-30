@@ -1,7 +1,8 @@
-{% # Section v1.2.0 %}
+{% # Section v1.3.0 %}
 
 {% comment %}
   Changelog
+  - v1.3.0 — add `layout` select setting (`column` / `row` / `columns_2/3/4`); emit `theme-root,layout:<value>,color-scheme:<scheme>` in `data-modifiers`. theme-section becomes a parametrizable implicit container per the theme-root contract — substrate CSS in `assets/layer-theme.css` gates layout presets on the layout modifier. See `.context/docs/theme-root.md`.
   - v1.2.0 — replace `@theme` blocks wildcard with an explicit whitelist of the 9 shipped L1 blocks (+ `@app`) per the block-whitelisting convention in `composition-strategy.md`
   - v1.1.0 — add `block_rhythm` setting (spacing metaobject) + emit `--block-rhythm-{mobile,desktop}` variables for the inter-block margin rule in `core.css`
   - v1.0.0 — initial
@@ -10,10 +11,11 @@
 {% liquid
   assign content_width = section.settings.content_width
   assign block_rhythm = section.settings.block_rhythm
+  assign layout = section.settings.layout | default: 'column'
   assign base_selector = 'shopify-section-' | append: section.id
 %}
 
-<theme-section data-modifiers="color-scheme:{{ section.settings.color_scheme }}">
+<theme-section data-modifiers="theme-root,layout:{{ layout }},color-scheme:{{ section.settings.color_scheme }}">
   {% content_for 'blocks' %}
 </theme-section>
 
@@ -52,6 +54,20 @@
     {
       "type": "header",
       "content": "t:sections.section.settings.layout.content"
+    },
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "t:sections.section.settings.layout.label",
+      "info": "t:sections.section.settings.layout.info",
+      "options": [
+        { "value": "column", "label": "t:sections.section.settings.layout.options.column" },
+        { "value": "row", "label": "t:sections.section.settings.layout.options.row" },
+        { "value": "columns_2", "label": "t:sections.section.settings.layout.options.columns_2" },
+        { "value": "columns_3", "label": "t:sections.section.settings.layout.options.columns_3" },
+        { "value": "columns_4", "label": "t:sections.section.settings.layout.options.columns_4" }
+      ],
+      "default": "column"
     },
     {
       "type": "metaobject",

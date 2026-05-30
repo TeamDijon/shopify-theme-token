@@ -26,7 +26,7 @@
   assign base_selector = 'shopify-section-' | append: section.id
 %}
 
-<theme-section>
+<theme-section data-modifiers="theme-root,layout:column">
   {% render 'validation--breadcrumb' %}
 
   <header class="validation__intro">
