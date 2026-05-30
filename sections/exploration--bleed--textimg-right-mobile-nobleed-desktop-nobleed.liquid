@@ -1,0 +1,20 @@
+{% # Exploration: T+I R never bleed v1.0.0 %}
+
+{% render 'exploration--canvas', section: section %}
+
+{% schema %}
+{
+  "name": "T+I R never bleed",
+  "tag": "section",
+  "class": "shopify-section--exploration",
+  "blocks": [
+    { "type": "exploration-media" },
+    { "type": "exploration-text" },
+    { "type": "exploration-columns" }
+  ],
+  "settings": [
+    { "type": "text", "id": "title", "label": "Title", "default": "Text + image (right), never bleed" },
+    { "type": "textarea", "id": "description", "label": "Description", "default": "Variant 8 — columns 1:1 (equal split). Media on the right, no bleed anywhere. Baseline no-bleed reference for comparison against variants 5–7." }
+  ]
+}
+{% endschema %}

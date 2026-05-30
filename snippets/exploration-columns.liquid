@@ -1,0 +1,114 @@
+{% # Exploration Columns v1.0.0 %}
+
+{% doc %}
+  @description 2-column grid for bleed-API exploration. Tests bleed_desktop / bleed_mobile + asymmetric ratios.
+
+  @param {section} [section]
+  @param {block} [block]
+  @param {string} [contents] - Rendered child blocks markup.
+
+  Settings:
+  - `ratio`: 1-1, 2-1, 1-2
+  - `bleed_desktop`: none / both
+  - `bleed_mobile`: none / both
+  - `gap`: 0-100px
+  - `stack_below`: none / 40 / 60 / 80
+
+  Discards expected when shipped-block API decisions land.
+{% enddoc %}
+
+{% liquid
+  assign ratio = block.settings.ratio | default: '1-1'
+  assign bleed_desktop = block.settings.bleed_desktop | default: 'none'
+  assign bleed_mobile = block.settings.bleed_mobile | default: 'none'
+  assign gap = block.settings.gap | default: 16
+  assign stack_below = block.settings.stack_below | default: '60'
+
+  assign modifier_list = 'ratio:' | append: ratio
+  if bleed_desktop != 'none'
+    assign modifier_list = modifier_list | append: ',bleed-desktop:' | append: bleed_desktop
+  endif
+  if bleed_mobile != 'none'
+    assign modifier_list = modifier_list | append: ',bleed-mobile:' | append: bleed_mobile
+  endif
+  if stack_below != 'none'
+    assign modifier_list = modifier_list | append: ',stack-below:' | append: stack_below
+  endif
+
+  capture base_selector
+    render 'utility--base-selector', section: section, block: block
+  endcapture
+  assign base_selector = base_selector | strip
+
+  capture modifiers
+    render 'utility--modifiers', modifier_list: modifier_list
+  endcapture
+%}
+
+<div class="shopify-block shopify-block--exploration-columns" id="{{ base_selector }}" {{ block.shopify_attributes }} {{ modifiers }}>
+  <div class="inner">
+    {{ contents }}
+  </div>
+</div>
+
+{% capture dynamic_style %}
+  --gap: {{ gap | divided_by: 16.0 | round: 3 }}rem;
+{% endcapture %}
+{% render 'utility--dynamic-style', base_selector: base_selector, css_content: dynamic_style %}
+
+{% stylesheet %}
+  @layer components {
+    .shopify-block--exploration-columns {
+      container-type: inline-size;
+      container-name: exploration-columns;
+
+      & > .inner {
+        display: grid;
+        gap: var(--gap, 1rem);
+        grid-template-columns: 1fr;
+      }
+
+      /* Bleed mobile */
+      @media (max-width: 47.99rem) {
+        &[data-modifiers*='bleed-mobile:both'] {
+          margin-inline: calc(-1 * var(--exploration-bleed-extension, 0px));
+          inline-size: calc(100% + var(--exploration-bleed-extension, 0px) * 2);
+          max-inline-size: none;
+        }
+      }
+
+      /* Bleed desktop */
+      @media (min-width: 48rem) {
+        &[data-modifiers*='bleed-desktop:both'] {
+          margin-inline: calc(-1 * var(--exploration-bleed-extension, 0px));
+          inline-size: calc(100% + var(--exploration-bleed-extension, 0px) * 2);
+          max-inline-size: none;
+        }
+      }
+
+      /* Ratios applied when not stacked below the breakpoint */
+      @container exploration-columns (inline-size >= 40rem) {
+        &[data-modifiers*='stack-below:40'] > .inner,
+        &[data-modifiers*='stack-below:60'] > .inner,
+        &[data-modifiers*='stack-below:80'] > .inner {
+          /* fall through to specific stack-below queries below */
+        }
+      }
+      @container exploration-columns (inline-size >= 40rem) {
+        &[data-modifiers*='stack-below:40'][data-modifiers*='ratio:1-1'] > .inner { grid-template-columns: 1fr 1fr; }
+        &[data-modifiers*='stack-below:40'][data-modifiers*='ratio:2-1'] > .inner { grid-template-columns: 2fr 1fr; }
+        &[data-modifiers*='stack-below:40'][data-modifiers*='ratio:1-2'] > .inner { grid-template-columns: 1fr 2fr; }
+      }
+      @container exploration-columns (inline-size >= 60rem) {
+        &[data-modifiers*='stack-below:60'][data-modifiers*='ratio:1-1'] > .inner { grid-template-columns: 1fr 1fr; }
+        &[data-modifiers*='stack-below:60'][data-modifiers*='ratio:2-1'] > .inner { grid-template-columns: 2fr 1fr; }
+        &[data-modifiers*='stack-below:60'][data-modifiers*='ratio:1-2'] > .inner { grid-template-columns: 1fr 2fr; }
+      }
+      @container exploration-columns (inline-size >= 80rem) {
+        &[data-modifiers*='stack-below:80'][data-modifiers*='ratio:1-1'] > .inner { grid-template-columns: 1fr 1fr; }
+        &[data-modifiers*='stack-below:80'][data-modifiers*='ratio:2-1'] > .inner { grid-template-columns: 2fr 1fr; }
+        &[data-modifiers*='stack-below:80'][data-modifiers*='ratio:1-2'] > .inner { grid-template-columns: 1fr 2fr; }
+      }
+    }
+  }
+{% endstylesheet %}

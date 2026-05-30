@@ -1,0 +1,71 @@
+{% # Exploration Columns block v1.0.0 %}
+
+{% capture contents %}{% content_for 'blocks' %}{% endcapture %}
+
+{% render 'exploration-columns', section: section, block: block, contents: contents %}
+
+{% schema %}
+{
+  "name": "Exploration: Columns",
+  "tag": null,
+  "blocks": [
+    { "type": "exploration-media" },
+    { "type": "exploration-text" }
+  ],
+  "settings": [
+    {
+      "type": "select",
+      "id": "ratio",
+      "label": "Column ratio",
+      "options": [
+        { "value": "1-1", "label": "1 : 1" },
+        { "value": "2-1", "label": "2 : 1 (left wider)" },
+        { "value": "1-2", "label": "1 : 2 (right wider)" }
+      ],
+      "default": "1-1"
+    },
+    {
+      "type": "select",
+      "id": "bleed_desktop",
+      "label": "Bleed (desktop)",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "both", "label": "Both sides" }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "select",
+      "id": "bleed_mobile",
+      "label": "Bleed (mobile)",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "both", "label": "Both sides" }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "label": "Gap",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "select",
+      "id": "stack_below",
+      "label": "Stack below",
+      "options": [
+        { "value": "none", "label": "Never stack" },
+        { "value": "40", "label": "640px" },
+        { "value": "60", "label": "960px" },
+        { "value": "80", "label": "1280px" }
+      ],
+      "default": "60"
+    }
+  ]
+}
+{% endschema %}

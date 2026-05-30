@@ -1,0 +1,83 @@
+{% # Exploration Text v1.0.0 %}
+
+{% doc %}
+  @description Lorem ipsum text block for bleed-API exploration. Simulates content alongside or beneath bleeding media.
+
+  @param {section} [section]
+  @param {block} [block]
+
+  Settings:
+  - `length`: short / medium / long
+  - `alignment`: start / center / end
+
+  Discards expected when shipped-block API decisions land.
+{% enddoc %}
+
+{% liquid
+  assign length = block.settings.length | default: 'medium'
+  assign alignment = block.settings.alignment | default: 'start'
+
+  capture base_selector
+    render 'utility--base-selector', section: section, block: block
+  endcapture
+  assign base_selector = base_selector | strip
+%}
+
+<div class="shopify-block shopify-block--exploration-text" id="{{ base_selector }}" {{ block.shopify_attributes }} data-length="{{ length }}" data-alignment="{{ alignment }}">
+  <h3>Lorem ipsum dolor sit amet</h3>
+  <p>
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+    {%- if length == 'medium' or length == 'long' -%}
+      Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+    {%- endif -%}
+    {%- if length == 'long' -%}
+      Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+    {%- endif -%}
+  </p>
+  {%- if length == 'long' %}
+    <p>
+      Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+      Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium.
+    </p>
+  {%- endif %}
+</div>
+
+{% stylesheet %}
+  @layer components {
+    .shopify-block--exploration-text {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      padding-block: 1rem;
+
+      &[data-alignment='center'] { text-align: center; }
+      &[data-alignment='end']    { text-align: end; }
+
+      & h3 {
+        margin: 0;
+        font-family: ui-monospace, monospace;
+        font-size: 0.875rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        opacity: 0.6;
+      }
+
+      & p {
+        margin: 0;
+        font-size: 1rem;
+        line-height: 1.6;
+        max-inline-size: 65ch;
+      }
+
+      &[data-alignment='center'] p,
+      &[data-alignment='end'] p {
+        margin-inline: auto;
+      }
+      &[data-alignment='end'] p {
+        margin-inline-start: auto;
+        margin-inline-end: 0;
+      }
+    }
+  }
+{% endstylesheet %}

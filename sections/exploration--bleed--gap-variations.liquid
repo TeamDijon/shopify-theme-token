@@ -1,0 +1,20 @@
+{% # Exploration: Gap variations v1.0.0 %}
+
+{% render 'exploration--canvas', section: section %}
+
+{% schema %}
+{
+  "name": "Gap variations",
+  "tag": "section",
+  "class": "shopify-section--exploration",
+  "blocks": [
+    { "type": "exploration-media" },
+    { "type": "exploration-text" },
+    { "type": "exploration-columns" }
+  ],
+  "settings": [
+    { "type": "text", "id": "title", "label": "Title", "default": "Gap variations" },
+    { "type": "textarea", "id": "description", "label": "Description", "default": "Variant 9 — four stacked columns instances, each with gap = 0 / 16 / 48 / gutter-equivalent. Same 1:1 ratio, same media pair. Reveals how gap interacts with column-width budget and visual rhythm." }
+  ]
+}
+{% endschema %}

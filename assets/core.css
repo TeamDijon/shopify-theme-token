@@ -591,3 +591,55 @@
     }
   }
 }
+
+/* -----------------------------------------------------------------------------
+   EXPLORATION SCAFFOLD — TEMPORARY (delete after bleed API decisions land)
+   See BACKLOG.md § Active exploration. This block + every `exploration-*` block,
+   snippet, section, and template gets removed when the shipped bleed API is
+   chosen and ported to media/columns/group.
+   ----------------------------------------------------------------------------- */
+@layer components {
+  .shopify-section--exploration {
+    theme-section {
+      display: block;
+      padding-block: 2rem 4rem;
+    }
+
+    .exploration__intro {
+      max-inline-size: 80rem;
+      margin-inline: auto;
+      padding-inline: 1.5rem;
+      margin-block-end: 2.5rem;
+
+      h1 {
+        margin-block-end: 0.5rem;
+      }
+
+      p {
+        max-inline-size: 65ch;
+        opacity: 0.75;
+        margin-block: 0.5rem;
+      }
+
+      code {
+        font-family: ui-monospace, monospace;
+        font-size: 0.9em;
+        background: rgba(0, 0, 0, 0.06);
+        padding-inline: 0.25rem;
+        border-radius: 0.25rem;
+      }
+    }
+
+    .exploration__canvas {
+      max-inline-size: var(--exploration-content-width, 80rem);
+      margin-inline: auto;
+      padding-inline: var(--exploration-canvas-padding-inline, 1.5rem);
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+  }
+}
+/* -----------------------------------------------------------------------------
+   END EXPLORATION SCAFFOLD
+   ----------------------------------------------------------------------------- */

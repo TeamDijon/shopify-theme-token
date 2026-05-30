@@ -1,0 +1,20 @@
+{% # Exploration: Asymmetric 2/3 + 1/3 v1.0.0 %}
+
+{% render 'exploration--canvas', section: section %}
+
+{% schema %}
+{
+  "name": "Asymmetric 2/3 + 1/3",
+  "tag": "section",
+  "class": "shopify-section--exploration",
+  "blocks": [
+    { "type": "exploration-media" },
+    { "type": "exploration-text" },
+    { "type": "exploration-columns" }
+  ],
+  "settings": [
+    { "type": "text", "id": "title", "label": "Title", "default": "Asymmetric ⅔ + ⅓ with per-side bleed" },
+    { "type": "textarea", "id": "description", "label": "Description", "default": "Variant 10 — columns 2:1 (wide left, narrow right). Media bleeds inline-start on desktop (escapes left to viewport edge). Text stays in canvas gutter on right. On mobile, columns stack; media bleeds both sides; text in gutter beneath. This is the case the current shipped API can't express." }
+  ]
+}
+{% endschema %}

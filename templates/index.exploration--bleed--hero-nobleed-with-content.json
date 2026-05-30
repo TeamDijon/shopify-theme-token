@@ -1,0 +1,27 @@
+{
+  "sections": {
+    "main": {
+      "type": "exploration--bleed--hero-nobleed-with-content",
+      "blocks": {
+        "hero-media": {
+          "type": "exploration-media",
+          "settings": {
+            "bleed_desktop": "none",
+            "bleed_mobile": "none",
+            "aspect_ratio": "16/9"
+          }
+        },
+        "hero-text": {
+          "type": "exploration-text",
+          "settings": {
+            "length": "medium",
+            "alignment": "start"
+          }
+        }
+      },
+      "block_order": ["hero-media", "hero-text"],
+      "settings": {}
+    }
+  },
+  "order": ["main"]
+}

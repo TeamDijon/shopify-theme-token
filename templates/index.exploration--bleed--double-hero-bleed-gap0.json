@@ -1,0 +1,33 @@
+{
+  "sections": {
+    "main": {
+      "type": "exploration--bleed--double-hero-bleed-gap0",
+      "blocks": {
+        "cols": {
+          "type": "exploration-columns",
+          "blocks": {
+            "media-left": {
+              "type": "exploration-media",
+              "settings": { "bleed_desktop": "none", "bleed_mobile": "none", "aspect_ratio": "3/2" }
+            },
+            "media-right": {
+              "type": "exploration-media",
+              "settings": { "bleed_desktop": "none", "bleed_mobile": "none", "aspect_ratio": "3/2" }
+            }
+          },
+          "block_order": ["media-left", "media-right"],
+          "settings": {
+            "ratio": "1-1",
+            "bleed_desktop": "both",
+            "bleed_mobile": "both",
+            "gap": 0,
+            "stack_below": "60"
+          }
+        }
+      },
+      "block_order": ["cols"],
+      "settings": {}
+    }
+  },
+  "order": ["main"]
+}

@@ -1,0 +1,20 @@
+{% # Exploration: Hero (bleed) v1.0.0 %}
+
+{% render 'exploration--canvas', section: section %}
+
+{% schema %}
+{
+  "name": "Hero, bleed",
+  "tag": "section",
+  "class": "shopify-section--exploration",
+  "blocks": [
+    { "type": "exploration-media" },
+    { "type": "exploration-text" },
+    { "type": "exploration-columns" }
+  ],
+  "settings": [
+    { "type": "text", "id": "title", "label": "Title", "default": "Bleed hero + content in gutter" },
+    { "type": "textarea", "id": "description", "label": "Description", "default": "Variant 1 — media bleeds to viewport edge (both desktop + mobile), sibling text below stays in canvas gutter. Tests the simplest full-bleed case." }
+  ]
+}
+{% endschema %}

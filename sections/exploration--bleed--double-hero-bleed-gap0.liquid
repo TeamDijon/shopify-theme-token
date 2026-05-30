@@ -1,0 +1,20 @@
+{% # Exploration: Double hero bleed gap=0 v1.0.0 %}
+
+{% render 'exploration--canvas', section: section %}
+
+{% schema %}
+{
+  "name": "Double hero, gap=0",
+  "tag": "section",
+  "class": "shopify-section--exploration",
+  "blocks": [
+    { "type": "exploration-media" },
+    { "type": "exploration-text" },
+    { "type": "exploration-columns" }
+  ],
+  "settings": [
+    { "type": "text", "id": "title", "label": "Title", "default": "Double hero, full bleed, gap = 0" },
+    { "type": "textarea", "id": "description", "label": "Description", "default": "Variant 3 — columns bleeds (both sides) with gap=0 + ratio 1:1. Two media children naturally fill their 50dvw tracks. No center gap, seamless edge-to-edge two-image hero. Tests that grid tracks partition correctly without overlap." }
+  ]
+}
+{% endschema %}
