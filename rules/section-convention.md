@@ -25,7 +25,7 @@ Section CSS and JS live in dedicated `assets/<name>.css` and `assets/<name>.js` 
 When the section is a merchant-composable container that renders blocks, no bespoke JS needed:
 
 1. **Liquid block** — resolve `section.settings.*`, compute `base_selector = 'shopify-section-' | append: section.id`
-2. **`<theme-section>` custom element wrapper** — the generic base element; inlines the color-scheme modifier (see Architecture)
+2. **`<theme-section>` custom element wrapper** — the generic base element; carries `theme-root,layout:<preset>,color-scheme:<id>` in `data-modifiers`. The `layout` modifier picks the implicit-container preset (see `.context/docs/theme-root.md` § Layout enum). Default `column`.
 3. **`{% content_for 'blocks' %}`** inside the wrapper
 4. **Dynamic style** — see `.context/docs/dynamic-style-pattern.md`
 
@@ -34,7 +34,7 @@ When the section is a merchant-composable container that renders blocks, no besp
 When the section has bespoke JS (cart, header, footer, etc.), the root element is a specialized custom element extending `BaseComponent`, named `<theme-<name>>`:
 
 1. Liquid block with `base_selector`
-2. `<theme-<name>>` as the body root (no `<theme-section>` wrapping it)
+2. `<theme-<name>>` as the body root (no `<theme-section>` wrapping it). Carries `theme-root` in `data-modifiers` to inherit appearance defaults; omits `layout:` modifier and owns its own layout via per-section CSS (see `.context/docs/theme-root.md` § Layout opt-out)
 3. Custom markup driven by settings/blocks as needed
 4. Dynamic style if per-instance CSS values apply
 
@@ -46,7 +46,7 @@ A rendered section produces two nested wrappers:
 
 ```html
 <section class="shopify-section shopify-section--<name>">
-  <theme-section data-modifiers="color-scheme:scheme-2">
+  <theme-section data-modifiers="theme-root,layout:column,color-scheme:scheme-2">
     <!-- content -->
   </theme-section>
 </section>
@@ -55,7 +55,7 @@ A rendered section produces two nested wrappers:
 The two wrappers serve different audiences and have different blast radii. Each layer's job follows from its scope.
 
 - **Outer `<section class="shopify-section ...">`** — Shopify wraps every section, ours and apps', in this. **Universal scope.** Anything we put on `.shopify-section` propagates to app sections too, so only outer-flow concerns belong here: anchor scrolling (`scroll-margin-block-start`), scroll-behavior, inter-section spacing if ever needed. **No typography, background, or transitions** — those would bleed into apps. The schema's `"class": "shopify-section--<name>"` adds a per-section identity hook used rarely, only for outer-level overrides that *can't* live on the inner element (typically `position: sticky` for header sections, `z-index` overlaps, document-flow positioning). Most sections add no rule at this layer.
-- **Inner `<theme-section>` / `<theme-<name>>`** — our domain, no bleed. **All content-level appearance lives here**: typography, color, background, transitions, content-width, gutter, layout. Plus the JS runtime wiring (`events`, `observers`, `cache`, `modifiers` managers via `BaseComponent`). Theme defaults are applied to `theme-section` directly in `assets/core.css`; when authoring a specialized section root, expand the appearance selector to `:is(theme-section, theme-cart, ...)` so it inherits the shared defaults.
+- **Inner `<theme-section>` / `<theme-<name>>`** — our domain, no bleed. **All content-level appearance lives here**: typography, color, background, transitions, content-width, gutter, layout. Plus the JS runtime wiring (`events`, `observers`, `cache`, `modifiers` managers via `BaseComponent`). Theme defaults are applied via the `theme-root` modifier, carried in each custom-element root's `data-modifiers` value — `[data-modifiers*='theme-root']` matches every theme-owned root. See `.context/docs/theme-root.md` for the contract (identity, layout enum, opt-out, rhythm scope).
 
 The split keeps app sections un-themed by default (since they only get the outer wrapper, never an inner `theme-*`), avoiding silent bleed of typography or background into app content.
 
@@ -69,7 +69,7 @@ The split keeps app sections un-themed by default (since they only get the outer
 - `"tag": "section"`, `"class": "shopify-section--<name>"` — per-section outer hook. Reserved for outer-level overrides only (e.g. `position: sticky` for the header section). Theme-wide content styling goes on the inner `theme-*` root, not here — see Architecture.
 - `"blocks"` — **explicit whitelist** of block types the section accepts, plus `{ "type": "@app" }` when app blocks should compose. No `@theme` wildcards. The general theme's `section.liquid` whitelists the 9 shipped L1 blocks (`spacer`, `separator`, `title`, `richtext`, `button`, `media`, `embed`, `group`, `columns`) + `@app`. Specialized sections own narrower whitelists naming the blocks they compose. See `.context/docs/composition-strategy.md` Block whitelisting for the convention's full rationale.
 - `"disabled_on"` — restrict where the section can appear (e.g. `{ "groups": ["header", "footer"] }` for content sections)
-- Base settings (Layout + Appearance) — see `.context/docs/schema-conventions.md#section-base-settings`. Required for merchant-addable standard sections; optional for specialized or static sections
+- Base settings (Layout + Appearance) — see `.context/docs/schema-conventions.md#section-base-settings`. Required for merchant-addable standard sections; optional for specialized or static sections. The `layout` setting picks the implicit-container preset (see `.context/docs/theme-root.md` § Layout enum)
 - `"presets"` — include one or more when the section is merchant-addable via the editor. Omit (or use `[]`) when the section is pinned via section groups (header, footer, etc.) or set via code
 
 ## Example (standard section)
@@ -85,10 +85,11 @@ The split keeps app sections un-themed by default (since they only get the outer
 
 {% liquid
   assign content_width = section.settings.content_width
+  assign layout = section.settings.layout | default: 'column'
   assign base_selector = 'shopify-section-' | append: section.id
 %}
 
-<theme-section data-modifiers="color-scheme:{{ section.settings.color_scheme }}">
+<theme-section data-modifiers="theme-root,layout:{{ layout }},color-scheme:{{ section.settings.color_scheme }}">
   {% content_for 'blocks' %}
 </theme-section>
 
@@ -125,6 +126,7 @@ The split keeps app sections un-themed by default (since they only get the outer
 
 ## Related
 
+- Theme-root contract (`theme-root` modifier, layout enum, opt-out, rhythm scope): `.context/docs/theme-root.md`
 - Modifier system: `.context/docs/modifier-system.md`
 - Design-system metaobjects: `.context/docs/design-system-metaobjects.md`
 - Locale conventions (incl. `t:` prefix for schema translations): `.context/docs/locale-conventions.md`

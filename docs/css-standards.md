@@ -24,7 +24,7 @@ Modern CSS nesting is used throughout — `& > *`, `&[data-modifiers*="x"]`, `& 
 `assets/core.css` declares `@layer reset, theme, components, utilities;`. Cascade priority runs left → right (later layers win). Place rules deliberately:
 
 - `@layer reset` — universal hygiene applied to everything (UA-default normalizations, media defaults).
-- `@layer theme` — theme-managed roots: `theme-section` today (appearance + layout). Expand to `:is(theme-section, theme-cart, ...)` for the appearance defaults when specialized roots are added.
+- `@layer theme` — theme-managed roots, matched via `[data-modifiers*='theme-root']` (appearance defaults) and `[data-modifiers*='theme-root'][data-modifiers*='layout:<preset>']` (layout presets gated on the layout modifier). Every theme-owned custom-element root (`theme-section`, future `theme-cart` / `theme-header` / `theme-footer`) carries `theme-root` in `data-modifiers` and inherits appearance automatically. Specialized sections omit `layout:` and own their layout via per-section CSS. See `.context/docs/theme-root.md`.
 - `@layer components` — per-block and per-section stylesheets. Wrap every `{% stylesheet %}` block and `assets/<name>.css` body in `@layer components { ... }`. This puts component styles **above** theme defaults (so blocks override theme appearance) but **below** utilities (so opt-in modifiers like `prose:narrow` cleanly override component defaults without each block needing a `:not()` escape hatch).
 - `@layer utilities` — opt-in modifiers (`prose`, `prose:narrow`, `skip-to-content`). Last in the ladder, so they always win when applied.
 

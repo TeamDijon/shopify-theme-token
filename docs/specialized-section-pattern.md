@@ -13,7 +13,7 @@ For the high-level convention see `section-convention.md`. For JS module convent
 When authoring a new specialized section, also:
 
 - Append `'<name>'` to `module_list` in `snippets/utility--import-map.liquid`
-- Add `theme-<name>` to the `:is(theme-section, theme-cart, ...)` selector in `assets/core.css` so it inherits theme defaults
+- Carry `theme-root` in the custom-element's `data-modifiers` so it inherits theme appearance defaults via the substrate's `[data-modifiers*='theme-root']` selector. Omit any `layout:` modifier — specialized sections own their layout via per-section CSS. See `.context/docs/theme-root.md` for the contract.
 
 ## Liquid (`sections/<name>.liquid`)
 
@@ -24,7 +24,7 @@ When authoring a new specialized section, also:
   assign base_selector = 'shopify-section-' | append: section.id
 %}
 
-<theme-cart id="{{ base_selector }}" data-modifiers="state:closed">
+<theme-cart id="{{ base_selector }}" data-modifiers="theme-root,state:closed">
   {% comment %} markup driven by section.settings {% endcomment %}
   <button data-toggle>{{ 'cart.actions.toggle' | t }}</button>
 </theme-cart>
@@ -98,6 +98,7 @@ if (!customElements.get("theme-cart")) {
 
 ## Cross-references
 
+- `theme-root.md` — the `theme-root` modifier contract (identity, layout opt-out by omission)
 - `section-convention.md` — Specialized section subsection (high-level)
 - `js-asset-convention.md` — JS module structure (imports, exports, JSDoc, changelog)
 - `asset-loading.md` — `utility--asset-loader` strategy details (`'inline'`, `'link'`, `'module'`, `'preload'`)

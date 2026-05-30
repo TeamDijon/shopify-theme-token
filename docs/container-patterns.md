@@ -311,6 +311,7 @@ Tracked in BACKLOG for revisit.
 
 ## Related
 
+- `theme-root.md` — section's role as parametrizable implicit container; layout enum (`column` / `row` / `columns_N`); rhythm scope rule that pairs with the container patterns here
 - `css-standards.md` — CSS layer model, naming, variables foundation
 - `composition-strategy.md` — block / preset / section layer model
 - `modifier-system.md` — `data-modifiers` convention used for `bleed:*` flags

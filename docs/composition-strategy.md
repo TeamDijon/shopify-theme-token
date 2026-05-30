@@ -76,6 +76,15 @@ A secondary annotation — element primitive (wraps a single HTML tag) vs compos
 
 Examples spanning both axes: `icon` = element + sub-component; `media` = composite + block-backed; `title` = element + block-backed; `star-rating` = composite + sub-component.
 
+## Leaf-vs-wrapped composition
+
+Theme-section is a parametrizable implicit container — its `layout` setting picks a preset (`column` / `row` / `columns_N`) that bundles theme defaults for direction, gap, and stack-below. Two composition shapes for the same layout outcome:
+
+- **Leaf-only** — section picks the layout preset; merchant adds blocks directly under the section. The implicit container provides the composition. Saves one nesting level. Fits the section's primary composition matching one of the layout presets.
+- **Wrapped** — merchant adds a `group` / `columns` block as the first (or only) child of an `column`-layout section, and that wrapper takes over composition. Fits nested composition (a row of columns where each column has its own children), per-wrapper customization (specific gap, color-scheme override on a subset), or container-style variants on a sub-region.
+
+Both compositions are first-class. The two are equivalent in vertical rhythm for matching layout choices; choose by what's needed beyond the rhythm. See `.context/docs/theme-root.md` § Leaf-vs-wrapped composition equivalence.
+
 ## Render vs inline
 
 For developer-authored fixed content, inline raw HTML tags — they inherit substrate styling. A cart header writes `<h2 class="cart-title">Your cart</h2>`, not `{% render 'title' %}`.
@@ -120,6 +129,7 @@ None of the three ship today; they will land alongside their first consumer.
 
 ## Related
 
+- `.context/docs/theme-root.md` — `theme-root` modifier contract, layout enum, leaf-vs-wrapped equivalence, rhythm scope
 - `.context/rules/block-convention.md` — theme block authoring (L1); block-backed snippet root contract; flat naming convention
 - `.context/rules/section-convention.md` — standard vs specialized sections (L2 host vs Beyond-L2); explicit-whitelist schema convention
 - `.context/rules/snippet-convention.md` — snippet structure (L0)

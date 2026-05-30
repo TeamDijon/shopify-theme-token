@@ -45,6 +45,20 @@ Every section carries these settings before its custom ones:
 ```json
 { "type": "header", "content": "Layout" },
 {
+  "type": "select",
+  "id": "layout",
+  "label": "Layout",
+  "options": [
+    { "value": "column", "label": "Stacked" },
+    { "value": "row", "label": "Side-by-side" },
+    { "value": "columns_2", "label": "Two columns" },
+    { "value": "columns_3", "label": "Three columns" },
+    { "value": "columns_4", "label": "Four columns" }
+  ],
+  "default": "column",
+  "info": "Picks the section's implicit-container layout. For finer control, wrap children in a `group` or `columns` block."
+},
+{
   "type": "metaobject",
   "metaobject_type": "content_width",
   "id": "content_width",
@@ -66,6 +80,8 @@ Every section carries these settings before its custom ones:
   "default": "scheme-1"
 }
 ```
+
+The `layout` setting emits as `layout:<value>` in the section's `data-modifiers`. Substrate CSS gates layout presets on this modifier; the default `column` matches the long-standing implicit-container behavior. Specialized sections omit this setting and the modifier — see `.context/docs/theme-root.md` § Layout opt-out.
 
 `block_rhythm` emits `--block-rhythm-mobile` / `--block-rhythm-desktop` CSS variables via `utility--dynamic-style`. The matching rule lives in `core.css` under `theme-section`:
 

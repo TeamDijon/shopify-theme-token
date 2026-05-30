@@ -24,7 +24,7 @@ Every section renders as two nested wrappers:
 
 ```html
 <section class="shopify-section shopify-section--<name>">
-  <theme-section data-modifiers="...">
+  <theme-section data-modifiers="theme-root,layout:column,color-scheme:scheme-1">
     <!-- content -->
   </theme-section>
 </section>
@@ -34,7 +34,7 @@ Three layers, three audiences:
 
 - **Outer `.shopify-section`** — universal scope (ours + apps'). Only outer-flow concerns: anchor scrolling, scroll-behavior. **No typography or background here** — would bleed into apps.
 - **Per-section `.shopify-section--<name>`** — identity hook. Used rarely, only for outer-level overrides that can't live on the inner element (e.g., `position: sticky` for header sections).
-- **Inner `<theme-section>` / `<theme-<name>>`** — our domain. All content-level appearance + behavior. JS runtime hooks via `BaseComponent`.
+- **Inner `<theme-section>` / `<theme-<name>>`** — our domain. All content-level appearance + behavior. JS runtime hooks via `BaseComponent`. Carries `theme-root` in `data-modifiers` so substrate appearance/layout rules match via `[data-modifiers*='theme-root']` (see `.context/docs/theme-root.md`).
 
 → See `.context/rules/section-convention.md` Architecture for the full breakdown.
 
@@ -79,10 +79,10 @@ Three flows, each with its own strategy:
 `assets/core.css` declares `@layer reset, theme, utilities;`:
 
 - **`@layer reset`** — universal hygiene (box-sizing, margin/padding zero, media defaults, common typography).
-- **`@layer theme`** — `.shopify-section` (outer, universal — minimal) + `theme-section` (theme defaults — typography, background, transition — plus the section's own layout, gutter, max-inline-size, form inputs). When authoring a specialized section root, expand the appearance selector to `:is(theme-section, theme-cart, ...)` so it inherits the shared defaults.
+- **`@layer theme`** — `.shopify-section` (outer, universal — minimal) + theme-roots matched via `[data-modifiers*='theme-root']` (theme defaults — typography, background, transitions, form inputs). Layout presets (`column` / `row` / `columns_N`) gated on the `layout:<preset>` modifier; specialized sections omit `layout:` and own their layout via per-section CSS. See `.context/docs/theme-root.md` for the contract.
 - **`@layer utilities`** — opt-in modifiers like prose, skip-to-content.
 
-When adding a specialized section root, add its tag to the `:is(...)` list so it inherits theme defaults.
+A new specialized section root inherits theme appearance defaults automatically — its custom-element carries `theme-root` in `data-modifiers`, no selector enumeration to maintain.
 
 ## Block-level conventions
 
@@ -112,7 +112,7 @@ Before picking a unit type, walk the decision flow in `.context/docs/composition
 
 - **New snippet** — `snippet-convention.md` for structure (header, doc block, liquid, output)
 - **New block** — `block-convention.md` (thin schema wrapper that renders a matching snippet of the same name)
-- **New section** — `section-convention.md` (standard or specialized; specialized roots also need adding to the `:is(...)` list in core.css)
+- **New section** — `section-convention.md` (standard or specialized). Theme-root contract for the custom-element root: `.context/docs/theme-root.md`
 - **New JS module** — `js-asset-convention.md` + append the filename (without `.js`) to `module_list` in `utility--import-map.liquid`
 - **New icon** — drop `icon-<name>.svg` in `assets/`, create a matching `icon` metaobject entry. See `icon-convention.md` for SVG structure.
 - **New metaobject** — document in **both** `metaobject-definitions.md` (creation) and `design-system-metaobjects.md` (consumption) before referencing in a schema
