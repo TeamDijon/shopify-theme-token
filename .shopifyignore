@@ -6,3 +6,7 @@ node_modules
 
 package.json
 
+# Editor / atomic-write temp files (sed -i, write-file-atomic, etc.)
+**/sed*
+*.tmp.*
+
