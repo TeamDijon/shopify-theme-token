@@ -4,6 +4,7 @@
   @description Shared render scaffold for every exploration section. Emits the bleed-extension CSS variable on the section root (inherited by all blocks) + the canvas wrapper that bleeding children escape from.
 
   @param {section} section - The section object (passed explicitly because snippets run in isolated scope)
+  @param {string} contents - Pre-rendered child blocks markup. Sections capture `{% content_for 'blocks' %}` before rendering this snippet (snippets can't host `content_for`).
 
   Variables emitted (scoped to section's #base_selector):
   - `--exploration-content-width`: 80rem (the canvas's max-inline-size)
@@ -30,7 +31,7 @@
   </header>
 
   <div class="exploration__canvas">
-    {% content_for 'blocks' %}
+    {{ contents }}
   </div>
 </theme-section>
 

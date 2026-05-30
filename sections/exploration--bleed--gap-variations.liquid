@@ -1,6 +1,8 @@
 {% # Exploration: Gap variations v1.0.0 %}
 
-{% render 'exploration--canvas', section: section %}
+{% capture contents %}{% content_for 'blocks' %}{% endcapture %}
+
+{% render 'exploration--canvas', section: section, contents: contents %}
 
 {% schema %}
 {

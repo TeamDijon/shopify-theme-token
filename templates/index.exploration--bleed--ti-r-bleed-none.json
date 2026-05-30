@@ -1,21 +1,21 @@
 {
   "sections": {
     "main": {
-      "type": "exploration--bleed--textimg-left-mobile-bleed-desktop-nobleed",
+      "type": "exploration--bleed--ti-r-bleed-none",
       "blocks": {
         "cols": {
           "type": "exploration-columns",
           "blocks": {
-            "media": {
-              "type": "exploration-media",
-              "settings": { "bleed_desktop": "none", "bleed_mobile": "both", "aspect_ratio": "4/3" }
-            },
             "text": {
               "type": "exploration-text",
               "settings": { "length": "long", "alignment": "start" }
+            },
+            "media": {
+              "type": "exploration-media",
+              "settings": { "bleed_desktop": "none", "bleed_mobile": "none", "aspect_ratio": "4/3" }
             }
           },
-          "block_order": ["media", "text"],
+          "block_order": ["text", "media"],
           "settings": {
             "ratio": "1-1",
             "bleed_desktop": "none",
