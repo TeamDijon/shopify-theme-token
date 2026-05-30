@@ -57,6 +57,39 @@ Validation sections aren't merchant-addable. Differences from standard section c
 - **Literal English labels** — these never ship to merchants. Skip `t:` keys to keep the locale files lean.
 - Each section owns its `{% stylesheet %}` block, wrapped in `@layer components` like every other component CSS.
 
+## Chrome / content decoupling
+
+Validation surfaces render two distinct content types. They must NOT impose constraints on each other:
+
+1. **Utility chrome** — authoring scaffolding: breadcrumb back to hub, section title, description, page-level legend. Carries its own typographic discipline (paragraph reading-width, code styling, opacity). Lives as a sibling of validation content under `<theme-section>`.
+
+2. **Validation content** — the blocks, widgets, or matrix being tested. Rendered as a direct child of `<theme-section>`, inheriting only the section's production-native constraints (`--content-width` cap + `--gutter` padding). No validation-imposed wrapper between `theme-section` and the validation content.
+
+```liquid
+<theme-section>
+  {% render 'validation--breadcrumb' %}
+
+  <header class="validation__intro">
+    <h1>{{ section.settings.title }}</h1>
+    <p>{{ section.settings.description }}</p>
+  </header>
+
+  {% content_for 'blocks' %}   {# or per-tier rendering pattern (block-labels helper for Tier 2, metaobject iteration for Tier 1a, etc.) #}
+</theme-section>
+```
+
+**Anti-pattern**: wrapping validation content in a `.canvas` div with its own `max-inline-size` / `padding-inline`. The wrapper's constraints cascade onto every block inside — bleed math breaks (blocks bleed to the wrapper's edge, not the section's), and the page no longer represents production behavior.
+
+The chrome's own styling MUST stay within its own selector (`.validation__intro` typography, etc.). It does not impose width/padding on the validation content. `theme-section` handles those production-style:
+
+- `max-inline-size: var(--content-width)` caps the section's content area
+- `padding-inline: var(--gutter)` (mobile: `var(--mobile-gutter)`) sets the inner gutter
+- Per-section `utility--dynamic-style` overrides `--content-width` when a narrower test surface is needed; theme-section honors it the production way
+
+Same rule applies to the **exploration scaffold** (`sections/exploration--*`) where API hypotheses are sandboxed. The exploration `--canvas` wrapper was the surfaced anti-pattern that motivated this rule — removed in the current scaffold.
+
+Existing validation sections from the 21-page inventory carry the wrapper anti-pattern (theme-section gets `max-inline-size` + `padding-inline` applied directly). Retrofit at next touch; tracked in `BACKLOG.md`.
+
 ## Schema-driven matrix
 
 Tiers 2, 3, and 4 share one pattern: the validation section accepts `@theme` blocks (Tiers 2 + 3) or declares its own inline-block schema (Tier 4 / Framing-A), and the **template JSON** bakes the test matrix into block instances. The JSON IS the test spec — diffing it tells you what scenarios changed.
