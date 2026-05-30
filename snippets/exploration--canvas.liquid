@@ -1,21 +1,23 @@
-{% # Exploration canvas v1.0.0 %}
+{% # Exploration canvas v1.1.0 %}
 
 {% doc %}
-  @description Shared render scaffold for every exploration section. Emits the bleed-extension CSS variable on the section root (inherited by all blocks) + the canvas wrapper that bleeding children escape from.
+  @description Shared render scaffold for every exploration section. Renders utility chrome (breadcrumb + intro) as a sibling of the validation content; the validation content is `{{ contents }}` emitted directly under `<theme-section>` with no exploration-imposed wrapper. This keeps validation blocks production-native — they inherit only theme-section's `--content-width` cap + `--gutter` padding, exactly like a real section's children.
+
+  Utility chrome carries its own width discipline (`.exploration__intro` with max-inline-size + padding). It does NOT cascade onto sibling validation content.
 
   @param {section} section - The section object (passed explicitly because snippets run in isolated scope)
   @param {string} contents - Pre-rendered child blocks markup. Sections capture `{% content_for 'blocks' %}` before rendering this snippet (snippets can't host `content_for`).
 
   Variables emitted (scoped to section's #base_selector):
-  - `--exploration-content-width`: 80rem (the canvas's max-inline-size)
-  - `--exploration-canvas-padding-inline`: 1.5rem (escape distance on mobile + included in extension formula)
-  - `--exploration-bleed-extension`: total distance a bleeding child shifts to reach viewport edge (or the 3200px background-stop cap on wide viewports)
+  - `--content-width`: 80rem — overrides production default (125rem) so the section is production-like but narrower for visibility
+  - `--block-rhythm-mobile` / `--block-rhythm-desktop`: 1rem / 1.5rem — production sections set these via the `spacing` metaobject; exploration uses reasonable defaults so blocks have inter-block spacing via the theme-section block-rhythm cascade
+  - `--exploration-bleed-extension`: distance a bleeding child shifts to reach the bleed boundary (capped at 125rem content cap). Computed as `section_gutter_to_cap + section_padding_inline`. Used by exploration block stylesheets.
 
-  Formula: `max(0px, (min(100dvw, 125rem) - 80rem) / 2)`. The min() caps the viewport reference at 2000px (the substrate's content cap — bleeding media is content, not background). Below 80rem viewport, extension = 0 and bleed becomes a no-op (canvas is already viewport-wide).
+  Formula: `max(0px, (min(100dvw, 125rem) - 80rem) / 2) + var(--gutter)`. First term = section gutter (capped at 125rem so bleeds don't exceed content cap on wide viewports). Second term = theme-section's padding-inline (responsive: 1.5rem mobile, 3.5rem desktop). Total = full distance from theme-section content edge to bleed boundary.
 
   Temporary scaffold — see BACKLOG.md § Active exploration.
 
-  @example {% render 'exploration--canvas' %}
+  @example {% render 'exploration--canvas', section: section, contents: contents %}
 {% enddoc %}
 
 {% liquid
@@ -30,13 +32,13 @@
     <p>{{ section.settings.description }}</p>
   </header>
 
-  <div class="exploration__canvas">
-    {{ contents }}
-  </div>
+  {{ contents }}
 </theme-section>
 
 {% capture dynamic_style %}
-  --exploration-content-width: 80rem;
-  --exploration-bleed-extension: max(0px, calc((min(100dvw, 125rem) - 80rem) / 2));
+  --content-width: 80rem;
+  --block-rhythm-mobile: 1rem;
+  --block-rhythm-desktop: 1.5rem;
+  --exploration-bleed-extension: calc(max(0px, (min(100dvw, 125rem) - 80rem) / 2) + var(--gutter));
 {% endcapture %}
 {% render 'utility--dynamic-style', base_selector: base_selector, css_content: dynamic_style %}

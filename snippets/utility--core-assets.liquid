@@ -49,19 +49,37 @@
      this block plus every exploration- block / snippet / section / template
      once the shipped bleed API is chosen and ported to media/columns/group.
      See BACKLOG.md, Active exploration section.
+
+     Note: utility chrome (.exploration__intro) carries only its own typographic
+     discipline. It does NOT impose max-inline-size or padding on its sibling
+     validation content — theme-section's --content-width + --gutter handle that
+     production-like, so blocks flow as they would in a real section.
      --------------------------------------------------------------------------- */
   @layer components {
-  .shopify-section--exploration { theme-section { display: block; padding-block: 2rem 4rem; }
+    .shopify-section--exploration {
+      theme-section {
+        display: block;
+        padding-block: 2rem 4rem;
+      }
 
-  .exploration__intro { max-inline-size: 80rem; margin-inline: auto; padding-inline: 1.5rem; margin-block-end: 2.5rem;
-
-  h1 { margin-block-end: 0.5rem; }
-
-  p { max-inline-size: 65ch; opacity: 0.75; margin-block: 0.5rem; }
-
-  code { font-family: ui-monospace, monospace; font-size: 0.9em; background: rgba(0, 0, 0, 0.06); padding-inline: 0.25rem;
-  border-radius: 0.25rem; } }
-
-  .exploration__canvas { max-inline-size: var(--exploration-content-width, 80rem); margin-inline: auto; display: flex;
-  flex-direction: column; gap: 1.5rem; } } }
+      .exploration__intro {
+        margin-block-end: 2.5rem;
+      }
+      .exploration__intro h1 {
+        margin-block-end: 0.5rem;
+      }
+      .exploration__intro p {
+        max-inline-size: 65ch;
+        opacity: 0.75;
+        margin-block: 0.5rem;
+      }
+      .exploration__intro code {
+        font-family: ui-monospace, monospace;
+        font-size: 0.9em;
+        background: rgba(0, 0, 0, 0.06);
+        padding-inline: 0.25rem;
+        border-radius: 0.25rem;
+      }
+    }
+  }
 {% endstylesheet %}
