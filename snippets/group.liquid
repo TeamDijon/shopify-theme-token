@@ -1,7 +1,8 @@
-{% # Group v1.2.0 %}
+{% # Group v1.3.0 %}
 
 {% comment %}
   Changelog
+  - v1.3.0 — rename BEM-style inner wrapper class `shopify-block--group__inner` to rscss-compliant `.inner` (scoped via `.shopify-block--group > .inner`). Restructure stylesheet to native nesting on the outer class. Per-project CSS targeting the old class name must rename.
   - v1.2.0 — read `container_style` metaobject and emit `container-style:<handle>` modifier when set. Centralized variant CSS (card / outlined / elevated) lives in `core.css` `@layer theme`.
   - v1.1.2 — emit `{{ block.shopify_attributes }}` on the root for theme-editor block selection (was missing)
   - v1.1.1 — route content_width + top-margin vars through `utility--block-layout-vars`; output unchanged
@@ -75,7 +76,7 @@
 %}
 
 <div class="shopify-block shopify-block--group" id="{{ base_selector }}" {{ block.shopify_attributes }} {{ modifiers }}>
-  <div class="shopify-block--group__inner">
+  <div class="inner">
     {{ contents }}
   </div>
 
@@ -99,7 +100,7 @@
 
 {% stylesheet %}
   @layer components {
-    /* Outer wrapper hosts the named container so descendant @container queries can match. The flex layout lives on the inner wrapper — querying the same element that defines the container never matches per spec. */
+    /* Outer wrapper hosts the named container so descendant @container queries can match. The flex layout lives on .inner — querying the same element that defines the container never matches per spec. */
     .shopify-block--group {
       container-type: inline-size;
       container-name: group;
@@ -113,32 +114,32 @@
         max-inline-size: none;
         margin-inline: calc(50% - 50dvw);
       }
-    }
 
-    .shopify-block--group__inner {
-      display: flex;
-      gap: var(--gap, 0rem);
-    }
+      & > .inner {
+        display: flex;
+        gap: var(--gap, 0rem);
+      }
 
-    .shopify-block--group[data-modifiers*='direction:column'] > .shopify-block--group__inner {
-      flex-direction: column;
-      align-items: var(--horizontal-alignment, start);
-    }
+      &[data-modifiers*='direction:column'] > .inner {
+        flex-direction: column;
+        align-items: var(--horizontal-alignment, start);
+      }
 
-    .shopify-block--group[data-modifiers*='direction:row'] > .shopify-block--group__inner {
-      flex-direction: row;
-      justify-content: var(--horizontal-alignment, start);
-      align-items: var(--vertical-alignment, start);
-    }
+      &[data-modifiers*='direction:row'] > .inner {
+        flex-direction: row;
+        justify-content: var(--horizontal-alignment, start);
+        align-items: var(--vertical-alignment, start);
+      }
 
-    /* Stack-below: collapse to column when container is narrower than the breakpoint */
-    .shopify-block--group[data-modifiers*='stack-below'] > .shopify-block--group__inner {
-      flex-direction: column;
-      align-items: var(--horizontal-alignment, start);
+      /* Stack-below: collapse to column when container is narrower than the breakpoint */
+      &[data-modifiers*='stack-below'] > .inner {
+        flex-direction: column;
+        align-items: var(--horizontal-alignment, start);
+      }
     }
 
     @container group (inline-size >= 40rem) {
-      .shopify-block--group[data-modifiers*='stack-below:40'] > .shopify-block--group__inner {
+      .shopify-block--group[data-modifiers*='stack-below:40'] > .inner {
         flex-direction: row;
         justify-content: var(--horizontal-alignment, start);
         align-items: var(--vertical-alignment, start);
@@ -146,7 +147,7 @@
     }
 
     @container group (inline-size >= 60rem) {
-      .shopify-block--group[data-modifiers*='stack-below:60'] > .shopify-block--group__inner {
+      .shopify-block--group[data-modifiers*='stack-below:60'] > .inner {
         flex-direction: row;
         justify-content: var(--horizontal-alignment, start);
         align-items: var(--vertical-alignment, start);
@@ -154,7 +155,7 @@
     }
 
     @container group (inline-size >= 80rem) {
-      .shopify-block--group[data-modifiers*='stack-below:80'] > .shopify-block--group__inner {
+      .shopify-block--group[data-modifiers*='stack-below:80'] > .inner {
         flex-direction: row;
         justify-content: var(--horizontal-alignment, start);
         align-items: var(--vertical-alignment, start);

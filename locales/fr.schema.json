@@ -439,7 +439,7 @@
         },
         "content_width": {
           "label": "Largeur du contenu",
-          "info": "Laisser vide pour la pleine largeur"
+          "info": "Laisser vide pour la pleine largeur. Ignoré lorsque « Bord à bord » est activé."
         },
         "gap": { "label": "Écart" },
         "bleed": {

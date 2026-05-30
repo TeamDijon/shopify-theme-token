@@ -430,7 +430,7 @@
         },
         "content_width": {
           "label": "Content width",
-          "info": "Leave blank for full width"
+          "info": "Leave blank for full width. Ignored when 'Edge to edge' is enabled."
         },
         "gap": { "label": "Gap" },
         "bleed": {
