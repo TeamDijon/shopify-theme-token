@@ -128,3 +128,4 @@ The split keeps app sections un-themed by default (since they only get the outer
 - Modifier system: `.context/docs/modifier-system.md`
 - Design-system metaobjects: `.context/docs/design-system-metaobjects.md`
 - Locale conventions (incl. `t:` prefix for schema translations): `.context/docs/locale-conventions.md`
+- Container patterns (horizontal sizing, gutter / gap / inner padding, bleed model): `.context/docs/container-patterns.md`

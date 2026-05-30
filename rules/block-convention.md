@@ -97,3 +97,4 @@ All three are mandatory companions in every shipped L1 block snippet — calling
 ## Related
 
 - Locale conventions (incl. `t:` prefix for schema translations): `.context/docs/locale-conventions.md`
+- Container patterns (horizontal sizing, gutter / gap / inner padding, bleed model): `.context/docs/container-patterns.md`
