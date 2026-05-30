@@ -108,3 +108,7 @@ The validation page doubles as the developer-facing variant catalog (same intent
 - **Per-container-block variant differences.** The centralized `:where()` selector intentionally makes the same handle look the same across all three containers. A project wanting "card on group looks different from card on media" should create separate handles (`group-card`, `media-card`) and per-block CSS rules — not parameterize the existing handle.
 - **Cascading variants.** Selecting a variant on a parent container does not propagate to nested containers. Each level opts in independently.
 - **`-rgb` companion handles.** Not applicable; container_style doesn't expose color tokens directly.
+
+## Related
+
+- Container patterns (inner padding as one of the three sizing concepts; composition with bleed): `.context/docs/container-patterns.md`

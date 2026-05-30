@@ -12,7 +12,7 @@ For block-level top margin, use a mobile + desktop range pair preceded by a "Top
   "type": "range",
   "id": "mobile_margin_block_start",
   "label": "Mobile",
-  "min": 0,
+  "min": -200,
   "max": 200,
   "step": 2,
   "unit": "px",
@@ -22,7 +22,7 @@ For block-level top margin, use a mobile + desktop range pair preceded by a "Top
   "type": "range",
   "id": "desktop_margin_block_start",
   "label": "Desktop",
-  "min": 0,
+  "min": -200,
   "max": 200,
   "step": 2,
   "unit": "px",
@@ -31,6 +31,12 @@ For block-level top margin, use a mobile + desktop range pair preceded by a "Top
 ```
 
 The snippet reads both settings and emits `--mobile-margin-block-start` and `--desktop-margin-block-start` CSS custom properties via `utility--dynamic-style`. The stylesheet applies mobile by default and switches at the desktop breakpoint (`@media (width >= 48rem)`).
+
+### Override idiom
+
+Top-margin overrides the section's `block_rhythm` cascade per block, in both directions. The range is symmetric around zero: positive values add breathing room beyond the section rhythm; negative values pull a block tighter than the rhythm. Authoring rule: set the section rhythm to the section's typical spacing, then use positive overrides for breathing-room exceptions and negative overrides for tightening exceptions. Negative top-margin is the explicit, declared exception to the rhythm grid; use it for one-off tightening.
+
+See `container-patterns.md` § Block-rhythm override idiom.
 
 ## Section base settings
 

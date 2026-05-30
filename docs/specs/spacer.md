@@ -20,7 +20,11 @@
 
 Vertical-space block with configurable block-size (height). Two modes — one fixed size, or a mobile/desktop pair that switches at a selected breakpoint. An optional `theme_color` background turns the spacer into a colored band, serving as a section divider between same-scheme sections, a brand-color stripe, or a framed accent above or below a hero.
 
-Scope constraint — vertical-rhythm at the section level. Inside a row-direction `group`, the spacer's `inline-size: 100%` claims the full row and squishes siblings. Inside column-direction containers (the default for `group` and `columns`), it works as intended.
+Primary scope: vertical-rhythm at the section level. Between section-level blocks, spacer adds rhythm independent of the section's `block_rhythm` cascade.
+
+Inside a column-direction rail (columns track, group child), spacer is the legitimate tool for **edge whitespace** — pre-first-child or post-last-child gaps. Rhythm utilities (`block-rhythm` cascade and per-block top-margin) address only between-sibling spacing, not rail edges, so a spacer at the edge is the only mechanism. Between-sibling spacing inside a rail uses the parent's `gap` setting or the next sibling's top-margin, not a spacer. Symmetric breathing room around content of varying height uses the columns / group `vertical_alignment: center` setting, not edge spacers. See `container-patterns.md` § Spacer at rail edges.
+
+Inside a row-direction `group`, the spacer's `inline-size: 100%` claims the full row and squishes siblings. Anti-pattern; not actively prevented.
 
 ## API
 
@@ -129,4 +133,9 @@ Per `validation-contract.md`:
 
 - Horizontal spacer — `inline-size: 100%` is intentional; horizontal gaps belong in container `gap` settings
 - Use inside row-direction `group` — documented anti-pattern; documentation only, not enforced
+- Between-sibling spacing inside a column-direction rail — use parent `gap` or next sibling's top-margin instead. Spacer remains correct at rail edges (see Purpose)
 - Animated reveal — pure spacing primitive, no motion concerns
+
+## Related
+
+- Container patterns (rail-edge use, rhythm vs gap, vertical-alignment alternative): `.context/docs/container-patterns.md`

@@ -42,9 +42,10 @@ Snippet args (`{% render %}` interface) and block schema settings cover the same
 | `stack_below` | select (`none` / `40` / `60` / `80`) | no | `"60"` | In `row` direction, switches to column when the group's container inline-size is below the named breakpoint (rem). `none` disables; `40` / `60` / `80` map to the substrate breakpoint rems (sm / md / lg). Schema `visible_if` shows only when `direction == 'row'`. |
 | `horizontal_alignment` | select (`start` / `center` / `end` / `space-between`) | no | `"start"` | In `column` direction maps to `align-items`; in `row` direction maps to `justify-content`. `space-between` is silently normalized to `start` in column direction (would emit invalid `align-items: space-between`). |
 | `vertical_alignment` | select (`start` / `center` / `end`) | no | `"start"` | In `row` direction maps to `align-items`. Ignored in column direction. Schema `visible_if` shows only when `direction == 'row'`. |
-| `content_width` | metaobject (`content_width`) | no | blank → 100% (no cap) | Caps `max-inline-size` via `--content-width`. Ignored when `bleed` is true (the bleed rule overrides max-inline-size to `none`). |
+| `content_width` | metaobject (`content_width`) | no | blank → 100% (no cap) | Caps `max-inline-size` via `--content-width`. Composes with bleed — bleed caps at the section's content cap, so `content_width: 60rem` + `bleed_desktop: both` produces a 60rem-wide bleed band (see `container-patterns.md` § Content cap and convergence). |
 | `gap` | range (0–100, step 2, px) | no | `16` | Gap between children. Emitted as `--gap` in rem (px / 16). Zero-emission skipped — `--gap` is only emitted when positive. |
-| `bleed` | checkbox | no | `false` | Extends the group past the section gutter to the visible viewport width via `inline-size: 100dvw; margin-inline: calc(50% - 50dvw)`. Same constraint as `media`'s bleed: assumes a centered ancestor chain (the group must sit inside a `margin-inline: auto` parent for the math to land symmetrically). |
+| `bleed_desktop` | select (`none` / `inline_start` / `inline_end` / `both`) | no | `"none"` | Group's bleed direction at/above 48rem. `both` matches section-bleed (caps at the section's content cap). `inline_start` / `inline_end` extend the group's start / end edge to the bleed boundary (= content cap), keeping gutter offset on the other side. Emitted as `bleed-desktop:<value>` modifier when ≠ `none`. |
+| `bleed_mobile` | select (`none` / `both`) | no | `"none"` | Group's bleed direction below 48rem. Single-column mobile has no edge tracks; per-side bleed has no geometric meaning there, so the mobile enum is binary. `both` matches section-bleed below 48rem. Emitted as `bleed-mobile:both` modifier when set. Asymmetric setting shape with `bleed_desktop` is intentional — see `container-patterns.md` § Bleed API: asymmetric mobile / desktop shapes. |
 | `container_style` | metaobject (`container_style`) | no | blank | Reads `.system.handle`; emits `container-style:<handle>` modifier. Variant CSS lives **centrally in `core.css`** `@layer theme`, scoped across the three container blocks (group/columns/media) so the same handle yields the same visual treatment across consumers. |
 | `color_scheme` | theme setting (`color_scheme`) | no | blank | Overrides the section's color scheme for this block and its descendants. Emits `color-scheme:<id>` modifier; the global per-scheme rules in `utility--css-variables` re-resolve `--color-role-*` tokens within the modifier-bearing element. |
 | `mobile_margin_block_start` | range (0–200, step 2, px) | no | `0` | Top margin below the desktop breakpoint. Routed through `utility--block-layout-vars`. |
@@ -71,7 +72,7 @@ When a new L1 block ships, this whitelist needs an entry per the `composition-st
 <div class="shopify-block shopify-block--group"
      id="<base-selector>"
      {{ block.shopify_attributes }}
-     data-modifiers="direction:row,stack-below:60,container-style:card,color-scheme:scheme-2">
+     data-modifiers="direction:row,stack-below:60,bleed-desktop:inline-start,bleed-mobile:both,container-style:card,color-scheme:scheme-2">
   <div class="inner">
     <!-- children rendered via {% content_for 'blocks' %} -->
   </div>
@@ -80,7 +81,7 @@ When a new L1 block ships, this whitelist needs an entry per the `composition-st
 
 **Outer/inner architecture is load-bearing.** `container-type: inline-size; container-name: group` lives on the outer (`.shopify-block--group`); the flex layout (`display: flex`, direction, alignment, gap) lives on the inner (`.inner`, parent-scoped via `.shopify-block--group > .inner`). The CSS Containment spec states that `@container <name>` queries do **not** match the element with `container-type` — they only match descendants. Putting flex on the outer would make stack-below rules silently never match. The split is structural, not stylistic.
 
-`data-modifiers` always carries at least `direction:column` (or `direction:row`); additional tokens append per setting (`stack-below`, `bleed`, `container-style`, `color-scheme`). Order is deterministic per the snippet's `modifier_list` builder.
+`data-modifiers` always carries at least `direction:column` (or `direction:row`); additional tokens append per setting (`stack-below`, `bleed-desktop`, `bleed-mobile`, `container-style`, `color-scheme`). Order is deterministic per the snippet's `modifier_list` builder.
 
 Per-instance custom properties emit via `utility--block-layout-vars` + `utility--dynamic-style` into a scoped `<style>` block keyed to `#<base-selector>`.
 
@@ -94,10 +95,36 @@ Component-rooted on `.shopify-block--group` (outer) and `.inner` (inner). Layere
   container-name: group;
   max-inline-size: var(--content-width, 100%);
 
-  &[data-modifiers*='bleed'] {
-    inline-size: 100dvw;
+  /* Mobile bleed:both → section-bleed sizing (caps at content cap = bleed boundary) */
+  &[data-modifiers*='bleed-mobile:both'] {
+    inline-size: min(100%, var(--content-width, 125rem));
     max-inline-size: none;
-    margin-inline: calc(50% - 50dvw);
+    margin-inline: auto;
+  }
+
+  @media (width >= 48rem) {
+    /* Desktop bleed:both → section-bleed sizing */
+    &[data-modifiers*='bleed-desktop:both'] {
+      inline-size: min(100%, var(--content-width, 125rem));
+      max-inline-size: none;
+      margin-inline: auto;
+    }
+
+    /* Desktop bleed:inline-start → partial-bleed escape on start side */
+    &[data-modifiers*='bleed-desktop:inline-start'] {
+      margin-inline-start: calc(-1 * var(--gutter));
+    }
+
+    /* Desktop bleed:inline-end → partial-bleed escape on end side */
+    &[data-modifiers*='bleed-desktop:inline-end'] {
+      margin-inline-end: calc(-1 * var(--gutter));
+    }
+
+    /* Revert mobile bleed at desktop when desktop has no bleed configured */
+    &[data-modifiers*='bleed-mobile:both']:not([data-modifiers*='bleed-desktop']) {
+      inline-size: auto;
+      max-inline-size: var(--content-width, 100%);
+    }
   }
 
   & > .inner {
@@ -165,8 +192,9 @@ Zero-emission discipline: alignment vars and gap are only emitted when they diff
 - **Container queries against the group's own width, not viewport.** This is the load-bearing reason for `@container` vs `@media`. A row-direction group placed inside a narrow column or sidebar stacks based on the column's inline-size — correctly — even though the viewport may be wider than the named breakpoint. Standard responsive thinking ("at 768px, stack") doesn't apply; the question is "is this group narrower than 40/60/80rem?"
 - **Outer/inner wrapper architecture is required**, not cosmetic. `@container group` queries skip the element that defines the container. If flex were on the outer, stack-below rules would silently never fire. The `.inner` wrapper exists so the flex layout sits on a descendant of the container-defining element.
 - **`space-between` in column direction normalizes to `start`.** CSS doesn't accept `align-items: space-between` (it's a `justify-content` value), and silently invalid values inherit the cascade default — which would be unpredictable. The snippet's Liquid pre-normalizes (`if direction == 'column' and horizontal_alignment == 'space-between' → horizontal_alignment = 'start'`) so the emitted `--horizontal-alignment` is always valid.
-- **Bleed math.** `inline-size: 100dvw; margin-inline: calc(50% - 50dvw)` extends the group symmetrically past the section gutter. Math depends on the group's parent chain being centered (`margin-inline: auto` somewhere up the tree). Inside a non-centered parent (e.g. a left-aligned grid column), bleed will skew to one side. Same constraint as `media`'s bleed; documented because it's a real authoring trap.
-- **`content_width` vs `bleed` ordering.** When both are set, bleed wins (the bleed rule sets `max-inline-size: none`, overriding the content-width cap). A schema-level `visible_if` safeguard on `content_width` would be the natural fix but Shopify's schema rejects `visible_if` on `metaobject`-type settings (`ValidSchema` error). The mitigation is an `info` string on the setting documenting the override: *"Leave blank for full width. Ignored when 'Edge to edge' is enabled."* When Shopify lifts the `visible_if` restriction on metaobject settings, switch to the schema-level gate.
+- **Bleed math.** Mobile and desktop bleed are settled independently via the data-modifier surface and the 48rem media-query split. `bleed:both` (either breakpoint) uses the section-bleed sizing pattern: `inline-size: min(100%, var(--content-width, 125rem)); margin-inline: auto` — caps at the section's content cap (= bleed boundary per `container-patterns.md` Option A), not at the viewport. `bleed:inline-start` / `bleed:inline-end` (desktop only) use the partial-bleed escape: `margin-inline-(start|end): calc(-1 * var(--gutter))`, reclaiming the section gutter on the bleeding side. None of these depend on a centered ancestor chain.
+- **Mobile-bleed revert at desktop.** When `bleed_mobile: both` is set and `bleed_desktop: none`, the desktop media-query rule reverts `inline-size` / `max-inline-size` so the group returns to its default sizing at/above 48rem. The selector `:not([data-modifiers*='bleed-desktop'])` matches groups with no `bleed-desktop:*` modifier emitted.
+- **`content_width` vs `bleed` interaction.** Under Option A (`container-patterns.md` § Content cap and convergence), bleed caps at `--content-width`. A merchant setting both `content_width: 60rem` and `bleed_desktop: both` gets a 60rem-wide bleed band — the bleed honors the section's content cap rather than overriding it. The `content_width` setting now coherently composes with bleed instead of being silently ignored. The earlier `info` string on `content_width` describing it as "ignored when 'Edge to edge' is enabled" is obsolete and removed at reconciliation.
 - **Color-scheme override emission.** When `color_scheme` is set, the block emits `data-modifiers*='color-scheme:<id>'` on the outer element. The per-scheme rule in `utility--css-variables` re-emits `--color-role-*` tokens on every element matching the modifier — including this group. Descendants inherit the new tokens via the normal CSS cascade. A nested group with its own `color_scheme` override re-emits again locally; the deepest override wins for that subtree. The descendant-bleed footgun was closed in `utility--css-variables` v1.5.1 (dropped a `:has()` selector that re-matched ancestors).
 - **Recursive nesting.** A group inside a group is a fully supported composition pattern. Each nesting level has its own container query (`container-name: group` is shared — the `@container group` rule walks up to the nearest named ancestor, which is the immediate parent group). Stack-below works per-level independently.
 - **Empty group renders the wrapper, intentionally.** Container blocks emit their wrappers structurally — that's their role. The asymmetry vs leaf blocks (button/title/richtext, which `break` on blank content) is deliberate: a content-bearing primitive with no content has nothing to render; a container with no children still provides the container. Two consequences worth knowing: (1) an empty group still participates in section block-rhythm — it's a `.shopify-block` matched by the rhythm cascade selector, so a section with `[block A, empty group, block B]` carries rhythmic spacing around the empty group as if it were a real block. Authors using a group as a visual placeholder during composition should be aware. (2) an empty group with `container_style` set renders an empty styled card / outlined box / elevated panel — useful as a placeholder pattern for "I'll fill this card later," not a footgun.
@@ -184,7 +212,8 @@ Schema strings under `blocks.group.*` (defined in `locales/en.default.schema.jso
 - `blocks.group.settings.vertical_alignment.{label,options.{start,center,end}}`
 - `blocks.group.settings.content_width.{label,info}`
 - `blocks.group.settings.gap.label`
-- `blocks.group.settings.bleed.{label,info}`
+- `blocks.group.settings.bleed_desktop.{label,info,options.{none,inline_start,inline_end,both}}`
+- `blocks.group.settings.bleed_mobile.{label,info,options.{none,both}}`
 - `blocks.group.settings.appearance.content` (group header)
 - `blocks.group.settings.container_style.{label,info}`
 - `blocks.group.settings.color_scheme.{label,info}`
@@ -204,21 +233,25 @@ Per `validation-contract.md` Tier 2 (theme-primitive).
   - **Direction × stack-below matrix**: row with each `stack_below ∈ {none, 40, 60, 80}`; column (stack_below not honored).
   - **Alignment matrix per direction**: row × `horizontal_alignment ∈ {start, center, end, space-between}` × `vertical_alignment ∈ {start, center, end}`; column × `horizontal_alignment ∈ {start, center, end}` (space-between normalized to start).
   - **Gap variation**: 0, 16, 48 (zero-emission discipline check).
-  - **content_width × bleed precedence**: both set → bleed wins; verify visually.
+  - **Bleed matrix**: `bleed_desktop ∈ {none, inline_start, inline_end, both}` × `bleed_mobile ∈ {none, both}` — eight combinations. Verify the asymmetric API (mobile binary, desktop per-side enum) renders correctly: at each breakpoint, the active bleed treatment matches the setting and falls back cleanly when the other breakpoint differs.
+  - **content_width × bleed composition**: bleed caps at the section's content cap (no override) — verify a `content_width: 60rem` section with `bleed_desktop: both` produces a 60rem-wide bleed band, not a 125rem one.
   - **container_style integration**: `card`, `outlined`, `elevated` variants applied; verify CSS comes from `core.css`'s centralized rule (not duplicated here).
   - **color_scheme override**: group with `scheme-2` override inside a `scheme-1` section; nested group with `scheme-3` override inside the `scheme-2` group; verify the deepest override wins for its subtree.
   - **Recursion**: nested groups (group inside group inside group) with mixed directions; verify each level's stack-below is independent.
 - **Edge cases**:
   - Empty group (no children declared in the template) → outer + inner wrappers render, no inner content
   - `direction: column` + `horizontal_alignment: space-between` → emits `--horizontal-alignment: start` (normalization branch)
-  - `bleed: true` inside a non-centered parent → skewed bleed (documented anti-pattern; not actively prevented)
+  - `bleed_mobile: both` + `bleed_desktop: none` → mobile bleeds, desktop reverts to default sizing via the `:not([data-modifiers*='bleed-desktop'])` selector
+  - `bleed_desktop: inline_start` on a group inside a single-track parent (no edge tracks) → the partial-bleed escape still pushes the start margin negative by `--gutter`, reaching the section's bleed boundary on the start side. Geometrically coherent at section level (group is the section's leftmost child); inside a nested grid track that isn't an edge track, the escape still fires (no position-selector gating on group's own bleed, unlike the columns-children partial-bleed pattern which gates via `:first-child` / `:last-child`).
   - `stack_below: 40` in column direction → stack-below modifier still emits if it weren't `visible_if`-gated in row only; the schema gating means the case is unreachable from the editor, but a direct snippet render could pass it. Snippet renders honor the modifier; CSS rule fires correctly (column stays column, since the `stack-below` rule reverts to column on narrow which is column already).
-- **Visual showcase**: matrix sections, each labelled. Reader confirms layout per direction × stack-below × alignment cell; bleed extends past gutter symmetrically; container_style variants look the same as on `validation--primitive--columns` and `validation--primitive--media` (centralized CSS verification); color-scheme override propagates to descendants.
+- **Visual showcase**: matrix sections, each labelled. Reader confirms layout per direction × stack-below × alignment cell; bleed treatments render at the expected breakpoint with the expected per-side (or both-sides) extension to the section's content cap; container_style variants look the same as on `validation--primitive--columns` and `validation--primitive--media` (centralized CSS verification); color-scheme override propagates to descendants.
 - **Assertions** (prose; Playwright once installed):
   - `direction:column` instances have computed `flex-direction: column` on `.inner`
   - `direction:row` + `stack-below:40` instances have `flex-direction: column` below 40rem container width, `row` at/above
   - `align-items` / `justify-content` resolve to the expected value per direction
-  - `bleed` instances have `inline-size: 100dvw` and `margin-inline: calc(50% - 50dvw)` matching the snippet's bleed rule
+  - `bleed_mobile:both` instances below 48rem and `bleed_desktop:both` instances at/above 48rem have `inline-size: min(100%, var(--content-width, 125rem))` and `margin-inline: auto`
+  - `bleed_desktop:inline-start` / `inline-end` instances at/above 48rem have the corresponding `margin-inline-(start|end): calc(-1 * var(--gutter))` applied
+  - `bleed_mobile:both` + `bleed_desktop:none` instances revert to default sizing at/above 48rem
   - `container_style:card` instances pull their variant rule from `core.css`, not the group snippet's stylesheet (verify via computed-style chain)
   - `color_scheme:scheme-2` override emits `--color-role-background`, `--color-role-foreground` (etc.) values from scheme 2's settings on the group element
   - Nested groups each emit their own container query context; child stack-below works against immediate parent's inline-size
@@ -230,6 +263,11 @@ Per `validation-contract.md` Tier 2 (theme-primitive).
 - **Mixed-axis breakpoint behavior** — group's stack-below switches from row to column at a single breakpoint. "Row on mobile, column on tablet, row on desktop" or "reverse the column order at this breakpoint" isn't supported via setting; a project needing it composes nested groups or writes per-project CSS.
 - **`align-self` / per-child overrides** — group's alignment is uniform across children. A specific child needing different alignment than its siblings must consume its own per-child custom property (rare) or be wrapped in a single-child group with its own alignment.
 - **Auto-fit / auto-fill grid behavior** — `repeat(auto-fit, minmax(…))`-style adaptive grids belong in `columns` (or future grid-aware blocks). Group's stack-below is a binary switch; it doesn't compose intermediate states.
-- **Bleed inside non-centered parents** — the bleed math (`margin-inline: calc(50% - 50dvw)`) assumes a centered ancestor chain. Bleeding inside a left-aligned grid cell or off-center container skews to one side. Not enforced; documented as an authoring constraint. <!-- REVIEW: Any ideas where this would happen and more generally when bleed would be used for group block ? -->
+- **Bleed beyond the section's content cap** — bleed caps at `--content-width` per Option A in `container-patterns.md`. A merchant wanting a "narrow text + wide media" composition inside a single section uses `columns` with one bleeding child and a per-block `content_width` override on the text-bearing sibling, not a wider bleed ceiling.
 - **Auto-detection of child count for ratio assignment** — a group with 3 row-direction children does not auto-distribute into equal thirds; children render at their intrinsic sizes plus gap, then `justify-content` distributes leftover space. For deterministic ratio control, reach for `columns`.
 - **Style overrides from child blocks bleeding up** — a child block's `color_scheme` override styles itself but does not propagate upward to affect the parent group's chrome. The cascade is one-way down.
+
+## Related
+
+- Container patterns (gutter / gap / inner padding, bleed model, responsiveness shapes, asymmetric bleed API): `.context/docs/container-patterns.md`
+- Schema conventions (top-spacing pair, section base settings, color-scheme override pattern): `.context/docs/schema-conventions.md`
