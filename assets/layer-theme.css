@@ -1,0 +1,109 @@
+@layer theme {
+  /* Outer section wrapper. Universal scope — applies to ours AND app sections, so only outer-flow concerns belong here (anchor scrolling, scroll-behavior). All content-level styling (typography, background, transitions) lives on the inner `theme-*` roots so it doesn't bleed into apps. See `.context/rules/section-convention.md` for the three-layer model. */
+  .shopify-section {
+    scroll-margin-block-start: 5rem;
+    scroll-behavior: var(--scroll-behavior);
+
+    --scroll-behavior: smooth;
+
+    @media (prefers-reduced-motion) {
+      --scroll-behavior: auto;
+    }
+  }
+
+  /* Inner section container — appearance + layout. When authoring a specialized section root (theme-cart, theme-header, etc.), expand the selector to `:is(theme-section, theme-cart, ...)` so it inherits these defaults; section-specific layout stays in its own selector. */
+  theme-section {
+    background: var(--gradient-background);
+    color: var(--color-role-foreground);
+
+    font-family: var(--base-font-family);
+    font-style: var(--base-font-style);
+    font-size: var(--base-font-size);
+    line-height: var(--base-line-height);
+    font-weight: var(--base-font-weight);
+    letter-spacing: var(--base-letter-spacing);
+    text-transform: var(--base-text-transform);
+    text-decoration: var(--base-text-decoration);
+    text-wrap: pretty;
+
+    transition: background-color var(--duration-base) var(--ease-standard), color var(--duration-base) var(--ease-standard);
+
+    @media (prefers-reduced-motion) {
+      transition-duration: 0s;
+    }
+
+    display: flow-root;
+    position: relative;
+    max-inline-size: var(--content-width, 125rem);
+    margin-inline: auto;
+    padding-inline: var(--gutter);
+
+    @media (width < 48rem) {
+      padding-inline: var(--mobile-gutter, var(--gutter));
+    }
+
+    /* Heading color */
+    & :where(.h0, h1, .h1, h2, .h2, h3, .h3, h4, .h4, h5, .h5, h6, .h6) {
+      color: var(--color-role-foreground-heading, inherit);
+    }
+
+    /* Form inputs */
+    & :where(input, textarea, select) {
+      background-color: var(--color-role-input-background);
+      color: var(--color-role-input-text);
+      border: 0.0625rem solid var(--color-role-input-border);
+    }
+
+    & :where(input, textarea, select):hover {
+      background-color: var(--color-role-input-background-hover);
+      border-color: var(--color-role-input-border-hover);
+    }
+
+    & :where(input, textarea, select):focus-visible {
+      outline: 0.125rem solid var(--color-role-focus-ring);
+      outline-offset: 0.125rem;
+      border-color: var(--color-role-primary);
+    }
+
+    & :where(input, textarea, select):disabled {
+      background-color: var(--color-role-disabled-background);
+      color: var(--color-role-disabled-text);
+      border-color: var(--color-role-disabled-border);
+      cursor: not-allowed;
+    }
+
+    & :where(input, textarea)::placeholder {
+      color: var(--color-role-placeholder);
+    }
+  }
+
+  /* Block rhythm — inter-block vertical spacing for any .shopify-block that isn't its parent's first child. Reads per-instance override first (--mobile/desktop-margin-block-start), falls through to the section's --block-rhythm-* cascade, defaults to 0. First-child relies on the container's padding/gap for top spacing. */
+  .shopify-block:not(:first-child) {
+    margin-block-start: var(--mobile-margin-block-start, var(--block-rhythm-mobile, 0rem));
+
+    @media (width >= 48rem) {
+      margin-block-start: var(--desktop-margin-block-start, var(--block-rhythm-desktop, 0rem));
+    }
+  }
+
+  /* Container style variants — applied to any container block (group, columns, media) carrying data-modifiers="container-style:<handle>". Centralized here so the three consumers share the same visual treatment; per-project CSS can extend or override. */
+  :where(.shopify-block--group, .shopify-block--columns, .shopify-block--media)[data-modifiers*='container-style:card'] {
+    padding: 1.5rem;
+    border-radius: var(--radius-default);
+    background-color: var(--color-role-background);
+    box-shadow: 0 0.0625rem 0.1875rem rgba(0, 0, 0, 0.08);
+  }
+
+  :where(.shopify-block--group, .shopify-block--columns, .shopify-block--media)[data-modifiers*='container-style:outlined'] {
+    padding: 1.5rem;
+    border-radius: var(--radius-default);
+    border: 0.0625rem solid var(--color-role-foreground);
+  }
+
+  :where(.shopify-block--group, .shopify-block--columns, .shopify-block--media)[data-modifiers*='container-style:elevated'] {
+    padding: 1.5rem;
+    border-radius: var(--radius-default);
+    background-color: var(--color-role-background);
+    box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.1);
+  }
+}

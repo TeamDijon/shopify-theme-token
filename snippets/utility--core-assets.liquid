@@ -1,7 +1,8 @@
-{% # Core Assets v1.1.0 %}
+{% # Core Assets v1.2.0 %}
 
 {% comment %}
   Changelog
+  - v1.2.0 — split `core.css` into four per-layer files (`layer-base.css`, `layer-reset.css`, `layer-theme.css`, `layer-utilities.css`) to circumvent Shopify's 15360-byte `inline_asset_content` cap. Each layer is captured via `utility--inline-asset` and concatenated, then routed through `utility--asset-loader` (mirrors the dynamic-styles pattern). No load-mechanism change — still one inline `<style>` block on first paint.
   - v1.1.0 — drop `lab.css` template-suffix branch (lab concept not in this theme)
   - v1.0.0 — initial
 {% endcomment %}
@@ -9,7 +10,7 @@
 {% doc %}
   @description
   Emits the theme's head assets in order:
-  1. `core.css` inline (critical-path CSS) + `core.js` preloaded as an ES module
+  1. Core layers inline (`layer-base` → `layer-reset` → `layer-theme` → `layer-utilities`, concatenated and minified into one `<style>` block) + `core.js` preloaded as an ES module
   2. Dynamic styles (from `utility--font-face` + `utility--css-variables`) inlined as a second minified block
   3. ES module import map
 
@@ -19,8 +20,15 @@
 {% enddoc %}
 
 {% liquid
-  # Primary: core.css inline + core.js preload
-  render 'utility--asset-loader', name: 'core', css: 'inline', js: 'preload'
+  # Primary: per-layer core CSS inline + core.js preload
+  capture core_layers
+    render 'utility--inline-asset', asset_name: 'layer-base.css'
+    render 'utility--inline-asset', asset_name: 'layer-reset.css'
+    render 'utility--inline-asset', asset_name: 'layer-theme.css'
+    render 'utility--inline-asset', asset_name: 'layer-utilities.css'
+  endcapture
+  render 'utility--asset-loader', css: 'inline', css_content: core_layers, js: false
+  render 'utility--asset-loader', name: 'core', css: false, js: 'preload'
 
   # Secondary: dynamic styles (fonts + CSS variables)
   capture dynamic_style
@@ -32,3 +40,28 @@
   # Tertiary: ES module import map
   render 'utility--import-map'
 %}
+
+{% stylesheet %}
+  /* ---------------------------------------------------------------------------
+     EXPLORATION SCAFFOLD — TEMPORARY (delete after bleed API decisions land).
+     Lives in the snippet-level stylesheet block (no size cap) rather than
+     core.css (which crossed the 15360-byte inline_asset_content limit). Delete
+     this block plus every exploration- block / snippet / section / template
+     once the shipped bleed API is chosen and ported to media/columns/group.
+     See BACKLOG.md, Active exploration section.
+     --------------------------------------------------------------------------- */
+  @layer components {
+  .shopify-section--exploration { theme-section { display: block; padding-block: 2rem 4rem; }
+
+  .exploration__intro { max-inline-size: 80rem; margin-inline: auto; padding-inline: 1.5rem; margin-block-end: 2.5rem;
+
+  h1 { margin-block-end: 0.5rem; }
+
+  p { max-inline-size: 65ch; opacity: 0.75; margin-block: 0.5rem; }
+
+  code { font-family: ui-monospace, monospace; font-size: 0.9em; background: rgba(0, 0, 0, 0.06); padding-inline: 0.25rem;
+  border-radius: 0.25rem; } }
+
+  .exploration__canvas { max-inline-size: var(--exploration-content-width, 80rem); margin-inline: auto; display: flex;
+  flex-direction: column; gap: 1.5rem; } } }
+{% endstylesheet %}

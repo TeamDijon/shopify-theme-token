@@ -1,0 +1,197 @@
+@layer utilities {
+  /* Prose modifier — rich-content spacing utility. Lives in `@layer utilities` (not nested under `theme-section`) so specialized sections (`<theme-cart>`, `<theme-header>`, `<theme-overlay>`) and any non-section context style rich content the same way. */
+  [data-modifiers*="prose"] {
+    & > *:not(style) {
+      margin-block: 1rem;
+    }
+    & :is(h1, .h1, .h0) {
+      margin-block: 2rem;
+    }
+    & :is(h2, .h2, h3, .h3) {
+      margin-block-start: 1.5rem;
+    }
+    & :is(ul, ol) {
+      margin-inline-start: 0.75rem;
+      padding-inline-start: 0.75rem;
+    }
+    & li {
+      margin-block: 0.5rem 0.5rem;
+      text-align: left;
+    }
+    & li :is(ul, ol) {
+      margin-block: 0rem;
+    }
+    & hr + * {
+      margin-block-start: 0rem;
+    }
+    & > :first-child {
+      margin-block-start: 0rem;
+    }
+    & > :last-child:not(style),
+    & > :has(+ style:last-child) {
+      margin-block-end: 0rem;
+    }
+  }
+
+  /* Skip to content */
+  .skip-to-content {
+    position: absolute;
+    inline-size: 0.0625rem;
+    block-size: 0.0625rem;
+    margin: -0.0625rem;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+
+    &:focus-within {
+      inline-size: auto;
+      block-size: auto;
+      margin: 0;
+      padding: 0.5rem 1rem;
+      inset-inline-start: 0.75rem;
+      inset-block-start: 0.75rem;
+
+      font-family: sans-serif;
+      font-style: normal;
+      font-size: 1rem;
+      line-height: 1.5;
+      font-weight: normal;
+      letter-spacing: normal;
+
+      background-color: white;
+      border: 0.0625rem solid black;
+      border-radius: 0.25rem;
+
+      overflow: visible;
+      clip: auto;
+      white-space: normal;
+      z-index: var(--layer-temporary);
+    }
+  }
+
+  /* Scroll-lock */
+  html {
+    overflow-y: scroll;
+    scrollbar-gutter: stable;
+
+    &[data-modifiers*="locked-scroll"] {
+      position: fixed;
+      inline-size: 100%;
+    }
+  }
+
+  /* Screen-reader only */
+  .sr-only {
+    position: absolute;
+    inline-size: 0.0625rem;
+    block-size: 0.0625rem;
+    padding: 0;
+    margin: -0.0625rem;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+
+  /* SVG icons — scoped to our icon system via [data-name] */
+  svg[data-name] {
+    fill: none;
+    stroke: currentcolor;
+    stroke-width: 0.25rem;
+
+    &[data-modifiers*="fill"] {
+      fill: currentcolor;
+      stroke: none;
+      scale: 1;
+    }
+    &[data-modifiers*="round"] {
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    & path[data-edge] {
+      transform-origin: center;
+      scale: 0.92;
+    }
+
+    /* Icon presets */
+    &[data-name="arrow"] {
+      /* Source SVG points top-right (corner-to-corner diagonal). Cardinal
+         presets rotate from there; the diagonal then lands on a viewBox
+         axis and the tip overshoots the box by sqrt(2). Scale back by
+         1/sqrt(2) on the orthogonal presets to keep the arrow in bounds. */
+      &:is(
+        [data-preset="up"],
+        [data-preset="right"],
+        [data-preset="down"],
+        [data-preset="left"]
+      ) {
+        scale: 0.7071;
+      }
+      &[data-preset="up"] {
+        transform: rotate(-45deg);
+      }
+      &[data-preset="right"] {
+        transform: rotate(45deg);
+      }
+      &[data-preset="down"] {
+        transform: rotate(135deg);
+      }
+      &[data-preset="left"] {
+        transform: rotate(-135deg);
+      }
+    }
+
+    &[data-name="chevron"] {
+      &[data-preset="left"] {
+        transform: rotate(180deg);
+      }
+      &[data-preset="up"] {
+        transform: rotate(-90deg);
+      }
+      &[data-preset="down"] {
+        transform: rotate(90deg);
+      }
+    }
+
+    &[data-name="star"] {
+      &[data-preset="full"] {
+        fill: currentcolor;
+      }
+      &[data-preset="half"] path[data-half-star] {
+        fill: currentcolor;
+      }
+      &[data-preset="empty"] path[data-half-star] {
+        display: none;
+      }
+      &[data-preset="empty"] {
+        fill: none;
+      }
+    }
+  }
+
+  /* Details animation */
+  @media (prefers-reduced-motion: no-preference) {
+    details {
+      transition: var(--duration-slow) var(--ease-standard);
+
+      @supports (interpolate-size: allow-keywords) {
+        interpolate-size: allow-keywords;
+
+        &::details-content {
+          block-size: 0;
+          opacity: 0;
+
+          transition: var(--duration-slow) var(--ease-standard) allow-discrete;
+          overflow-y: hidden;
+        }
+
+        &[open]::details-content {
+          block-size: auto;
+          opacity: 1;
+        }
+      }
+    }
+  }
+}

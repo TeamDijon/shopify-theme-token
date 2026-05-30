@@ -1,0 +1,45 @@
+@layer reset, theme, components, utilities;
+
+/* Design constants — theme-wide invariants (scheme-independent). Scheme-dependent tokens are emitted by utility--css-variables. */
+:root {
+  /* Z-index scale — gaps of 100 leave room to insert layers; theme-internal only (third-party overlays intentionally sit above) */
+  --layer-below: -1;
+  --layer-base: 0;
+  --layer-raised: 100;
+  --layer-sticky: 200;
+  --layer-overlay: 300;
+  --layer-drawer: 400;
+  --layer-temporary: 500;
+
+  /* Motion */
+  --duration-fast: 120ms;
+  --duration-base: 200ms;
+  --duration-slow: 320ms;
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-emphasized: cubic-bezier(0.3, 0, 0, 1);
+  --ease-out: cubic-bezier(0.33, 1, 0.68, 1);
+
+  /* Focus ring (color is scheme-driven via --color-role-focus-ring) */
+  --focus-ring-width: 0.125rem;
+  --focus-ring-offset: 0.125rem;
+
+  /* Border-radius scale — consumed by button_style / container_style variant CSS and any per-project surface that wants brand-roundness. Per-project overrides via custom property cascade. */
+  --radius-none: 0;
+  --radius-small: 0.25rem;
+  --radius-default: 0.5rem;
+  --radius-large: 1rem;
+  --radius-pill: 9999px;
+}
+
+/* Cross-document view transitions — progressive enhancement (Chromium, Safari 18.2+; ignored elsewhere) */
+@view-transition {
+  navigation: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none;
+  }
+}

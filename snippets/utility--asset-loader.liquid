@@ -10,9 +10,11 @@
 {% doc %}
   @description Loads assets for a component with per-channel strategies. See `.context/docs/asset-loading.md` for strategy details.
 
+  Note: `css` and `js` accept `false` to skip that channel; the snippet's defaults chain uses `allow_false: true`. IDE LSP flags this as a type mismatch (theme-check's `ValidDocParamTypes` rejects union types like `string|boolean`), but the runtime behavior is documented and correct.
+
   @param {string} [name] - Component name. Resolves to assets/<name>.css and assets/<name>.js.
-  @param {string} [css] - CSS strategy: 'link' (default), 'inline', or false
-  @param {string} [js] - JS strategy: 'module' (default), 'preload', 'inline', or false
+  @param {string} [css] - CSS strategy: 'link' (default), 'inline', or `false` to skip
+  @param {string} [js] - JS strategy: 'module' (default), 'preload', 'inline', or `false` to skip
   @param {string} [css_content] - Arbitrary CSS string; used when css='inline' and no name is given
   @param {string} [js_content] - Arbitrary JS string; used when js='inline' and no name is given
 

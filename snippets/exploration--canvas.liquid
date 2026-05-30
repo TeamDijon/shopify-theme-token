@@ -11,7 +11,7 @@
   - `--exploration-canvas-padding-inline`: 1.5rem (escape distance on mobile + included in extension formula)
   - `--exploration-bleed-extension`: total distance a bleeding child shifts to reach viewport edge (or the 3200px background-stop cap on wide viewports)
 
-  Formula: `max(0px, (min(100dvw, 200rem) - 80rem) / 2) + 1.5rem`. The min() caps the viewport reference at 3200px (the substrate's background-stop guard). The constant `+ 1.5rem` accounts for canvas padding-inline so mobile (viewport ≤ 80rem) still has a gutter to bleed past.
+  Formula: `max(0px, (min(100dvw, 125rem) - 80rem) / 2)`. The min() caps the viewport reference at 2000px (the substrate's content cap — bleeding media is content, not background). Below 80rem viewport, extension = 0 and bleed becomes a no-op (canvas is already viewport-wide).
 
   Temporary scaffold — see BACKLOG.md § Active exploration.
 
@@ -37,7 +37,6 @@
 
 {% capture dynamic_style %}
   --exploration-content-width: 80rem;
-  --exploration-canvas-padding-inline: 1.5rem;
-  --exploration-bleed-extension: calc(max(0px, (min(100dvw, 200rem) - 80rem) / 2) + 1.5rem);
+  --exploration-bleed-extension: max(0px, calc((min(100dvw, 125rem) - 80rem) / 2));
 {% endcapture %}
 {% render 'utility--dynamic-style', base_selector: base_selector, css_content: dynamic_style %}
