@@ -6,9 +6,9 @@
 
 **Status**: shipped
 
-**Implementation**: `sections/section.liquid` v1.4.0 (render surface + schema)
+**Implementation**: `sections/section.liquid` v1.5.0 (render surface + schema)
 
-**Reconciled**: 2026-05-31 (subgrid migration Stage 2)
+**Reconciled**: 2026-05-31 (theme-* → token-* rename pass; also corrects missed v1.4.0 body amendments — the `layout` setting was dropped from the schema but several paragraphs still described it as a current setting, and the Related section's theme-root + subgrid-migration descriptions referenced obsolete sub-sections)
 
 **Depends on**: `snippets/utility--dynamic-style.liquid`, `content_width` metaobject (optional), `spacing` metaobject (optional), `theme_color` color schemes, `layer-theme.css` substrate rules per `theme-root.md`
 
@@ -16,7 +16,7 @@
 
 ## Purpose
 
-The canonical merchant-composable section host. Renders `<token-section>` as the inner element with the `theme-root` modifier identity, exposes the section's `layout` / `content_width` / `block_rhythm` / `color_scheme` settings, and accepts the 9 L1 blocks plus `@app` blocks for composition. The single section file the general theme ships; L2 presets attach as `presets[]` entries on its schema, sharing one host file instead of forking per archetype. Specialized sections (header, footer, future cart) are *not* this — they're separate files with their own custom element per `composition-strategy.md` Beyond-L2.
+The canonical merchant-composable section host. Renders `<token-section>` as the inner element with the `theme-root` modifier identity, exposes the section's `content_width` / `block_rhythm` / `color_scheme` settings, and accepts the 9 L1 blocks plus `@app` blocks for composition. The single section file the general theme ships; L2 presets attach as `presets[]` entries on its schema, sharing one host file instead of forking per archetype. Specialized sections (header, footer, future cart) are *not* this — they're separate files with their own custom element per `composition-strategy.md` Beyond-L2.
 
 ## Architecture
 
@@ -30,7 +30,7 @@ A rendered section produces two nested wrappers:
 </section>
 ```
 
-The outer `.shopify-section` is Shopify's universal section wrapper — outer-flow concerns only (anchor scrolling, document-flow positioning). The inner `<token-section>` is the theme-root: appearance defaults, layout preset, block-rhythm cascade, custom-element JS runtime. See `section-convention.md` § Architecture for the two-wrapper split rationale and `theme-root.md` for the theme-root contract.
+The outer `.shopify-section` is Shopify's universal section wrapper — outer-flow concerns only (anchor scrolling, document-flow positioning). The inner `<token-section>` is the theme-root: bleed grid, block-rhythm cascade, custom-element JS runtime. See `section-convention.md` § Architecture for the two-wrapper split rationale and `theme-root.md` for the theme-root contract.
 
 ## API
 
@@ -120,7 +120,7 @@ No runtime strings; the section emits no user-visible chrome of its own.
 
 ## Validation
 
-Per `validation-contract.md` Tier 3 (preset / L2). The host section itself is exercised through its presets; there is no dedicated "section host" validation page in the current contract. Each preset's validation page configures the section's settings (`layout`, `content_width`, `block_rhythm`, `color_scheme`) and renders the preset's block composition end-to-end.
+Per `validation-contract.md` Tier 3 (preset / L2). The host section itself is exercised through its presets; there is no dedicated "section host" validation page in the current contract. Each preset's validation page configures the section's settings (`content_width`, `block_rhythm`, `color_scheme`) and renders the preset's block composition end-to-end.
 
 - **Tier**: section host — Tier 3 work is parked (see `validation-contract.md` § Tier 3). No dedicated verification surface in the current contract; bleed-grid + rhythm behavior is exercised through container-block validation pages and through preset pages once Tier 3 unparks.
 - **Page(s)**: future `validation--preset--*` series (per preset, when Tier 3 unparks).
@@ -150,16 +150,15 @@ Per `validation-contract.md` Tier 3 (preset / L2). The host section itself is ex
 - **`<token-section>` JS implementation** — covered by the `BaseComponent` spec and the four manager specs. The section file only declares the custom element root.
 - **Per-preset content composition** — each L2 preset entry has its own spec describing its block composition, settings defaults, and validation page. This spec covers the host, not the catalog of presets.
 - **Specialized section identity** — `<token-cart>`, `<token-header>`, `<token-footer>` are Beyond-L2 sections with their own files and their own specs. They share the `theme-root` identity but own their layout via per-section CSS (see `theme-root.md` § Specialized-section opt-out and `specialized-section-pattern.md`).
-- **Layout setting evolution** — the `layout` enum (column/row/columns_N) is planned to be dropped in the subgrid migration (see `subgrid-migration.md`). The section becomes an always-bleed-grid with named lines; container blocks declare `grid-column` instead of layout flowing from the section setting. This spec describes the today-state.
 - **Container-style at the section level** — `container_style` is a container-block concern (`group`/`columns`/`media`), not a section concern. A merchant wanting card-styled chrome around a section's content wraps the section's children in a `group` with `container_style: card`.
 - **Section-level bleed setting** — bleed is a container-block concern under the strict container-only bleed model (see `subgrid-migration.md`). Sections don't declare bleed; their children (specifically the container blocks) do.
 
 ## Related
 
-- Theme-root contract (identity, layout enum, layout opt-out, rhythm scope, specialized-section pattern): `.context/docs/theme-root.md`
+- Theme-root contract (identity, bleed grid, specialized-section opt-out, rhythm scope, leaf-vs-wrapped composition): `.context/docs/theme-root.md`
 - Section convention (file structure, two-wrapper architecture, naming, schema requirements): `.context/rules/section-convention.md`
 - Composition strategy (layer model, block whitelisting, leaf-vs-wrapped composition): `.context/docs/composition-strategy.md`
 - Container patterns (gutter / gap / bleed model, content cap and convergence): `.context/docs/container-patterns.md`
-- Subgrid migration (planned future state — section becomes a named-line grid, layout enum drops): `.context/docs/subgrid-migration.md`
+- Subgrid migration (history of the named-line grid + strict container-only bleed model — shipped 2026-05-31): `.context/docs/subgrid-migration.md`
 - Validation contract (Tier 3 preset validation via the section's preset entries): `.context/docs/validation-contract.md`
 - Schema conventions (section base settings, block-level color scheme override, top-spacing pair): `.context/docs/schema-conventions.md`

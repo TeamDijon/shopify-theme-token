@@ -7,11 +7,11 @@
 **Status**: shipped
 
 **Implementation**:
-- `snippets/group.liquid` v1.5.0 (render surface)
+- `snippets/group.liquid` v1.6.0 (render surface)
 - `blocks/group.liquid` v1.4.0 (block schema + render call)
-- `assets/token-layout.js` v1.0.0 (inner-wrapper custom element)
+- `assets/token-layout.js` v1.1.0 (inner-wrapper custom element)
 
-**Reconciled**: 2026-05-31 (subgrid migration Stage 3 — `<token-layout>` replaces `<div class="inner">`)
+**Reconciled**: 2026-05-31 (theme-* → token-* rename pass — inner-wrapper tag `<theme-layout>` → `<token-layout>`; contract surface unchanged)
 
 **Depends on**: `snippets/utility--base-selector.liquid`, `snippets/utility--modifiers.liquid`, `snippets/utility--block-layout-vars.liquid`, `snippets/utility--dynamic-style.liquid`, `content_width` metaobject (optional), `container_style` metaobject (optional)
 
