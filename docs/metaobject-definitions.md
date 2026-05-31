@@ -219,7 +219,7 @@ Standard name field — see [convention](#name-field-convention). Description: *
 
 **Runtime notes:**
 
-- Iterated by `utility--css-variables`, which emits `--gradient-<system.handle>: linear-gradient(<angle>deg, var(--color-<color_start>), var(--color-<color_end>))` in `:root`.
+- Iterated by `utility--css-variables`, which emits `--gradient-<system.handle>: linear-gradient(<angle>deg, var(--color-role-<color_start>), var(--color-role-<color_end>))` in `:root`. Full contract in `specs/gradient.md`.
 - Stops reference per-scheme `--color-<role>` variables, so one definition re-resolves against whichever color scheme the consuming element sits in — no per-scheme gradient emission. Consume as `background: var(--gradient-<handle>)`.
 - **Reserved handle:** `background` — the color-scheme system owns `--gradient-background` (each scheme's background gradient). A `gradient` entry with that handle is skipped at emit time; don't use it.
 - Linear only; a `type` (linear/radial) field can be added later if needed.
