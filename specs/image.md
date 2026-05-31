@@ -10,6 +10,8 @@
 
 **Reconciled**: 2026-05-31
 
+**Reviewed**: pending
+
 **Depends on**: Shopify's `image_url` filter, Shopify's `image_tag` filter (handles `loading`, `fetchpriority`, `widths`, `sizes`, `preload`)
 
 **Consumers**: `snippets/media.liquid` (primary), per-project sections rendering brand imagery, future `article-card` / `product-card` L0 primitives

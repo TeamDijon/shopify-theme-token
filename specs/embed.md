@@ -12,6 +12,8 @@
 
 **Reconciled**: 2026-05-31
 
+**Reviewed**: pending
+
 **Depends on**: `snippets/utility--base-selector.liquid`, `snippets/utility--modifiers.liquid`, `snippets/utility--media-sizing.liquid` (sizing-modifier + vars dual-mode), `snippets/utility--block-layout-vars.liquid`, `snippets/utility--dynamic-style.liquid`, `accessibility.embedded_content` locale key (runtime fallback for iframe title), `media_size` metaobject (optional), `content_width` metaobject (optional)
 
 **Whitelisted by**: `sections/section.liquid`, `blocks/group.liquid`, `blocks/columns.liquid`

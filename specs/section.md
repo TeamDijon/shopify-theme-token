@@ -10,6 +10,8 @@
 
 **Reconciled**: 2026-05-31 (theme-* → token-* rename pass; also corrects missed v1.4.0 body amendments — the `layout` setting was dropped from the schema but several paragraphs still described it as a current setting, and the Related section's theme-root + subgrid-migration descriptions referenced obsolete sub-sections)
 
+**Reviewed**: pending
+
 **Depends on**: `snippets/utility--dynamic-style.liquid`, `content_width` metaobject (optional), `spacing` metaobject (optional), `theme_color` color schemes, `layer-theme.css` substrate rules per `theme-root.md`
 
 **Consumers**: every merchant-composable page that adds a generic section via the editor; hosts L2 presets defined in the `presets` array; reachable on `templates/*.json` page templates outside of `header` / `footer` section groups

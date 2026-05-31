@@ -7,10 +7,12 @@
 **Status**: shipped
 
 **Implementation**:
-- `snippets/button.liquid` v1.3.0 (render surface)
+- `snippets/button.liquid` v1.4.0 (render surface)
 - `blocks/button.liquid` v1.2.0 (block schema + render call)
 
-**Reconciled**: 2026-05-29
+**Reconciled**: 2026-05-31 (paired with `utility--css-variables` v1.11.0 — dropped internal `--button-color-rgb` intermediate; outline-hover translucency migrates to `rgb(from var(--button-color) r g b / α)`. Contract-neutral — `--button-color-rgb` was never exposed.)
+
+**Reviewed**: pending
 
 **Depends on**: `snippets/icon.liquid`, `snippets/utility--base-selector.liquid`, `snippets/utility--modifiers.liquid`, `snippets/utility--block-layout-vars.liquid`, `snippets/utility--dynamic-style.liquid`, `button_style` metaobject, `icon` metaobject (optional), `content_width` metaobject (optional)
 

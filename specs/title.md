@@ -12,6 +12,8 @@
 
 **Reconciled**: 2026-05-31
 
+**Reviewed**: pending
+
 **Depends on**: `snippets/icon.liquid` (optional, for leading icon), `snippets/utility--base-selector.liquid`, `snippets/utility--modifiers.liquid`, `snippets/utility--block-layout-vars.liquid`, `snippets/utility--dynamic-style.liquid`, `text_style` metaobject (optional), `icon` metaobject (optional), `content_width` metaobject (optional), `theme_color` metaobject (optional)
 
 **Whitelisted by**: `sections/section.liquid`, `blocks/group.liquid`, `blocks/columns.liquid`, `blocks/media.liquid`

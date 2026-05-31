@@ -3,6 +3,7 @@
 **Layer**: 1
 **Type**: block (`blocks/rating.liquid`) + matching snippet (`snippets/rating.liquid`)
 **Status**: spec (not yet implemented)
+**Reviewed**: pending
 **Depends on**: `snippets/star-rating.liquid` (spec'd, not yet implemented), `accessibility.star_rating` locale keys (owned by `star-rating` spec), `snippets/utility--json-ld.liquid` (shipped) for AggregateRating emission
 **Consumers**: PDP (next to product title), product cards (planned), `testimonial` L1 block (optional embedded rating)
 

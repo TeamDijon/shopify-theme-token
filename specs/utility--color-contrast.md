@@ -10,6 +10,8 @@
 
 **Reconciled**: 2026-05-29
 
+**Reviewed**: pending
+
 **Depends on**: Liquid built-in `color_contrast` filter
 
 **Consumers**: `sections/validation--substrate--theme-color.liquid` — picks the legible foreground for the "on-self" swatch per `theme_color` entry

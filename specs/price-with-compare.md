@@ -3,6 +3,7 @@
 **Layer**: 0
 **Type**: snippet (`snippets/price-with-compare.liquid`)
 **Status**: spec (not yet implemented)
+**Reviewed**: pending
 **Depends on**: Shopify `money` filter family (built-in). JS update path: future `pricing.js` module (specced with product blocks).
 **Consumers**: PDP price block, product card, cart line items, recommendation strips, comparison tables (all planned)
 

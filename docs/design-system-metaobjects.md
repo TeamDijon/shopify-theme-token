@@ -73,7 +73,7 @@ The snippet's doc block specifies which fields the metaobject path reads, so the
 Most field references resolve by GID, so handle renames are safe. A few patterns *do* couple to the entry's `system.handle` directly — renaming the entry in admin will silently break them. Keep these handle sets stable:
 
 - `theme_color` — handles drive `--color-<handle>` CSS variable names; consumed by every CSS rule that uses `var(--color-X)`. Semantic seeds (`success`, `warning`, `error`, `info`) are referenced from component CSS for state-driven styling — renaming silently breaks consumers
-- `text_style` — handles `h1`–`h6` auto-bind to bare HTML headings (`utility--css-variables`); other handles drive `[data-text-style="<handle>"]` and `[data-modifiers*="text-style:<handle>"]` selectors
+- `text_style` — handles `h1`–`h6` auto-bind to bare HTML headings (`utility--css-variables`); other handles drive the `[data-modifiers*="text-style:<handle>"]` selector
 - `typeface` — entry's `name.value` is read by `utility--font-face` and emitted as the quoted `font-family` value in `@font-face` rules + the `--<style>-font-family` CSS variable. Renaming a typeface entry's `name` silently changes the CSS `font-family` token everywhere it's consumed
 - `media_size` — handle `fill` is a special-case branch in the media block (no type/value, emits `block-size: 100%`)
 - `button_style`, `container_style` — handles drive `[data-modifiers*='button-style:<handle>']` / `[data-modifiers*='container-style:<handle>']` CSS rules in the respective stylesheets (button's in the snippet, container's centralized in `layer-theme.css`)

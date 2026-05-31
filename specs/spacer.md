@@ -12,6 +12,8 @@
 
 **Reconciled**: 2026-05-29
 
+**Reviewed**: pending
+
 **Depends on**: `snippets/utility--base-selector.liquid`, `snippets/utility--modifiers.liquid`, `snippets/utility--dynamic-style.liquid`, `theme_color` metaobject entries (optional, for background)
 
 **Whitelisted by**: `sections/section.liquid`, `blocks/group.liquid`, `blocks/columns.liquid`

@@ -10,6 +10,8 @@
 
 **Reconciled**: 2026-05-29
 
+**Reviewed**: pending
+
 **Depends on**: none — leaf module, no `@theme/*` imports
 
 **Consumers**:

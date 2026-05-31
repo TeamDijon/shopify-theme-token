@@ -3,6 +3,7 @@
 **Layer**: 0
 **Type**: snippet (`snippets/article-card.liquid`)
 **Status**: spec (not yet implemented)
+**Reviewed**: pending
 **Depends on**: Shopify `article` object, `snippets/image.liquid` (responsive image renderer, already shipped), localized-date pattern (`.context/rules/liquid-date-translation.md`)
 **Consumers**: `blog-index` section, featured-articles strip, related-articles (all planned)
 

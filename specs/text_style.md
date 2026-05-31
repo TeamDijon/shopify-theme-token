@@ -7,10 +7,12 @@
 **Status**: shipped
 
 **Implementation**:
-- `snippets/utility--css-variables.liquid` v1.10.0 (CSS variable emitter — text-style block; per-entry `:root` declarations + auto-bind selector rule)
+- `snippets/utility--css-variables.liquid` v1.11.0 (CSS variable emitter — text-style block; per-entry `:root` declarations + auto-bind selector rule)
 - Metaobject definition itself — created per `metaobject-definitions.md` § `text_style`
 
 **Reconciled**: 2026-05-31
+
+**Reviewed**: pending
 
 **Depends on**:
 - `typeface` metaobject (via the `font_family` reference field — entry's name flows into the emitted CSS `font-family` chain)
@@ -18,14 +20,14 @@
 
 **Consumers**:
 - `snippets/utility--css-variables.liquid` — iterates `metaobjects.text_style.values`, emits the per-entry CSS variables + selector rule
-- `snippets/title.liquid` + `blocks/title.liquid` — block-level consumer; the `text_style` picker setting selects an entry whose handle is written to `data-text-style` on the rendered element
+- `snippets/title.liquid` + `blocks/title.liquid` — block-level consumer; the `text_style` picker setting selects an entry whose handle is emitted as `text-style:<handle>` in the rendered element's `data-modifiers`
 - `snippets/utility--font-preload.liquid` — reads text_style entries to determine which typefaces need preload hints
-- Selector consumers (any element): tag binding via `h1`–`h6` handles, attribute binding via `[data-text-style='<handle>']` or `[data-modifiers*='text-style:<handle>']`
+- Selector consumers (any element): tag binding via `h1`–`h6` handles, modifier binding via `[data-modifiers*='text-style:<handle>']`
 - Theme setting consumer: `base_text_style` (in `config/settings_schema.json`) — singular picker that drives the `--base-*` alias emission
 
 ## Purpose
 
-A reusable typography style — one entry defines a complete set of CSS typography properties (font-family chain, style, weight, mobile + desktop size, line-height, letter-spacing, transform, decoration), and the entry's handle becomes the consumption surface across three selector forms (tag for `h1`–`h6` handles, `[data-text-style]` attribute for explicit picks, `[data-modifiers*='text-style:<handle>']` for the unified modifier surface).
+A reusable typography style — one entry defines a complete set of CSS typography properties (font-family chain, style, weight, mobile + desktop size, line-height, letter-spacing, transform, decoration), and the entry's handle becomes the consumption surface across two selector forms (tag for `h1`–`h6` handles, `[data-modifiers*='text-style:<handle>']` for the unified modifier surface).
 
 The metaobject is the design system's typography catalog. Per-block "use this style" decisions are picker settings on consuming blocks; per-element "be styled like this" decisions are the handle written into one of the three selectors. One catalog, two surfaces: setting-driven (block authoring) and selector-driven (substrate auto-bind for `h1`–`h6` + utility classes for anything).
 
@@ -88,7 +90,6 @@ The emitter (`utility--css-variables`) writes one block per entry: a `:root` rul
 }
 
 h1, /* one of h1..h6, only when handle matches a heading tag */
-[data-text-style='<handle>'],
 [data-modifiers*='text-style:<handle>'] {
   font-family: var(--<handle>-font-family);
   font-style: var(--<handle>-font-style);
@@ -126,7 +127,7 @@ Plus `--base-*` aliases (same eight names, prefixed `--base-` instead of `--<han
 
 ## Behavior
 
-- **`h1`–`h6` auto-bind.** Entries with `system.handle` exactly equal to `h1`, `h2`, `h3`, `h4`, `h5`, or `h6` get the matching bare HTML tag selector prepended to their rule block. A merchant naming a heading style `h1` wires it to every `<h1>` in the document without any `data-text-style` attribute. Handles outside the heading set (`hero-display`, `eyebrow`, `caption`, etc.) require explicit `[data-text-style='<handle>']` or `[data-modifiers*='text-style:<handle>']` to apply.
+- **`h1`–`h6` auto-bind.** Entries with `system.handle` exactly equal to `h1`, `h2`, `h3`, `h4`, `h5`, or `h6` get the matching bare HTML tag selector prepended to their rule block. A merchant naming a heading style `h1` wires it to every `<h1>` in the document without any attribute. Handles outside the heading set (`hero-display`, `eyebrow`, `caption`, etc.) require `[data-modifiers*='text-style:<handle>']` to apply.
 - **`base_text_style` binding.** Exactly one entry — the one referenced by the `base_text_style` setting in `settings_data.json` — emits the `--base-*` alias block. Consumers reading `var(--base-font-family)` get the project's default body typography. The substrate body rule (in `layer-theme.css`) is the canonical consumer; the rule reads every `--base-*` variable, so `<body>` and its descendants inherit the picked entry.
 - **Three-layer font-family fallback.** The emitted `font-family` value is a comma-separated list of three layers: (1) the entry's `font_family.value.name.value` (or `default_font_family` when blank — see next bullet), (2) the family name from the theme-settings font selected by `font_fallback_family` (e.g., `settings.sans_serif_font.family`), (3) the generic-fallback families listed by that same theme font (e.g., `system-ui, sans-serif`). When the entry has no `font_family` and `base_text_style` also has no `font_family`, the primary layer falls through to the literal `system-ui`.
 - **`default_font_family` hoist.** The emitter hoists the base text_style's font_family (with `system-ui` terminal fallback) into a single Liquid assign at the top of the text_style loop, so every entry without its own `font_family` reuses the same default without re-reading the base entry per iteration.
@@ -137,7 +138,7 @@ Plus `--base-*` aliases (same eight names, prefixed `--base-` instead of `--<han
 - **`line_height` zero fallback.** Blank `line_height` (resolves to `0`) falls through to `1.5` (the typographic default).
 - **`weight` default.** Blank `weight` falls through to `'400'` (regular). The text-typed field's regex (`^[1-9]00$`) prevents arbitrary numeric values; only the canonical 100-step weights validate.
 - **Boolean → CSS keyword mapping.** `uppercase.value == true` → `text-transform: uppercase`; otherwise `none`. `underline.value == true` → `text-decoration: underline`; otherwise `none`. False, blank, and missing field all resolve to the `none` branch.
-- **`system.handle` is the cross-cutting key.** The same string drives: the CSS variable prefix, the auto-bind tag selector (when in `h1`–`h6`), the `[data-text-style='…']` attribute value, and the `text-style:<handle>` modifier token. Renaming a handle moves all four. The metaobject's `name` field is decorative; only `system.handle` is load-bearing.
+- **`system.handle` is the cross-cutting key.** The same string drives: the CSS variable prefix, the auto-bind tag selector (when in `h1`–`h6`), and the `text-style:<handle>` modifier token. Renaming a handle moves all three. The metaobject's `name` field is decorative; only `system.handle` is load-bearing.
 
 ## Seed entries
 
@@ -170,7 +171,7 @@ Per `validation-contract.md` Tier 1a (substrate / metaobject).
 - **Tier**: substrate — metaobject sub-shape
 - **Page(s)**: `sections/validation--substrate--text-style.liquid` + `templates/index.validation--substrate--text-style.json` *(planned)*. May share validation surface with `utility--css-variables`'s validation page once that lands (text-style block is one of the snippet's five emission domains).
 - **API surface** (matrix to exercise):
-  - **Per-entry typography catalog**: every text_style entry shown three times, once per selector form (tag binding when applicable, `[data-text-style]`, modifier). Reader confirms identical typography across the three rows per entry.
+  - **Per-entry typography catalog**: every text_style entry shown twice, once per selector form (tag binding when applicable, `[data-modifiers*='text-style:']`). Reader confirms identical typography across the two rows per entry.
   - **`h1`–`h6` auto-bind**: bare `<h1>`–`<h6>` elements rendered (no attributes, no modifiers). Reader confirms each takes the typography of the matching-handle entry.
   - **Base alias resolution**: an element styled via `font-family: var(--base-font-family)` etc. Reader confirms it inherits the typography of the entry referenced by `settings.base_text_style`.
   - **Responsive font-size switch**: viewport-cycling test showing mobile size below 48rem and desktop size at/above; verify the `@media` override fires only on entries with mismatched mobile/desktop.
@@ -189,7 +190,7 @@ Per `validation-contract.md` Tier 1a (substrate / metaobject).
   - Computed `font-family` on a tag-bound element (e.g., `<h1>`) starts with the entry's resolved primary font; the chain matches the fallback layers in order.
   - Computed `font-size` matches the mobile rem at narrow viewport and desktop rem at wide viewport (when they differ).
   - Computed `font-family` on the body element matches the entry referenced by `settings.base_text_style`.
-  - `data-text-style` and `data-modifiers*='text-style:'` produce identical computed typography for the same handle.
+  - A bare tag (e.g., `<h1>`) and `[data-modifiers*='text-style:h1']` produce identical computed typography.
 - **Unit scope**: none (metaobject layer; no JS).
 
 ## Out of scope
@@ -208,5 +209,5 @@ Per `validation-contract.md` Tier 1a (substrate / metaobject).
 - `theme-color.md` — sibling metaobject spec (color tokens). Same metaobject-spec shape; useful as a calibration reference.
 - `.context/docs/metaobject-definitions.md` § `text_style` — the setup contract (Shopify admin metaobject definition schema, field validations, recommended seed entries).
 - `.context/docs/design-system-metaobjects.md` — catalog-wide consumer patterns (fallback chains, override scopes, metaobject reference fields).
-- `.context/specs/title.md` — L1 block consumer; picks a text_style via setting and writes the handle to `data-text-style`.
+- `.context/specs/title.md` — L1 block consumer; picks a text_style via setting and emits the handle as `text-style:<handle>` in `data-modifiers`.
 - `.context/specs/richtext.md` — L1 block consumer; relies on `--base-*` aliases for body typography rather than picking a specific text_style.

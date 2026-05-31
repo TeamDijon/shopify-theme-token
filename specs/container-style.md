@@ -12,6 +12,8 @@
 
 **Reconciled**: 2026-05-31 (pin format clarified — substrate CSS pinned by description rather than version; structural anchor is the `:where()` selector chain in `@layer theme`)
 
+**Reviewed**: pending
+
 **Depends on**: none — substrate-root token type
 
 **Consumers**:

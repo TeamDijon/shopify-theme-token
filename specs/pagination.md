@@ -3,6 +3,7 @@
 **Layer**: 0
 **Type**: snippet (`snippets/pagination.liquid`)
 **Status**: spec (not yet implemented)
+**Reviewed**: pending
 **Depends on**: Shopify `paginate` object (built-in). Load-more JS: future `assets/pagination.js` module (standalone, loaded by consumer section).
 **Consumers**: `collection-list-page`, `search-results-page`, `blog-index`, article comment lists (all planned)
 

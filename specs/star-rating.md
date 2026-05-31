@@ -3,6 +3,7 @@
 **Layer**: 0
 **Type**: snippet (`snippets/star-rating.liquid`)
 **Status**: spec (not yet implemented)
+**Reviewed**: pending
 **Depends on**: `snippets/icon.liquid`, `assets/icon-star.svg`, star presets in `assets/layer-theme.css` (all shipped)
 **Consumers**: `rating` L1 block (primary), product-card surfaces (planned), `testimonial` block (optional rating display)
 

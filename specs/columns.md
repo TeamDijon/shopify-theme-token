@@ -13,6 +13,8 @@
 
 **Reconciled**: 2026-05-31 (theme-* → token-* rename pass — inner-wrapper tag `<theme-layout>` → `<token-layout>`; contract surface unchanged)
 
+**Reviewed**: pending
+
 **Depends on**: `snippets/utility--base-selector.liquid`, `snippets/utility--modifiers.liquid`, `snippets/utility--block-layout-vars.liquid`, `snippets/utility--dynamic-style.liquid`, `content_width` metaobject (optional), `container_style` metaobject (optional)
 
 **Whitelisted by**: `sections/section.liquid`, `blocks/group.liquid`, `blocks/columns.liquid` (recursive), `blocks/media.liquid` is NOT in this list (media whitelists columns but not the reverse — see "Nested container composition" below)

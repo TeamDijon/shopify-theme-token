@@ -3,6 +3,7 @@
 **Layer**: 0
 **Type**: snippet (`snippets/payment-icons-strip.liquid`)
 **Status**: spec (not yet implemented)
+**Reviewed**: pending
 **Depends on**: `shop.enabled_payment_types`, `payment_type_svg_tag` filter (built-in)
 **Consumers**: footer, cart trust area (planned)
 

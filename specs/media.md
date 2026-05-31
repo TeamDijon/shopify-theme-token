@@ -12,6 +12,8 @@
 
 **Reconciled**: 2026-05-31 (subgrid migration Stage 2 — bleed boolean replaced by responsive enum API; bleed CSS moved to section; centered-ancestor footgun resolved)
 
+**Reviewed**: pending
+
 **Depends on**: `snippets/image.liquid` (for `media_type: image`), `snippets/video.liquid` (for `media_type: video`), `snippets/utility--base-selector.liquid`, `snippets/utility--modifiers.liquid`, `snippets/utility--media-sizing.liquid` (sizing-modifier + vars dual-mode), `snippets/utility--block-layout-vars.liquid`, `snippets/utility--dynamic-style.liquid`, `media_size` metaobject (optional), `content_width` metaobject (optional), `container_style` metaobject (optional)
 
 **Whitelisted by**: `sections/section.liquid`, `blocks/group.liquid`, `blocks/columns.liquid` (recursive container composition)

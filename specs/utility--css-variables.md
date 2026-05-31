@@ -6,9 +6,11 @@
 
 **Status**: shipped
 
-**Implementation**: `snippets/utility--css-variables.liquid` v1.10.0 (CSS variable emitter)
+**Implementation**: `snippets/utility--css-variables.liquid` v1.11.0 (CSS variable emitter)
 
 **Reconciled**: 2026-05-31
+
+**Reviewed**: 2026-05-31
 
 **Depends on**:
 - `theme_color` metaobject (`system.handle`, `hex_code.value`)
@@ -79,10 +81,8 @@ A single document-wide selection style; values track the active scheme via role 
 :root,
 [data-modifiers*="color-scheme:scheme-1"] {
   --color-role-background: <hex>;
-  --color-role-background-rgb: <r>, <g>, <b>;
   --gradient-background: <gradient or background-fallback>;
   --color-role-foreground: <hex>;
-  --color-role-foreground-rgb: <r>, <g>, <b>;
   /* ...full role-token set... */
 }
 
@@ -92,13 +92,13 @@ A single document-wide selection style; values track the active scheme via role 
 
 **Selector union for the default scheme.** The first scheme also targets `:root`, so descendants of any unmodified ancestor read its tokens. Subsequent schemes target only the `[data-modifiers*='color-scheme:<id>']` form. A modifier-bearing element re-scopes its subtree without leaking onto unmodified siblings.
 
-Each scheme block emits ~30 variables in four groups:
+Each scheme block emits variables in four groups:
 
 **Direct color settings** (literal values from `scheme.settings.*`):
-- `--color-role-background`, `--color-role-foreground`, `--color-role-foreground-heading`, `--color-role-primary`, `--color-role-border`, `--color-role-shadow` — plus their `-rgb` companions <!-- REVIEW: Are the rgb variants used right now ? Will they be used in the future ? Should we keep them ? -->
+- `--color-role-background`, `--color-role-foreground`, `--color-role-foreground-heading`, `--color-role-primary`, `--color-role-border`, `--color-role-shadow`
 - `--gradient-background` — the scheme's `background_gradient` setting if set; falls through to `--color-role-background` value as a plain color
-- Button sub-roles: `--color-role-{primary,secondary}-button-{background,text,border}` (opaque only — no `-rgb` companions by default; add on demand)
-- Input sub-roles: `--color-role-input-{background,text,border}` plus `--color-role-input-text-rgb` (used by placeholder derivation)
+- Button sub-roles: `--color-role-{primary,secondary}-button-{background,text,border}`
+- Input sub-roles: `--color-role-input-{background,text,border}`
 
 **Brightness-derived opacity scales** — branch on `scheme.settings.background | color_brightness`:
 
@@ -117,13 +117,15 @@ Dark schemes need stronger overlays to register against deep grounds.
 - `--color-role-input-background-hover` — shift toward `var(--color-role-foreground)` 4%
 - `--color-role-input-border-hover` — shift toward `var(--color-role-foreground)` 20%
 
-**Derived tokens** — composed from the direct settings + opacity scales:
-- `--color-role-foreground-muted` = `rgba(<foreground-rgb>, var(--opacity-muted))`
-- `--color-role-placeholder` = `rgba(<input-text-rgb>, 0.5)`
+**Derived translucent tokens** — composed via `rgb(from var(--color-role-X) r g b / <alpha>)` relative-color syntax:
+- `--color-role-foreground-muted` = `rgb(from var(--color-role-foreground) r g b / var(--opacity-muted))`
+- `--color-role-placeholder` = `rgb(from var(--color-role-input-text) r g b / 0.5)`
 - `--color-role-disabled-{background,text,border}` — opacity-scaled foreground
-- `--color-role-focus-ring` = `var(--color-role-primary)`
-- `--color-role-backdrop` = `rgba(<shadow-rgb>, 0.5)`
-- `--shadow-{sm,md,lg}` — three preset shadows interpolating shadow-rgb at increasing depth
+- `--color-role-focus-ring` = `var(--color-role-primary)` (alias, opaque)
+- `--color-role-backdrop` = `rgb(from var(--color-role-shadow) r g b / 0.5)`
+- `--shadow-{sm,md,lg}` — three preset shadows composing shadow color at increasing alpha depth via `rgb(from)`
+
+`color-mix(in oklab, …)` covers color *mixing* (hover state shifts toward another color); `rgb(from … r g b / α)` covers *transparency* (compose translucent from an opaque token). Two intents, two syntaxes, semantically distinct at a glance.
 
 ### 5. Text styles (mixed `:root` + tag/attribute selectors)
 
@@ -157,7 +159,6 @@ Each `text_style` metaobject emits a per-style block:
 }
 
 h1, /* one of h1..h6, only when handle matches a heading tag */
-[data-text-style='<handle>'], <!-- REVIEW: Rapid sanity check, for regular authored titles like <h2>My cart</h2>, the data-text-style attribute is useful or should we instead rely on the established data-modifiers ? -->
 [data-modifiers*='text-style:<handle>'] {
   font-family: var(--<handle>-font-family);
   font-style: var(--<handle>-font-style);
@@ -170,7 +171,7 @@ h1, /* one of h1..h6, only when handle matches a heading tag */
 }
 ```
 
-Selector auto-bind: text_style handles `h1`–`h6` get the corresponding tag selector appended (so `<h1>` reads its style without a `data-` attribute). Every handle also matches the two attribute selectors — `data-text-style` (used by primitives like `title` / `richtext` that pick a text_style via setting) and `data-modifiers*='text-style:<handle>'` (the unified modifier surface).
+Selector auto-bind: text_style handles `h1`–`h6` get the corresponding tag selector appended (so `<h1>` reads its style without any attribute). Every handle also matches `[data-modifiers*='text-style:<handle>']` — the unified modifier surface used by primitives like `title` to pick a non-default style.
 
 ### 6. Gutter spacing (`:root`)
 
@@ -198,15 +199,15 @@ N/A — utility emits CSS as captured text, not as a per-element stylesheet atta
 |---|---|---|
 | Theme palette | `--color-<handle>` (one per entry) | `theme_color.hex_code.value` |
 | Gradients | `--gradient-<handle>` (one per non-reserved entry) | `gradient` metaobject; scheme-adaptive via role-token interpolation |
-| Scheme background | `--color-role-background` (+ `-rgb`), `--gradient-background` | `scheme.settings.background` (+ optional `background_gradient`) |
-| Scheme foreground | `--color-role-foreground` (+ `-rgb`), `--color-role-foreground-heading` (+ `-rgb`), `--color-role-foreground-muted` (derived) | `scheme.settings` + opacity scale |
-| Scheme primary | `--color-role-primary` (+ `-rgb`), `--color-role-focus-ring` (alias) | `scheme.settings.primary` |
-| Scheme border / shadow | `--color-role-border` (+ `-rgb`), `--color-role-shadow` (+ `-rgb`), `--color-role-backdrop` (derived) | `scheme.settings` + 0.5 opacity |
+| Scheme background | `--color-role-background`, `--gradient-background` | `scheme.settings.background` (+ optional `background_gradient`) |
+| Scheme foreground | `--color-role-foreground`, `--color-role-foreground-heading`, `--color-role-foreground-muted` (derived) | `scheme.settings` + opacity scale |
+| Scheme primary | `--color-role-primary`, `--color-role-focus-ring` (alias) | `scheme.settings.primary` |
+| Scheme border / shadow | `--color-role-border`, `--color-role-shadow`, `--color-role-backdrop` (derived) | `scheme.settings` + 0.5 alpha via `rgb(from)` |
 | Button roles | `--color-role-{primary,secondary}-button-{background,text,border}` + `-hover` companions | `scheme.settings` + `color-mix` |
-| Input roles | `--color-role-input-{background,text,border}` + `-hover`; `--color-role-input-text-rgb`; `--color-role-placeholder` (derived) | `scheme.settings` + derivation |
-| Disabled states | `--color-role-disabled-{background,text,border}` | foreground-rgb × opacity scales |
+| Input roles | `--color-role-input-{background,text,border}` + `-hover`; `--color-role-placeholder` (derived) | `scheme.settings` + `rgb(from)` derivation |
+| Disabled states | `--color-role-disabled-{background,text,border}` | foreground × opacity scales via `rgb(from)` |
 | Opacity scales | `--opacity-subtle`, `--opacity-muted`, `--opacity-border-soft` | brightness-conditional |
-| Shadows | `--shadow-sm`, `--shadow-md`, `--shadow-lg` | shadow-rgb interpolation |
+| Shadows | `--shadow-sm`, `--shadow-md`, `--shadow-lg` | shadow color × alpha depth via `rgb(from)` |
 | Text styles | `--<handle>-font-family`, `-font-style`, `-font-size`, `-line-height`, `-font-weight`, `-letter-spacing`, `-text-transform`, `-text-decoration` (×8 per style) | `text_style` metaobject |
 | Base aliases | `--base-font-family`, `-font-style`, `-font-size`, `-line-height`, `-font-weight`, `-letter-spacing`, `-text-transform`, `-text-decoration` | text_style matching `settings.base_text_style` |
 | Gutter | `--mobile-gutter`, `--desktop-gutter`, `--gutter` | `settings.{mobile,desktop}_gutter` |
@@ -220,7 +221,8 @@ N/A — utility emits CSS as captured text, not as a per-element stylesheet atta
 - **Reserved gradient handle: `background`.** The `background` handle is skipped in the top-level gradient loop; the per-scheme block emits `--gradient-background` from `scheme.settings.background_gradient` (with a fall-through to the flat background color when no gradient is set on the scheme).
 - **Incomplete gradient entries skip emission.** A gradient metaobject with blank `color_start` or `color_end` produces no `--gradient-<handle>` line. The runtime tolerates partial entries by skipping rather than emitting a malformed `linear-gradient(…, var(--color-role-), …)` declaration.
 - **`--base-*` aliases gate on `text_style == settings.base_text_style`.** Exactly one text_style emits the alias set (the one referenced by the project's `base_text_style` setting). Consumers reading `var(--base-font-family)` resolve to the project default body typography; the body rule in `layer-theme.css` is the canonical consumer.
-- **`h1`–`h6` auto-bind.** A text_style whose handle equals one of `h1`, `h2`, …, `h6` adds the matching tag selector to its rule block — `<h1>` reads its style without any attribute. Handles outside the heading set (`hero-display`, `caption`, …) require `[data-text-style='<handle>']` or `[data-modifiers*='text-style:<handle>']` to apply.
+- **`h1`–`h6` auto-bind.** A text_style whose handle equals one of `h1`, `h2`, …, `h6` adds the matching tag selector to its rule block — `<h1>` reads its style without any attribute. Handles outside the heading set (`hero-display`, `caption`, …) require `[data-modifiers*='text-style:<handle>']` to apply.
+- **Transparency via `rgb(from var(--*) r g b / α)`.** Derived translucent tokens (foreground-muted, placeholder, disabled-*, backdrop, shadows) compose alpha from an opaque source color via relative-color syntax. Drop-in replacement for the legacy `rgba(var(--*-rgb), α)` pattern (removed in v1.11.0) — preserves Token's fractional `--opacity-*` alpha format without separate channel storage. `color-mix(in oklab, …)` is reserved for color *mixing* (hover state shifts); `rgb(from)` handles *transparency*. Two intents, two syntaxes — distinguishable at a glance.
 - **Responsive font-size collapse.** When a text_style's mobile and desktop font sizes match, no `@media (width >= 48rem)` override is emitted — the rem value is single-source. When they differ, the override emits. Same pattern applies to `--gutter` (mobile vs desktop gutter).
 - **font-size auto-fill on zero.** When both `mobile_font_size` and `desktop_font_size` are 0 → both fall through to 1rem. When one is 0, the other backfills (a single-breakpoint declaration becomes both breakpoints).
 - **`line_height` zero fallback.** Blank line_height (resolves to 0) falls through to 1.5.
@@ -238,7 +240,7 @@ Per `validation-contract.md` Tier 1b (substrate / utility-snippet).
 - **Page(s)**: `sections/validation--utility-snippet--css-variables.liquid` + `templates/index.validation--utility-snippet--css-variables.json` *(planned — Tier 1b currently has zero pages live)*. The existing `validation--substrate--theme-color` page covers a subset (the `--color-<handle>` emission); a future page or sister-pages exercise the per-scheme switching + text-style + gutter outputs.
 - **API surface** (the matrix to exercise):
   - **Scheme isolation**: a section with three child blocks, each carrying `color-scheme:scheme-N` modifier. Reader confirms each block renders with its scheme's role tokens; the outer ancestor stays in scheme-1 (no descendant catch-all leak).
-  - **Text-style triple-selector binding**: each `text_style` entry shown via tag binding (when `h1`–`h6`), `[data-text-style='<handle>']`, and `[data-modifiers*='text-style:<handle>']`. Reader confirms identical typography across the three selector surfaces.
+  - **Text-style selector binding**: each `text_style` entry shown via tag binding (when `h1`–`h6`) and `[data-modifiers*='text-style:<handle>']`. Reader confirms identical typography across both selector surfaces.
   - **Base alias resolution**: an element styled via `--base-*` aliases. Reader confirms the computed values match the text_style referenced by `settings.base_text_style`.
   - **Gradient under each scheme**: every non-reserved gradient entry rendered as a swatch under each scheme. Reader confirms color stops re-resolve per scheme (same declaration, different appearance).
   - **Gutter responsive switch**: a guide element with `inline-size: var(--gutter)` shown at narrow and wide viewports.

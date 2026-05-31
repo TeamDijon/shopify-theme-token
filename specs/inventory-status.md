@@ -3,6 +3,7 @@
 **Layer**: 0
 **Type**: snippet (`snippets/inventory-status.liquid`)
 **Status**: spec (not yet implemented)
+**Reviewed**: pending
 **Depends on**: Shopify variant inventory fields (built-in). JS update path: future `variant-display.js` module (specced with product blocks, likely shared with `price-with-compare`).
 **Consumers**: PDP buy-buttons block, product card, cart line items, comparison table (all planned)
 

@@ -3,6 +3,7 @@
 **Layer**: 0
 **Type**: snippet (`snippets/tooltip.liquid`)
 **Status**: spec (not yet implemented)
+**Reviewed**: pending
 **Depends on**: `snippets/icon.liquid`, native `popover` API, future `assets/tooltip.js` (progressive enhancement)
 **Consumers**: form-field hints, swatch labels, fine-print explainers, icon-meaning hints, price breakdowns (all planned)
 

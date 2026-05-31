@@ -28,7 +28,7 @@ A spec is the contract. It describes the element's API, output, behavior, valida
 
 **Reconciled**: <YYYY-MM-DD; omit when `Implementation: pending`>
 
-**Reviewed**: <YYYY-MM-DD; omit when never reviewed>
+**Reviewed**: <YYYY-MM-DD or `pending` when never reviewed>
 
 **Depends on**: <files, primitives, metaobjects, utilities the element consumes>
 
@@ -111,7 +111,7 @@ A spec can be reconciled-fresh and review-stale (pin matches the file but no one
 
 Bump `Reviewed` on any review pass, even if no content changes — the value is the sign-off, not the diff. When a review surfaces content changes, they land in the same commit; the Reviewed date covers them.
 
-Omit the field on specs that have never been reviewed (typical for freshly-drafted specs). Don't backfill the field on existing specs — add it only when a real review pass happens.
+Every spec carries the `Reviewed` field as a `pending` placeholder until its first review pass — a glanceable signal of which specs still owe a developer read-through. On first review, replace `pending` with the date; on subsequent reviews, bump the date.
 
 ## Section ordering
 

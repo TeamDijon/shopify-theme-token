@@ -3,6 +3,7 @@
 **Layer**: 0
 **Type**: snippet (`snippets/form-field.liquid`)
 **Status**: spec (not yet implemented)
+**Reviewed**: pending
 **Depends on**: theme input styling in `layer-theme.css` (`input`/`textarea`/`select` are styled there), semantic `--color-error` token
 **Consumers**: `contact-page`, account-auth templates, `guest-order-lookup`, `preorder-notify-me`, `gift-card-recipient-form`, newsletter/promo forms (all planned)
 

@@ -10,6 +10,8 @@
 
 **Reconciled**: 2026-05-31
 
+**Reviewed**: pending
+
 **Depends on**:
 - `assets/events-manager.js` (EventsManager class)
 - `assets/observers-manager.js` (ObserversManager class)

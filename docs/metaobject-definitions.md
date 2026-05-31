@@ -339,7 +339,7 @@ Standard name field — see [convention](#name-field-convention). Description: *
 |---|---|
 | Type key | `text_style` |
 | Display name | Text style |
-| Description | A reusable typography style applied to elements via `data-text-style` or modifiers |
+| Description | A reusable typography style applied to elements via `data-modifiers="text-style:<handle>"` (and auto-bound to bare `h1`–`h6` tags when the handle matches) |
 
 Type-level metadata: follows [convention](#type-level-metadata-convention), no deviations.
 
@@ -432,8 +432,8 @@ Standard name field — see [convention](#name-field-convention). Description: *
 **Runtime notes:**
 
 - The entry's `system.handle` is the prefix for emitted CSS variables: `--<handle>-font-family`, `--<handle>-font-size`, `--<handle>-line-height`, `--<handle>-font-weight`, `--<handle>-letter-spacing`, `--<handle>-text-transform`, `--<handle>-text-decoration`, `--<handle>-font-style`.
-- The same handle is also the value for the `[data-text-style="<handle>"]` and `[data-modifiers*="text-style:<handle>"]` selectors that apply the style.
-- **`h1`-`h6` auto-bind:** entries with handles `h1`, `h2`, `h3`, `h4`, `h5`, or `h6` get auto-applied to the matching bare HTML element (`h1 { ... }`). Naming heading entries with these handles wires them up to the document automatically — no `data-text-style` attribute needed.
+- The same handle is also the value for the `[data-modifiers*="text-style:<handle>"]` selector that applies the style — the unified modifier surface for non-heading-tag elements.
+- **`h1`-`h6` auto-bind:** entries with handles `h1`, `h2`, `h3`, `h4`, `h5`, or `h6` get auto-applied to the matching bare HTML element (`h1 { ... }`). Naming heading entries with these handles wires them up to the document automatically — no attribute needed.
 - **`--base-*` aliases:** when an entry matches the `base_text_style` setting, all its properties are re-exported as `--base-font-family`, `--base-font-size`, etc. Any element can `var(--base-font-family)` to inherit "the theme's default body typography" without referencing a specific handle.
 - Px-to-rem conversion (mobile/desktop font size, letter spacing) happens in Liquid via `÷ 16.0`. Merchants enter px; the CSS receives rem.
 - `weight` is stored as text+regex (matching `font.weight`) to enforce canonical 100-step values; Liquid coerces with `| default: '400'`.

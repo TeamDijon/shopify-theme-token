@@ -7,11 +7,13 @@
 **Status**: shipped (retrofit)
 
 **Implementation**:
-- `snippets/utility--css-variables.liquid` v1.10.0 (CSS variable emitter — `:root` `--color-<handle>` lines)
+- `snippets/utility--css-variables.liquid` v1.11.0 (CSS variable emitter — `:root` `--color-<handle>` lines)
 - `snippets/utility--meta-theme-color.liquid` v1.1.0 (head meta tag emitter)
 - Metaobject definition itself — created per `metaobject-definitions.md` § `theme_color`
 
 **Reconciled**: 2026-05-31
+
+**Reviewed**: pending
 
 **Depends on**: none — substrate-root token type
 

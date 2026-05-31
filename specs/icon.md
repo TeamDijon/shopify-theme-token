@@ -10,6 +10,8 @@
 
 **Reconciled**: 2026-05-31
 
+**Reviewed**: pending
+
 **Depends on**: `snippets/utility--inline-asset.liquid` (for the SVG inlining with missing-asset guard), `assets/icon-*.svg` files (the icon catalog), `icon` metaobject (optional dual-API input shape)
 
 **Consumers**: `snippets/button.liquid` (leading/trailing icon), `snippets/title.liquid` (leading icon), future `snippets/star-rating.liquid` (star presets), per-project sections rendering brand iconography

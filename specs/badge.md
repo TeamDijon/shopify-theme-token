@@ -3,6 +3,7 @@
 **Layer**: 0
 **Type**: snippet (`snippets/badge.liquid`)
 **Status**: spec (not yet implemented)
+**Reviewed**: pending
 **Depends on**: `snippets/icon.liquid`, semantic `theme_color` tokens (`--color-success/warning/error/info`)
 **Consumers**: `product-badges` L1 block, blog category/tag pills, promo labels, status markers — any labeled pill (all planned)
 

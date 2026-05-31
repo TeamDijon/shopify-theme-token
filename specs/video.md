@@ -10,6 +10,8 @@
 
 **Reconciled**: 2026-05-31
 
+**Reviewed**: pending
+
 **Depends on**: Shopify's `image_url` filter (for the poster image), `<media-video>` custom element (if registered — not required for static rendering)
 
 **Consumers**: `snippets/media.liquid` (primary, when `media_type: video`), future video-heavy specialized sections
