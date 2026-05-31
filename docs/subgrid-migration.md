@@ -65,15 +65,21 @@ CSS in `assets/layer-theme.css`:
     display: grid;
     grid-template-columns:
       [bleed-start]
-      minmax(0, calc((100% - var(--content-width, 125rem)) / 2 + var(--gutter)))
+      min(var(--gutter), max(0px, calc((var(--content-width, 125rem) + 2 * var(--gutter) - 100%) / 2)))
       [content-start]
-      minmax(0, var(--content-width, 125rem))
+      min(var(--content-width, 125rem), calc(100% - 2 * var(--gutter)))
       [content-end]
-      minmax(0, calc((100% - var(--content-width, 125rem)) / 2 + var(--gutter)))
+      min(var(--gutter), max(0px, calc((var(--content-width, 125rem) + 2 * var(--gutter) - 100%) / 2)))
       [bleed-end];
     justify-content: center;
     position: relative;
   }
+  /* Side-track formula caps at `--gutter` at narrow viewports and shrinks toward 0 as
+   * viewport exceeds `--content-width + 2 × --gutter` — preserving the original spec's
+   * three viewport ranges: (1) viewport < cw → bleed = viewport, content = viewport - 2g;
+   * (2) cw ≤ viewport ≤ cw + 2g → bleed = cw, content tracks viewport; (3) viewport > cw + 2g
+   * → both = cw (converged). Edge-to-edge backgrounds at wider viewports live on the outer
+   * `.shopify-section` (no max-inline-size). */
 
   /* Default: direct children span content track */
   [data-modifiers*='theme-root'] > * {

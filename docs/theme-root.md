@@ -48,7 +48,7 @@ Theme-root resolves as a CSS grid with three tracks and named lines:
 }
 ```
 
-Side tracks (`1fr`) absorb the gutter at narrow viewports and the (viewport - content-width) excess at wide viewports. The center track caps at `--content-width` and is clamped to viewport minus gutter at narrow viewports.
+Side tracks shrink from `--gutter` at narrow viewports toward `0` as the viewport grows past convergence (`--content-width + 2 * --gutter`). The center track caps at `--content-width` and is clamped to `100% - 2 * --gutter` at narrow viewports. The convergence math means bleed and content both cap at `--content-width` at viewports ≥ `--content-width + 2 * --gutter`; below convergence, bleeding children extend to viewport edges. Edge-to-edge backgrounds at very wide viewports live on the outer `.shopify-section` (no max-inline-size).
 
 Direct children default to the content track:
 
@@ -139,10 +139,14 @@ The substrate's `layer-theme.css` carries the bleed grid, bleed-direction rules,
   [data-modifiers*='theme-root'] {
     display: grid;
     grid-template-columns:
-      [bleed-start] 1fr
-      [content-start] min(var(--content-width, 125rem), calc(100% - 2 * var(--gutter)))
-      [content-end] 1fr
+      [bleed-start]
+      min(var(--gutter), max(0px, calc((var(--content-width, 125rem) + 2 * var(--gutter) - 100%) / 2)))
+      [content-start]
+      min(var(--content-width, 125rem), calc(100% - 2 * var(--gutter)))
+      [content-end]
+      min(var(--gutter), max(0px, calc((var(--content-width, 125rem) + 2 * var(--gutter) - 100%) / 2)))
       [bleed-end];
+    justify-content: center;
     position: relative;
   }
 

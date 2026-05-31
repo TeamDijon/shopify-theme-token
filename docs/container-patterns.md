@@ -33,10 +33,14 @@ Theme-section resolves as a CSS grid with three tracks and four named lines. Dir
 [data-modifiers*='theme-root'] {
   display: grid;
   grid-template-columns:
-    [bleed-start] 1fr
-    [content-start] min(var(--content-width, 125rem), calc(100% - 2 * var(--gutter)))
-    [content-end] 1fr
+    [bleed-start]
+    min(var(--gutter), max(0px, calc((var(--content-width, 125rem) + 2 * var(--gutter) - 100%) / 2)))
+    [content-start]
+    min(var(--content-width, 125rem), calc(100% - 2 * var(--gutter)))
+    [content-end]
+    min(var(--gutter), max(0px, calc((var(--content-width, 125rem) + 2 * var(--gutter) - 100%) / 2)))
     [bleed-end];
+  justify-content: center;
 }
 
 [data-modifiers*='theme-root'] > * {
@@ -44,12 +48,15 @@ Theme-section resolves as a CSS grid with three tracks and four named lines. Dir
 }
 ```
 
-Track behavior:
+Track behavior (three viewport ranges):
 
-| Viewport | Side track | Center track |
-|---|---|---|
-| `< --content-width + 2 × --gutter` | `--gutter` minimum (`1fr` distributes; the center track's `min(...)` cap clamps to `100% - 2 × --gutter` at narrow viewports) | `min(--content-width, 100% - 2 × --gutter)` → tracks viewport with gutter offset |
-| `≥ --content-width + 2 × --gutter` | `(viewport - content-width) / 2` (side `1fr` tracks absorb the excess) | `--content-width` (capped) |
+| Viewport | Side track | Center track | Bleed extent (start → end) | Content extent |
+|---|---|---|---|---|
+| `< --content-width` | `--gutter` | `viewport - 2 × --gutter` | viewport (full bleed) | `viewport - 2 × --gutter` |
+| Convergence range: `--content-width` to `--content-width + 2 × --gutter` | shrinking from `--gutter` toward `0` | `viewport - 2 × --gutter` (still tracking viewport) | `--content-width` (already capped) | `viewport - 2 × --gutter` |
+| `≥ --content-width + 2 × --gutter` | `0` (collapsed) | `--content-width` (capped) | `--content-width` (capped) | `--content-width` |
+
+At wide viewports, bleed and content **converge** at `--content-width`. The grid total ≤ `--content-width + 2 × --gutter`; `justify-content: center` keeps the grid centered within the wider section. Edge-to-edge backgrounds at very wide viewports live on the outer `.shopify-section` (no max-inline-size cap).
 
 Direct children:
 - **No bleed modifier** (default): `grid-column: content-start / content-end` → sits in the center track, capped at `--content-width`.
