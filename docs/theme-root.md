@@ -184,6 +184,7 @@ Specialized sections that omit the layout modifier get appearance + rhythm but n
 ## Related
 
 - Container patterns (gutter / gap / inner padding, bleed model, responsiveness shapes): `.context/docs/container-patterns.md`
+- Subgrid migration (planned future state: body-level appearance, named-line bleed grid, strict container-only bleed): `.context/docs/subgrid-migration.md`
 - Section convention (`<section>` outer wrapper vs theme-root inner element, file structure): `.context/rules/section-convention.md`
 - Specialized section pattern (custom-element + JS class authoring): `.context/docs/specialized-section-pattern.md`
 - Modifier system (the `data-modifiers` convention, runtime mutation): `.context/docs/modifier-system.md`

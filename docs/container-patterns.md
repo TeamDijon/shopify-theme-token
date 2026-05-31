@@ -311,6 +311,7 @@ Tracked in BACKLOG for revisit.
 
 ## Related
 
+- `subgrid-migration.md` — planned future state: replaces the today-state patterns documented here with a named-line CSS grid model. When the migration lands, the "Partial-bleed escape" section in this doc is removed entirely; the bleed cap / default sizing sections rewrite as grid-column declarations.
 - `theme-root.md` — section's role as parametrizable implicit container; layout enum (`column` / `row` / `columns_N`); rhythm scope rule that pairs with the container patterns here
 - `css-standards.md` — CSS layer model, naming, variables foundation
 - `composition-strategy.md` — block / preset / section layer model
