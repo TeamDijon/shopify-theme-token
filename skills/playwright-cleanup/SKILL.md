@@ -1,12 +1,12 @@
 ---
-name: cleanup-debug-artifacts
-description: List and remove local debug artifacts left by tooling — `.playwright-mcp/` snapshots, console logs, and screenshots; plus root-level debug `*.png` files created by Playwright tool calls that used a bare filename. Walks the inventory and proposes individual or small-batch `rm` commands; never uses `rm -rf` or wildcard globs (hallucination-safe). Invoke when the working tree shows debug noise, before a commit where the tree should be clean, or when a session has accumulated more than a few MB of artifacts.
+name: playwright-cleanup
+description: List and remove Playwright debug artifacts — `.playwright-mcp/` snapshots, console logs, and screenshots; plus root-level `*.png` files left by Playwright tool calls that used a bare filename. Walks the inventory and proposes individual or small-batch `rm` commands; never uses `rm -rf` or wildcard globs (hallucination-safe). Invoke when the working tree shows Playwright noise, before a commit where the tree should be clean, or when a session has accumulated more than a few MB of artifacts.
 tools: Bash, Glob, Read
 ---
 
-# Cleanup debug artifacts
+# Playwright cleanup
 
-Local debug noise that accumulates over a session:
+Playwright debug noise that accumulates over a session:
 
 - **`.playwright-mcp/`** — Playwright MCP auto-saves snapshots (`page-*.yml`), console logs (`console-*.log`), and tool-emitted screenshots. The folder is `.gitignored` but bloats on disk over sessions.
 - **Root-level `*.png`** — when a Playwright `take_screenshot` call uses a relative filename without a path prefix, the file lands at the repo root and shows up in `git status` as untracked.
