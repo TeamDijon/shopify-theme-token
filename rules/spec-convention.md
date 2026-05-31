@@ -72,6 +72,16 @@ Some implementations live outside the repo — Shopify-side metaobject definitio
 
 When `metaobject-definitions.md` has its own pinned reference (a commit hash or doc version), name it. Until that doc gets versioned, the cross-reference alone is the pin; the `Reconciled` date carries the freshness signal.
 
+### Substrate stylesheets — same pattern
+
+Substrate CSS files (`assets/layer-theme.css`, `assets/layer-base.css`, etc.) aggregate many concerns — body appearance defaults, the bleed grid, the rhythm cascade, container-style variants. Versioning the file as a whole would force every spec pinning it to reconcile on every substrate edit, regardless of whether the edit touches the spec's surface. Specs pin substrate CSS the same way they pin metaobject definitions: by description naming the scope (`@layer` block, selector, rule role) the spec depends on. The structural anchor is the selector or layer name; the `Reconciled` date is the freshness signal.
+
+```markdown
+- `assets/layer-theme.css` `@layer theme` — variant CSS rules scoped across `:where(.shopify-block--group, .shopify-block--columns, .shopify-block--media)[data-modifiers*='container-style:<handle>']`
+```
+
+Drift detection is manual at reconciliation: re-read the named scope, confirm the rule body still matches what the spec describes. If the selector chain or the structural pattern changed, spec body amends; if rule values changed but the contract surface didn't, refresh the `Reconciled` date only.
+
 ## Reconciliation discipline
 
 The pin is the spec's anchor to the file state it was last verified against. The `Reconciled` date records when that verification happened.

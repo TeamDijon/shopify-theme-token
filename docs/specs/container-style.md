@@ -7,10 +7,10 @@
 **Status**: shipped
 
 **Implementation**:
-- `assets/layer-theme.css` `@layer theme` (variant CSS rules, scoped across the three container blocks via `:where(...)`)
+- `assets/layer-theme.css` `@layer theme` — variant CSS rules scoped across `:where(.shopify-block--group, .shopify-block--columns, .shopify-block--media)[data-modifiers*='container-style:<handle>']`; substrate stylesheet pinned by description per `spec-convention.md` § Substrate stylesheets
 - Metaobject definition itself — created per `metaobject-definitions.md` § `container_style`
 
-**Reconciled**: 2026-05-30
+**Reconciled**: 2026-05-31 (pin format clarified — substrate CSS pinned by description rather than version; structural anchor is the `:where()` selector chain in `@layer theme`)
 
 **Depends on**: none — substrate-root token type
 
