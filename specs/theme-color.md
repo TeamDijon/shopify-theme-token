@@ -136,7 +136,7 @@ A separate spec deliverable from validation, even when the implementation shares
 
 ## Out of scope
 
-- **Color-scheme role tokens** (`--color-role-background`, `--color-role-foreground`, `--color-role-primary`, `--color-role-border`, `--color-role-shadow`, button sub-roles, input sub-roles, derived tokens like `--color-role-foreground-muted`). These come from `settings.color_schemes` and emit via the scheme block of `utility--css-variables`. A separate substrate spec covers the color-scheme system.
+- **Color-scheme role tokens** (`--color-role-background`, `--color-role-foreground`, `--color-role-primary`, `--color-role-border`, `--color-role-shadow`, button sub-roles, input sub-roles, derived tokens like `--color-role-foreground-muted`). These come from `settings.color_schemes` and emit via the scheme block of `utility--css-variables` — full contract in `utility--css-variables.md`.
 - **Gradient stops** — the `gradient` metaobject composes stops by referencing `--color-role-<role>` for scheme-adaptive stops. A theme_color handle is not a valid stop name.
 - **Runtime contrast computation** — handled by `snippets/utility--color-contrast.liquid` (its own spec). theme_color's spec is the input shape; the contrast utility is a separate consumer.
 - **Translucent companion (`-rgb`)** for theme_color entries — additive; revisit when a consumer needs `rgba(var(--color-<handle>-rgb), <alpha>)` directly off a palette color rather than a scheme role.
