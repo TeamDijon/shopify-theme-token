@@ -122,9 +122,9 @@ No runtime strings; the section emits no user-visible chrome of its own.
 
 Per `validation-contract.md` Tier 3 (preset / L2). The host section itself is exercised through its presets; there is no dedicated "section host" validation page in the current contract. Each preset's validation page configures the section's settings (`layout`, `content_width`, `block_rhythm`, `color_scheme`) and renders the preset's block composition end-to-end.
 
-- **Tier**: section host — Tier 3 work is parked (see `validation-contract.md` § Tier 3). The host's bleed-grid behavior is exercised through `sections/exploration--subgrid.liquid` (six cases on `/?view=exploration--subgrid`) until preset validation resumes.
-- **Page(s)**: `exploration--subgrid` (current verification surface); future `validation--preset--*` series (per preset, when Tier 3 unparks).
-- **API surface exercised through the verification scaffold**:
+- **Tier**: section host — Tier 3 work is parked (see `validation-contract.md` § Tier 3). No dedicated verification surface in the current contract; bleed-grid + rhythm behavior is exercised through container-block validation pages and through preset pages once Tier 3 unparks.
+- **Page(s)**: future `validation--preset--*` series (per preset, when Tier 3 unparks).
+- **API surface to exercise**:
   - **Bleed-grid cases**: section-bleed band; asymmetric image-left / image-right bleed; two-track band with both edges bleeding; three-track content-aligned; nested groups inside a bleeding columns (verify children don't independently bleed).
   - **content_width**: a section with a non-default `content_width` caps the center grid track; bleed children still span viewport-edge to viewport-edge.
   - **block_rhythm cascade**: rhythm applies between direct children of `<token-section>` only — nested blocks inside containers use parent's `gap`.
@@ -136,7 +136,6 @@ Per `validation-contract.md` Tier 3 (preset / L2). The host section itself is ex
   - `block_rhythm` blank → no `--block-rhythm-*` declarations; rhythm cascade rule's `0rem` fallback applies (no inter-block spacing).
   - Container block (group / columns / media) with `bleed-desktop:both` placed inside another container → outer's grid-column rule doesn't match (`>` direct-child requirement); nested container positions in parent's layout, no bleed. Strict container-only bleed model in action.
   - App block (`@app`) inserted alongside theme blocks → app block renders inside `<token-section>`, inherits body-level appearance defaults; section's block-rhythm cascade applies to it via the direct-child selector; section's `grid-column` default sits it in the content track.
-- **Visual showcase**: `exploration--subgrid` walks the six cases on a single page. Reader confirms each case renders as expected against the new substrate.
 - **Assertions** (prose; Playwright once installed):
   - `<token-section>` carries `data-modifiers` with `theme-root` + `color-scheme:<id>` (no `layout:` modifier under v1.4.0)
   - Computed `display` on `<token-section>` is `grid` with the named-line template

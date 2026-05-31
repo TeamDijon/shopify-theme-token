@@ -2,7 +2,7 @@
 
 Substrate restructure that replaced the today-state's `inline-size: min(...)` + `margin-inline: auto` + negative-margin escape with a named-line CSS grid model. Coordinated three structural shifts into one coherent overhaul.
 
-**Status**: shipped (Stages 0 + 1 + 2 + 3 landed 2026-05-31). The verification scaffold lives at `sections/exploration--subgrid.liquid` (reachable at `/?view=exploration--subgrid`).
+**Status**: shipped (Stages 0 + 1 + 2 + 3 landed 2026-05-31). The verification scaffold was retired once the substrate stabilized; the substrate's bleed grid is now verified through container-block validation pages and (when Tier 3 unparks) preset pages.
 
 ## What this migration accomplishes
 
@@ -156,14 +156,7 @@ Staged commits to keep verification tractable.
 
 ### Stage 0 — Exploration scaffold
 
-`sections/exploration--subgrid.liquid` (reachable at `/?view=exploration--subgrid`) — one consolidated verification page covering the six representative cases:
-
-- Section-bleed band (full width) with content track child
-- Image-left + content-right hero (asymmetric `columns bleed:inline-start`)
-- Image-right + content-left hero (mirrored asymmetric)
-- Two-track columns with gap, both bleeding outward (full-bleed band with split content)
-- Three-track columns, content-aligned (no bleed)
-- Nested groups inside a section-bleed columns block (verifies children don't independently bleed; positioning is container-driven, demonstrating the strict-container-only model)
+One consolidated verification page (`sections/exploration--subgrid.liquid`, reachable at `/?view=exploration--subgrid`) covered six representative cases — section-bleed band, asymmetric image-left / image-right bleed, two-track band with both edges bleeding, three-track content-aligned, nested groups inside a section-bleed columns block (verifying the strict-container-only model). Retired after the substrate landed; the six cases are spec'd in `specs/section.md` § Validation for the future preset surface.
 
 ### Stage 1 — Substrate cutover
 
