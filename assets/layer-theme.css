@@ -71,10 +71,14 @@
   [data-modifiers*='theme-root'] {
     display: grid;
     grid-template-columns:
-      [bleed-start] 1fr
-      [content-start] min(var(--content-width, 125rem), calc(100% - 2 * var(--gutter)))
-      [content-end] 1fr
+      [bleed-start]
+      min(var(--gutter), max(0px, calc((var(--content-width, 125rem) + 2 * var(--gutter) - 100%) / 2)))
+      [content-start]
+      min(var(--content-width, 125rem), calc(100% - 2 * var(--gutter)))
+      [content-end]
+      min(var(--gutter), max(0px, calc((var(--content-width, 125rem) + 2 * var(--gutter) - 100%) / 2)))
       [bleed-end];
+    justify-content: center;
     position: relative;
   }
 
