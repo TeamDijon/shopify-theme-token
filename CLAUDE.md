@@ -59,6 +59,6 @@ Tally as of 2026-05-27. Update the table when adding/removing/resizing rules in 
 | `assets/*.js` | `js-asset-convention.md` | 53 |
 | `assets/icon-*.svg` | `icon-convention.md` | 71 |
 | `.context/docs/**`, `.context/rules/**` (`.md`) | `reference-voice.md` | 21 |
-| `.context/docs/specs/**` (`.md`) | `reference-voice.md` (21) + `spec-convention.md` (119) | 140 |
+| `.context/specs/**` (`.md`) | `reference-voice.md` (21) + `spec-convention.md` (119) | 140 |
 
 Section edits now sit slightly over the cap (407/~400). The recent +12 lines on section-convention.md include the container-patterns cross-reference plus linter reflow. Worth a trim pass when convenient — drop redundant intro lines or move the Example block to a separate doc.
