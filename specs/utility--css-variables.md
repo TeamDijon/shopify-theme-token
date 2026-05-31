@@ -95,7 +95,7 @@ A single document-wide selection style; values track the active scheme via role 
 Each scheme block emits ~30 variables in four groups:
 
 **Direct color settings** (literal values from `scheme.settings.*`):
-- `--color-role-background`, `--color-role-foreground`, `--color-role-foreground-heading`, `--color-role-primary`, `--color-role-border`, `--color-role-shadow` — plus their `-rgb` companions
+- `--color-role-background`, `--color-role-foreground`, `--color-role-foreground-heading`, `--color-role-primary`, `--color-role-border`, `--color-role-shadow` — plus their `-rgb` companions <!-- REVIEW: Are the rgb variants used right now ? Will they be used in the future ? Should we keep them ? -->
 - `--gradient-background` — the scheme's `background_gradient` setting if set; falls through to `--color-role-background` value as a plain color
 - Button sub-roles: `--color-role-{primary,secondary}-button-{background,text,border}` (opaque only — no `-rgb` companions by default; add on demand)
 - Input sub-roles: `--color-role-input-{background,text,border}` plus `--color-role-input-text-rgb` (used by placeholder derivation)
@@ -157,7 +157,7 @@ Each `text_style` metaobject emits a per-style block:
 }
 
 h1, /* one of h1..h6, only when handle matches a heading tag */
-[data-text-style='<handle>'],
+[data-text-style='<handle>'], <!-- REVIEW: Rapid sanity check, for regular authored titles like <h2>My cart</h2>, the data-text-style attribute is useful or should we instead rely on the established data-modifiers ? -->
 [data-modifiers*='text-style:<handle>'] {
   font-family: var(--<handle>-font-family);
   font-style: var(--<handle>-font-style);
