@@ -22,7 +22,7 @@ For the high-level map (repo layout, render model, asset pipeline, CSS layers, c
 
 ## Playwright debug artifacts
 
-When using Playwright MCP tools, pass screenshot filenames with the path prefix `.playwright-mcp/` (e.g. `filename: ".playwright-mcp/subgrid-check.png"`). The folder is `.gitignored`; root-level filenames leak into `git status`. To clean accumulated artifacts, invoke the `cleanup-debug-artifacts` skill — it walks the inventory and uses individual `rm <file>` commands, never `rm -rf` or wildcards.
+When using Playwright MCP tools, pass screenshot filenames with the path prefix `.playwright-mcp/` (e.g. `filename: ".playwright-mcp/subgrid-check.png"`). The folder is `.gitignored`; root-level filenames leak into `git status`. To clean accumulated artifacts, invoke the `playwright-cleanup` skill — it walks the inventory and uses individual `rm <file>` commands, never `rm -rf` or wildcards.
 
 ## Always-on Liquid context budget
 
