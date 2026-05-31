@@ -29,7 +29,7 @@ Originally sourced from the EXPLORATION-2 inventory pass (May 2026); retrofits a
 - [article-card](./article-card.md) — blog article tile (image / date / title / excerpt / author) with `::after` pseudo-overlay making the whole card clickable; opt-in line-clamp via `excerpt-clamp` modifier; localized date + responsive image *(planned)*
 - [form-field](./form-field.md) — atomic field: label + control + help + error with full ARIA wiring (`for`/`id`, `aria-describedby`, `aria-invalid`, `aria-required`, `role="alert"`); 9 types incl. text-family / textarea / select / checkbox; variable-shadow override for error-state border *(planned)*
 - [payment-icons-strip](./payment-icons-strip.md) — row of accepted payment-method icons from `shop.enabled_payment_types`; group-level `aria-label` + per-icon `aria-hidden` (one announcement, not per-method enumeration); wrap-friendly flex layout, no color overrides (brand SVGs carry their own paint) *(planned)*
-- [tooltip](./tooltip.md) — popover-API toggletip (pointer / keyboard / touch), non-interactive content, JS-enhanced hover + placement *(planned)*
+- [tooltip](./tooltip.md) — native-`popover` toggletip; non-interactive description content (`role="tooltip"`); zero-JS base (click / tap / Enter / Space toggles) + JS enhancement for hover / focus reveal + placement until CSS anchor positioning is baseline; icon or text trigger; AA touch-target floor with per-consumer AAA opt-in *(planned)*
 
 ## Layer 1 — Theme blocks
 

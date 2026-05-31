@@ -42,7 +42,7 @@ Both conventions live in the *handle* and the *setting*, not the metaobject sche
 
 | Field | Type | Required | Notes |
 |---|---|---|---|
-| `name` | Single line text | yes | Display name in admin (e.g., `Heading 1`, `Body`, `Eyebrow`). `system.handle` derives from it. |
+| `name` | Single line text | yes | Display name in admin (e.g., `Heading 1`, `Body`, `Eyebrow`). `system.handle` derives from it. | <!-- REVIEW: Derives from it but not coupled, on first creation the handle is derived from name but then changes do not propagate to the other, might be worth to document -->
 | `font_family` | Metaobject reference (→ `typeface`) | no | Resolves to a `typeface` entry whose `name.value` becomes the primary font in the emitted `font-family` chain. Falls back to `settings.base_text_style.font_family.value.name.value` when blank, then to `system-ui` as a terminal anchor. |
 | `font_fallback_family` | Single line text | no | One of `sans-serif` / `serif` / `mono`. Selects which theme-settings font (`settings.sans_serif_font` / `serif_font` / `mono_font`) appends as the family + generic-fallback pair after the primary. Defaults to `sans-serif` when blank. |
 | `font_style` | Single line text | no | CSS `font-style` value. One of `normal` / `italic` / `oblique`. Defaults to `normal`. |
