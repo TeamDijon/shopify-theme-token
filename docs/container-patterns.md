@@ -1,6 +1,6 @@
 # Container patterns
 
-The horizontal-sizing system for sections and blocks. Three concepts, one bleed model (named-line grid on theme-section), one content-width cap. Responsiveness layers on top — see "Responsiveness" below.
+The horizontal-sizing system for sections and blocks. Three concepts, one bleed model (named-line grid on token-section), one content-width cap. Responsiveness layers on top — see "Responsiveness" below.
 
 ## Three concepts
 
@@ -65,7 +65,7 @@ Mobile is a binary `both`-only enum. Single-column mobile has no edge tracks; pe
 Section gutter applies once, at the section's grid. Container blocks (`group`, `columns`, `media`) position via section's grid, then layout their own children via their own `gap` setting. No nested gutter math.
 
 ```html
-<theme-section>                                         <!-- bleed grid -->
+<token-section>                                         <!-- bleed grid -->
   <div class="shopify-block--group">                     <!-- direct child: positions in content track -->
     <div class="inner">
       <div class="shopify-block--columns">              <!-- group's child: positions in group's flex -->
@@ -75,7 +75,7 @@ Section gutter applies once, at the section's grid. Container blocks (`group`, `
       </div>
     </div>
   </div>
-</theme-section>
+</token-section>
 ```
 
 A `group` inside a section: positions in section's content track (default). Inside the group's `.inner`, children flow per the group's flex settings (direction, alignment, gap).
@@ -104,17 +104,17 @@ The three container blocks (`group`, `columns`, `media`) emit two nested wrapper
 
 ```html
 <div class="shopify-block shopify-block--group">  <!-- outer: container-type -->
-  <theme-layout>                                   <!-- inner: layout rules -->
+  <token-layout>                                   <!-- inner: layout rules -->
     {% content_for 'blocks' %}
-  </theme-layout>
+  </token-layout>
 </div>
 ```
 
 **Why two wrappers.** The CSS Containment spec states that `@container <name>` queries do **not** match the element with `container-type` — they only match descendants. Putting the flex/grid layout on the same element as `container-type: inline-size` would make stack-below rules silently never fire. The outer hosts containment + the named container; the inner hosts the actual layout (`display: flex` / `display: grid`, `flex-direction`, `grid-template-columns`, `gap`, alignment).
 
-**Inner is `<theme-layout>` — a generic custom element** registered by `assets/theme-layout.js`. Empty class extending `HTMLElement`; exists to give the inner wrapper a custom-element tag for CSS targeting. Scoped via the outer's class — `.shopify-block--group > theme-layout`, `.shopify-block--columns > theme-layout` — so the bare `theme-layout` selector doesn't need defensive scoping inside the outer's stylesheet.
+**Inner is `<token-layout>` — a generic custom element** registered by `assets/token-layout.js`. Empty class extending `HTMLElement`; exists to give the inner wrapper a custom-element tag for CSS targeting. Scoped via the outer's class — `.shopify-block--group > token-layout`, `.shopify-block--columns > token-layout` — so the bare `token-layout` selector doesn't need defensive scoping inside the outer's stylesheet.
 
-**`media` doesn't use `<theme-layout>`.** Its inner element is `<media-contents>` (overlay-content layout) — a custom element used as a scope anchor for absolute-positioned overlay children, not the same role as theme-layout. The outer hosts containment + the media element + the overlay tint sibling.
+**`media` doesn't use `<token-layout>`.** Its inner element is `<media-contents>` (overlay-content layout) — a custom element used as a scope anchor for absolute-positioned overlay children, not the same role as token-layout. The outer hosts containment + the media element + the overlay tint sibling.
 
 The outer/inner split is structural, not stylistic.
 

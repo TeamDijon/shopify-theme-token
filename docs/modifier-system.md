@@ -8,7 +8,7 @@ Every component element may carry `data-modifiers`, a comma-separated list of `k
 
 ```html
 <button data-modifiers="button-style:solid-secondary,size:large">...</button>
-<theme-section data-modifiers="color-scheme:scheme-2">...</theme-section>
+<token-section data-modifiers="color-scheme:scheme-2">...</token-section>
 <svg data-modifiers="fill">...</svg>
 <form data-modifiers="step:submitting">...</form>
 ```
@@ -46,7 +46,7 @@ Two patterns, depending on how the set evolves:
 **Single and stable** — when an element carries exactly one modifier and the set is unlikely to grow, hardcode the attribute inline. Skip the `modifier_list` + `utility--modifiers` ceremony.
 
 ```liquid
-<theme-section data-modifiers="color-scheme:{{ section.settings.color_scheme }}">
+<token-section data-modifiers="color-scheme:{{ section.settings.color_scheme }}">
 ```
 
 ## CSS hooks

@@ -9,9 +9,9 @@
 **Implementation**:
 - `snippets/columns.liquid` v1.6.0 (render surface)
 - `blocks/columns.liquid` v1.5.0 (block schema + render call)
-- `assets/theme-layout.js` v1.0.0 (inner-wrapper custom element)
+- `assets/token-layout.js` v1.0.0 (inner-wrapper custom element)
 
-**Reconciled**: 2026-05-31 (subgrid migration Stage 3 — `<theme-layout>` replaces `<div class="inner">`)
+**Reconciled**: 2026-05-31 (subgrid migration Stage 3 — `<token-layout>` replaces `<div class="inner">`)
 
 **Depends on**: `snippets/utility--base-selector.liquid`, `snippets/utility--modifiers.liquid`, `snippets/utility--block-layout-vars.liquid`, `snippets/utility--dynamic-style.liquid`, `content_width` metaobject (optional), `container_style` metaobject (optional)
 
@@ -19,7 +19,7 @@
 
 ## Purpose
 
-CSS Grid container with fixed column ratios. The second of three L1 container blocks (alongside `group` and `media`), specialized for explicit-ratio multi-track layouts. Renders an outer `.shopify-block--columns` (hosts the named container `columns` for `@container` queries) wrapping an inner `<theme-layout>` element (hosts the grid layout). Seven preset column ratios cover the common shapes: 2-track equal (`2`), 3-track equal (`3`), 4-track equal (`4`), and asymmetric pairs (`1-2`, `2-1`, `1-3`, `3-1`).
+CSS Grid container with fixed column ratios. The second of three L1 container blocks (alongside `group` and `media`), specialized for explicit-ratio multi-track layouts. Renders an outer `.shopify-block--columns` (hosts the named container `columns` for `@container` queries) wrapping an inner `<token-layout>` element (hosts the grid layout). Seven preset column ratios cover the common shapes: 2-track equal (`2`), 3-track equal (`3`), 4-track equal (`4`), and asymmetric pairs (`1-2`, `2-1`, `1-3`, `3-1`).
 
 Distinguishing from siblings:
 
@@ -67,13 +67,13 @@ The full 9-block roster. Recursive composition via `columns` in its own whitelis
      id="<base-selector>"
      {{ block.shopify_attributes }}
      data-modifiers="columns:2,stack-below:60,sticky-track:first,bleed-desktop:both,bleed-mobile:both,container-style:card,color-scheme:scheme-2">
-  <theme-layout>
+  <token-layout>
     <!-- children rendered via {% content_for 'blocks' %} -->
-  </theme-layout>
+  </token-layout>
 </div>
 ```
 
-**Outer/inner architecture is load-bearing.** `container-type: inline-size; container-name: columns` lives on the outer (`.shopify-block--columns`); the grid layout (`display: grid`, `grid-template-columns`, `gap`, `align-items`) lives on the inner `<theme-layout>`, scoped via `.shopify-block--columns > theme-layout`. The CSS Containment spec states `@container <name>` queries do **not** match the element with `container-type` — they only match descendants. Putting the grid on the outer would make stack-below rules silently never match. The split is structural, not stylistic. Same pattern as `group`.
+**Outer/inner architecture is load-bearing.** `container-type: inline-size; container-name: columns` lives on the outer (`.shopify-block--columns`); the grid layout (`display: grid`, `grid-template-columns`, `gap`, `align-items`) lives on the inner `<token-layout>`, scoped via `.shopify-block--columns > token-layout`. The CSS Containment spec states `@container <name>` queries do **not** match the element with `container-type` — they only match descendants. Putting the grid on the outer would make stack-below rules silently never match. The split is structural, not stylistic. Same pattern as `group`.
 
 `data-modifiers` accumulates per emit-when-set. Order is deterministic per `modifier_list` builder.
 
@@ -81,7 +81,7 @@ Per-instance custom properties emit via `utility--block-layout-vars` + `utility-
 
 ## CSS
 
-Component-rooted on `.shopify-block--columns` (outer) and `> theme-layout` (inner). Layered in `@layer components`.
+Component-rooted on `.shopify-block--columns` (outer) and `> token-layout` (inner). Layered in `@layer components`.
 
 ```css
 .shopify-block--columns {
@@ -89,10 +89,10 @@ Component-rooted on `.shopify-block--columns` (outer) and `> theme-layout` (inne
   container-name: columns;
   max-inline-size: var(--content-width, 100%);
 
-  /* No own bleed CSS — section's grid-column handles bleed positioning when this block is a direct child of <theme-section> and carries a bleed-desktop:* / bleed-mobile:* modifier. */
+  /* No own bleed CSS — section's grid-column handles bleed positioning when this block is a direct child of <token-section> and carries a bleed-desktop:* / bleed-mobile:* modifier. */
 }
 
-.shopify-block--columns > theme-layout {
+.shopify-block--columns > token-layout {
   display: grid;
   grid-template-columns: var(--grid-template-columns, 1fr);
   align-items: var(--vertical-alignment, start);
@@ -100,34 +100,34 @@ Component-rooted on `.shopify-block--columns` (outer) and `> theme-layout` (inne
 }
 
 /* Stack-below — collapse to single column when below the breakpoint */
-.shopify-block--columns[data-modifiers*='stack-below'] > theme-layout {
+.shopify-block--columns[data-modifiers*='stack-below'] > token-layout {
   grid-template-columns: 1fr;
 }
 
 @container columns (inline-size >= 40rem) {
-  .shopify-block--columns[data-modifiers*='stack-below:40'] > theme-layout {
+  .shopify-block--columns[data-modifiers*='stack-below:40'] > token-layout {
     grid-template-columns: var(--grid-template-columns);
   }
 }
 /* …equivalent @container queries at 60 and 80 rem */
 
 /* Sticky track — pin first or last column */
-.shopify-block--columns[data-modifiers*='sticky-track:first'] > theme-layout > :first-child,
-.shopify-block--columns[data-modifiers*='sticky-track:second'] > theme-layout > :last-child {
+.shopify-block--columns[data-modifiers*='sticky-track:first'] > token-layout > :first-child,
+.shopify-block--columns[data-modifiers*='sticky-track:second'] > token-layout > :last-child {
   position: sticky;
   top: var(--sticky-offset, 1rem);
   align-self: start;
 }
 
 /* Disable sticky when stack-below has collapsed */
-.shopify-block--columns[data-modifiers*='stack-below'] > theme-layout > * {
+.shopify-block--columns[data-modifiers*='stack-below'] > token-layout > * {
   position: static;
 }
 
 /* Re-enable sticky inside @container queries that re-enable the grid */
 @container columns (inline-size >= 40rem) {
-  .shopify-block--columns[data-modifiers*='stack-below:40'][data-modifiers*='sticky-track:first'] > theme-layout > :first-child,
-  .shopify-block--columns[data-modifiers*='stack-below:40'][data-modifiers*='sticky-track:second'] > theme-layout > :last-child {
+  .shopify-block--columns[data-modifiers*='stack-below:40'][data-modifiers*='sticky-track:first'] > token-layout > :first-child,
+  .shopify-block--columns[data-modifiers*='stack-below:40'][data-modifiers*='sticky-track:second'] > token-layout > :last-child {
     position: sticky;
   }
 }
@@ -165,7 +165,7 @@ Sticky-track tuning:
 
 - **Seven preset ratios.** `2`, `3`, `4` for equal tracks; `1-2`, `2-1`, `1-3`, `3-1` for asymmetric pairs. The emission is a `--grid-template-columns` value per the case branch. No `<n>fr` arbitrary-ratio mode — adding new ratios requires a new entry in the schema's options + a new `when` branch in the snippet.
 - **Stack-below via `@container` queries.** The block declares `container-name: columns` on the outer. The inner's `grid-template-columns` defaults to `1fr` when a `stack-below` modifier is present; the `@container columns (inline-size >= 40rem)` rule overrides it back to the configured `--grid-template-columns` value when the outer's width is at or above the breakpoint. Behavior: a columns block sized below 40rem stacks; above 40rem, the grid applies. Container queries against the outer's inline-size — not the viewport — so nested columns inside narrow parents stack correctly.
-- **Outer/inner is required.** Same architectural rationale as `group`. `@container columns` queries skip the element with `container-type: inline-size`. The grid lives on `<theme-layout>` (the descendant); the container lives on `.shopify-block--columns` (the outer).
+- **Outer/inner is required.** Same architectural rationale as `group`. `@container columns` queries skip the element with `container-type: inline-size`. The grid lives on `<token-layout>` (the descendant); the container lives on `.shopify-block--columns` (the outer).
 - **Sticky-track pins one column.** `sticky-track:first` pins the first grid item via `position: sticky; top: var(--sticky-offset, 1rem); align-self: start`. `sticky-track:second` pins the last. Only 2-track layouts make geometric sense for sticky (the non-sticky track provides the scroll runway); the schema's `visible_if` constrains the setting to 2-track values. `align-self: start` keeps the pinned child at its natural height so the parent grid can grow taller; the non-sticky child remains free to size itself.
 - **Sticky disables under stack-below.** When stack-below has collapsed the grid to single-column, sticky has no second track to scroll against; the `position: static` override at the `[data-modifiers*='stack-below']` selector disables pin. The `@container` queries that re-enable the grid also re-enable sticky (the per-breakpoint sticky rules).
 - **vertical_alignment hidden when sticky is active.** Schema `visible_if` ensures the editor doesn't expose the conflict; sticky forces `align-self: start` on the pinned track, so per-track alignment would be ignored anyway. The setting is preserved in the schema for the non-sticky case.
@@ -221,7 +221,7 @@ Per `validation-contract.md` Tier 2 (theme-primitive).
   - Container query support absent (legacy engines) → grid renders without stack-below switching; degrades to default `--grid-template-columns` always-on
 - **Visual showcase**: matrix sections per concern. Reader confirms ratio renders correctly at desktop/mobile, stack-below switches at the named breakpoint, sticky pins the correct track, bleed escapes the gutter.
 - **Assertions** (prose; Playwright once installed):
-  - Computed `grid-template-columns` on `theme-layout` matches the configured `columns` value (above the stack-below breakpoint) or `1fr` (below)
+  - Computed `grid-template-columns` on `token-layout` matches the configured `columns` value (above the stack-below breakpoint) or `1fr` (below)
   - `[data-modifiers*='sticky-track:first']` instances have `position: sticky` on the first grid child above the stack-below breakpoint
   - `[data-modifiers*='bleed']` instances have `inline-size: 100dvw` and `margin-inline: calc(50% - 50dvw)`
   - `[data-modifiers*='container-style:card']` instances pull their variant rule from `layer-theme.css`

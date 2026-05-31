@@ -81,7 +81,7 @@ Every section carries these settings before its custom ones:
 }
 ```
 
-The section's `data-modifiers` carries `theme-root` (identity) and `color-scheme:<id>` (theming context); no `layout` modifier. Under the subgrid model, theme-section is always a bleed grid (named-line columns: `bleed-start` / `content-start` / `content-end` / `bleed-end`); row / multi-track compositions live inside container blocks (`group` / `columns`). See `.context/docs/theme-root.md` § Bleed grid.
+The section's `data-modifiers` carries `theme-root` (identity) and `color-scheme:<id>` (theming context); no `layout` modifier. Under the subgrid model, token-section is always a bleed grid (named-line columns: `bleed-start` / `content-start` / `content-end` / `bleed-end`); row / multi-track compositions live inside container blocks (`group` / `columns`). See `.context/docs/theme-root.md` § Bleed grid.
 
 `block_rhythm` emits `--block-rhythm-mobile` / `--block-rhythm-desktop` CSS variables via `utility--dynamic-style`. The matching rule lives in `layer-theme.css` scoped to theme-roots:
 

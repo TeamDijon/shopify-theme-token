@@ -16,7 +16,7 @@
 
 ## Purpose
 
-The canonical merchant-composable section host. Renders `<theme-section>` as the inner element with the `theme-root` modifier identity, exposes the section's `layout` / `content_width` / `block_rhythm` / `color_scheme` settings, and accepts the 9 L1 blocks plus `@app` blocks for composition. The single section file the general theme ships; L2 presets attach as `presets[]` entries on its schema, sharing one host file instead of forking per archetype. Specialized sections (header, footer, future cart) are *not* this — they're separate files with their own custom element per `composition-strategy.md` Beyond-L2.
+The canonical merchant-composable section host. Renders `<token-section>` as the inner element with the `theme-root` modifier identity, exposes the section's `layout` / `content_width` / `block_rhythm` / `color_scheme` settings, and accepts the 9 L1 blocks plus `@app` blocks for composition. The single section file the general theme ships; L2 presets attach as `presets[]` entries on its schema, sharing one host file instead of forking per archetype. Specialized sections (header, footer, future cart) are *not* this — they're separate files with their own custom element per `composition-strategy.md` Beyond-L2.
 
 ## Architecture
 
@@ -24,13 +24,13 @@ A rendered section produces two nested wrappers:
 
 ```html
 <section class="shopify-section shopify-section--section">
-  <theme-section data-modifiers="theme-root,color-scheme:scheme-1">
+  <token-section data-modifiers="theme-root,color-scheme:scheme-1">
     <!-- block content -->
-  </theme-section>
+  </token-section>
 </section>
 ```
 
-The outer `.shopify-section` is Shopify's universal section wrapper — outer-flow concerns only (anchor scrolling, document-flow positioning). The inner `<theme-section>` is the theme-root: appearance defaults, layout preset, block-rhythm cascade, custom-element JS runtime. See `section-convention.md` § Architecture for the two-wrapper split rationale and `theme-root.md` for the theme-root contract.
+The outer `.shopify-section` is Shopify's universal section wrapper — outer-flow concerns only (anchor scrolling, document-flow positioning). The inner `<token-section>` is the theme-root: appearance defaults, layout preset, block-rhythm cascade, custom-element JS runtime. See `section-convention.md` § Architecture for the two-wrapper split rationale and `theme-root.md` for the theme-root contract.
 
 ## API
 
@@ -42,7 +42,7 @@ Section settings — appear in the editor sidebar:
 | `block_rhythm` | metaobject (`spacing`) | no | blank → 0 | Vertical rhythm between direct block children. Emits `--block-rhythm-mobile` / `--block-rhythm-desktop` CSS variables; the rhythm cascade rule in `layer-theme.css` applies them via `[data-modifiers*='theme-root'] > .shopify-block:not(:first-child)` (see `theme-root.md` § Rhythm scope). |
 | `color_scheme` | color_scheme | yes (schema-defaulted) | `"scheme-1"` | Section's color scheme. Emitted as `color-scheme:<id>` in `data-modifiers`; the per-scheme rules in `utility--css-variables` re-emit `--color-role-*` tokens scoped to the modifier-bearing element. |
 
-The `layout` setting was dropped in v1.4.0 as part of the subgrid migration — theme-section is always a bleed grid; merchants wanting row / multi-track compositions wrap children in a `group` or `columns` block. See `subgrid-migration.md` § Open questions (resolved: dropped).
+The `layout` setting was dropped in v1.4.0 as part of the subgrid migration — token-section is always a bleed grid; merchants wanting row / multi-track compositions wrap children in a `group` or `columns` block. See `subgrid-migration.md` § Open questions (resolved: dropped).
 
 ## Block whitelist
 
@@ -57,12 +57,12 @@ No `@theme` wildcard. New L1 blocks ship with an entry added here; see `composit
 ## Output shape
 
 ```liquid
-<theme-section data-modifiers="theme-root,color-scheme:{{ section.settings.color_scheme }}">
+<token-section data-modifiers="theme-root,color-scheme:{{ section.settings.color_scheme }}">
   {% content_for 'blocks' %}
-</theme-section>
+</token-section>
 ```
 
-`<theme-section>` is the generic custom element (extends `BaseComponent`) defined in `assets/section.js`. Carries `theme-root` as a static identity marker plus the section's `color-scheme` modifier. The bleed grid, bleed-direction rules, and rhythm cascade match against `[data-modifiers*='theme-root']` in `layer-theme.css`.
+`<token-section>` is the generic custom element (extends `BaseComponent`) defined in `assets/section.js`. Carries `theme-root` as a static identity marker plus the section's `color-scheme` modifier. The bleed grid, bleed-direction rules, and rhythm cascade match against `[data-modifiers*='theme-root']` in `layer-theme.css`.
 
 `{% content_for 'blocks' %}` renders the whitelisted child blocks the merchant has added. Empty section (no blocks) still renders the wrapper — useful for visual structure during composition.
 
@@ -95,12 +95,12 @@ Modifier-driven (not vars): `theme-root` (identity, matches bleed-grid + rhythm 
 
 ## Behavior
 
-- **Static `theme-root` modifier.** Authored directly in the markup — `<theme-section data-modifiers="theme-root,...">`. Not a setting; not a computed value. Substrate bleed-grid and rhythm rules all match `[data-modifiers*='theme-root']`, so the section participates in the bleed model by carrying the marker. See `theme-root.md` § Identity.
+- **Static `theme-root` modifier.** Authored directly in the markup — `<token-section data-modifiers="theme-root,...">`. Not a setting; not a computed value. Substrate bleed-grid and rhythm rules all match `[data-modifiers*='theme-root']`, so the section participates in the bleed model by carrying the marker. See `theme-root.md` § Identity.
 - **Always a bleed grid.** Theme-section resolves as `display: grid` with named columns (`bleed-start` / `content-start` / `content-end` / `bleed-end`). No `layout` setting — the section's role is the bleed grid; row / multi-track compositions live inside container blocks (`group` / `columns`). See `theme-root.md` § Bleed grid.
 - **`content_width` caps the center track.** The section's `--content-width` caps the center track via `min(--content-width, 100% - 2 × --gutter)`; bleeding children spanning `bleed-start / bleed-end` reach viewport edges. A 60rem-content section gets 60rem-wide content + full-viewport bleed (capped at viewport, not at 60rem) — see `container-patterns.md` § Content cap and convergence.
 - **`block_rhythm` is the section-level rhythm baseline.** Per-block top-margin overrides (`--mobile-margin-block-start` / `--desktop-margin-block-start` from `utility--block-layout-vars`) fall through to the section rhythm via the var chain in the rhythm cascade rule. The rhythm applies to direct children only (`> .shopify-block:not(:first-child)`); container blocks (`group`, `columns`, `media`) use their own `gap` setting for between-child spacing — see `theme-root.md` § Rhythm scope.
 - **Color-scheme override.** `color-scheme:<id>` on the section root activates that scheme's `--color-role-*` tokens, scoped via the per-scheme selectors in `utility--css-variables`. Block-level color-scheme overrides (on `group`/`columns`/`media`/etc.) re-emit the tokens for their subtree.
-- **Empty section renders the wrapper.** `{% content_for 'blocks' %}` against zero blocks emits nothing inside the wrapper; the `<theme-section>` outer + the `.shopify-section` wrapper still render, including all dynamic-style emission. Sections in the editor without blocks remain selectable.
+- **Empty section renders the wrapper.** `{% content_for 'blocks' %}` against zero blocks emits nothing inside the wrapper; the `<token-section>` outer + the `.shopify-section` wrapper still render, including all dynamic-style emission. Sections in the editor without blocks remain selectable.
 - **`disabled_on` excludes header / footer groups.** The section is not addable inside section groups for header / footer (those groups have their own specialized sections). Page-level template positions remain addable.
 - **No `presets[]` in this spec.** The schema's `presets` array lists L2 preset entries — each preset is its own spec at Tier 3 per `validation-contract.md`. This spec covers the host; presets attach via `presets[]` entries and ship with their own preset specs.
 
@@ -127,7 +127,7 @@ Per `validation-contract.md` Tier 3 (preset / L2). The host section itself is ex
 - **API surface exercised through the verification scaffold**:
   - **Bleed-grid cases**: section-bleed band; asymmetric image-left / image-right bleed; two-track band with both edges bleeding; three-track content-aligned; nested groups inside a bleeding columns (verify children don't independently bleed).
   - **content_width**: a section with a non-default `content_width` caps the center grid track; bleed children still span viewport-edge to viewport-edge.
-  - **block_rhythm cascade**: rhythm applies between direct children of `<theme-section>` only — nested blocks inside containers use parent's `gap`.
+  - **block_rhythm cascade**: rhythm applies between direct children of `<token-section>` only — nested blocks inside containers use parent's `gap`.
   - **color_scheme override**: non-default scheme cascades `--color-role-*` tokens to descendants; block-level overrides re-emit within their subtree.
   - **Empty section**: zero blocks → wrappers render, no inner content; remains selectable in editor.
   - **disabled_on**: section not offered inside header / footer section groups.
@@ -135,22 +135,22 @@ Per `validation-contract.md` Tier 3 (preset / L2). The host section itself is ex
   - `content_width` blank → falls through to the 125rem substrate default; no `--content-width` declaration emitted in the dynamic style block.
   - `block_rhythm` blank → no `--block-rhythm-*` declarations; rhythm cascade rule's `0rem` fallback applies (no inter-block spacing).
   - Container block (group / columns / media) with `bleed-desktop:both` placed inside another container → outer's grid-column rule doesn't match (`>` direct-child requirement); nested container positions in parent's layout, no bleed. Strict container-only bleed model in action.
-  - App block (`@app`) inserted alongside theme blocks → app block renders inside `<theme-section>`, inherits body-level appearance defaults; section's block-rhythm cascade applies to it via the direct-child selector; section's `grid-column` default sits it in the content track.
+  - App block (`@app`) inserted alongside theme blocks → app block renders inside `<token-section>`, inherits body-level appearance defaults; section's block-rhythm cascade applies to it via the direct-child selector; section's `grid-column` default sits it in the content track.
 - **Visual showcase**: `exploration--subgrid` walks the six cases on a single page. Reader confirms each case renders as expected against the new substrate.
 - **Assertions** (prose; Playwright once installed):
-  - `<theme-section>` carries `data-modifiers` with `theme-root` + `color-scheme:<id>` (no `layout:` modifier under v1.4.0)
-  - Computed `display` on `<theme-section>` is `grid` with the named-line template
+  - `<token-section>` carries `data-modifiers` with `theme-root` + `color-scheme:<id>` (no `layout:` modifier under v1.4.0)
+  - Computed `display` on `<token-section>` is `grid` with the named-line template
   - Direct-child `.shopify-block` (non-first) computed `margin-block-start` matches the rhythm cascade values per breakpoint
   - Direct children with `bleed-desktop:both` have computed `grid-column-start: bleed-start` and `grid-column-end: bleed-end` at viewports ≥ 48rem
   - `--content-width` resolves to the configured px value (or 125rem default)
   - Color-scheme tokens (`--color-role-*`) resolve to the scheme's configured colors
-- **Unit scope**: none — `<theme-section>` extends `BaseComponent` (the four managers run as a side-effect of registration), but the section itself ships no behavior beyond construction. JS coverage lives at the substrate Tier 1d level.
+- **Unit scope**: none — `<token-section>` extends `BaseComponent` (the four managers run as a side-effect of registration), but the section itself ships no behavior beyond construction. JS coverage lives at the substrate Tier 1d level.
 
 ## Out of scope
 
-- **`<theme-section>` JS implementation** — covered by the `BaseComponent` spec and the four manager specs. The section file only declares the custom element root.
+- **`<token-section>` JS implementation** — covered by the `BaseComponent` spec and the four manager specs. The section file only declares the custom element root.
 - **Per-preset content composition** — each L2 preset entry has its own spec describing its block composition, settings defaults, and validation page. This spec covers the host, not the catalog of presets.
-- **Specialized section identity** — `<theme-cart>`, `<theme-header>`, `<theme-footer>` are Beyond-L2 sections with their own files and their own specs. They share the `theme-root` identity but own their layout via per-section CSS (see `theme-root.md` § Specialized-section opt-out and `specialized-section-pattern.md`).
+- **Specialized section identity** — `<token-cart>`, `<token-header>`, `<token-footer>` are Beyond-L2 sections with their own files and their own specs. They share the `theme-root` identity but own their layout via per-section CSS (see `theme-root.md` § Specialized-section opt-out and `specialized-section-pattern.md`).
 - **Layout setting evolution** — the `layout` enum (column/row/columns_N) is planned to be dropped in the subgrid migration (see `subgrid-migration.md`). The section becomes an always-bleed-grid with named lines; container blocks declare `grid-column` instead of layout flowing from the section setting. This spec describes the today-state.
 - **Container-style at the section level** — `container_style` is a container-block concern (`group`/`columns`/`media`), not a section concern. A merchant wanting card-styled chrome around a section's content wraps the section's children in a `group` with `container_style: card`.
 - **Section-level bleed setting** — bleed is a container-block concern under the strict container-only bleed model (see `subgrid-migration.md`). Sections don't declare bleed; their children (specifically the container blocks) do.

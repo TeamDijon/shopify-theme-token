@@ -1,6 +1,6 @@
 # Specialized section pattern
 
-A specialized section has bespoke JS (cart, header, modal, etc.) and uses its own custom element (e.g. `<theme-cart>`) extending `BaseComponent`, instead of the generic `<theme-section>` wrapper.
+A specialized section has bespoke JS (cart, header, modal, etc.) and uses its own custom element (e.g. `<token-cart>`) extending `BaseComponent`, instead of the generic `<token-section>` wrapper.
 
 For the high-level convention see `section-convention.md`. For JS module conventions see `js-asset-convention.md`. This doc is the worked example.
 
@@ -24,10 +24,10 @@ When authoring a new specialized section, also:
   assign base_selector = 'shopify-section-' | append: section.id
 %}
 
-<theme-cart id="{{ base_selector }}" data-modifiers="theme-root,state:closed">
+<token-cart id="{{ base_selector }}" data-modifiers="theme-root,state:closed">
   {% comment %} markup driven by section.settings {% endcomment %}
   <button data-toggle>{{ 'cart.actions.toggle' | t }}</button>
-</theme-cart>
+</token-cart>
 
 {% capture dynamic_style %}
   {% comment %} per-instance CSS variables, optional {% endcomment %}
@@ -76,8 +76,8 @@ export class ThemeCart extends BaseComponent {
   };
 }
 
-if (!customElements.get("theme-cart")) {
-  customElements.define("theme-cart", ThemeCart);
+if (!customElements.get("token-cart")) {
+  customElements.define("token-cart", ThemeCart);
 }
 ```
 

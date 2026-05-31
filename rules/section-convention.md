@@ -25,7 +25,7 @@ Section CSS and JS live in dedicated `assets/<name>.css` and `assets/<name>.js` 
 When the section is a merchant-composable container that renders blocks, no bespoke JS needed:
 
 1. **Liquid block** — resolve `section.settings.*`, compute `base_selector = 'shopify-section-' | append: section.id`
-2. **`<theme-section>` custom element wrapper** — the generic base element; carries `theme-root,color-scheme:<id>` in `data-modifiers`. The `theme-root` modifier gates the section's named-line bleed grid and rhythm cascade (see `.context/docs/theme-root.md`). No `layout` modifier — the section is always a bleed grid; row / multi-track compositions live inside container blocks (`group` / `columns`).
+2. **`<token-section>` custom element wrapper** — the generic base element; carries `theme-root,color-scheme:<id>` in `data-modifiers`. The `theme-root` modifier gates the section's named-line bleed grid and rhythm cascade (see `.context/docs/theme-root.md`). No `layout` modifier — the section is always a bleed grid; row / multi-track compositions live inside container blocks (`group` / `columns`).
 3. **`{% content_for 'blocks' %}`** inside the wrapper
 4. **Dynamic style** — see `.context/docs/dynamic-style-pattern.md`
 
@@ -34,11 +34,11 @@ When the section is a merchant-composable container that renders blocks, no besp
 When the section has bespoke JS (cart, header, footer, etc.), the root element is a specialized custom element extending `BaseComponent`, named `<theme-<name>>`:
 
 1. Liquid block with `base_selector`
-2. `<theme-<name>>` as the body root (no `<theme-section>` wrapping it). Carries `theme-root` in `data-modifiers` for scheme tokens + bleed-grid / rhythm matching; overrides `display` in per-section CSS to opt out of the bleed grid when the section has its own layout (see `.context/docs/theme-root.md` § Specialized-section opt-out)
+2. `<theme-<name>>` as the body root (no `<token-section>` wrapping it). Carries `theme-root` in `data-modifiers` for scheme tokens + bleed-grid / rhythm matching; overrides `display` in per-section CSS to opt out of the bleed grid when the section has its own layout (see `.context/docs/theme-root.md` § Specialized-section opt-out)
 3. Custom markup driven by settings/blocks as needed
 4. Dynamic style if per-instance CSS values apply
 
-Examples: `<theme-cart>`, `<theme-header>`, `<theme-footer>`. The corresponding JS class is defined in `assets/<name>.js` and extends `BaseComponent` (see `.context/rules/js-asset-convention.md`). For the full worked example (Liquid + JS pair, patterns to follow, patterns to avoid), see `.context/docs/specialized-section-pattern.md`.
+Examples: `<token-cart>`, `<token-header>`, `<token-footer>`. The corresponding JS class is defined in `assets/<name>.js` and extends `BaseComponent` (see `.context/rules/js-asset-convention.md`). For the full worked example (Liquid + JS pair, patterns to follow, patterns to avoid), see `.context/docs/specialized-section-pattern.md`.
 
 ## Architecture
 
@@ -46,23 +46,23 @@ A rendered section produces two nested wrappers:
 
 ```html
 <section class="shopify-section shopify-section--<name>">
-  <theme-section data-modifiers="theme-root,color-scheme:scheme-2">
+  <token-section data-modifiers="theme-root,color-scheme:scheme-2">
     <!-- content -->
-  </theme-section>
+  </token-section>
 </section>
 ```
 
 The two wrappers serve different audiences and have different blast radii. Each layer's job follows from its scope.
 
 - **Outer `<section class="shopify-section ...">`** — Shopify wraps every section, ours and apps', in this. **Universal scope.** Anything we put on `.shopify-section` propagates to app sections too, so only outer-flow concerns belong here: anchor scrolling (`scroll-margin-block-start`), scroll-behavior, inter-section spacing if ever needed. **No typography, background, or transitions** — those would bleed into apps. The schema's `"class": "shopify-section--<name>"` adds a per-section identity hook used rarely, only for outer-level overrides that *can't* live on the inner element (typically `position: sticky` for header sections, `z-index` overlaps, document-flow positioning). Most sections add no rule at this layer.
-- **Inner `<theme-section>` / `<theme-<name>>`** — our domain. **Bleed grid + rhythm cascade + JS runtime live here.** The `theme-root` modifier gates section's named-line bleed grid (`grid-template-columns: [bleed-start] 1fr [content-start] ... [content-end] 1fr [bleed-end]`), the bleed-direction grid-column rules, and the block-rhythm cascade. Plus the JS runtime wiring (`events`, `observers`, `cache`, `modifiers` managers via `BaseComponent`). See `.context/docs/theme-root.md` for the contract (identity, bleed grid, rhythm scope).
+- **Inner `<token-section>` / `<theme-<name>>`** — our domain. **Bleed grid + rhythm cascade + JS runtime live here.** The `theme-root` modifier gates section's named-line bleed grid (`grid-template-columns: [bleed-start] 1fr [content-start] ... [content-end] 1fr [bleed-end]`), the bleed-direction grid-column rules, and the block-rhythm cascade. Plus the JS runtime wiring (`events`, `observers`, `cache`, `modifiers` managers via `BaseComponent`). See `.context/docs/theme-root.md` for the contract (identity, bleed grid, rhythm scope).
 
 **Content-level appearance defaults — typography, color, background, transitions, form inputs — live on `<body>`, not on theme-root.** They cascade to chrome + theme-roots + app sections alike. Apps with their own styling override per normal cascade; apps without styling inherit theme defaults. See `.context/docs/subgrid-migration.md` § Body-level appearance for the rationale.
 
 ## Naming
 
-- Namespace: `theme-` (e.g. `<theme-section>`, `<theme-cart>`, `<theme-header>`)
-- Specialized elements match the section filename: `sections/cart.liquid` → `<theme-cart>` → `assets/cart.js` defining a class extending `BaseComponent`
+- Namespace: `theme-` (e.g. `<token-section>`, `<token-cart>`, `<token-header>`)
+- Specialized elements match the section filename: `sections/cart.liquid` → `<token-cart>` → `assets/cart.js` defining a class extending `BaseComponent`
 
 ## Schema requirements
 
@@ -88,9 +88,9 @@ The two wrappers serve different audiences and have different blast radii. Each 
   assign base_selector = 'shopify-section-' | append: section.id
 %}
 
-<theme-section data-modifiers="theme-root,color-scheme:{{ section.settings.color_scheme }}">
+<token-section data-modifiers="theme-root,color-scheme:{{ section.settings.color_scheme }}">
   {% content_for 'blocks' %}
-</theme-section>
+</token-section>
 
 {% capture dynamic_style %}
   {% if content_width and content_width != blank %}

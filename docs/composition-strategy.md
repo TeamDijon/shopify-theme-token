@@ -134,7 +134,7 @@ None of the three ship today; they will land alongside their first consumer.
 - `.context/rules/section-convention.md` — standard vs specialized sections (L2 host vs Beyond-L2); explicit-whitelist schema convention
 - `.context/rules/snippet-convention.md` — snippet structure (L0)
 - `.context/docs/css-standards.md` — component-rooted CSS; `.shopify-block--<name>` (block-backed) vs `.<name>` (sub-component) roots
-- `.context/docs/modifier-system.md` — `data-modifiers` attribute used on block-backed roots and `<theme-section>`
+- `.context/docs/modifier-system.md` — `data-modifiers` attribute used on block-backed roots and `<token-section>`
 - `.context/docs/asset-loading.md` — file-vs-inline CSS/JS placement across consumer types
 - `.context/docs/spec-to-component.md` — end-to-end workflow from triage through validation
 - `.context/docs/validation-contract.md` — per-tier validation contract (substrate, primitive, preset, specialized section)

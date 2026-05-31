@@ -11,8 +11,8 @@ Conventions for theme CSS.
 
 ## `:has()` performance
 
-- **Anchor close to the descendant.** `theme-section:has([data-modifiers*="x"])` matches earlier in the selector engine than `:has(theme-section [data-modifiers*="x"])`.
-- **Prefer `>` combinator.** `theme-section:has(> [data-active])` is cheaper than `theme-section:has([data-active])` when the subtree is large.
+- **Anchor close to the descendant.** `token-section:has([data-modifiers*="x"])` matches earlier in the selector engine than `:has(token-section [data-modifiers*="x"])`.
+- **Prefer `>` combinator.** `token-section:has(> [data-active])` is cheaper than `token-section:has([data-active])` when the subtree is large.
 - **Avoid `:has()` on subtrees that mutate frequently.** Each mutation re-evaluates the selector for every potential match.
 
 ## Native nesting
@@ -24,7 +24,7 @@ Modern CSS nesting is used throughout — `& > *`, `&[data-modifiers*="x"]`, `& 
 `assets/layer-base.css` declares `@layer reset, theme, components, utilities;`. Cascade priority runs left → right (later layers win). Place rules deliberately:
 
 - `@layer reset` — universal hygiene applied to everything (UA-default normalizations, media defaults).
-- `@layer theme` — **body-level appearance defaults** (typography, color, background, transitions, form inputs) cascade from `<body>` to every element inside it (chrome + theme-roots + app sections alike). Theme-roots matched via `[data-modifiers*='theme-root']` resolve as the named-line bleed grid + rhythm cascade. Every theme-owned custom-element root (`theme-section`, future `theme-cart` / `theme-header` / `theme-footer`) carries `theme-root` in `data-modifiers`. Specialized sections override `display` per-section to opt out of the bleed grid. See `.context/docs/theme-root.md` for the contract and `.context/docs/subgrid-migration.md` for the body-level appearance rationale.
+- `@layer theme` — **body-level appearance defaults** (typography, color, background, transitions, form inputs) cascade from `<body>` to every element inside it (chrome + theme-roots + app sections alike). Theme-roots matched via `[data-modifiers*='theme-root']` resolve as the named-line bleed grid + rhythm cascade. Every theme-owned custom-element root (`token-section`, future `token-cart` / `token-header` / `token-footer`) carries `theme-root` in `data-modifiers`. Specialized sections override `display` per-section to opt out of the bleed grid. See `.context/docs/theme-root.md` for the contract and `.context/docs/subgrid-migration.md` for the body-level appearance rationale.
 - `@layer components` — per-block and per-section stylesheets. Wrap every `{% stylesheet %}` block and `assets/<name>.css` body in `@layer components { ... }`. This puts component styles **above** theme defaults (so blocks override theme appearance) but **below** utilities (so opt-in modifiers like `prose:narrow` cleanly override component defaults without each block needing a `:not()` escape hatch).
 - `@layer utilities` — opt-in modifiers (`prose`, `prose:narrow`, `skip-to-content`). Last in the ladder, so they always win when applied.
 
@@ -70,7 +70,7 @@ Component CSS targets a unique root selector, picked by the primitive's consumpt
 
 - **Block-backed primitive** — the snippet *is* a theme-block root (schema `"tag": null`), so it renders the root itself and emits `class="shopify-block shopify-block--<name>"` + `{{ block.shopify_attributes }}`. Style via `.shopify-block--<name>`. (`title`, `button`, `media`, …)
 - **Sub-component primitive** — nested inside other blocks/sections, never a block root. Style via a clean `.<name>` (`.star-rating`, `.badge`, `.skip-to-content`).
-- **Specialized section** — the custom element tag (`theme-cart`, `theme-header`).
+- **Specialized section** — the custom element tag (`token-cart`, `token-header`).
 
 Avoid bare element selectors that could leak (`button { ... }` in a block stylesheet styles every `<button>` on the page once the block is rendered, not just the block's own).
 

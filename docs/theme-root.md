@@ -9,14 +9,14 @@ A theme-root is the top of the theme's CSS scope chain on a given Shopify sectio
 Every theme-root element carries `theme-root` as one of its `data-modifiers` values, alongside other modifiers the element emits:
 
 ```liquid
-<theme-section data-modifiers="theme-root,color-scheme:scheme-1">
-<theme-cart data-modifiers="theme-root,color-scheme:scheme-1">
-<theme-header data-modifiers="theme-root,color-scheme:scheme-2">
+<token-section data-modifiers="theme-root,color-scheme:scheme-1">
+<token-cart data-modifiers="theme-root,color-scheme:scheme-1">
+<token-header data-modifiers="theme-root,color-scheme:scheme-2">
 ```
 
 The marker is a static identity value, authored directly in each section's Liquid (no value pair; just the bare `theme-root` token). Specialized-section authoring adds it to the custom element's static modifier list.
 
-Substrate selectors match all theme-roots via `[data-modifiers*='theme-root']` — the layout grid, the bleed-direction rules, and the rhythm cascade all key off this substring. Specialized-section-specific styling uses tag selectors (`theme-cart { ... }`) when the role matters.
+Substrate selectors match all theme-roots via `[data-modifiers*='theme-root']` — the layout grid, the bleed-direction rules, and the rhythm cascade all key off this substring. Specialized-section-specific styling uses tag selectors (`token-cart { ... }`) when the role matters.
 
 **Substring-match safety.** `theme-root` must remain a unique substring across every `data-modifiers` value the theme emits. Modifier values like `layout:theme-root-style` would false-match the `[data-modifiers*='theme-root']` selector and apply substrate rules where they don't belong. The convention is to keep `theme-root` as a reserved bare token; never use it as a substring inside another modifier value.
 
@@ -74,16 +74,16 @@ Mobile is a binary `both`-only enum — single-column mobile has no edge tracks,
 
 ## Specialized-section opt-out
 
-A specialized section (`<theme-cart>`, `<theme-header>`, `<theme-footer>`) carries `theme-root` for identity, color-scheme tokens, and JS runtime — but owns its layout independently. Per-section CSS overrides `display: grid` with whatever layout the section needs:
+A specialized section (`<token-cart>`, `<token-header>`, `<token-footer>`) carries `theme-root` for identity, color-scheme tokens, and JS runtime — but owns its layout independently. Per-section CSS overrides `display: grid` with whatever layout the section needs:
 
 ```css
-theme-cart {
+token-cart {
   display: grid;
   grid-template-areas: "header" "lines" "summary";
   /* ... */
 }
 
-theme-header {
+token-header {
   display: flex;
   position: sticky;
   inset-block-start: 0;
@@ -95,11 +95,11 @@ Specialized sections that need to retain the bleed grid pass through; those that
 
 ## Leaf-vs-wrapped composition
 
-A section composed as `[title, richtext, button]` directly under `<theme-section>` is equivalent in vertical rhythm to `[group{direction:column}, [title, richtext, button]]`:
+A section composed as `[title, richtext, button]` directly under `<token-section>` is equivalent in vertical rhythm to `[group{direction:column}, [title, richtext, button]]`:
 
 | Composition | Block-spacing source |
 |---|---|
-| Leaf-only under theme-section | Rhythm cascade (`--block-rhythm-*` set on the theme-root) applied to direct children via `[data-modifiers*='theme-root'] > .shopify-block:not(:first-child) { margin-block-start: ... }` |
+| Leaf-only under token-section | Rhythm cascade (`--block-rhythm-*` set on the theme-root) applied to direct children via `[data-modifiers*='theme-root'] > .shopify-block:not(:first-child) { margin-block-start: ... }` |
 | Wrapped in a `group` block (`direction:column`) | The group's own `gap` setting (no rhythm cascade leaks in — see Rhythm scope below) |
 
 Choose between them by what's needed:

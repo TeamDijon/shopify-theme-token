@@ -41,7 +41,7 @@ Originally sourced from the EXPLORATION-2 inventory pass (May 2026); retrofits a
 
 ## Section host
 
-- [section](./specs/section.md) — the merchant-composable section host (`sections/section.liquid`). Renders `<theme-section>` with the `theme-root` modifier; exposes the layout / content_width / block_rhythm / color_scheme settings; whitelists the 9 shipped L1 blocks + `@app`; hosts L2 presets via its `presets[]` schema array *(shipped — retrofit)*
+- [section](./specs/section.md) — the merchant-composable section host (`sections/section.liquid`). Renders `<token-section>` with the `theme-root` modifier; exposes the layout / content_width / block_rhythm / color_scheme settings; whitelists the 9 shipped L1 blocks + `@app`; hosts L2 presets via its `presets[]` schema array *(shipped — retrofit)*
 
 ## Layer 2 — Presets on `section.liquid`
 

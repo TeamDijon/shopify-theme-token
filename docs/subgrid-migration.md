@@ -8,9 +8,9 @@ Substrate restructure that replaced the today-state's `inline-size: min(...)` + 
 
 Three changes, landed together:
 
-1. **theme-section becomes a CSS grid with named bleed lines.** Direct children declare `grid-column` on those lines. Replaces the today pattern of `inline-size: min(100% - 2 * var(--gutter), var(--content-width))` + `margin-inline: auto`.
+1. **token-section becomes a CSS grid with named bleed lines.** Direct children declare `grid-column` on those lines. Replaces the today pattern of `inline-size: min(100% - 2 * var(--gutter), var(--content-width))` + `margin-inline: auto`.
 2. **Strict container-only bleed model.** Only container blocks (`group`, `columns`, `media`) declare bleed direction via grid-column on section's named lines. Content blocks (`title`, `richtext`, `button`) carry no bleed setting. Children of containers position via their container's own layout — they do not independently reach section's bleed lines. Eliminates the partial-bleed escape pattern entirely.
-3. **Appearance defaults move to `<body>`.** Typography, color, transitions, form-input styling cascade from body to everything inside it (including chrome elements outside `<theme-section>`). theme-root's responsibilities slim from five to four: JS runtime, scheme override, layout root (bleed grid), rhythm container.
+3. **Appearance defaults move to `<body>`.** Typography, color, transitions, form-input styling cascade from body to everything inside it (including chrome elements outside `<token-section>`). theme-root's responsibilities slim from five to four: JS runtime, scheme override, layout root (bleed grid), rhythm container.
 
 ## Target substrate shape
 
@@ -121,7 +121,7 @@ CSS in `assets/layer-theme.css`:
 | Rule | Statement |
 |---|---|
 | Bleed is a container concern | Only container blocks (`group`, `columns`, `media`) declare bleed direction. Content blocks (`title`, `richtext`, `button`, `spacer`, `separator`, `embed`) carry no bleed setting. |
-| Bleed declares grid-column on section's named lines | A container block as a direct child of theme-section uses one of: `content-start / content-end` (default), `bleed-start / content-end`, `content-start / bleed-end`, `bleed-start / bleed-end`. Emitted via `bleed-desktop:<value>` / `bleed-mobile:<value>` modifiers. |
+| Bleed declares grid-column on section's named lines | A container block as a direct child of token-section uses one of: `content-start / content-end` (default), `bleed-start / content-end`, `content-start / bleed-end`, `bleed-start / bleed-end`. Emitted via `bleed-desktop:<value>` / `bleed-mobile:<value>` modifiers. |
 | Children of containers do not reach section's bleed lines | A block inside a `columns` track positions in columns' own grid. It cannot independently bleed past its container's boundary. To make a child bleed, set the bleed at the container layer. |
 | Position selectors (`:first-child` / `:last-child`) are not used for bleed gating | Bleed declarations on a container apply absolutely on the section's named lines; no edge-track gating needed. |
 | Asymmetric layouts express via container settings | "Image-left bleed + text-right gutter" composes as `<columns bleed:inline-start ratio:2:1>` with two tracks. The container's bleed direction + track ratio do the work. |
@@ -133,7 +133,7 @@ CSS in `assets/layer-theme.css`:
 |---|---|
 | `assets/layer-theme.css` | Full rewrite. Appearance moves to `body`. Theme-root becomes a bleed grid via `display: grid` + named columns. Container bleed declarations match via `[data-modifiers*='bleed-desktop:*']`. Negative-margin escape rules removed entirely. |
 | `snippets/group.liquid` (stylesheet block) | Bleed CSS rewritten: `inline-size: min(100%, var(--content-width))` + `margin-inline: auto` → `grid-column: bleed-start / bleed-end` (etc.). Partial-bleed escape (`margin-inline-(start\|end)`) removed. |
-| `snippets/columns.liquid` (stylesheet block) | Same as group. Multi-track subdivision (`grid-template-columns: repeat(N, 1fr)`) lives on the `.inner` (or future `<theme-layout>`); subgrid pass-through on the outer is not required because container blocks now express bleed via the container's own grid-column. |
+| `snippets/columns.liquid` (stylesheet block) | Same as group. Multi-track subdivision (`grid-template-columns: repeat(N, 1fr)`) lives on the `.inner` (or future `<token-layout>`); subgrid pass-through on the outer is not required because container blocks now express bleed via the container's own grid-column. |
 | `snippets/media.liquid` (stylesheet block) | Same — bleed via grid-column. |
 | `.context/docs/theme-root.md` | "Five responsibilities" section reduces to four (appearance moves to body). "Substrate CSS shape" section updates to the subgrid model. "Layout enum" mention removed (no enum after this migration; section's `layout` setting itself is removed in a separate pass — see Open questions). |
 | `.context/docs/container-patterns.md` | Major trim. "Partial-bleed escape (per-side, inside a grid track)" section removed entirely. "Default content sizing" and "Section-bleed — full-width default" sections rewritten as grid-column declarations instead of `inline-size: min(...)` formulas. "Content cap and convergence" section updated to describe grid behavior. Position-selector table removed (no gating needed). |
@@ -181,15 +181,15 @@ Commits on context worktree:
 - `columns.md`, `media.md` — analogous updates when those specs are authored / reconciled.
 - `architecture.md`, `css-standards.md` — body-level appearance prose.
 
-### Stage 3 — `<theme-layout>` follow-up
+### Stage 3 — `<token-layout>` follow-up
 
 Separate batch after Stages 1–2 land:
 
-- New file `assets/theme-layout.js` — empty class registration.
-- Append `'theme-layout'` to `module_list` in `snippets/utility--import-map.liquid`.
-- Replace `<div class="inner">` with `<theme-layout>` in container block snippets.
+- New file `assets/token-layout.js` — empty class registration.
+- Append `'token-layout'` to `module_list` in `snippets/utility--import-map.liquid`.
+- Replace `<div class="inner">` with `<token-layout>` in container block snippets.
 - Update specs (group, columns, media) to reflect new tag.
-- CSS in container snippets updates from `> .inner` to `> theme-layout`.
+- CSS in container snippets updates from `> .inner` to `> token-layout`.
 
 Decoupled because it's cosmetic, not load-bearing. Lands when convenient.
 
@@ -200,7 +200,7 @@ Decoupled because it's cosmetic, not load-bearing. Lands when convenient.
 | Deep-nested partial bleed (depth > 1) | Not supported in substrate. Per-project CSS or restructure. |
 | Child of a bleeding container independently un-bleeding | Not supported. Child positions in container's layout; for narrower-than-container child, use per-block `content_width` override (`max-inline-size` cap + `margin-inline: auto` on the child). |
 | Asymmetric bleed in single-block sections | Express via single-block container blocks (`<media bleed:inline-start>`) at section level. Works cleanly. |
-| Browser support | CSS grid + named lines + `@media (width < ...)` are universally supported. Subgrid (Chrome 117+, Safari 16+, Firefox 71+) is **not used** in this migration — the grid model uses named lines on theme-section directly, and container blocks have their own grids. The subgrid migration earns its name only because the conceptual model is subgrid-shaped; the implementation doesn't require browser-level subgrid support. |
+| Browser support | CSS grid + named lines + `@media (width < ...)` are universally supported. Subgrid (Chrome 117+, Safari 16+, Firefox 71+) is **not used** in this migration — the grid model uses named lines on token-section directly, and container blocks have their own grids. The subgrid migration earns its name only because the conceptual model is subgrid-shaped; the implementation doesn't require browser-level subgrid support. |
 | App-section appearance inheritance | App sections inside `<body>` now inherit typography + default scheme tokens from body's appearance rules. Apps with their own explicit styling override per normal cascade. Apps without styling adopt theme defaults — usually desired. Accepted side effect. |
 
 ## Open questions
@@ -214,7 +214,7 @@ Two resolutions:
 
 Lean: **drop entirely.** Section schema simplifies to content_width + block_rhythm + color_scheme.
 
-**Container-query stack-below behavior.** Today columns/group blocks use `@container <name> (inline-size >= 40rem) { ... }` to switch between row and column layouts. Under subgrid migration: container blocks still own their own grid (multi-track) on `.inner` (or `<theme-layout>`). Container queries continue to govern stack-below — the trigger is unchanged, the result is grid-template-columns variations within the container's own grid. No conflict with section's bleed grid.
+**Container-query stack-below behavior.** Today columns/group blocks use `@container <name> (inline-size >= 40rem) { ... }` to switch between row and column layouts. Under subgrid migration: container blocks still own their own grid (multi-track) on `.inner` (or `<token-layout>`). Container queries continue to govern stack-below — the trigger is unchanged, the result is grid-template-columns variations within the container's own grid. No conflict with section's bleed grid.
 
 ## Related
 

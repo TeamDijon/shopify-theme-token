@@ -10,7 +10,7 @@ It does not duplicate content from rules or docs. It points and gives context.
 |---|---|
 | `assets/` | JS modules (`*.js`), CSS (per-layer files: `layer-base.css`, `layer-reset.css`, `layer-theme.css`, `layer-utilities.css`), SVG icons (`icon-*.svg`) |
 | `blocks/` | Schema wrappers — render a matching snippet by the same name; no rendering logic |
-| `sections/` | Section files (standard sections wrap `<theme-section>`; specialized sections use `<theme-<name>>`) |
+| `sections/` | Section files (standard sections wrap `<token-section>`; specialized sections use `<theme-<name>>`) |
 | `snippets/` | All actual rendering logic; consumed by blocks, sections, layouts, and other snippets |
 | `layout/` | `theme.liquid` (default), `landing.liquid` (alt) |
 | `templates/` | JSON section-list per page type |
@@ -24,9 +24,9 @@ Every section renders as two nested wrappers:
 
 ```html
 <section class="shopify-section shopify-section--<name>">
-  <theme-section data-modifiers="theme-root,color-scheme:scheme-1">
+  <token-section data-modifiers="theme-root,color-scheme:scheme-1">
     <!-- content -->
-  </theme-section>
+  </token-section>
 </section>
 ```
 
@@ -34,7 +34,7 @@ Three layers, three audiences:
 
 - **Outer `.shopify-section`** — universal scope (ours + apps'). Only outer-flow concerns: anchor scrolling, scroll-behavior. **No typography or background here** — would bleed into apps.
 - **Per-section `.shopify-section--<name>`** — identity hook. Used rarely, only for outer-level overrides that can't live on the inner element (e.g., `position: sticky` for header sections).
-- **Inner `<theme-section>` / `<theme-<name>>`** — our domain. JS runtime via `BaseComponent`; bleed grid + rhythm cascade via the `theme-root` modifier. Content-level appearance (typography, color, background, transitions) lives on `<body>` and cascades through — not on theme-root itself (see `.context/docs/subgrid-migration.md` § Body-level appearance). The theme-root modifier matches the bleed grid + rhythm rules via `[data-modifiers*='theme-root']` (see `.context/docs/theme-root.md`).
+- **Inner `<token-section>` / `<theme-<name>>`** — our domain. JS runtime via `BaseComponent`; bleed grid + rhythm cascade via the `theme-root` modifier. Content-level appearance (typography, color, background, transitions) lives on `<body>` and cascades through — not on theme-root itself (see `.context/docs/subgrid-migration.md` § Body-level appearance). The theme-root modifier matches the bleed grid + rhythm rules via `[data-modifiers*='theme-root']` (see `.context/docs/theme-root.md`).
 
 → See `.context/rules/section-convention.md` Architecture for the full breakdown.
 
@@ -42,7 +42,7 @@ Three layers, three audiences:
 
 `BaseComponent` (in `assets/base-component.js`) extends `HTMLElement` and lazy-loads four manager classes: `EventsManager`, `ObserversManager`, `CacheManager`, `ModifiersManager`. Every theme-* element gets all four through getters.
 
-- **Standard sections** register `<theme-section>` directly as `BaseComponent`.
+- **Standard sections** register `<token-section>` directly as `BaseComponent`.
 - **Specialized sections** define a class extending `BaseComponent` (e.g. `class ThemeCart extends BaseComponent`). > **Forward-looking** — no specialized sections authored yet; pattern documented for when we add them.
 
 Module imports use `@theme/<name>` specifiers via the import map (`snippets/utility--import-map.liquid`). Liquid doesn't run in `assets/`, so the import map is the only place we can interpolate cache-busted URLs.
