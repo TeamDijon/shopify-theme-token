@@ -33,7 +33,7 @@ Originally sourced from the EXPLORATION-2 inventory pass (May 2026); retrofits a
 
 ## Layer 1 — Theme blocks
 
-- [rating](./rating.md) — metafield-first rating display with override-checkbox safeguard; consumes `star-rating` L0; emits AggregateRating JSON-LD *(planned)*
+- [rating](./rating.md) — merchant-composable block for product rating display; metafield-first resolution with manual override-as-license + product picker for editorial placements; consumes `star-rating` L0; emits `AggregateRating` JSON-LD via `utility--json-ld` *(planned)*
 - [spacer](./spacer.md) — empty vertical-spacer block with fixed or breakpoint-paired sizing, optional `theme_color` background *(shipped — retrofit)*
 - [separator](./separator.md) — hairline `<hr>` divider with optional content_width cap and `theme_color`-driven line color (defaults to `--color-role-border`) *(shipped — retrofit)*
 - [title](./title.md) — heading primitive (`h1`–`h6` / `p`) with `text_style` override, optional leading icon, alignment, content_width cap, `theme_color` foreground *(shipped — retrofit)*

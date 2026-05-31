@@ -58,6 +58,8 @@ Type-level metadata: project default (publishable + translatable, `storefront: P
 
 The `weight` field is text-typed (rather than integer) so the regex validates the canonical 100-step values; Liquid coerces with `| default: '400'`.
 
+<!-- REVIEW: What do you think of this API ? I think it's solid and only per project needs might justify evolution ? -->
+
 ## Output shape
 
 The emitter (`utility--css-variables`) writes one block per entry: a `:root` rule with eight per-handle custom properties plus optional `--base-*` aliases plus an optional desktop `@media` override, followed by a selector rule binding the properties:
