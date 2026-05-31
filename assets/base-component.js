@@ -1,9 +1,10 @@
 /**
  * Base custom element for the theme library.
  * @module @theme/base-component
- * @version 1.1.0
+ * @version 1.2.0
  *
  * Changelog
+ * - v1.2.0 — `get section()` caches the `closest('.shopify-section')` lookup via `CacheManager` (`this.cache.get('dom', 'section', ...)`). Subsequent accesses return the cached match; `disconnectedCallback` clears the cache, so re-attach safely re-resolves. Matches the production ZAG theme's pattern (`ZagComponent.get section()` does the same). Side effect: components that touch `.section` now mount `CacheManager` lazily on first access; non-consumers pay nothing.
  * - v1.1.0 — register as `<token-section>` (was `<theme-section>`). Per-project markup using the old tag must rename. Modifier `theme-root` is unchanged.
  * - v1.0.0 — initial
  */
@@ -75,17 +76,17 @@ export class BaseComponent extends HTMLElement {
   }
 
   /**
-   * Gets the closest parent section element.
+   * Gets the closest parent section element, cached via CacheManager.
    * @returns {HTMLElement|null} The closest parent section element or null if not found.
    */
   get section() {
-    const section = this.closest(".shopify-section");
-    if (!section) {
-      console.warn("No parent section found for component:", this);
-      return null;
-    }
-
-    return section;
+    return this.cache.get("dom", "section", () => {
+      const section = this.closest(".shopify-section");
+      if (!section) {
+        console.warn("No parent section found for component:", this);
+      }
+      return section;
+    });
   }
 }
 

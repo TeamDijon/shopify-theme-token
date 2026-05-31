@@ -1,12 +1,13 @@
 /**
  * Theme library — entry point.
  * Imports all modules, re-exports them for consumers, and populates the
- * `window.theme` namespace for use in inline scripts and Liquid templates.
+ * `window.Token` namespace for use in inline scripts and Liquid templates.
  *
  * @module @theme/core
- * @version 1.2.0
+ * @version 1.3.0
  *
  * Changelog
+ * - v1.3.0 — rename global namespace `window.theme` → `window.Token` for collision safety. The generic `window.theme` risked colliding with merchant custom code, third-party widgets, or other themes' shared scripts when the codebase is ported. Per-project inline scripts and Liquid templates referencing `window.theme.<x>` must rename to `window.Token.<x>`.
  * - v1.2.0 — re-export `TokenLayout` from @theme/token-layout (registers the `<token-layout>` custom element used as the inner wrapper of container blocks; per subgrid migration Stage 3)
  * - v1.1.0 — extract document-level singletons (documentModifiers, documentScroll, documentScrollbar) into @theme/document-utils so this file stays focused on entry-point + namespace duties
  * - v1.0.0 — initial
@@ -31,7 +32,7 @@ export { ModifiersManager } from "@theme/modifiers-manager";
 export { BaseComponent } from "@theme/base-component";
 export { TokenLayout } from "@theme/token-layout";
 
-// ---- window.theme namespace (backward compat) ----
+// ---- window.Token namespace (theme-scoped globals for inline scripts + Liquid) ----
 
 import { getRootFontSize, throttle, debounce } from "@theme/utils";
 import { dom } from "@theme/dom";
@@ -43,27 +44,27 @@ import { ModifiersManager } from "@theme/modifiers-manager";
 import { BaseComponent } from "@theme/base-component";
 import { TokenLayout } from "@theme/token-layout";
 
-window.theme = window.theme || {};
+window.Token = window.Token || {};
 
-window.theme.utils = window.theme.utils || {};
-window.theme.utils.getRootFontSize = getRootFontSize;
-window.theme.utils.throttle = throttle;
-window.theme.utils.debounce = debounce;
-window.theme.utils.documentModifiers = documentModifiers;
-window.theme.utils.documentScroll = documentScroll;
-window.theme.utils.documentScrollbar = documentScrollbar;
+window.Token.utils = window.Token.utils || {};
+window.Token.utils.getRootFontSize = getRootFontSize;
+window.Token.utils.throttle = throttle;
+window.Token.utils.debounce = debounce;
+window.Token.utils.documentModifiers = documentModifiers;
+window.Token.utils.documentScroll = documentScroll;
+window.Token.utils.documentScrollbar = documentScrollbar;
 
-window.theme.dom = dom;
+window.Token.dom = dom;
 
-window.theme.managers = window.theme.managers || {};
-window.theme.managers.EventsManager = EventsManager;
-window.theme.managers.ObserversManager = ObserversManager;
-window.theme.managers.CacheManager = CacheManager;
-window.theme.managers.ModifiersManager = ModifiersManager;
+window.Token.managers = window.Token.managers || {};
+window.Token.managers.EventsManager = EventsManager;
+window.Token.managers.ObserversManager = ObserversManager;
+window.Token.managers.CacheManager = CacheManager;
+window.Token.managers.ModifiersManager = ModifiersManager;
 
-window.theme.components = window.theme.components || {};
-window.theme.components.BaseComponent = BaseComponent;
-window.theme.components.TokenLayout = TokenLayout;
+window.Token.components = window.Token.components || {};
+window.Token.components.BaseComponent = BaseComponent;
+window.Token.components.TokenLayout = TokenLayout;
 
 // ---- Initialization ----
 
@@ -72,12 +73,12 @@ window.theme.components.TokenLayout = TokenLayout;
  *
  * @fires theme:ready - Custom event dispatched when the library is initialized.
  */
-window.theme.init = () => {
+window.Token.init = () => {
   window.dispatchEvent(new CustomEvent("theme:ready"));
 };
 
 if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", window.theme.init);
+  document.addEventListener("DOMContentLoaded", window.Token.init);
 } else {
-  window.theme.init();
+  window.Token.init();
 }
