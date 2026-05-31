@@ -1,7 +1,8 @@
-{% # Embed v1.1.2 %}
+{% # Embed v1.2.0 %}
 
 {% comment %}
   Changelog
+  - v1.2.0 — rename BEM-style diagnostic class `shopify-block--embed__diagnostic` to rscss-compliant `.diagnostic` (scoped via `.shopify-block--embed > .diagnostic`). Per-project CSS targeting the old class name must rename. Aligns with the `group.liquid` v1.3.0 / `columns.liquid` v1.4.0 rscss precedent.
   - v1.1.2 — emit `{{ block.shopify_attributes }}` on the root for theme-editor block selection (was missing)
   - v1.1.1 — route content_width + top-margin vars through `utility--block-layout-vars`; output unchanged
   - v1.1.0 — route `media_size` interpretation through `utility--media-sizing` (modifier + vars modes), fixing drift with `media`: embed now honors a `fill`-handle media_size (renders 100svh via a new `sizing:fill` CSS rule) instead of silently falling back to 16/9. Ratio/height behavior unchanged.
@@ -155,7 +156,7 @@
   {% else %}
     {{ 'image' | placeholder_svg_tag }}
     {% if url != blank %}
-      <p class='shopify-block--embed__diagnostic' role='status'>
+      <p class='diagnostic' role='status'>
         {{ 'blocks.embed.diagnostic.unrecognized_url' | t }}
       </p>
     {% endif %}
@@ -205,7 +206,7 @@
         border: none;
       }
 
-      & > .shopify-block--embed__diagnostic {
+      & > .diagnostic {
         display: none;
         position: absolute;
         inset: auto 0 0 0;
@@ -226,7 +227,7 @@
     /* Editor-only diagnostic for unparseable URLs. Hidden by default; revealed
         only when the document carries the `shopify-design-mode` modifier emitted
         by `utility--document-modifiers`. */
-    html[data-modifiers*='shopify-design-mode'] .shopify-block--embed__diagnostic {
+    html[data-modifiers*='shopify-design-mode'] .shopify-block--embed > .diagnostic {
       display: block;
     }
   }

@@ -1,7 +1,8 @@
-{% # Columns v1.3.0 %}
+{% # Columns v1.4.0 %}
 
 {% comment %}
   Changelog
+  - v1.4.0 — rename BEM-style inner wrapper class `shopify-block--columns__inner` to rscss-compliant `.inner` (scoped via `.shopify-block--columns > .inner`). Per-project CSS targeting the old class name must rename. Mirrors `group.liquid` v1.3.0.
   - v1.3.0 — read `container_style` metaobject and emit `container-style:<handle>` modifier when set. Centralized variant CSS (card / outlined / elevated) lives in `core.css` `@layer theme`.
   - v1.2.2 — emit `{{ block.shopify_attributes }}` on the root for theme-editor block selection (was missing)
   - v1.2.1 — route content_width + top-margin vars through `utility--block-layout-vars`; output unchanged
@@ -75,7 +76,7 @@
 %}
 
 <div class="shopify-block shopify-block--columns" id="{{ base_selector }}" {{ block.shopify_attributes }} {{ modifiers }}>
-  <div class="shopify-block--columns__inner">
+  <div class="inner">
     {{ contents }}
   </div>
 
@@ -128,7 +129,7 @@
       }
     }
 
-    .shopify-block--columns__inner {
+    .shopify-block--columns > .inner {
       display: grid;
       grid-template-columns: var(--grid-template-columns, 1fr);
       align-items: var(--vertical-alignment, start);
@@ -136,59 +137,59 @@
     }
 
     /* Stack-below: collapse to single column when container is narrower than the breakpoint */
-    .shopify-block--columns[data-modifiers*='stack-below'] > .shopify-block--columns__inner {
+    .shopify-block--columns[data-modifiers*='stack-below'] > .inner {
       grid-template-columns: 1fr;
     }
 
     @container columns (inline-size >= 40rem) {
-      .shopify-block--columns[data-modifiers*='stack-below:40'] > .shopify-block--columns__inner {
+      .shopify-block--columns[data-modifiers*='stack-below:40'] > .inner {
         grid-template-columns: var(--grid-template-columns);
       }
     }
 
     @container columns (inline-size >= 60rem) {
-      .shopify-block--columns[data-modifiers*='stack-below:60'] > .shopify-block--columns__inner {
+      .shopify-block--columns[data-modifiers*='stack-below:60'] > .inner {
         grid-template-columns: var(--grid-template-columns);
       }
     }
 
     @container columns (inline-size >= 80rem) {
-      .shopify-block--columns[data-modifiers*='stack-below:80'] > .shopify-block--columns__inner {
+      .shopify-block--columns[data-modifiers*='stack-below:80'] > .inner {
         grid-template-columns: var(--grid-template-columns);
       }
     }
 
     /* Sticky track — pin one column while the other scrolls. `align-self: start` keeps the sticky child at its natural height so the parent grid can grow taller than it; the non-sticky child remains free to size itself, providing the scroll runway. */
-    .shopify-block--columns[data-modifiers*='sticky-track:first'] > .shopify-block--columns__inner > :first-child,
-    .shopify-block--columns[data-modifiers*='sticky-track:second'] > .shopify-block--columns__inner > :last-child {
+    .shopify-block--columns[data-modifiers*='sticky-track:first'] > .inner > :first-child,
+    .shopify-block--columns[data-modifiers*='sticky-track:second'] > .inner > :last-child {
       position: sticky;
       top: var(--sticky-offset, 1rem);
       align-self: start;
     }
 
     /* Disable sticky when stack-below has collapsed the grid to a single column. */
-    .shopify-block--columns[data-modifiers*='stack-below'] > .shopify-block--columns__inner > * {
+    .shopify-block--columns[data-modifiers*='stack-below'] > .inner > * {
       position: static;
     }
 
     /* Re-enable sticky inside the same @container queries that re-enable the grid. */
     @container columns (inline-size >= 40rem) {
-      .shopify-block--columns[data-modifiers*='stack-below:40'][data-modifiers*='sticky-track:first'] > .shopify-block--columns__inner > :first-child,
-      .shopify-block--columns[data-modifiers*='stack-below:40'][data-modifiers*='sticky-track:second'] > .shopify-block--columns__inner > :last-child {
+      .shopify-block--columns[data-modifiers*='stack-below:40'][data-modifiers*='sticky-track:first'] > .inner > :first-child,
+      .shopify-block--columns[data-modifiers*='stack-below:40'][data-modifiers*='sticky-track:second'] > .inner > :last-child {
         position: sticky;
       }
     }
 
     @container columns (inline-size >= 60rem) {
-      .shopify-block--columns[data-modifiers*='stack-below:60'][data-modifiers*='sticky-track:first'] > .shopify-block--columns__inner > :first-child,
-      .shopify-block--columns[data-modifiers*='stack-below:60'][data-modifiers*='sticky-track:second'] > .shopify-block--columns__inner > :last-child {
+      .shopify-block--columns[data-modifiers*='stack-below:60'][data-modifiers*='sticky-track:first'] > .inner > :first-child,
+      .shopify-block--columns[data-modifiers*='stack-below:60'][data-modifiers*='sticky-track:second'] > .inner > :last-child {
         position: sticky;
       }
     }
 
     @container columns (inline-size >= 80rem) {
-      .shopify-block--columns[data-modifiers*='stack-below:80'][data-modifiers*='sticky-track:first'] > .shopify-block--columns__inner > :first-child,
-      .shopify-block--columns[data-modifiers*='stack-below:80'][data-modifiers*='sticky-track:second'] > .shopify-block--columns__inner > :last-child {
+      .shopify-block--columns[data-modifiers*='stack-below:80'][data-modifiers*='sticky-track:first'] > .inner > :first-child,
+      .shopify-block--columns[data-modifiers*='stack-below:80'][data-modifiers*='sticky-track:second'] > .inner > :last-child {
         position: sticky;
       }
     }
