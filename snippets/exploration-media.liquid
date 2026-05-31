@@ -1,4 +1,10 @@
-{% # Exploration Media v1.0.0 %}
+{% # Exploration Media v2.0.0 %}
+
+{% comment %}
+  Changelog
+  - v2.0.0 — drop internal bleed CSS (negative-margin escape). Section's named-line bleed grid (per subgrid migration) now resolves positioning via grid-column rules on the `bleed-desktop:<value>` / `bleed-mobile:<value>` modifiers this block already emits. Internal CSS was double-applying alongside section's grid-column, causing horizontal-scroll overflow.
+  - v1.0.0 — initial
+{% endcomment %}
 
 {% doc %}
   @description Placeholder media block for bleed-API exploration. Renders a Shopify `image` placeholder SVG inside a sized box. Tests per-side desktop bleed + binary mobile bleed.
@@ -66,29 +72,7 @@
         fill: rgba(0, 0, 0, 0.25);
       }
 
-      /* Mobile bleed — below 48rem */
-      @media (max-width: 47.99rem) {
-        &[data-modifiers*='bleed-mobile:both'] {
-          margin-inline: calc(-1 * var(--exploration-bleed-extension, 0px));
-          inline-size: calc(100% + var(--exploration-bleed-extension, 0px) * 2);
-        }
-      }
-
-      /* Desktop bleed — 48rem+ */
-      @media (min-width: 48rem) {
-        &[data-modifiers*='bleed-desktop:both'] {
-          margin-inline: calc(-1 * var(--exploration-bleed-extension, 0px));
-          inline-size: calc(100% + var(--exploration-bleed-extension, 0px) * 2);
-        }
-        &[data-modifiers*='bleed-desktop:inline-start'] {
-          margin-inline-start: calc(-1 * var(--exploration-bleed-extension, 0px));
-          inline-size: calc(100% + var(--exploration-bleed-extension, 0px));
-        }
-        &[data-modifiers*='bleed-desktop:inline-end'] {
-          margin-inline-end: calc(-1 * var(--exploration-bleed-extension, 0px));
-          inline-size: calc(100% + var(--exploration-bleed-extension, 0px));
-        }
-      }
+      /* Bleed positioning is owned by the section's named-line grid (see `assets/layer-theme.css`). This snippet emits `bleed-desktop:<value>` / `bleed-mobile:<value>` modifiers; section's grid-column rules match them on direct children. */
     }
   }
 {% endstylesheet %}

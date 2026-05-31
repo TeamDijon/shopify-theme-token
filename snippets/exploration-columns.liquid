@@ -1,4 +1,10 @@
-{% # Exploration Columns v1.0.0 %}
+{% # Exploration Columns v2.0.0 %}
+
+{% comment %}
+  Changelog
+  - v2.0.0 — drop internal bleed CSS (negative-margin escape). Section's named-line bleed grid (per subgrid migration) now resolves positioning via grid-column rules on the `bleed-desktop:<value>` / `bleed-mobile:<value>` modifiers this block already emits.
+  - v1.0.0 — initial
+{% endcomment %}
 
 {% doc %}
   @description 2-column grid for bleed-API exploration. Tests bleed_desktop / bleed_mobile + asymmetric ratios.
@@ -68,23 +74,7 @@
         grid-template-columns: 1fr;
       }
 
-      /* Bleed mobile */
-      @media (max-width: 47.99rem) {
-        &[data-modifiers*='bleed-mobile:both'] {
-          margin-inline: calc(-1 * var(--exploration-bleed-extension, 0px));
-          inline-size: calc(100% + var(--exploration-bleed-extension, 0px) * 2);
-          max-inline-size: none;
-        }
-      }
-
-      /* Bleed desktop */
-      @media (min-width: 48rem) {
-        &[data-modifiers*='bleed-desktop:both'] {
-          margin-inline: calc(-1 * var(--exploration-bleed-extension, 0px));
-          inline-size: calc(100% + var(--exploration-bleed-extension, 0px) * 2);
-          max-inline-size: none;
-        }
-      }
+      /* Bleed positioning is owned by the section's named-line grid (see `assets/layer-theme.css`). This snippet emits `bleed-desktop:<value>` / `bleed-mobile:<value>` modifiers; section's grid-column rules match them on direct children. */
 
       /* Ratios applied when not stacked below the breakpoint */
       @container exploration-columns (inline-size >= 40rem) {
