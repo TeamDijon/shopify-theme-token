@@ -28,7 +28,7 @@ There is no "track inner gutter" as a primitive. The padding inside a grid track
 
 ### Default content sizing
 
-Direct children of `<theme-section>` (i.e., `.shopify-section > .shopify-block`) declare their own width via:
+Direct children of `<theme-section>` (i.e., `[data-modifiers*='theme-root'] > .shopify-block`) declare their own width via:
 
 ```css
 .shopify-block {
@@ -101,7 +101,7 @@ Section gutter applies **only at the section's direct children**. Deeper nesting
 
 ```css
 /* Gutter offset applies only to direct children of the section */
-.shopify-section > .shopify-block {
+[data-modifiers*='theme-root'] > .shopify-block {
   inline-size: min(calc(100% - 2 * var(--gutter)), var(--content-width, 125rem));
 }
 
@@ -278,36 +278,6 @@ A `spacer` block inside a rail (columns track, group child) is the legitimate to
 Between-sibling spacing inside a rail uses the parent's `gap` setting or the next sibling's top-margin. Spacer is not the tool for that case.
 
 Symmetric breathing room around content of varying height uses the columns / group `vertical_alignment: center` setting, not edge spacers.
-
-## Future direction — subgrid for parent-aware bleed
-
-Gated on the upcoming `<theme-section>` identity discussion. Subgrid changes section structure fundamentally (every section becomes a grid with named lines); that restructure can't be scoped until the section's role and obligations are settled.
-
-CSS subgrid (browser-supported as of Chrome 117+, Safari 16+, Firefox 71+) provides a cleaner alternative to the partial-bleed escape math for the asymmetric-bleed case.
-
-A section structured as a grid with named bleed lines:
-
-```css
-.section {
-  display: grid;
-  grid-template-columns:
-    [bleed-start] minmax(0, var(--gutter))
-    [content-start] 1fr
-    [center] 1fr
-    [content-end] minmax(0, var(--gutter))
-    [bleed-end];
-}
-```
-
-Lets children declare their span using named lines: `grid-column: bleed-start / center` for a left-bleeding-to-center image. The grid engine resolves position and width — no negative margins escaping the gutter, no viewport math.
-
-Trade-off: requires every section to be a grid with named lines. Substantial substrate restructure. Partial-bleed escape math is the today-state; subgrid is the future cleaner answer when the substrate is ready for it.
-
-Tracked in BACKLOG for revisit.
-
-## Open questions
-
-**Subgrid migration.** When does Token's substrate adopt subgrid for sections? Gated on the upcoming `<theme-section>` identity discussion (subgrid restructures the section root). After that, depends on browser-support comfort and the cost-benefit of the restructure. Track in BACKLOG.
 
 ## Related
 

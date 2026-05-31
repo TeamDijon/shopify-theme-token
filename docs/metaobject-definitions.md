@@ -486,7 +486,7 @@ Standard name field — see [convention](#name-field-convention). Description: *
 **Runtime notes:**
 
 - Read by `sections/section.liquid` via the section's `content_width` setting; emitted as `--content-width: <value>px` into the section's dynamic style.
-- When no entry is selected, [core.css](assets/core.css) falls back to `var(--content-width, 125rem)` — the **2000px theme default**, which acts as a big-screen protection. Most screens (≤1920px) render full-width within this cap. The outer `3200px` background-stop guard lives elsewhere in `core.css`.
+- When no entry is selected, [layer-theme.css](assets/layer-theme.css) falls back to `var(--content-width, 125rem)` — the **2000px theme default**, which acts as a big-screen protection. Most screens (≤1920px) render full-width within this cap. The outer `3200px` background-stop guard lives elsewhere in `layer-theme.css`.
 
 **Recommended entries** (no `default` entry — blank section setting falls through to the 2000px CSS fallback):
 
@@ -597,8 +597,8 @@ Standard name field — see [convention](#name-field-convention). Description: *
 
 **Runtime notes:**
 
-- Consumed by the three container blocks (`group`, `columns`, `media`) via a `container_style` metaobject setting. Each entry's `system.handle` is appended to the block's `data-modifiers` as `container-style:<handle>`. CSS rules live centrally in `assets/core.css` `@layer theme`, scoped to `:where(.shopify-block--group, .shopify-block--columns, .shopify-block--media)[data-modifiers*='container-style:<handle>']` so all three consumers share the same visual treatment.
-- Same named-selector pattern as [`button_style`](#button_style). Adding a new variant means extending `core.css` with a new rule, then seeding the metaobject entry — no field changes.
+- Consumed by the three container blocks (`group`, `columns`, `media`) via a `container_style` metaobject setting. Each entry's `system.handle` is appended to the block's `data-modifiers` as `container-style:<handle>`. CSS rules live centrally in `assets/layer-theme.css` `@layer theme`, scoped to `:where(.shopify-block--group, .shopify-block--columns, .shopify-block--media)[data-modifiers*='container-style:<handle>']` so all three consumers share the same visual treatment.
+- Same named-selector pattern as [`button_style`](#button_style). Adding a new variant means extending `layer-theme.css` with a new rule, then seeding the metaobject entry — no field changes.
 - **No additional fields needed** — the named-variant pattern bundles its visual configuration (border, radius, shadow, padding) into the CSS rule, not into field values.
 
 **Recommended entries** (3 starter seeds; extend per-project for project-specific variants like `panel`, `bordered-dashed`, etc.):

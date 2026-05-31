@@ -19,7 +19,7 @@ Four tiers per `validation-contract.md`, each with its own naming prefix:
 | Substrate — utility CSS | `sections/validation--utility-css--<concern>.liquid` | `templates/index.validation--utility-css--<concern>.json` |
 | Theme-primitive (L0 + L1) | `sections/validation--primitive--<name>.liquid` | `templates/index.validation--primitive--<name>.json` |
 | Preset (L2) | `sections/validation--preset--<name>.liquid` | `templates/index.validation--preset--<name>.json` |
-| Specialized section (L3 + L4) | `sections/validation--section--<name>.liquid` | `templates/index.validation--section--<name>.json` |
+| Specialized section (Beyond L2) | `sections/validation--section--<name>.liquid` | `templates/index.validation--section--<name>.json` |
 
 Substrate — utility JS runs in Vitest under `tests/unit/`, not on a Liquid page; see `validation-contract.md` for the future-state harness.
 

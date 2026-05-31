@@ -7,7 +7,7 @@ Conventions for theme CSS.
 - **Cap at `0 4 0`.** Higher specificity signals excessive nesting or DOM depth — restructure instead.
 - **No `!important`.**
 - **No ID selectors except for `utility--dynamic-style`'s scoping.** That snippet emits `#<base_selector> { ... }` to scope per-instance values; everywhere else, use class or attribute selectors.
-- **`:where()` to keep grouped selectors low-specificity.** Examples in `core.css`: `:where(*, ::before, ::after) { box-sizing: border-box }`, `:where(input, textarea, select) { ... }`.
+- **`:where()` to keep grouped selectors low-specificity.** Examples in `layer-reset.css`: `:where(*, ::before, ::after) { box-sizing: border-box }`, `:where(input, textarea, select) { ... }`.
 
 ## `:has()` performance
 
@@ -21,7 +21,7 @@ Modern CSS nesting is used throughout — `& > *`, `&[data-modifiers*="x"]`, `& 
 
 ## Layers
 
-`assets/core.css` declares `@layer reset, theme, components, utilities;`. Cascade priority runs left → right (later layers win). Place rules deliberately:
+`assets/layer-base.css` declares `@layer reset, theme, components, utilities;`. Cascade priority runs left → right (later layers win). Place rules deliberately:
 
 - `@layer reset` — universal hygiene applied to everything (UA-default normalizations, media defaults).
 - `@layer theme` — theme-managed roots, matched via `[data-modifiers*='theme-root']` (appearance defaults) and `[data-modifiers*='theme-root'][data-modifiers*='layout:<preset>']` (layout presets gated on the layout modifier). Every theme-owned custom-element root (`theme-section`, future `theme-cart` / `theme-header` / `theme-footer`) carries `theme-root` in `data-modifiers` and inherits appearance automatically. Specialized sections omit `layout:` and own their layout via per-section CSS. See `.context/docs/theme-root.md`.
@@ -42,7 +42,7 @@ Anything still emitted **outside layers** (e.g. inline declarations from `utilit
 
 ## Design constants
 
-`core.css` declares scheme-independent invariants in a top-level `:root`. Consume these rather than hardcoding:
+`layer-base.css` declares scheme-independent invariants in a top-level `:root`. Consume these rather than hardcoding:
 
 - **Z-index** — `--layer-below` (−1), `--layer-base` (0), `--layer-raised` (100), `--layer-sticky` (200), `--layer-overlay` (300), `--layer-drawer` (400), `--layer-temporary` (500). Gaps of 100 leave room for intermediate layers; third-party overlays sit above the scale.
 - **Motion** — `--duration-fast` (120ms), `--duration-base` (200ms), `--duration-slow` (320ms); `--ease-standard`, `--ease-emphasized`, `--ease-out`.
@@ -68,7 +68,7 @@ Logical properties handle RTL/vertical flow correctly without per-locale overrid
 
 Component CSS targets a unique root selector, picked by the primitive's consumption mode (see `.context/docs/composition-strategy.md` — block-backed vs sub-component):
 
-- **Block-backed primitive** — the snippet *is* a theme-block root (schema `"tag": null`), so it renders the root itself and emits `class="shopify-block shopify-block--<name>"` + `{{ shopify_attributes }}`. Style via `.shopify-block--<name>`. (`title`, `button`, `media`, …)
+- **Block-backed primitive** — the snippet *is* a theme-block root (schema `"tag": null`), so it renders the root itself and emits `class="shopify-block shopify-block--<name>"` + `{{ block.shopify_attributes }}`. Style via `.shopify-block--<name>`. (`title`, `button`, `media`, …)
 - **Sub-component primitive** — nested inside other blocks/sections, never a block root. Style via a clean `.<name>` (`.star-rating`, `.badge`, `.skip-to-content`).
 - **Specialized section** — the custom element tag (`theme-cart`, `theme-header`).
 

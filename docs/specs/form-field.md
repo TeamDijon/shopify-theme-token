@@ -3,7 +3,7 @@
 **Layer**: 0
 **Type**: snippet (`snippets/form-field.liquid`)
 **Status**: spec (not yet implemented)
-**Depends on**: theme input styling in `core.css` (`input`/`textarea`/`select` are styled there), semantic `--color-error` token
+**Depends on**: theme input styling in `layer-theme.css` (`input`/`textarea`/`select` are styled there), semantic `--color-error` token
 **Consumers**: `contact-page`, account-auth templates, `guest-order-lookup`, `preorder-notify-me`, `gift-card-recipient-form`, newsletter/promo forms (all planned)
 
 ## Purpose
@@ -89,7 +89,7 @@ Per `.context/docs/css-standards.md` — component-rooted, no BEM:
     color: var(--field-required-color, var(--color-error));
   }
 
-  /* .field-control inherits theme input styling from core.css; only invalid state overridden here */
+  /* .field-control inherits theme input styling from layer-theme.css; only invalid state overridden here */
   & .field-control[aria-invalid='true'] {
     --color-role-input-border: var(--color-error);
   }
@@ -148,7 +148,7 @@ Per `.context/docs/css-standards.md` — component-rooted, no BEM:
 - Required state via the `required` attribute (announced natively) + decorative `aria-hidden` asterisk
 - Errors: `role="alert"` (announced on appearance) + `aria-invalid` on the control + `aria-describedby` linkage
 - Help text linked via `aria-describedby`
-- Inherits the theme's `:focus-visible` input styling from `core.css`
+- Inherits the theme's `:focus-visible` input styling from `layer-theme.css`
 
 ## Out of scope
 
@@ -162,4 +162,4 @@ Per `.context/docs/css-standards.md` — component-rooted, no BEM:
 
 - Select placeholder option (disabled empty `<option>` shown first) — add when the first `select` consumer lands
 - Whether to support `type:date` / `type:file` in the input branch — trivial to add, defer until needed
-- Error-state border override approach — currently re-points `--color-role-input-border` to `--color-error`; confirm against the actual `core.css` input rules when implementing
+- Error-state border override approach — currently re-points `--color-role-input-border` to `--color-error`; confirm against the actual `layer-theme.css` input rules when implementing

@@ -8,7 +8,7 @@ It does not duplicate content from rules or docs. It points and gives context.
 
 | Directory | Contents |
 |---|---|
-| `assets/` | JS modules (`*.js`), CSS (`core.css`), SVG icons (`icon-*.svg`) |
+| `assets/` | JS modules (`*.js`), CSS (per-layer files: `layer-base.css`, `layer-reset.css`, `layer-theme.css`, `layer-utilities.css`), SVG icons (`icon-*.svg`) |
 | `blocks/` | Schema wrappers — render a matching snippet by the same name; no rendering logic |
 | `sections/` | Section files (standard sections wrap `<theme-section>`; specialized sections use `<theme-<name>>`) |
 | `snippets/` | All actual rendering logic; consumed by blocks, sections, layouts, and other snippets |
@@ -67,7 +67,7 @@ Schema settings prefer metaobject pickers (`"type": "metaobject"`) over hardcode
 Three flows, each with its own strategy:
 
 - **Liquid-captured CSS** (output of `utility--css-variables`, `utility--font-face`, `utility--dynamic-style`) → `utility--css-minifier` → wrapped in `<style>` inline. The minifier does whitespace pass + comment strip + token collapse.
-- **Static CSS files** (e.g., `core.css`, per-component CSS) → `utility--asset-loader`. Strategies: `link` (default, external `<link>`), `inline` (via `utility--inline-asset` → raw `<style>`), `false` (skip).
+- **Static CSS files** (e.g., `layer-theme.css`, per-component CSS) → `utility--asset-loader`. Strategies: `link` (default, external `<link>`), `inline` (via `utility--inline-asset` → raw `<style>`), `false` (skip).
 - **JS modules** → `utility--asset-loader`. Strategies: `module` (default, `<script type="module">`), `preload` (modulepreload + script), `inline`, `false`.
 
 `utility--inline-asset` wraps `inline_asset_content` to handle blank input + missing-asset error strings; never call the raw filter.
@@ -76,10 +76,11 @@ Three flows, each with its own strategy:
 
 ## CSS layering
 
-`assets/core.css` declares `@layer reset, theme, utilities;`:
+`assets/layer-base.css` declares `@layer reset, theme, components, utilities;`:
 
 - **`@layer reset`** — universal hygiene (box-sizing, margin/padding zero, media defaults, common typography).
 - **`@layer theme`** — `.shopify-section` (outer, universal — minimal) + theme-roots matched via `[data-modifiers*='theme-root']` (theme defaults — typography, background, transitions, form inputs). Layout presets (`column` / `row` / `columns_N`) gated on the `layout:<preset>` modifier; specialized sections omit `layout:` and own their layout via per-section CSS. See `.context/docs/theme-root.md` for the contract.
+- **`@layer components`** — per-block and per-section stylesheets (block snippets' `{% stylesheet %}` blocks, section `{% stylesheet %}` blocks). Cascades above `@layer theme` so component CSS overrides substrate defaults without specificity escalation.
 - **`@layer utilities`** — opt-in modifiers like prose, skip-to-content.
 
 A new specialized section root inherits theme appearance defaults automatically — its custom-element carries `theme-root` in `data-modifiers`, no selector enumeration to maintain.

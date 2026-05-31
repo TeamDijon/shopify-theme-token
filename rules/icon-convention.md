@@ -40,7 +40,7 @@ Never include:
 
 ## Path-level data attributes
 
-- `data-edge=""` — prevents stroke bleed outside the viewBox. The baseline CSS in `assets/core.css` strokes every SVG path by default (`stroke: currentcolor`, `stroke-width: 0.25rem`) and additionally applies `scale: 0.92` with `transform-origin: center` to paths carrying `data-edge`, shrinking them inward so the stroke stays inside the viewBox. Apply when the path's geometry touches or approaches a viewBox edge (e.g. arrow from `x=50`, plus spanning `0` to `50`). Omit when the path stays clear of edges (e.g. gear). No visual effect in fill-mode icons — the `data-modifiers="fill"` rule re-sets `scale: 1`.
+- `data-edge=""` — prevents stroke bleed outside the viewBox. The baseline CSS in `assets/layer-theme.css` strokes every SVG path by default (`stroke: currentcolor`, `stroke-width: 0.25rem`) and additionally applies `scale: 0.92` with `transform-origin: center` to paths carrying `data-edge`, shrinking them inward so the stroke stays inside the viewBox. Apply when the path's geometry touches or approaches a viewBox edge (e.g. arrow from `x=50`, plus spanning `0` to `50`). Omit when the path stays clear of edges (e.g. gear). No visual effect in fill-mode icons — the `data-modifiers="fill"` rule re-sets `scale: 1`.
 - `data-<part>=""` — arbitrary sub-element hooks for icons with distinguishable parts addressable by CSS or JS (e.g. `data-half-star=""` on the first path of `icon-star.svg` to support partial-rating rendering). Use kebab-case. One attribute per semantic part.
 
 ## Examples

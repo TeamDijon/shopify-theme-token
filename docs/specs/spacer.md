@@ -76,7 +76,7 @@ Inside a row-direction `group`, the spacer's `inline-size: 100%` claims the full
 }
 ```
 
-`margin-block-start` chain (per-instance override → section rhythm → 0) is applied via `assets/core.css` `@layer theme` `.shopify-block:not(:first-child)`.
+`margin-block-start` chain (per-instance override → section rhythm → 0) is applied via the theme-root rhythm cascade in `layer-theme.css` (see `theme-root.md` § Rhythm scope).
 
 ## CSS custom properties (exposed)
 

@@ -83,19 +83,19 @@ Every section carries these settings before its custom ones:
 
 The `layout` setting emits as `layout:<value>` in the section's `data-modifiers`. Substrate CSS gates layout presets on this modifier; the default `column` matches the long-standing implicit-container behavior. Specialized sections omit this setting and the modifier — see `.context/docs/theme-root.md` § Layout opt-out.
 
-`block_rhythm` emits `--block-rhythm-mobile` / `--block-rhythm-desktop` CSS variables via `utility--dynamic-style`. The matching rule lives in `core.css` under `theme-section`:
+`block_rhythm` emits `--block-rhythm-mobile` / `--block-rhythm-desktop` CSS variables via `utility--dynamic-style`. The matching rule lives in `layer-theme.css` scoped to theme-roots:
 
 ```css
-& :where(.shopify-block) + .shopify-block {
-  margin-block-start: var(--block-rhythm-mobile, 0);
+[data-modifiers*='theme-root'] > .shopify-block:not(:first-child) {
+  margin-block-start: var(--mobile-margin-block-start, var(--block-rhythm-mobile, 0rem));
 
   @media (width >= 48rem) {
-    margin-block-start: var(--block-rhythm-desktop, 0);
+    margin-block-start: var(--desktop-margin-block-start, var(--block-rhythm-desktop, 0rem));
   }
 }
 ```
 
-The `:where()` keeps specificity at zero so per-block overrides work; the sibling combinator gets margin-collapse semantics for free. Default 0 when no rhythm is configured.
+The `> .shopify-block:not(:first-child)` selector limits rhythm to direct children of a theme-root, one level deep; nested blocks inside container blocks (`group`, `columns`, `media`) use the parent's `gap` instead. The per-block fallback chain (`--mobile-margin-block-start` → `--block-rhythm-mobile` → `0rem`) lets per-block overrides win, fall through to the section rhythm, then to zero.
 
 See `.context/rules/section-convention.md` for the full section structure.
 

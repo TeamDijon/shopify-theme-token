@@ -46,7 +46,7 @@ Snippet args (`{% render %}` interface) and block schema settings cover the same
 | `gap` | range (0–100, step 2, px) | no | `16` | Gap between children. Emitted as `--gap` in rem (px / 16). Zero-emission skipped — `--gap` is only emitted when positive. |
 | `bleed_desktop` | select (`none` / `inline_start` / `inline_end` / `both`) | no | `"none"` | Group's bleed direction at/above 48rem. `both` matches section-bleed (caps at the section's content cap). `inline_start` / `inline_end` extend the group's start / end edge to the bleed boundary (= content cap), keeping gutter offset on the other side. Emitted as `bleed-desktop:<value>` modifier when ≠ `none`. |
 | `bleed_mobile` | select (`none` / `both`) | no | `"none"` | Group's bleed direction below 48rem. Single-column mobile has no edge tracks; per-side bleed has no geometric meaning there, so the mobile enum is binary. `both` matches section-bleed below 48rem. Emitted as `bleed-mobile:both` modifier when set. Asymmetric setting shape with `bleed_desktop` is intentional — see `container-patterns.md` § Bleed API: asymmetric mobile / desktop shapes. |
-| `container_style` | metaobject (`container_style`) | no | blank | Reads `.system.handle`; emits `container-style:<handle>` modifier. Variant CSS lives **centrally in `core.css`** `@layer theme`, scoped across the three container blocks (group/columns/media) so the same handle yields the same visual treatment across consumers. |
+| `container_style` | metaobject (`container_style`) | no | blank | Reads `.system.handle`; emits `container-style:<handle>` modifier. Variant CSS lives **centrally in `layer-theme.css`** `@layer theme`, scoped across the three container blocks (group/columns/media) so the same handle yields the same visual treatment across consumers. |
 | `color_scheme` | theme setting (`color_scheme`) | no | blank | Overrides the section's color scheme for this block and its descendants. Emits `color-scheme:<id>` modifier; the global per-scheme rules in `utility--css-variables` re-resolve `--color-role-*` tokens within the modifier-bearing element. |
 | `mobile_margin_block_start` | range (0–200, step 2, px) | no | `0` | Top margin below the desktop breakpoint. Routed through `utility--block-layout-vars`. |
 | `desktop_margin_block_start` | range (0–200, step 2, px) | no | `0` | Top margin at/above the desktop breakpoint. Same routing. |
@@ -162,7 +162,7 @@ Component-rooted on `.shopify-block--group` (outer) and `.inner` (inner). Layere
 /* …and equivalent @container queries at 60rem (md) and 80rem (lg) */
 ```
 
-`container_style` variant rules live **centrally in `core.css` `@layer theme`**, not in this snippet — they're shared across `group`, `columns`, and `media` via a `:where(...)` selector that doesn't carry to this file. See `specs/container-style.md` for the variant catalog and the per-project extension contract.
+`container_style` variant rules live **centrally in `layer-theme.css` `@layer theme`**, not in this snippet — they're shared across `group`, `columns`, and `media` via a `:where(...)` selector that doesn't carry to this file. See `specs/container-style.md` for the variant catalog and the per-project extension contract.
 
 `margin-block-start` chains through `--mobile-margin-block-start` → `--desktop-margin-block-start` → section's `--block-rhythm-mobile/desktop` via `utility--block-layout-vars`.
 
@@ -235,7 +235,7 @@ Per `validation-contract.md` Tier 2 (theme-primitive).
   - **Gap variation**: 0, 16, 48 (zero-emission discipline check).
   - **Bleed matrix**: `bleed_desktop ∈ {none, inline_start, inline_end, both}` × `bleed_mobile ∈ {none, both}` — eight combinations. Verify the asymmetric API (mobile binary, desktop per-side enum) renders correctly: at each breakpoint, the active bleed treatment matches the setting and falls back cleanly when the other breakpoint differs.
   - **content_width × bleed composition**: bleed caps at the section's content cap (no override) — verify a `content_width: 60rem` section with `bleed_desktop: both` produces a 60rem-wide bleed band, not a 125rem one.
-  - **container_style integration**: `card`, `outlined`, `elevated` variants applied; verify CSS comes from `core.css`'s centralized rule (not duplicated here).
+  - **container_style integration**: `card`, `outlined`, `elevated` variants applied; verify CSS comes from `layer-theme.css`'s centralized rule (not duplicated here).
   - **color_scheme override**: group with `scheme-2` override inside a `scheme-1` section; nested group with `scheme-3` override inside the `scheme-2` group; verify the deepest override wins for its subtree.
   - **Recursion**: nested groups (group inside group inside group) with mixed directions; verify each level's stack-below is independent.
 - **Edge cases**:
@@ -252,7 +252,7 @@ Per `validation-contract.md` Tier 2 (theme-primitive).
   - `bleed_mobile:both` instances below 48rem and `bleed_desktop:both` instances at/above 48rem have `inline-size: min(100%, var(--content-width, 125rem))` and `margin-inline: auto`
   - `bleed_desktop:inline-start` / `inline-end` instances at/above 48rem have the corresponding `margin-inline-(start|end): calc(-1 * var(--gutter))` applied
   - `bleed_mobile:both` + `bleed_desktop:none` instances revert to default sizing at/above 48rem
-  - `container_style:card` instances pull their variant rule from `core.css`, not the group snippet's stylesheet (verify via computed-style chain)
+  - `container_style:card` instances pull their variant rule from `layer-theme.css`, not the group snippet's stylesheet (verify via computed-style chain)
   - `color_scheme:scheme-2` override emits `--color-role-background`, `--color-role-foreground` (etc.) values from scheme 2's settings on the group element
   - Nested groups each emit their own container query context; child stack-below works against immediate parent's inline-size
 - **Unit scope**: none (Liquid + CSS only; no JS)

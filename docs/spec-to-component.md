@@ -42,7 +42,7 @@ When tickets run in parallel, these files attract conflicts. Three are append-on
 
 | File | Why it conflicts | Mitigation |
 |---|---|---|
-| `assets/core.css` | Any substrate addition | Substrate ticket lane; gate dependent primitives |
+| `assets/layer-*.css` | Any substrate addition | Substrate ticket lane; gate dependent primitives |
 | `snippets/utility--css-variables.liquid` | Any new metaobject loop | Same |
 | `sections/validation.liquid` | Hub anchor per new validation page | Append-only; resolve at merge |
 | `.context/docs/specs-index.md` | Every new spec | Append-only |

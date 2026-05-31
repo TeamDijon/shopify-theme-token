@@ -84,7 +84,7 @@ When source resolves to blank, the block renders nothing (early-exit `break`).
 - **Link wrapping**: when `link` is set, the entire star-rating + count is wrapped in `<a>`. Hover/focus styles target the link, not the inner svg
 - **Structured data**: when a rating resolves, the block emits AggregateRating JSON-LD via `utility--json-ld`, scoped to the resolved product (BACKLOG C7 resolved by this spec). Ships in the same PR as the block.
 - **A11y**: `aria-label` carried by `star-rating` snippet (passes through). Link target inherits the snippet's label
-- **Reduced motion / forced colors**: inherits from `star-rating` snippet + global `core.css`
+- **Reduced motion / forced colors**: inherits from `star-rating` snippet + `layer-reset.css`
 
 ## Locale keys to add
 

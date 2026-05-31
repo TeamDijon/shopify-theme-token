@@ -8,7 +8,7 @@ Every element ships from a spec at `.context/docs/specs/<name>.md` (template: `s
 
 ## Substrate
 
-The configuration + utility layer everything else builds on — metaobjects (`theme_color`, `text_style`, `content_width`, …), color schemes, utility snippets, utility CSS rules in `core.css`, JS modules. Substrate styles raw HTML tags ambiently, so a bare `<h2>` renders per theme configuration without any per-element metadata.
+The configuration + utility layer everything else builds on — metaobjects (`theme_color`, `text_style`, `content_width`, …), color schemes, utility snippets, utility CSS rules in `assets/layer-*.css`, JS modules. Substrate styles raw HTML tags ambiently, so a bare `<h2>` renders per theme configuration without any per-element metadata.
 
 Substrate is foundational, not composed — it sits outside the composition layers below. Its spec/validation tier (Tier 1, with sub-shapes for metaobject / utility snippet / utility CSS / utility JS) is defined in `validation-contract.md`. For substrate setup + consumption: `metaobject-definitions.md`, `design-system-metaobjects.md`, `architecture.md`.
 
@@ -121,7 +121,7 @@ None of the three ship today; they will land alongside their first consumer.
 
 | Layer | Shipped |
 |---|---|
-| Substrate | metaobjects (11 types — `theme_color`, `gradient`, `typeface`, `font`, `text_style`, `content_width`, `icon`, `button_style`, `container_style`, `media_size`, `spacing`), color schemes, `utility--*` snippets, `core.css`, JS modules (`base-component`, 4 managers, `utils`, `dom`, `core`) |
+| Substrate | metaobjects (11 types — `theme_color`, `gradient`, `typeface`, `font`, `text_style`, `content_width`, `icon`, `button_style`, `container_style`, `media_size`, `spacing`), color schemes, `utility--*` snippets, `layer-*.css` (per-layer substrate CSS files), JS modules (`base-component`, 4 managers, `utils`, `dom`, `core`) |
 | L0 — Theme-primitive | shipped: `image`, `icon`, `video`, `skip-to-content`, `validation--*`; render side of every L1 block. earmarked specs: `star-rating`, `badge`, `price-with-compare`, `form-field`, `article-card`, `inventory-status`, `pagination`, `payment-icons-strip`, `tooltip` |
 | L1 — Theme block | `title`, `richtext`, `button`, `media`, `group`, `columns`, `separator`, `spacer`, `embed` |
 | L2 — Preset on `section.liquid` | `Section` (default empty composition) |
