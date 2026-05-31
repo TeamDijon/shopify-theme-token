@@ -1,5 +1,5 @@
 @layer theme {
-  /* Outer section wrapper. Universal scope — applies to ours AND app sections, so only outer-flow concerns belong here (anchor scrolling, scroll-behavior). All content-level styling (typography, background, transitions) lives on the inner `theme-*` roots so it doesn't bleed into apps. See `.context/rules/section-convention.md` for the three-layer model. */
+  /* Outer section wrapper. Universal scope — applies to ours AND app sections, so only outer-flow concerns belong here (anchor scrolling, scroll-behavior). All content-level styling lives at body level (theme defaults, propagate to chrome + theme-roots + descendants) and on the inner `theme-*` roots (layout, bleed grid, rhythm). See `.context/rules/section-convention.md`. */
   .shopify-section {
     scroll-margin-block-start: 5rem;
     scroll-behavior: var(--scroll-behavior);
@@ -11,8 +11,8 @@
     }
   }
 
-  /* Theme-root: appearance defaults. Matches any theme-owned custom-element root carrying `theme-root` in `data-modifiers` (theme-section today; theme-cart, theme-header, theme-footer as they ship). See `.context/docs/theme-root.md` for the contract. */
-  [data-modifiers*='theme-root'] {
+  /* Body-level appearance. Cascade target for every element — including chrome (header / footer / app sections) and theme-roots. App sections without their own styling adopt these defaults; apps with explicit styling override per normal cascade. See `.context/docs/subgrid-migration.md` § Body-level appearance. */
+  body {
     background: var(--gradient-background);
     color: var(--color-role-foreground);
 
@@ -31,8 +31,6 @@
     @media (prefers-reduced-motion) {
       transition-duration: 0s;
     }
-
-    position: relative;
 
     /* Heading color */
     & :where(.h0, h1, .h1, h2, .h2, h3, .h3, h4, .h4, h5, .h5, h6, .h6) {
@@ -69,58 +67,41 @@
     }
   }
 
-  /* Theme-root: shared layout base. Applies to any theme-root carrying a layout:<preset> modifier — content cap, centering, section gutter. Specialized sections that omit the layout modifier skip this entirely and own their own layout via per-section CSS. */
-  [data-modifiers*='theme-root']:where([data-modifiers*='layout:']) {
-    max-inline-size: var(--content-width, 125rem);
-    margin-inline: auto;
-    padding-inline: var(--gutter);
+  /* Theme-root: bleed grid. Three tracks with named lines — side tracks absorb gutter at narrow viewports and the (viewport - content) excess at wide viewports; center track caps at --content-width and is clamped to viewport minus gutter at narrow viewports. Direct children default to the content track; container blocks (group/columns/media) opt into wider spans via `bleed-desktop:<value>` / `bleed-mobile:<value>` modifiers — see `.context/docs/subgrid-migration.md` § Bleed model. */
+  [data-modifiers*='theme-root'] {
+    display: grid;
+    grid-template-columns:
+      [bleed-start] 1fr
+      [content-start] min(var(--content-width, 125rem), calc(100% - 2 * var(--gutter)))
+      [content-end] 1fr
+      [bleed-end];
+    position: relative;
+  }
 
-    @media (width < 48rem) {
-      padding-inline: var(--mobile-gutter, var(--gutter));
+  /* Default: direct children sit in the content track */
+  [data-modifiers*='theme-root'] > * {
+    grid-column: content-start / content-end;
+  }
+
+  /* Desktop bleed (≥ 48rem) — container blocks carrying bleed-desktop:<value> opt into wider spans. Mobile inherits desktop bleed by default; mobile-specific rules below override. */
+  @media (width >= 48rem) {
+    [data-modifiers*='theme-root'] > [data-modifiers*='bleed-desktop:both'] {
+      grid-column: bleed-start / bleed-end;
+    }
+
+    [data-modifiers*='theme-root'] > [data-modifiers*='bleed-desktop:inline-start'] {
+      grid-column: bleed-start / content-end;
+    }
+
+    [data-modifiers*='theme-root'] > [data-modifiers*='bleed-desktop:inline-end'] {
+      grid-column: content-start / bleed-end;
     }
   }
 
-  /* Theme-root: layout = column. Default merchant section composition — direct block children stack vertically via the block-rhythm cascade. */
-  [data-modifiers*='theme-root'][data-modifiers*='layout:column'] {
-    display: flow-root;
-  }
-
-  /* Theme-root: layout = row. Direct block children flow horizontally; wrap when content exceeds available width. Gap = section gutter. */
-  [data-modifiers*='theme-root'][data-modifiers*='layout:row'] {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: var(--gutter);
-  }
-
-  /* Theme-root: layout = columns_2 / columns_3 / columns_4. Grid with N tracks; stacks to single column below the stack-below breakpoint. Theme defaults: 40rem for columns_2, 60rem for columns_3 / columns_4. */
-  [data-modifiers*='theme-root'][data-modifiers*='layout:columns_2'] {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: var(--gutter);
-
-    @media (width < 40rem) {
-      grid-template-columns: 1fr;
-    }
-  }
-
-  [data-modifiers*='theme-root'][data-modifiers*='layout:columns_3'] {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: var(--gutter);
-
-    @media (width < 60rem) {
-      grid-template-columns: 1fr;
-    }
-  }
-
-  [data-modifiers*='theme-root'][data-modifiers*='layout:columns_4'] {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: var(--gutter);
-
-    @media (width < 60rem) {
-      grid-template-columns: 1fr;
+  /* Mobile bleed (< 48rem) — binary `both`-only enum. Containers carrying bleed-mobile:both span the full bleed. Containers without bleed-mobile but with bleed-desktop don't bleed at mobile (default content track applies). */
+  @media (width < 48rem) {
+    [data-modifiers*='theme-root'] > [data-modifiers*='bleed-mobile:both'] {
+      grid-column: bleed-start / bleed-end;
     }
   }
 

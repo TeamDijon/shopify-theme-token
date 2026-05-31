@@ -62,18 +62,7 @@
     "section": {
       "name": "Section",
       "settings": {
-        "layout": {
-          "content": "Mise en page",
-          "label": "Mise en page",
-          "info": "Choisit la mise en page implicite de la section. Pour un contrôle plus fin, encapsulez les enfants dans un bloc group ou columns.",
-          "options": {
-            "column": "Empilée",
-            "row": "Côte à côte",
-            "columns_2": "Deux colonnes",
-            "columns_3": "Trois colonnes",
-            "columns_4": "Quatre colonnes"
-          }
-        },
+        "layout": { "content": "Mise en page" },
         "content_width": {
           "label": "Largeur du contenu",
           "info": "Laisser vide pour le défaut du thème (2000px) — pleine largeur sur la plupart des écrans (1920px et moins)."
@@ -319,9 +308,23 @@
           "label": "Taille mobile",
           "info": "Laisser vide pour hériter du bureau"
         },
-        "bleed": {
-          "label": "Bord à bord",
-          "info": "Étend le média au-delà de la gouttière de la section"
+        "bleed_desktop": {
+          "label": "Pleine largeur (bureau)",
+          "info": "Étend le bloc jusqu'au bord de la section sur écran large. « Les deux » pour pleine largeur ; « Début » / « Fin » pour un débordement d'un seul côté.",
+          "options": {
+            "none": "Aucun",
+            "inline_start": "Début",
+            "inline_end": "Fin",
+            "both": "Les deux"
+          }
+        },
+        "bleed_mobile": {
+          "label": "Pleine largeur (mobile)",
+          "info": "Étend le bloc jusqu'au bord de la section sur écran mobile. Seule la pleine largeur a du sens en mobile.",
+          "options": {
+            "none": "Aucun",
+            "both": "Les deux"
+          }
         },
         "image_fit": {
           "label": "Adaptation de l'image",
@@ -450,12 +453,26 @@
         },
         "content_width": {
           "label": "Largeur du contenu",
-          "info": "Laisser vide pour la pleine largeur. Ignoré lorsque « Bord à bord » est activé."
+          "info": "Laisser vide pour la pleine largeur"
         },
         "gap": { "label": "Écart" },
-        "bleed": {
-          "label": "Bord à bord",
-          "info": "Étend le groupe au-delà de la gouttière de la section jusqu'au bord du viewport"
+        "bleed_desktop": {
+          "label": "Pleine largeur (bureau)",
+          "info": "Étend le bloc jusqu'au bord de la section sur écran large. « Les deux » pour pleine largeur ; « Début » / « Fin » pour un débordement d'un seul côté.",
+          "options": {
+            "none": "Aucun",
+            "inline_start": "Début",
+            "inline_end": "Fin",
+            "both": "Les deux"
+          }
+        },
+        "bleed_mobile": {
+          "label": "Pleine largeur (mobile)",
+          "info": "Étend le bloc jusqu'au bord de la section sur écran mobile. Seule la pleine largeur a du sens en mobile.",
+          "options": {
+            "none": "Aucun",
+            "both": "Les deux"
+          }
         },
         "appearance": { "content": "Apparence" },
         "container_style": {
@@ -526,9 +543,23 @@
           "info": "Laisser vide pour la pleine largeur"
         },
         "gap": { "label": "Écart" },
-        "bleed": {
-          "label": "Bord à bord",
-          "info": "Étend les colonnes au-delà de la gouttière de la section jusqu'au bord du viewport"
+        "bleed_desktop": {
+          "label": "Pleine largeur (bureau)",
+          "info": "Étend le bloc jusqu'au bord de la section sur écran large. « Les deux » pour pleine largeur ; « Début » / « Fin » pour un débordement d'un seul côté.",
+          "options": {
+            "none": "Aucun",
+            "inline_start": "Début",
+            "inline_end": "Fin",
+            "both": "Les deux"
+          }
+        },
+        "bleed_mobile": {
+          "label": "Pleine largeur (mobile)",
+          "info": "Étend le bloc jusqu'au bord de la section sur écran mobile. Seule la pleine largeur a du sens en mobile.",
+          "options": {
+            "none": "Aucun",
+            "both": "Les deux"
+          }
         },
         "appearance": { "content": "Apparence" },
         "container_style": {

@@ -1,7 +1,8 @@
-{% # Media block v1.3.0 %}
+{% # Media block v1.4.0 %}
 
 {% comment %}
   Changelog
+  - v1.4.0 — replace `bleed` checkbox with `bleed_desktop` (none/inline_start/inline_end/both) + `bleed_mobile` (none/both) responsive enum API. Bleed positioning moves from the snippet's own CSS to the section's named-line bleed grid (per subgrid migration). Merchants previously setting `bleed: true` reset to `bleed_desktop: none`.
   - v1.3.0 — add `container_style` setting (metaobject ref). Emits `container-style:<handle>` modifier; centralized CSS for card/outlined/elevated variants lives in `core.css` `@layer theme`.
   - v1.2.0 — replace `@theme` blocks wildcard with an explicit whitelist for overlay content (title, richtext, button, group). Was missed in the section.liquid/group/columns whitelist refactor; media is the third container block.
   - v1.1.0 — add `image_fit` setting (`cover` default, `contain` for full-image-visible cases — logos, portraits, packshots)
@@ -119,11 +120,28 @@
       "info": "t:blocks.media.settings.mobile_media_size.info"
     },
     {
-      "type": "checkbox",
-      "id": "bleed",
-      "label": "t:blocks.media.settings.bleed.label",
-      "info": "t:blocks.media.settings.bleed.info",
-      "default": false
+      "type": "select",
+      "id": "bleed_desktop",
+      "label": "t:blocks.media.settings.bleed_desktop.label",
+      "info": "t:blocks.media.settings.bleed_desktop.info",
+      "options": [
+        { "value": "none", "label": "t:blocks.media.settings.bleed_desktop.options.none" },
+        { "value": "inline_start", "label": "t:blocks.media.settings.bleed_desktop.options.inline_start" },
+        { "value": "inline_end", "label": "t:blocks.media.settings.bleed_desktop.options.inline_end" },
+        { "value": "both", "label": "t:blocks.media.settings.bleed_desktop.options.both" }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "select",
+      "id": "bleed_mobile",
+      "label": "t:blocks.media.settings.bleed_mobile.label",
+      "info": "t:blocks.media.settings.bleed_mobile.info",
+      "options": [
+        { "value": "none", "label": "t:blocks.media.settings.bleed_mobile.options.none" },
+        { "value": "both", "label": "t:blocks.media.settings.bleed_mobile.options.both" }
+      ],
+      "default": "none"
     },
     {
       "type": "select",

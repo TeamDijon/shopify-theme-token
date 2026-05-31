@@ -53,18 +53,7 @@
     "section": {
       "name": "Section",
       "settings": {
-        "layout": {
-          "content": "Layout",
-          "label": "Layout",
-          "info": "Picks the section's implicit-container layout. For finer control, wrap children in a group or columns block.",
-          "options": {
-            "column": "Stacked",
-            "row": "Side-by-side",
-            "columns_2": "Two columns",
-            "columns_3": "Three columns",
-            "columns_4": "Four columns"
-          }
-        },
+        "layout": { "content": "Layout" },
         "content_width": {
           "label": "Content width",
           "info": "Leave blank for the 2000px theme default — full width on most screens (1920px and below)."
@@ -310,9 +299,23 @@
           "label": "Mobile size",
           "info": "Leave blank to inherit from desktop"
         },
-        "bleed": {
-          "label": "Edge to edge",
-          "info": "Extends media past the section gutter"
+        "bleed_desktop": {
+          "label": "Bleed (desktop)",
+          "info": "Extends to the section's bleed boundary at desktop sizes. 'Both' for full bleed; 'Start' / 'End' for one-side bleed.",
+          "options": {
+            "none": "None",
+            "inline_start": "Start",
+            "inline_end": "End",
+            "both": "Both"
+          }
+        },
+        "bleed_mobile": {
+          "label": "Bleed (mobile)",
+          "info": "Extends to the section's bleed boundary at mobile sizes. Only full bleed is meaningful on mobile.",
+          "options": {
+            "none": "None",
+            "both": "Both"
+          }
         },
         "image_fit": {
           "label": "Image fit",
@@ -441,12 +444,26 @@
         },
         "content_width": {
           "label": "Content width",
-          "info": "Leave blank for full width. Ignored when 'Edge to edge' is enabled."
+          "info": "Leave blank for full width"
         },
         "gap": { "label": "Gap" },
-        "bleed": {
-          "label": "Edge to edge",
-          "info": "Extends the group past the section gutter to the viewport edge"
+        "bleed_desktop": {
+          "label": "Bleed (desktop)",
+          "info": "Extends to the section's bleed boundary at desktop sizes. 'Both' for full bleed; 'Start' / 'End' for one-side bleed.",
+          "options": {
+            "none": "None",
+            "inline_start": "Start",
+            "inline_end": "End",
+            "both": "Both"
+          }
+        },
+        "bleed_mobile": {
+          "label": "Bleed (mobile)",
+          "info": "Extends to the section's bleed boundary at mobile sizes. Only full bleed is meaningful on mobile.",
+          "options": {
+            "none": "None",
+            "both": "Both"
+          }
         },
         "appearance": { "content": "Appearance" },
         "container_style": {
@@ -517,9 +534,23 @@
           "info": "Leave blank for full width"
         },
         "gap": { "label": "Gap" },
-        "bleed": {
-          "label": "Edge to edge",
-          "info": "Extends the columns past the section gutter to the viewport edge"
+        "bleed_desktop": {
+          "label": "Bleed (desktop)",
+          "info": "Extends to the section's bleed boundary at desktop sizes. 'Both' for full bleed; 'Start' / 'End' for one-side bleed.",
+          "options": {
+            "none": "None",
+            "inline_start": "Start",
+            "inline_end": "End",
+            "both": "Both"
+          }
+        },
+        "bleed_mobile": {
+          "label": "Bleed (mobile)",
+          "info": "Extends to the section's bleed boundary at mobile sizes. Only full bleed is meaningful on mobile.",
+          "options": {
+            "none": "None",
+            "both": "Both"
+          }
         },
         "appearance": { "content": "Appearance" },
         "container_style": {

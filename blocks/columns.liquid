@@ -1,7 +1,8 @@
-{% # Columns block v1.4.0 %}
+{% # Columns block v1.5.0 %}
 
 {% comment %}
   Changelog
+  - v1.5.0 — replace `bleed` checkbox with `bleed_desktop` (none/inline_start/inline_end/both) + `bleed_mobile` (none/both) responsive enum API. Bleed positioning moves from the snippet's own CSS to the section's named-line bleed grid (per subgrid migration). Merchants previously setting `bleed: true` reset to `bleed_desktop: none`.
   - v1.4.0 — add `container_style` setting (metaobject ref). Emits `container-style:<handle>` modifier; centralized CSS for card/outlined/elevated variants lives in `core.css` `@layer theme`.
   - v1.3.0 — replace `@theme` blocks wildcard with an explicit whitelist of the 9 shipped L1 blocks per the block-whitelisting convention in `composition-strategy.md`
   - v1.2.0 — add `sticky_track` setting (none/first/second) to pin one column while the other scrolls; visible only on 2-track layouts; hides `vertical_alignment` when active since sticky forces start alignment
@@ -105,11 +106,28 @@
       "default": 16
     },
     {
-      "type": "checkbox",
-      "id": "bleed",
-      "label": "t:blocks.columns.settings.bleed.label",
-      "info": "t:blocks.columns.settings.bleed.info",
-      "default": false
+      "type": "select",
+      "id": "bleed_desktop",
+      "label": "t:blocks.columns.settings.bleed_desktop.label",
+      "info": "t:blocks.columns.settings.bleed_desktop.info",
+      "options": [
+        { "value": "none", "label": "t:blocks.columns.settings.bleed_desktop.options.none" },
+        { "value": "inline_start", "label": "t:blocks.columns.settings.bleed_desktop.options.inline_start" },
+        { "value": "inline_end", "label": "t:blocks.columns.settings.bleed_desktop.options.inline_end" },
+        { "value": "both", "label": "t:blocks.columns.settings.bleed_desktop.options.both" }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "select",
+      "id": "bleed_mobile",
+      "label": "t:blocks.columns.settings.bleed_mobile.label",
+      "info": "t:blocks.columns.settings.bleed_mobile.info",
+      "options": [
+        { "value": "none", "label": "t:blocks.columns.settings.bleed_mobile.options.none" },
+        { "value": "both", "label": "t:blocks.columns.settings.bleed_mobile.options.both" }
+      ],
+      "default": "none"
     },
     {
       "type": "header",

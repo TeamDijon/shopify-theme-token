@@ -1,7 +1,8 @@
-{% # Columns v1.4.0 %}
+{% # Columns v1.5.0 %}
 
 {% comment %}
   Changelog
+  - v1.5.0 — replace `bleed` boolean with responsive `bleed_desktop` (none/inline_start/inline_end/both) + `bleed_mobile` (none/both) enums. Emits `bleed-desktop:<value>` / `bleed-mobile:<value>` modifiers consumed by the section's named-line bleed grid (substrate `layer-theme.css` rewrite). Removes the snippet's own bleed CSS — section handles via `grid-column`. Per the subgrid migration (`.context/docs/subgrid-migration.md`).
   - v1.4.0 — rename BEM-style inner wrapper class `shopify-block--columns__inner` to rscss-compliant `.inner` (scoped via `.shopify-block--columns > .inner`). Per-project CSS targeting the old class name must rename. Mirrors `group.liquid` v1.3.0.
   - v1.3.0 — read `container_style` metaobject and emit `container-style:<handle>` modifier when set. Centralized variant CSS (card / outlined / elevated) lives in `core.css` `@layer theme`.
   - v1.2.2 — emit `{{ block.shopify_attributes }}` on the root for theme-editor block selection (was missing)
@@ -24,9 +25,10 @@
   @param {string} [stack_below] - Collapse to single column when container is below the breakpoint. One of `'none'`, `'40'`, `'60'`, `'80'` (rem). Defaults to `'60'`.
   @param {string} [vertical_alignment] - `align-items` value for grid items. One of `'start'` (default), `'center'`, `'end'`, `'stretch'`. Ignored when `sticky_track` is set — sticky forces start alignment so the non-sticky track can grow taller than the sticky one.
   @param {string} [sticky_track] - Pins one track while the other scrolls. `'none'` (default), `'first'`, or `'second'`. Only meaningful for 2-track layouts (`2`, `1-2`, `2-1`, `1-3`, `3-1`). Disabled when stack-below has collapsed the layout to a single column.
-  @param {metaobject} [content_width] - `content_width` metaobject. Caps `max-inline-size`. Full width when blank. Ignored when `bleed` is true.
+  @param {metaobject} [content_width] - `content_width` metaobject. Caps `max-inline-size`. Full width when blank. Composes with bleed (cap = section's content cap; per `container-patterns.md`).
   @param {number} [gap] - Gap between columns in px. Defaults to 16.
-  @param {boolean} [bleed] - Extends the columns past the section gutter to the visible viewport width (`margin-inline: calc(50% - 50dvw)`). Same constraint as `media`'s bleed: assumes a centered ancestor chain. Defaults to false.
+  @param {string} [bleed_desktop] - At/above 48rem: extend the columns block's start / end / both edges to the section's bleed boundary. One of `'none'` (default), `'inline_start'`, `'inline_end'`, `'both'`. Emitted as `bleed-desktop:<value>` modifier; the section's named-line bleed grid handles positioning.
+  @param {string} [bleed_mobile] - Below 48rem: full-bleed only. One of `'none'` (default) or `'both'`.
   @param {metaobject} [container_style] - `container_style` metaobject. Reads `.system.handle`; emits `container-style:<handle>` modifier. Centralized CSS in `core.css` handles card / outlined / elevated.
   @param {string} [color_scheme] - Optional `color_scheme` setting value. When set, emits `color-scheme:<id>` modifier so the global scheme rules from `utility--css-variables` apply.
   @param {number} [mobile_margin_block_start] - Top margin in px below the desktop breakpoint. Defaults to 0.
@@ -42,7 +44,8 @@
   assign sticky_track = sticky_track | default: block.settings.sticky_track | default: 'none'
   assign content_width = content_width | default: block.settings.content_width | default: ''
   assign gap = gap | default: block.settings.gap | default: 16
-  assign bleed = bleed | default: block.settings.bleed, allow_false: true | default: false, allow_false: true
+  assign bleed_desktop = bleed_desktop | default: block.settings.bleed_desktop | default: 'none'
+  assign bleed_mobile = bleed_mobile | default: block.settings.bleed_mobile | default: 'none'
   assign container_style = container_style | default: block.settings.container_style | default: ''
   assign color_scheme = color_scheme | default: block.settings.color_scheme | default: ''
   assign mobile_margin_block_start = mobile_margin_block_start | default: block.settings.mobile_margin_block_start | default: 0
@@ -55,8 +58,11 @@
   if sticky_track != 'none'
     assign modifier_list = modifier_list | append: ',sticky-track:' | append: sticky_track
   endif
-  if bleed
-    assign modifier_list = modifier_list | append: ',bleed'
+  if bleed_desktop != 'none'
+    assign modifier_list = modifier_list | append: ',bleed-desktop:' | append: bleed_desktop
+  endif
+  if bleed_mobile != 'none'
+    assign modifier_list = modifier_list | append: ',bleed-mobile:' | append: bleed_mobile
   endif
   if container_style != blank
     assign modifier_list = modifier_list | append: ',container-style:' | append: container_style.system.handle
@@ -114,19 +120,12 @@
 {% stylesheet %}
   @layer components {
     /* Outer wrapper hosts the named container so descendant @container queries can match. The grid layout lives on the inner wrapper — querying the same element that defines the container never matches per spec. */
+    /* Outer wrapper hosts the named container so descendant @container queries can match. The grid layout lives on .inner. Bleed is now declared by the section's named-line grid (see `assets/layer-theme.css` and `.context/docs/subgrid-migration.md`); this snippet emits the bleed modifiers but does not own bleed CSS. */
     .shopify-block--columns {
       container-type: inline-size;
       container-name: columns;
 
       max-inline-size: var(--content-width, 100%);
-
-      /* Bleed: escape the section gutter, span the full visible viewport.
-         Same math as media's bleed; assumes a centered ancestor chain. */
-      &[data-modifiers*='bleed'] {
-        inline-size: 100dvw;
-        max-inline-size: none;
-        margin-inline: calc(50% - 50dvw);
-      }
     }
 
     .shopify-block--columns > .inner {

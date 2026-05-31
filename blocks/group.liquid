@@ -1,7 +1,8 @@
-{% # Group block v1.3.0 %}
+{% # Group block v1.4.0 %}
 
 {% comment %}
   Changelog
+  - v1.4.0 — replace `bleed` checkbox with `bleed_desktop` (none/inline_start/inline_end/both) + `bleed_mobile` (none/both) responsive enum API. Bleed positioning moves from the snippet's own CSS to the section's named-line bleed grid (per subgrid migration). Merchants previously setting `bleed: true` reset to `bleed_desktop: none`; opt back into bleed via the new enums.
   - v1.3.0 — add `container_style` setting (metaobject ref). Emits `container-style:<handle>` modifier; centralized CSS for card/outlined/elevated variants lives in `core.css` `@layer theme`.
   - v1.2.0 — replace `@theme` blocks wildcard with an explicit whitelist of the 9 shipped L1 blocks per the block-whitelisting convention in `composition-strategy.md`
   - v1.1.0 — add `bleed` checkbox to extend the group past the section gutter to the visible viewport width
@@ -100,11 +101,28 @@
       "default": 16
     },
     {
-      "type": "checkbox",
-      "id": "bleed",
-      "label": "t:blocks.group.settings.bleed.label",
-      "info": "t:blocks.group.settings.bleed.info",
-      "default": false
+      "type": "select",
+      "id": "bleed_desktop",
+      "label": "t:blocks.group.settings.bleed_desktop.label",
+      "info": "t:blocks.group.settings.bleed_desktop.info",
+      "options": [
+        { "value": "none", "label": "t:blocks.group.settings.bleed_desktop.options.none" },
+        { "value": "inline_start", "label": "t:blocks.group.settings.bleed_desktop.options.inline_start" },
+        { "value": "inline_end", "label": "t:blocks.group.settings.bleed_desktop.options.inline_end" },
+        { "value": "both", "label": "t:blocks.group.settings.bleed_desktop.options.both" }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "select",
+      "id": "bleed_mobile",
+      "label": "t:blocks.group.settings.bleed_mobile.label",
+      "info": "t:blocks.group.settings.bleed_mobile.info",
+      "options": [
+        { "value": "none", "label": "t:blocks.group.settings.bleed_mobile.options.none" },
+        { "value": "both", "label": "t:blocks.group.settings.bleed_mobile.options.both" }
+      ],
+      "default": "none"
     },
     {
       "type": "header",
