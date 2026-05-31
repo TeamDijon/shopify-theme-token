@@ -82,7 +82,7 @@ A primitive with only one surface (sub-component-only or block-only) renders one
 
 **Files:** `sections/validation--preset--<name>.liquid` + `templates/index.validation--preset--<name>.json`.
 
-The 4 current "composition" pages (`hero`, `content`, `columns-features`, `cta-banner`) are proto-presets; they slot here at retrofit time.
+**Tier 3 work is parked.** L2 preset authoring + validation lands after L1 block validation hardens. The 4 existing `sections/validation--preset--*.liquid` scaffolds (`hero`, `content`, `columns-features`, `cta-banner`) remain on disk as composition references but are not tracked as Tier 3 implementations — track in `BACKLOG.md` until block validation is settled.
 
 ## Tier 4 — Specialized section (Beyond L2)
 
@@ -94,7 +94,7 @@ The 4 current "composition" pages (`hero`, `content`, `columns-features`, `cta-b
 
 Covers Beyond-L2 sections per `composition-strategy.md`: bespoke section files with explicitly-whitelisted blocks (no private theme blocks — the whitelist convention makes them unnecessary).
 
-No specialized-section validation pages exist today.
+**Tier 4 work is parked.** Specialized sections (header / footer / cart / faq / collection-grid / featured-product) land after substrate confidence is established (subgrid migration ships + L1 block validation hardens). No specialized-section files exist today; track in `BACKLOG.md` until the substrate is settled.
 
 ## What the spec carries
 

@@ -45,8 +45,8 @@ Originally sourced from the EXPLORATION-2 inventory pass (May 2026); retrofits a
 
 ## Layer 2 — Presets on `section.liquid`
 
-(none yet — proto-presets `hero` / `content` / `columns-features` / `cta-banner` slot here at retrofit time)
+Parked. Authoring + validation lands after L1 block validation hardens. The 4 existing `sections/validation--preset--*.liquid` scaffolds (`hero`, `content`, `columns-features`, `cta-banner`) remain on disk as composition references but are not tracked here until preset work resumes — see local `BACKLOG.md`.
 
 ## Beyond L2 — Specialized sections
 
-(none yet — `header` / `footer` retrofits earmarked; future `cart` / `featured-product` / `collection-grid` / `faq` slot here)
+Parked. Authoring + validation lands after substrate confidence is established (subgrid migration ships + L1 block validation hardens). Earmarked: `header`, `footer`, future `cart` / `faq` / `collection-grid` / `featured-product` — see local `BACKLOG.md`.
