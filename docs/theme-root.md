@@ -1,84 +1,115 @@
 # Theme root
 
-The contract identifying an element as a theme-owned CSS scope root. Carried via a `data-modifiers` value; consumed by substrate CSS for appearance defaults, layout presets, and rhythm scoping.
+The contract identifying an element as a theme-owned CSS scope root. Carried via a `data-modifiers` value; consumed by substrate CSS for the named-line bleed grid and the block-rhythm cascade.
 
-A theme-root is the top of the theme's CSS scope chain on a given Shopify section. It hosts the section's appearance (typography, color, transitions), runs as a custom element extending `BaseComponent` (events / observers / cache / modifiers managers), and — for merchant-composable sections — provides a parametrizable implicit container for direct `.shopify-block` children.
+A theme-root is the top of the theme's CSS scope chain on a given Shopify section. It runs as a custom element extending `BaseComponent` (events / observers / cache / modifiers managers), carries the section's color-scheme context, and — for merchant-composable sections — provides the named-line bleed grid that direct `.shopify-block` children position against.
 
 ## Identity
 
 Every theme-root element carries `theme-root` as one of its `data-modifiers` values, alongside other modifiers the element emits:
 
 ```liquid
-<theme-section data-modifiers="theme-root,layout:column,color-scheme:scheme-1">
+<theme-section data-modifiers="theme-root,color-scheme:scheme-1">
 <theme-cart data-modifiers="theme-root,color-scheme:scheme-1">
 <theme-header data-modifiers="theme-root,color-scheme:scheme-2">
 ```
 
 The marker is a static identity value, authored directly in each section's Liquid (no value pair; just the bare `theme-root` token). Specialized-section authoring adds it to the custom element's static modifier list.
 
-Generic appearance rules match all theme-roots via `[data-modifiers*='theme-root']`. Specialized-section-specific styling uses tag selectors (`theme-cart { ... }`) when the role matters.
+Substrate selectors match all theme-roots via `[data-modifiers*='theme-root']` — the layout grid, the bleed-direction rules, and the rhythm cascade all key off this substring. Specialized-section-specific styling uses tag selectors (`theme-cart { ... }`) when the role matters.
 
-**Substring-match safety.** `theme-root` must remain a unique substring across every `data-modifiers` value the theme emits. Modifier values like `layout:theme-root-style` would false-match the `[data-modifiers*='theme-root']` selector and apply substrate appearance rules where they don't belong. The convention is to keep `theme-root` as a reserved bare token; never use it as a substring inside another modifier value.
+**Substring-match safety.** `theme-root` must remain a unique substring across every `data-modifiers` value the theme emits. Modifier values like `layout:theme-root-style` would false-match the `[data-modifiers*='theme-root']` selector and apply substrate rules where they don't belong. The convention is to keep `theme-root` as a reserved bare token; never use it as a substring inside another modifier value.
 
-**Agnostic component extraction.** Component CSS reads scheme tokens (`var(--color-role-*)`), typography tokens, and other cascading variables — never the `[data-modifiers*='theme-root']` selector directly. Where those tokens get applied (`body` vs `theme-root`) is Token's internal scoping choice, not a contract the component knows about. To lift a component into another theme: copy the snippet + stylesheet, ensure the destination applies the same variable set somewhere up the cascade (body, root, or its own theme-root analogue), no further changes required. The selector enumeration stays inside the substrate.
+**Agnostic component extraction.** Component CSS reads scheme tokens (`var(--color-role-*)`), typography tokens, and other cascading variables — never the `[data-modifiers*='theme-root']` selector directly. Appearance defaults live on `<body>` (see `subgrid-migration.md` § Body-level appearance), so the theme-root scoping is invisible to components. To lift a component into another theme: copy the snippet + stylesheet, ensure the destination applies the same variable set on `<body>` or up the cascade, no further changes required.
 
-## Five responsibilities
+## Four responsibilities
 
-A theme-root carries five responsibilities. They co-locate on the element by design — they're tightly coupled in practice and separating them would impose more cost than it saves.
+A theme-root carries four responsibilities. They co-locate on the element by design — they're tightly coupled in practice and separating them would impose more cost than it saves.
 
 1. **JS runtime.** Custom-element class extending `BaseComponent`. Hosts the four lifecycle managers for the element's subtree.
 2. **Theming context.** Carries `color-scheme:<id>` modifier; per-scheme rules re-emit `--color-role-*` tokens scoped to the modifier-bearing element.
-3. **Appearance defaults.** Substrate CSS applies typography, color, background, transitions, form-input styling, heading colors — cascading to descendants.
-4. **Layout root.** Owns the section's content cap (`max-inline-size: var(--content-width)`), gutter offset, and layout preset (see Layout enum).
-5. **Implicit container for direct block children.** Direct `.shopify-block` children participate in the block-rhythm cascade. Container blocks (`group`, `columns`, `media`) take over composition for their own children.
+3. **Layout root — bleed grid.** Theme-root resolves as a CSS grid with three tracks and four named lines (`bleed-start` / `content-start` / `content-end` / `bleed-end`). Direct children declare span via `grid-column`, gated on `bleed-desktop:<value>` / `bleed-mobile:<value>` modifiers. See § Bleed grid.
+4. **Implicit container for direct block children.** Direct `.shopify-block` children participate in the block-rhythm cascade. Container blocks (`group`, `columns`, `media`) take over composition for their own children (their own gap governs nested spacing — the cascade doesn't leak through).
 
-## Layout enum
+**Appearance defaults are not a theme-root responsibility.** Typography, color, background, transitions, and form-input styling live on `<body>` in `layer-theme.css`. They cascade to every element inside `<body>` — chrome (header / footer), theme-roots, app sections alike. Apps with their own explicit styling override per normal cascade. See `subgrid-migration.md` § Body-level appearance.
 
-Theme-roots that host merchant block composition emit a `layout:<preset>` modifier. The preset bundles direction + theme-default gap + theme-default stack-below into a single setting.
+## Bleed grid
 
-| Preset value | Behavior |
-|---|---|
-| `column` (default) | `display: flow-root`. Direct block children stack vertically via the block-rhythm cascade. Caps at `--content-width`, gutter offset, centered. |
-| `row` | `display: flex; flex-direction: row; flex-wrap: wrap; gap: var(--gutter)`. Children flow horizontally; wrap when content exceeds available width. |
-| `columns_2` | `display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--gutter)`. Stacks at container width < 40rem. |
-| `columns_3` | Same as `columns_2`, three tracks. Stacks at < 60rem. |
-| `columns_4` | Same, four tracks. Stacks at < 60rem. |
+Theme-root resolves as a CSS grid with three tracks and named lines:
 
-Theme defaults are bundled per preset. Merchants picking a layout get those defaults; for finer control (per-section gap, per-section stack-below threshold, color-scheme override on a subset of children), wrap in a `group` or `columns` block.
-
-The `layout` setting on `sections/section.liquid` exposes this enum to merchants. Specialized sections omit the setting and the modifier — they own their layout via per-section CSS (see Layout opt-out).
-
-## Layout opt-out — via modifier omission
-
-A theme-root *without* a `layout:<preset>` modifier gets no layout preset applied. The CSS rules for layout are gated on the layout modifier; no match means no rule fires.
-
-Specialized sections (`<theme-cart>`, `<theme-header>`, `<theme-footer>`) omit `layout:` from their data-modifiers and own their layout via per-section CSS:
-
-```liquid
-<theme-cart data-modifiers="theme-root,color-scheme:scheme-1">
-  ...
-</theme-cart>
+```css
+[data-modifiers*='theme-root'] {
+  display: grid;
+  grid-template-columns:
+    [bleed-start] 1fr
+    [content-start] min(var(--content-width, 125rem), calc(100% - 2 * var(--gutter)))
+    [content-end] 1fr
+    [bleed-end];
+}
 ```
 
-Appearance defaults still apply (the appearance rule matches `[data-modifiers*='theme-root']` regardless of layout modifier). The specialized section's own CSS sets `display`, `max-inline-size`, padding, and any custom region structure.
+Side tracks (`1fr`) absorb the gutter at narrow viewports and the (viewport - content-width) excess at wide viewports. The center track caps at `--content-width` and is clamped to viewport minus gutter at narrow viewports.
 
-Omission is the opt-out mechanism — no separate `no-layout` flag exists.
+Direct children default to the content track:
 
-## Leaf-vs-wrapped composition equivalence
+```css
+[data-modifiers*='theme-root'] > * {
+  grid-column: content-start / content-end;
+}
+```
 
-A section composed as `[title, richtext, button]` directly under a theme-root with `layout:column` is equivalent in vertical rhythm to a section composed as `[group{direction:column}, [title, richtext, button]]` inside the same theme-root.
+Container blocks (`group`, `columns`, `media`) opt into wider spans via the responsive bleed modifier API:
+
+| Desktop modifier | Mobile modifier | grid-column at viewport |
+|---|---|---|
+| (none) | (none) | `content-start / content-end` (default) |
+| `bleed-desktop:both` | (none) | desktop: `bleed-start / bleed-end`; mobile: default |
+| `bleed-desktop:inline-start` | (none) | desktop: `bleed-start / content-end`; mobile: default |
+| `bleed-desktop:inline-end` | (none) | desktop: `content-start / bleed-end`; mobile: default |
+| (any) | `bleed-mobile:both` | mobile: `bleed-start / bleed-end` overrides desktop rules at < 48rem |
+
+Mobile is a binary `both`-only enum — single-column mobile has no edge tracks, so per-side bleed has no geometric meaning.
+
+**Strict container-only.** Only container blocks declare bleed direction. Content blocks (`title`, `richtext`, `button`, `spacer`, `separator`, `embed`) carry no bleed setting. Children of containers position via the container's own layout — they don't independently reach section's bleed lines. See `subgrid-migration.md` § Bleed model.
+
+## Specialized-section opt-out
+
+A specialized section (`<theme-cart>`, `<theme-header>`, `<theme-footer>`) carries `theme-root` for identity, color-scheme tokens, and JS runtime — but owns its layout independently. Per-section CSS overrides `display: grid` with whatever layout the section needs:
+
+```css
+theme-cart {
+  display: grid;
+  grid-template-areas: "header" "lines" "summary";
+  /* ... */
+}
+
+theme-header {
+  display: flex;
+  position: sticky;
+  inset-block-start: 0;
+  /* ... */
+}
+```
+
+Specialized sections that need to retain the bleed grid pass through; those that don't override `display` and resolve as the override. No separate opt-out modifier is required — per-section CSS wins by cascade.
+
+## Leaf-vs-wrapped composition
+
+A section composed as `[title, richtext, button]` directly under `<theme-section>` is equivalent in vertical rhythm to `[group{direction:column}, [title, richtext, button]]`:
 
 | Composition | Block-spacing source |
 |---|---|
-| Leaf-only under theme-root (`layout:column`) | Rhythm cascade (`--block-rhythm-*` set on the theme-root) applied to direct children via `[data-modifiers*='theme-root'] > .shopify-block:not(:first-child) { margin-block-start: ... }` |
+| Leaf-only under theme-section | Rhythm cascade (`--block-rhythm-*` set on the theme-root) applied to direct children via `[data-modifiers*='theme-root'] > .shopify-block:not(:first-child) { margin-block-start: ... }` |
 | Wrapped in a `group` block (`direction:column`) | The group's own `gap` setting (no rhythm cascade leaks in — see Rhythm scope below) |
 
 Choose between them by what's needed:
 
-- **Leaf-only** when the section's primary composition matches the layout preset (column / row / columns_N). No wrapping needed; the merchant picks the layout setting and adds blocks. Saves one nesting level.
+- **Leaf-only** when the section's primary composition is a vertical stack with section-rhythm spacing. Saves one nesting level.
 - **Wrapped** when the section needs nested composition (a row of columns where each column has its own children), per-wrapper customization (specific gap, color-scheme override on a subset), or container-style variants (card / outlined / elevated treatments on a sub-region).
 
-The two compositions are first-class. Neither is the preferred path.
+Both compositions are first-class. Neither is the preferred path.
+
+For non-vertical compositions (row, multi-track), wrap in `group` or `columns`. Section host (`sections/section.liquid`) no longer exposes a `layout` setting — the always-bleed-grid model means row / columns_N would need container blocks to layout their own children, so the section-level enum was redundant. See `subgrid-migration.md` § Open questions (resolved: dropped).
 
 ## Rhythm scope
 
@@ -98,79 +129,42 @@ Inside container blocks (`group`, `columns`, `media`), the parent's `gap` settin
 
 This resolves the "rhythm + gap sum" footgun that exists when a flat selector (`.shopify-block:not(:first-child)`) matches nested blocks: a child of a container block was receiving both the rhythm-cascade margin AND the parent's gap, summed visually.
 
-## Specialized-section pattern
-
-A specialized section uses its own custom element extending `BaseComponent` and carries the `theme-root` modifier:
-
-```liquid
-<theme-cart data-modifiers="theme-root,color-scheme:{{ section.settings.color_scheme }}">
-  {% comment %} custom markup; section owns layout {% endcomment %}
-</theme-cart>
-```
-
-The specialized section's per-section CSS sets layout independently — `display`, `max-inline-size`, multi-region grid layouts, sticky behavior, etc. Appearance defaults apply via the shared `[data-modifiers*='theme-root']` selector; no enumeration of custom-element tag names required.
-
-When the specialized section needs per-element-type styling beyond the shared defaults, tag selectors are unambiguous and cheap:
-
-```css
-theme-cart {
-  /* cart-specific layout: multi-region grid */
-  display: grid;
-  grid-template-areas: "header" "lines" "summary";
-  /* ... */
-}
-
-theme-header {
-  /* header-specific layout: sticky bar */
-  position: sticky;
-  inset-block-start: 0;
-  /* ... */
-}
-```
-
 ## Substrate CSS shape
 
-The substrate's `layer-theme.css` carries the appearance, layout-preset, and rhythm-scope rules. Indicative shape:
+The substrate's `layer-theme.css` carries the bleed grid, bleed-direction rules, rhythm cascade, and container-style variants. Appearance lives on `<body>` (separately). Indicative shape:
 
 ```css
 @layer theme {
-  /* Appearance — every theme-root */
+  /* Theme-root: bleed grid */
   [data-modifiers*='theme-root'] {
-    background: var(--gradient-background);
-    color: var(--color-role-foreground);
-    font-family: var(--base-font-family);
-    /* ...typography, transitions, form-input defaults, heading colors */
-  }
-
-  /* Layout: column (default merchant section) */
-  [data-modifiers*='theme-root'][data-modifiers*='layout:column'] {
-    display: flow-root;
-    max-inline-size: var(--content-width, 125rem);
-    margin-inline: auto;
-    padding-inline: var(--gutter);
-  }
-
-  /* Layout: row */
-  [data-modifiers*='theme-root'][data-modifiers*='layout:row'] {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: var(--gutter);
-    max-inline-size: var(--content-width, 125rem);
-    margin-inline: auto;
-    padding-inline: var(--gutter);
-  }
-
-  /* Layout: columns_2 / columns_3 / columns_4 */
-  [data-modifiers*='theme-root'][data-modifiers*='layout:columns_2'] {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: var(--gutter);
-    max-inline-size: var(--content-width, 125rem);
-    margin-inline: auto;
-    padding-inline: var(--gutter);
+    grid-template-columns:
+      [bleed-start] 1fr
+      [content-start] min(var(--content-width, 125rem), calc(100% - 2 * var(--gutter)))
+      [content-end] 1fr
+      [bleed-end];
+    position: relative;
   }
-  /* ...columns_3, columns_4 similarly */
+
+  /* Default: direct children sit in the content track */
+  [data-modifiers*='theme-root'] > * {
+    grid-column: content-start / content-end;
+  }
+
+  /* Desktop bleed (≥ 48rem) */
+  @media (width >= 48rem) {
+    [data-modifiers*='theme-root'] > [data-modifiers*='bleed-desktop:both'] {
+      grid-column: bleed-start / bleed-end;
+    }
+    /* ...inline-start, inline-end */
+  }
+
+  /* Mobile bleed (< 48rem) */
+  @media (width < 48rem) {
+    [data-modifiers*='theme-root'] > [data-modifiers*='bleed-mobile:both'] {
+      grid-column: bleed-start / bleed-end;
+    }
+  }
 
   /* Rhythm cascade — direct children of any theme-root */
   [data-modifiers*='theme-root'] > .shopify-block:not(:first-child) {
@@ -183,14 +177,12 @@ The substrate's `layer-theme.css` carries the appearance, layout-preset, and rhy
 }
 ```
 
-Specialized sections that omit the layout modifier get appearance + rhythm but no layout preset; per-section CSS sets layout.
-
 ## Related
 
-- Container patterns (gutter / gap / inner padding, bleed model, responsiveness shapes): `.context/docs/container-patterns.md`
-- Subgrid migration (planned future state: body-level appearance, named-line bleed grid, strict container-only bleed): `.context/docs/subgrid-migration.md`
+- Subgrid migration (the structural overhaul that produced this contract; explains the body-level appearance shift + named-line grid + strict container-only bleed): `.context/docs/subgrid-migration.md`
+- Container patterns (gutter / gap / inner padding, bleed model under the named-line grid, content cap): `.context/docs/container-patterns.md`
 - Section convention (`<section>` outer wrapper vs theme-root inner element, file structure): `.context/rules/section-convention.md`
 - Specialized section pattern (custom-element + JS class authoring): `.context/docs/specialized-section-pattern.md`
 - Modifier system (the `data-modifiers` convention, runtime mutation): `.context/docs/modifier-system.md`
 - Composition strategy (L0–L2 + Beyond-L2 layer model): `.context/docs/composition-strategy.md`
-- Schema conventions (the `layout` setting under section base settings): `.context/docs/schema-conventions.md`
+- Schema conventions (section base settings — content_width, block_rhythm, color_scheme): `.context/docs/schema-conventions.md`

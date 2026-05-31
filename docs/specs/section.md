@@ -6,9 +6,9 @@
 
 **Status**: shipped
 
-**Implementation**: `sections/section.liquid` v1.3.0 (render surface + schema)
+**Implementation**: `sections/section.liquid` v1.4.0 (render surface + schema)
 
-**Reconciled**: 2026-05-31
+**Reconciled**: 2026-05-31 (subgrid migration Stage 2)
 
 **Depends on**: `snippets/utility--dynamic-style.liquid`, `content_width` metaobject (optional), `spacing` metaobject (optional), `theme_color` color schemes, `layer-theme.css` substrate rules per `theme-root.md`
 
@@ -24,7 +24,7 @@ A rendered section produces two nested wrappers:
 
 ```html
 <section class="shopify-section shopify-section--section">
-  <theme-section data-modifiers="theme-root,layout:column,color-scheme:scheme-1">
+  <theme-section data-modifiers="theme-root,color-scheme:scheme-1">
     <!-- block content -->
   </theme-section>
 </section>
@@ -38,10 +38,11 @@ Section settings — appear in the editor sidebar:
 
 | Setting | Type | Required | Default | Notes |
 |---|---|---|---|---|
-| `layout` | select (`column` / `row` / `columns_2` / `columns_3` / `columns_4`) | no | `"column"` | Picks the implicit-container layout preset. Emitted as `layout:<value>` in `data-modifiers`; substrate CSS in `layer-theme.css` gates layout rules on the modifier. See `theme-root.md` § Layout enum for behavior per preset. |
-| `content_width` | metaobject (`content_width`) | no | blank → 125rem substrate default | Caps `max-inline-size`. Emitted as `--content-width: <value>px` in the section's dynamic style. Cascades to descendants as the bleed cap (`container-patterns.md` § Content cap and convergence). |
+| `content_width` | metaobject (`content_width`) | no | blank → 125rem substrate default | Caps the section's center grid track (`min(--content-width, 100% - 2 × --gutter)`). Emitted as `--content-width: <value>px` in the section's dynamic style. Cascades to descendants as the bleed cap (`container-patterns.md` § Content cap and convergence). |
 | `block_rhythm` | metaobject (`spacing`) | no | blank → 0 | Vertical rhythm between direct block children. Emits `--block-rhythm-mobile` / `--block-rhythm-desktop` CSS variables; the rhythm cascade rule in `layer-theme.css` applies them via `[data-modifiers*='theme-root'] > .shopify-block:not(:first-child)` (see `theme-root.md` § Rhythm scope). |
 | `color_scheme` | color_scheme | yes (schema-defaulted) | `"scheme-1"` | Section's color scheme. Emitted as `color-scheme:<id>` in `data-modifiers`; the per-scheme rules in `utility--css-variables` re-emit `--color-role-*` tokens scoped to the modifier-bearing element. |
+
+The `layout` setting was dropped in v1.4.0 as part of the subgrid migration — theme-section is always a bleed grid; merchants wanting row / multi-track compositions wrap children in a `group` or `columns` block. See `subgrid-migration.md` § Open questions (resolved: dropped).
 
 ## Block whitelist
 
@@ -56,12 +57,12 @@ No `@theme` wildcard. New L1 blocks ship with an entry added here; see `composit
 ## Output shape
 
 ```liquid
-<theme-section data-modifiers="theme-root,layout:{{ layout }},color-scheme:{{ section.settings.color_scheme }}">
+<theme-section data-modifiers="theme-root,color-scheme:{{ section.settings.color_scheme }}">
   {% content_for 'blocks' %}
 </theme-section>
 ```
 
-`<theme-section>` is the generic custom element (extends `BaseComponent`) defined in `assets/section.js`. Carries `theme-root` as a static identity marker plus the section's `layout` and `color-scheme` modifiers. The block-rhythm cascade and layout presets match against `[data-modifiers*='theme-root']` / `[data-modifiers*='theme-root'][data-modifiers*='layout:<preset>']` rules in `layer-theme.css`.
+`<theme-section>` is the generic custom element (extends `BaseComponent`) defined in `assets/section.js`. Carries `theme-root` as a static identity marker plus the section's `color-scheme` modifier. The bleed grid, bleed-direction rules, and rhythm cascade match against `[data-modifiers*='theme-root']` in `layer-theme.css`.
 
 `{% content_for 'blocks' %}` renders the whitelisted child blocks the merchant has added. Empty section (no blocks) still renders the wrapper — useful for visual structure during composition.
 
@@ -71,9 +72,12 @@ Section-specific CSS is minimal — most behavior comes from substrate rules mat
 
 The substrate rules that match are in `layer-theme.css` under `@layer theme`:
 
-- `[data-modifiers*='theme-root']` — appearance defaults (typography, color, transitions, form-input styling)
-- `[data-modifiers*='theme-root'][data-modifiers*='layout:<preset>']` — layout preset (`column` / `row` / `columns_N`)
+- `[data-modifiers*='theme-root']` — bleed grid (`display: grid` + four named columns); rhythm cascade
+- `[data-modifiers*='theme-root'] > *` — default `grid-column: content-start / content-end`
+- `[data-modifiers*='theme-root'] > [data-modifiers*='bleed-desktop:<value>']` — bleed-direction grid-column rules
 - `[data-modifiers*='theme-root'] > .shopify-block:not(:first-child)` — block-rhythm cascade
+
+Appearance defaults (typography, color, background, transitions, form-input styling) live on `<body>` — they cascade to chrome elements (header / footer / app sections) and theme-roots alike. See `subgrid-migration.md` § Body-level appearance.
 
 The outer `.shopify-section` adds no theme-managed rules per the two-wrapper split (`section-convention.md` § Architecture).
 
@@ -87,13 +91,13 @@ Per-instance vars emitted into the section's dynamic style block (scoped to `#sh
 | `--block-rhythm-mobile` | `block_rhythm.mobile_value.value` (px) when setting populated | `0rem` (substrate default in the rhythm cascade rule) |
 | `--block-rhythm-desktop` | `block_rhythm.desktop_value.value` (px) when setting populated | `0rem` |
 
-Modifier-driven (not vars): `layout:<preset>`, `color-scheme:<id>` — matched by selectors, not consumed as `var()`.
+Modifier-driven (not vars): `theme-root` (identity, matches bleed-grid + rhythm selectors), `color-scheme:<id>` (matches per-scheme tokens). Children's bleed modifiers (`bleed-desktop:<value>`, `bleed-mobile:<value>`) match section's grid-column rules — emitted by container blocks, not by the section itself.
 
 ## Behavior
 
-- **Static `theme-root` modifier.** Authored directly in the markup — `<theme-section data-modifiers="theme-root,...">`. Not a setting; not a computed value. Substrate appearance and rhythm rules all match `[data-modifiers*='theme-root']`, so the section inherits theme defaults by carrying the marker. See `theme-root.md` § Identity.
-- **Layout enum picks an implicit-container preset.** Each preset bundles direction + theme-default gap + theme-default stack-below into a single setting (`theme-root.md` § Layout enum). `column` (default) is `display: flow-root` — children stack vertically via the block-rhythm cascade. `row` / `columns_2` / `columns_3` / `columns_4` apply flex / grid layouts. Specialized sections opt out by omitting the `layout:` modifier; this section always emits one (default `column`).
-- **`content_width` cascades as the bleed cap.** The section's `--content-width` is the single ceiling for both content sizing and bleed sizing on its descendants (`container-patterns.md` § Content cap and convergence). A 60rem-content section gets 60rem bleed bands inside `group`/`columns`/`media` children.
+- **Static `theme-root` modifier.** Authored directly in the markup — `<theme-section data-modifiers="theme-root,...">`. Not a setting; not a computed value. Substrate bleed-grid and rhythm rules all match `[data-modifiers*='theme-root']`, so the section participates in the bleed model by carrying the marker. See `theme-root.md` § Identity.
+- **Always a bleed grid.** Theme-section resolves as `display: grid` with named columns (`bleed-start` / `content-start` / `content-end` / `bleed-end`). No `layout` setting — the section's role is the bleed grid; row / multi-track compositions live inside container blocks (`group` / `columns`). See `theme-root.md` § Bleed grid.
+- **`content_width` caps the center track.** The section's `--content-width` caps the center track via `min(--content-width, 100% - 2 × --gutter)`; bleeding children spanning `bleed-start / bleed-end` reach viewport edges. A 60rem-content section gets 60rem-wide content + full-viewport bleed (capped at viewport, not at 60rem) — see `container-patterns.md` § Content cap and convergence.
 - **`block_rhythm` is the section-level rhythm baseline.** Per-block top-margin overrides (`--mobile-margin-block-start` / `--desktop-margin-block-start` from `utility--block-layout-vars`) fall through to the section rhythm via the var chain in the rhythm cascade rule. The rhythm applies to direct children only (`> .shopify-block:not(:first-child)`); container blocks (`group`, `columns`, `media`) use their own `gap` setting for between-child spacing — see `theme-root.md` § Rhythm scope.
 - **Color-scheme override.** `color-scheme:<id>` on the section root activates that scheme's `--color-role-*` tokens, scoped via the per-scheme selectors in `utility--css-variables`. Block-level color-scheme overrides (on `group`/`columns`/`media`/etc.) re-emit the tokens for their subtree.
 - **Empty section renders the wrapper.** `{% content_for 'blocks' %}` against zero blocks emits nothing inside the wrapper; the `<theme-section>` outer + the `.shopify-section` wrapper still render, including all dynamic-style emission. Sections in the editor without blocks remain selectable.
@@ -105,7 +109,7 @@ Modifier-driven (not vars): `layout:<preset>`, `color-scheme:<id>` — matched b
 Schema strings under `sections.section.*` (defined in `locales/en.default.schema.json` + `locales/fr.schema.json`):
 
 - `sections.section.name`
-- `sections.section.settings.layout.{content,label,info,options.{column,row,columns_2,columns_3,columns_4}}`
+- `sections.section.settings.layout.content` (group header — covers content_width + block_rhythm)
 - `sections.section.settings.content_width.{label,info}`
 - `sections.section.settings.block_rhythm.{label,info}`
 - `sections.section.settings.appearance.content` (group header)
@@ -118,25 +122,26 @@ No runtime strings; the section emits no user-visible chrome of its own.
 
 Per `validation-contract.md` Tier 3 (preset / L2). The host section itself is exercised through its presets; there is no dedicated "section host" validation page in the current contract. Each preset's validation page configures the section's settings (`layout`, `content_width`, `block_rhythm`, `color_scheme`) and renders the preset's block composition end-to-end.
 
-- **Tier**: section host — Tier 3 via its preset entries (proto-presets `hero`, `content`, `columns-features`, `cta-banner` exist today; full L2 preset specs come from the preset-authoring pass).
-- **Page(s)**: `validation--preset--*` series (per preset).
-- **API surface exercised through presets**:
-  - **Layout matrix**: `column`, `row`, `columns_2`, `columns_3`, `columns_4` — verify substrate rules in `layer-theme.css` apply per modifier; the `column` baseline is the default; the four non-column variants apply their layout preset.
-  - **content_width × layout interaction**: a section with a non-default `content_width` propagates the cap through to descendant blocks and to bleed-extending children (the cap is the bleed boundary).
-  - **block_rhythm cascade**: section with a populated `block_rhythm` shows rhythm spacing between direct children; nested blocks (children of `group`/`columns`/`media`) do not receive rhythm — they use the parent's gap. Verifies the `> .shopify-block:not(:first-child)` selector limits scope to one level deep.
-  - **color_scheme override**: section with a non-default scheme renders descendant blocks with the scheme's `--color-role-*` tokens; a block-level color-scheme override (on a `group`/`columns`) re-emits within its subtree.
-  - **Empty section**: section with zero blocks renders the wrappers + dynamic style; no inner content; remains selectable in the editor.
-  - **disabled_on**: section is not offered inside header / footer section groups in the editor; addable on page-level templates.
+- **Tier**: section host — Tier 3 work is parked (see `validation-contract.md` § Tier 3). The host's bleed-grid behavior is exercised through `sections/exploration--subgrid.liquid` (six cases on `/?view=exploration--subgrid`) until preset validation resumes.
+- **Page(s)**: `exploration--subgrid` (current verification surface); future `validation--preset--*` series (per preset, when Tier 3 unparks).
+- **API surface exercised through the verification scaffold**:
+  - **Bleed-grid cases**: section-bleed band; asymmetric image-left / image-right bleed; two-track band with both edges bleeding; three-track content-aligned; nested groups inside a bleeding columns (verify children don't independently bleed).
+  - **content_width**: a section with a non-default `content_width` caps the center grid track; bleed children still span viewport-edge to viewport-edge.
+  - **block_rhythm cascade**: rhythm applies between direct children of `<theme-section>` only — nested blocks inside containers use parent's `gap`.
+  - **color_scheme override**: non-default scheme cascades `--color-role-*` tokens to descendants; block-level overrides re-emit within their subtree.
+  - **Empty section**: zero blocks → wrappers render, no inner content; remains selectable in editor.
+  - **disabled_on**: section not offered inside header / footer section groups.
 - **Edge cases**:
   - `content_width` blank → falls through to the 125rem substrate default; no `--content-width` declaration emitted in the dynamic style block.
   - `block_rhythm` blank → no `--block-rhythm-*` declarations; rhythm cascade rule's `0rem` fallback applies (no inter-block spacing).
-  - `layout: columns_N` on a section narrower than the preset's stack threshold → preset stacks per `theme-root.md` § Layout enum.
-  - App block (`@app`) inserted alongside theme blocks → app block renders inside `<theme-section>` and inherits theme-root appearance defaults; section's block-rhythm cascade applies to it via the direct-child selector.
-- **Visual showcase**: each preset's validation page surfaces the section host's behavior implicitly by exercising the preset's expected configuration. Reader confirms layout preset renders correctly, content_width caps as expected, block_rhythm spacing applies between siblings, color scheme cascades.
+  - Container block (group / columns / media) with `bleed-desktop:both` placed inside another container → outer's grid-column rule doesn't match (`>` direct-child requirement); nested container positions in parent's layout, no bleed. Strict container-only bleed model in action.
+  - App block (`@app`) inserted alongside theme blocks → app block renders inside `<theme-section>`, inherits body-level appearance defaults; section's block-rhythm cascade applies to it via the direct-child selector; section's `grid-column` default sits it in the content track.
+- **Visual showcase**: `exploration--subgrid` walks the six cases on a single page. Reader confirms each case renders as expected against the new substrate.
 - **Assertions** (prose; Playwright once installed):
-  - `<theme-section>` carries `data-modifiers` with `theme-root` + `layout:<preset>` + `color-scheme:<id>`
-  - Computed `display` on `<theme-section>` matches the layout preset (`flow-root` for column; `flex` / `grid` for the others)
+  - `<theme-section>` carries `data-modifiers` with `theme-root` + `color-scheme:<id>` (no `layout:` modifier under v1.4.0)
+  - Computed `display` on `<theme-section>` is `grid` with the named-line template
   - Direct-child `.shopify-block` (non-first) computed `margin-block-start` matches the rhythm cascade values per breakpoint
+  - Direct children with `bleed-desktop:both` have computed `grid-column-start: bleed-start` and `grid-column-end: bleed-end` at viewports ≥ 48rem
   - `--content-width` resolves to the configured px value (or 125rem default)
   - Color-scheme tokens (`--color-role-*`) resolve to the scheme's configured colors
 - **Unit scope**: none — `<theme-section>` extends `BaseComponent` (the four managers run as a side-effect of registration), but the section itself ships no behavior beyond construction. JS coverage lives at the substrate Tier 1d level.
@@ -145,7 +150,7 @@ Per `validation-contract.md` Tier 3 (preset / L2). The host section itself is ex
 
 - **`<theme-section>` JS implementation** — covered by the `BaseComponent` spec and the four manager specs. The section file only declares the custom element root.
 - **Per-preset content composition** — each L2 preset entry has its own spec describing its block composition, settings defaults, and validation page. This spec covers the host, not the catalog of presets.
-- **Specialized section identity** — `<theme-cart>`, `<theme-header>`, `<theme-footer>` are Beyond-L2 sections with their own files and their own specs. They share the `theme-root` identity but own their layout via per-section CSS (see `theme-root.md` § Layout opt-out and `specialized-section-pattern.md`).
+- **Specialized section identity** — `<theme-cart>`, `<theme-header>`, `<theme-footer>` are Beyond-L2 sections with their own files and their own specs. They share the `theme-root` identity but own their layout via per-section CSS (see `theme-root.md` § Specialized-section opt-out and `specialized-section-pattern.md`).
 - **Layout setting evolution** — the `layout` enum (column/row/columns_N) is planned to be dropped in the subgrid migration (see `subgrid-migration.md`). The section becomes an always-bleed-grid with named lines; container blocks declare `grid-column` instead of layout flowing from the section setting. This spec describes the today-state.
 - **Container-style at the section level** — `container_style` is a container-block concern (`group`/`columns`/`media`), not a section concern. A merchant wanting card-styled chrome around a section's content wraps the section's children in a `group` with `container_style: card`.
 - **Section-level bleed setting** — bleed is a container-block concern under the strict container-only bleed model (see `subgrid-migration.md`). Sections don't declare bleed; their children (specifically the container blocks) do.

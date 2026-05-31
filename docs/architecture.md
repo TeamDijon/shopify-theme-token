@@ -24,7 +24,7 @@ Every section renders as two nested wrappers:
 
 ```html
 <section class="shopify-section shopify-section--<name>">
-  <theme-section data-modifiers="theme-root,layout:column,color-scheme:scheme-1">
+  <theme-section data-modifiers="theme-root,color-scheme:scheme-1">
     <!-- content -->
   </theme-section>
 </section>
@@ -34,7 +34,7 @@ Three layers, three audiences:
 
 - **Outer `.shopify-section`** — universal scope (ours + apps'). Only outer-flow concerns: anchor scrolling, scroll-behavior. **No typography or background here** — would bleed into apps.
 - **Per-section `.shopify-section--<name>`** — identity hook. Used rarely, only for outer-level overrides that can't live on the inner element (e.g., `position: sticky` for header sections).
-- **Inner `<theme-section>` / `<theme-<name>>`** — our domain. All content-level appearance + behavior. JS runtime hooks via `BaseComponent`. Carries `theme-root` in `data-modifiers` so substrate appearance/layout rules match via `[data-modifiers*='theme-root']` (see `.context/docs/theme-root.md`).
+- **Inner `<theme-section>` / `<theme-<name>>`** — our domain. JS runtime via `BaseComponent`; bleed grid + rhythm cascade via the `theme-root` modifier. Content-level appearance (typography, color, background, transitions) lives on `<body>` and cascades through — not on theme-root itself (see `.context/docs/subgrid-migration.md` § Body-level appearance). The theme-root modifier matches the bleed grid + rhythm rules via `[data-modifiers*='theme-root']` (see `.context/docs/theme-root.md`).
 
 → See `.context/rules/section-convention.md` Architecture for the full breakdown.
 
@@ -79,11 +79,11 @@ Three flows, each with its own strategy:
 `assets/layer-base.css` declares `@layer reset, theme, components, utilities;`:
 
 - **`@layer reset`** — universal hygiene (box-sizing, margin/padding zero, media defaults, common typography).
-- **`@layer theme`** — `.shopify-section` (outer, universal — minimal) + theme-roots matched via `[data-modifiers*='theme-root']` (theme defaults — typography, background, transitions, form inputs). Layout presets (`column` / `row` / `columns_N`) gated on the `layout:<preset>` modifier; specialized sections omit `layout:` and own their layout via per-section CSS. See `.context/docs/theme-root.md` for the contract.
+- **`@layer theme`** — `.shopify-section` outer-flow concerns (anchor scrolling), **body-level appearance defaults** (typography, color, background, transitions, form inputs — cascade to chrome + theme-roots + apps alike), and theme-roots matched via `[data-modifiers*='theme-root']` (named-line bleed grid, bleed-direction grid-column rules, block-rhythm cascade). See `.context/docs/theme-root.md` for the contract and `.context/docs/subgrid-migration.md` for the body-level appearance rationale.
 - **`@layer components`** — per-block and per-section stylesheets (block snippets' `{% stylesheet %}` blocks, section `{% stylesheet %}` blocks). Cascades above `@layer theme` so component CSS overrides substrate defaults without specificity escalation.
 - **`@layer utilities`** — opt-in modifiers like prose, skip-to-content.
 
-A new specialized section root inherits theme appearance defaults automatically — its custom-element carries `theme-root` in `data-modifiers`, no selector enumeration to maintain.
+A new specialized section root inherits theme appearance defaults from `<body>` automatically (no theme-root selector required for appearance). Carrying `theme-root` in `data-modifiers` opts the section into the bleed grid + rhythm cascade; specialized sections that don't want the grid override `display` per-section.
 
 ## Block-level conventions
 

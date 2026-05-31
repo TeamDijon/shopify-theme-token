@@ -13,7 +13,7 @@ For the high-level convention see `section-convention.md`. For JS module convent
 When authoring a new specialized section, also:
 
 - Append `'<name>'` to `module_list` in `snippets/utility--import-map.liquid`
-- Carry `theme-root` in the custom-element's `data-modifiers` so it inherits theme appearance defaults via the substrate's `[data-modifiers*='theme-root']` selector. Omit any `layout:` modifier — specialized sections own their layout via per-section CSS. See `.context/docs/theme-root.md` for the contract.
+- Carry `theme-root` in the custom-element's `data-modifiers` for scheme tokens, bleed-grid matching, and rhythm cascade. Appearance defaults come from `<body>` (cascade, not theme-root scoping); specialized sections inherit them automatically. If the section has its own layout, override `display` in per-section CSS to opt out of the substrate's bleed grid. See `.context/docs/theme-root.md` for the contract.
 
 ## Liquid (`sections/<name>.liquid`)
 

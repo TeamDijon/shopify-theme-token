@@ -7,10 +7,10 @@
 **Status**: shipped
 
 **Implementation**:
-- `snippets/group.liquid` v1.3.0 (render surface)
-- `blocks/group.liquid` v1.3.0 (block schema + render call)
+- `snippets/group.liquid` v1.4.0 (render surface)
+- `blocks/group.liquid` v1.4.0 (block schema + render call)
 
-**Reconciled**: 2026-05-30
+**Reconciled**: 2026-05-31 (subgrid migration Stage 2 — bleed enum API now actual; bleed CSS moved to section)
 
 **Depends on**: `snippets/utility--base-selector.liquid`, `snippets/utility--modifiers.liquid`, `snippets/utility--block-layout-vars.liquid`, `snippets/utility--dynamic-style.liquid`, `content_width` metaobject (optional), `container_style` metaobject (optional)
 

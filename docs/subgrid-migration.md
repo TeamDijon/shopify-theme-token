@@ -1,8 +1,8 @@
 # Subgrid migration
 
-Planned substrate restructure replacing the today-state's `inline-size: min(...)` + `margin-inline: auto` + negative-margin escape with a named-line CSS grid model. Coordinates three structural shifts into one coherent overhaul.
+Substrate restructure that replaced the today-state's `inline-size: min(...)` + `margin-inline: auto` + negative-margin escape with a named-line CSS grid model. Coordinated three structural shifts into one coherent overhaul.
 
-**Status**: planned. Not shipped. Gated on visual verification via an exploration scaffold (see § Migration sequence).
+**Status**: shipped (Stages 0 + 1 + 2 landed 2026-05-31). Stage 3 (`<theme-layout>` follow-up) remains decoupled. The verification scaffold lives at `sections/exploration--subgrid.liquid` (reachable at `/?view=exploration--subgrid`).
 
 ## What this migration accomplishes
 

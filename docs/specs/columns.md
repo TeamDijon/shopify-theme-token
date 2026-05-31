@@ -7,10 +7,10 @@
 **Status**: shipped
 
 **Implementation**:
-- `snippets/columns.liquid` v1.4.0 (render surface)
-- `blocks/columns.liquid` v1.4.0 (block schema + render call)
+- `snippets/columns.liquid` v1.5.0 (render surface)
+- `blocks/columns.liquid` v1.5.0 (block schema + render call)
 
-**Reconciled**: 2026-05-31
+**Reconciled**: 2026-05-31 (subgrid migration Stage 2 — bleed boolean replaced by responsive enum API; bleed CSS moved to section)
 
 **Depends on**: `snippets/utility--base-selector.liquid`, `snippets/utility--modifiers.liquid`, `snippets/utility--block-layout-vars.liquid`, `snippets/utility--dynamic-style.liquid`, `content_width` metaobject (optional), `container_style` metaobject (optional)
 
@@ -42,9 +42,10 @@ Snippet args (`{% render %}`) and block schema settings cover the same surface; 
 | `stack_below` | select (`none` / `40` / `60` / `80`) | no | `"60"` | Below the named container-width breakpoint (rem), collapses to single column. `none` disables. Emits `stack-below:<value>` modifier when ≠ `none`. The 60 default (md / ~960px) covers most "stack on tablet" cases. |
 | `sticky_track` | select (`none` / `first` / `second`) | no (visible only on 2-track layouts) | `"none"` | Pins the named track via `position: sticky`. Schema `visible_if` constrains to layouts with exactly 2 tracks (`2`, `1-2`, `2-1`, `1-3`, `3-1`). Disabled when stack-below has collapsed the layout. |
 | `vertical_alignment` | select (`start` / `center` / `end` / `stretch`) | no (visible only when `sticky_track: none`) | `"start"` | `align-items` on the grid container. Hidden in the editor when sticky is active because sticky forces `align-self: start` on the pinned track. |
-| `content_width` | metaobject (`content_width`) | no | blank → 100% | Caps `max-inline-size`. **Ignored when `bleed` is true.** |
+| `content_width` | metaobject (`content_width`) | no | blank → 100% | Caps `max-inline-size`. Composes with bleed (cap = section's content cap; per `container-patterns.md`). |
 | `gap` | range (0–100, step 2, px) | no | `16` | Gap between columns. Emitted as `--gap` in rem; zero-emission skipped. |
-| `bleed` | checkbox | no | `false` | Extends the columns block past the section gutter to full viewport width (same math as media's bleed; **same centered-ancestor footgun**). |
+| `bleed_desktop` | select (`none` / `inline_start` / `inline_end` / `both`) | no | `"none"` | Columns block's bleed direction at/above 48rem. Emitted as `bleed-desktop:<value>` modifier when ≠ `none`; the section's named-line bleed grid resolves positioning. |
+| `bleed_mobile` | select (`none` / `both`) | no | `"none"` | Columns block's bleed direction below 48rem. Single-column mobile has no edge tracks; per-side bleed has no geometric meaning there. Emitted as `bleed-mobile:both` modifier when set. |
 | `container_style` | metaobject (`container_style`) | no | blank | Emits `container-style:<handle>` modifier. Centralized variant CSS in `layer-theme.css`. |
 | `color_scheme` | theme setting (`color_scheme`) | no | blank | Overrides the section's color scheme. Emits `color-scheme:<id>` modifier. |
 | `mobile_margin_block_start` | range (0–200, step 2, px) | no | `0` | Top margin below the desktop breakpoint. |
@@ -64,7 +65,7 @@ The full 9-block roster. Recursive composition via `columns` in its own whitelis
 <div class="shopify-block shopify-block--columns"
      id="<base-selector>"
      {{ block.shopify_attributes }}
-     data-modifiers="columns:2,stack-below:60,sticky-track:first,bleed,container-style:card,color-scheme:scheme-2">
+     data-modifiers="columns:2,stack-below:60,sticky-track:first,bleed-desktop:both,bleed-mobile:both,container-style:card,color-scheme:scheme-2">
   <div class="inner">
     <!-- children rendered via {% content_for 'blocks' %} -->
   </div>

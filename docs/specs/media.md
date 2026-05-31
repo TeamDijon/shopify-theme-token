@@ -7,10 +7,10 @@
 **Status**: shipped
 
 **Implementation**:
-- `snippets/media.liquid` v1.3.0 (render surface)
-- `blocks/media.liquid` v1.3.0 (block schema + render call)
+- `snippets/media.liquid` v1.4.0 (render surface)
+- `blocks/media.liquid` v1.4.0 (block schema + render call)
 
-**Reconciled**: 2026-05-31
+**Reconciled**: 2026-05-31 (subgrid migration Stage 2 — bleed boolean replaced by responsive enum API; bleed CSS moved to section; centered-ancestor footgun resolved)
 
 **Depends on**: `snippets/image.liquid` (for `media_type: image`), `snippets/video.liquid` (for `media_type: video`), `snippets/utility--base-selector.liquid`, `snippets/utility--modifiers.liquid`, `snippets/utility--media-sizing.liquid` (sizing-modifier + vars dual-mode), `snippets/utility--block-layout-vars.liquid`, `snippets/utility--dynamic-style.liquid`, `media_size` metaobject (optional), `content_width` metaobject (optional), `container_style` metaobject (optional)
 
@@ -49,11 +49,12 @@ Snippet args (`{% render %}`) and block schema settings cover the same surface; 
 | `video_loop` | checkbox | no (visible when `media_type: video`) | `true` | Loop the video. |
 | `media_size` | metaobject (`media_size`) | no | blank → 16/9 aspect ratio default | Reads `.system.handle` (for the `fill` special-case → 100svh), `.type.value` (`ratio` / `relative` / `fixed`), and `.value.value`. Routed through `utility--media-sizing` (emits `sizing:ratio` / `sizing:height` / `sizing:fill` modifier + matching `--media-ratio` or `--media-height` var). |
 | `mobile_media_size` | metaobject (`media_size`) | no | inherits desktop | Mobile-viewport override. Same shape as `media_size`. Emits `--mobile-media-ratio` / `--mobile-media-height` for the mobile media query. |
-| `bleed` | checkbox | no | `false` | Extends media past the section gutter to full viewport (`margin-inline: calc(50% - 50dvw)`). **Footgun: assumes centered ancestors** — only works at section level or inside a centered group; off-center column tracks (the narrower track of a `1-3` columns) cause visual drift. Documented in the snippet's doc block. |
+| `bleed_desktop` | select (`none` / `inline_start` / `inline_end` / `both`) | no | `"none"` | Media block's bleed direction at/above 48rem. Emitted as `bleed-desktop:<value>` modifier when ≠ `none`; the section's named-line bleed grid resolves positioning. Only fires when media is a direct child of `<theme-section>` (the strict container-only bleed model); nested-inside-container media positions in its container's layout instead. |
+| `bleed_mobile` | select (`none` / `both`) | no | `"none"` | Media block's bleed direction below 48rem. Single-column mobile has no edge tracks; per-side bleed has no geometric meaning there. Emitted as `bleed-mobile:both` modifier when set. |
 | `image_fit` | select (`cover` / `contain`) | no (visible when `media_type: image`) | `"cover"` | `object-fit` on the image. `cover` fills the box (cropping); `contain` shows the full image (possibly letterboxed). Emits `image-fit:contain` modifier when ≠ `cover`. |
 | `horizontal_alignment` | select (`start` / `center` / `end`) | no | `"start"` | `align-items` on `<media-contents>` (flex column). |
 | `vertical_alignment` | select (`start` / `center` / `end`) | no | `"end"` | `justify-content` on `<media-contents>` (flex column). Default `end` matches the hero pattern (content at bottom over the media). |
-| `content_width` | metaobject (`content_width`) | no | blank → 100% | Caps `max-inline-size`. **Ignored when `bleed` is true** (bleed sizing overrides). |
+| `content_width` | metaobject (`content_width`) | no | blank → 100% | Caps `max-inline-size`. Composes with bleed (cap = section's content cap; per `container-patterns.md`). |
 | `gap` | range (0–100, step 2, px) | no | `16` | Gap between overlay-content children. Emitted as `--gap` in rem. Zero-emission skipped. |
 | `overlay_color` | color (alpha) | no | `rgba(0,0,0,0)` (transparent) | Tint color painted over the media. Blank or fully transparent → no overlay element emitted. |
 | `container_style` | metaobject (`container_style`) | no | blank | Emits `container-style:<handle>` modifier. Centralized variant CSS in `layer-theme.css` (card / outlined / elevated). |

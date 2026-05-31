@@ -1,132 +1,102 @@
 # Container patterns
 
-The horizontal-sizing system for sections and blocks. Three concepts, two CSS patterns, one bleed model. Responsiveness layers on top — see "Responsiveness" below.
+The horizontal-sizing system for sections and blocks. Three concepts, one bleed model (named-line grid on theme-section), one content-width cap. Responsiveness layers on top — see "Responsiveness" below.
 
 ## Three concepts
 
 | Concept | What it is | Where it lives |
 |---|---|---|
-| **Section gutter** (`--gutter`) | Space between section content area and viewport edge. Responsive: `--mobile-gutter` (1.5rem) below 48rem, `--desktop-gutter` (3.5rem) at/above. | Theme-wide, emitted by `utility--css-variables`. |
-| **Gap** | Space *between* tracks in a grid or flex container. | Per-container (set on `group`, `columns`, etc., via the `gap` block setting). |
+| **Section gutter** (`--gutter`) | Space between section content area and viewport edge. Responsive: `--mobile-gutter` (1.5rem) below 48rem, `--desktop-gutter` (3.5rem) at/above. Absorbed by the section's side grid tracks (1fr each); no explicit padding. | Theme-wide, emitted by `utility--css-variables`. |
+| **Gap** | Space *between* tracks in a grid or flex container. | Per-container (set on `group`, `columns`, `media` overlay-content via the `gap` block setting). |
 | **Inner padding** | Space inside an element's own border (`padding-inline` / `padding-block`). | Per-element, opt-in via `container_style` variants (card / outlined / elevated) or per-project CSS overrides. |
 
 These three live at independent scales. A change at one scale doesn't leak into another:
-- Section gutter is a theme-wide constant; it doesn't propagate to nested containers.
+
+- Section gutter is the section's side-track width; it doesn't propagate to nested containers (their own layout governs).
 - Gap separates tracks in a single grid; it doesn't accumulate when grids nest.
 - Inner padding is element-local; it doesn't interact with the section/track gutter system.
 
-There is no "track inner gutter" as a primitive. The padding inside a grid track is handled by the track's child block via `container_style` (when card-like chrome is wanted) or by the block's own padding (when block-specific). The grid itself doesn't add padding inside tracks.
+There is no "track inner gutter" as a primitive. The padding inside a grid track is handled by the track's child block via `container_style` (when card-like chrome is wanted) or by the block's own padding (when block-specific).
 
 ## CSS variables
 
 | Variable | Source | Purpose |
 |---|---|---|
-| `--gutter` | `utility--css-variables` (responsive via `--mobile-gutter` / `--desktop-gutter`) | Section gutter at the current breakpoint. Doubles as the partial-bleed escape distance. |
-| `--content-width` | Section-level dynamic style (via `content_width` metaobject setting) | Section's content cap, also the bleed ceiling; defaults to 125rem at the substrate (`layer-base.css`) |
+| `--gutter` | `utility--css-variables` (responsive via `--mobile-gutter` / `--desktop-gutter`) | Section side-track minimum at narrow viewports. Absorbed into the section's `1fr` side tracks. |
+| `--content-width` | Section-level dynamic style (via `content_width` metaobject setting) | Section's content cap (max width of the center track). Defaults to 125rem at the substrate (`layer-base.css`). Doubles as the bleed cap — bleeding children span past the content cap to viewport edge only when the viewport is wider than `content-width + 2 × gutter`. |
 
-## Width patterns
+## Bleed grid (the one model)
 
-### Default content sizing
-
-Direct children of `<theme-section>` (i.e., `[data-modifiers*='theme-root'] > .shopify-block`) declare their own width via:
+Theme-section resolves as a CSS grid with three tracks and four named lines. Direct children declare span via `grid-column`, gated on `bleed-desktop:<value>` / `bleed-mobile:<value>` modifiers — emitted by container blocks (`group`, `columns`, `media`).
 
 ```css
-.shopify-block {
-  inline-size: min(calc(100% - 2 * var(--gutter)), var(--content-width, 125rem));
-  margin-inline: auto;
+[data-modifiers*='theme-root'] {
+  display: grid;
+  grid-template-columns:
+    [bleed-start] 1fr
+    [content-start] min(var(--content-width, 125rem), calc(100% - 2 * var(--gutter)))
+    [content-end] 1fr
+    [bleed-end];
+}
+
+[data-modifiers*='theme-root'] > * {
+  grid-column: content-start / content-end;
 }
 ```
 
-Behavior:
+Track behavior:
 
-| Viewport | `inline-size` resolves to |
-|---|---|
-| `< --content-width` | `viewport - 2 × --gutter` (content tracks viewport with gutter offset) |
-| `≥ --content-width` (specifically `≥ --content-width + 2 × --gutter`) | `--content-width` (capped) |
+| Viewport | Side track | Center track |
+|---|---|---|
+| `< --content-width + 2 × --gutter` | `--gutter` minimum (`1fr` distributes; the center track's `min(...)` cap clamps to `100% - 2 × --gutter` at narrow viewports) | `min(--content-width, 100% - 2 × --gutter)` → tracks viewport with gutter offset |
+| `≥ --content-width + 2 × --gutter` | `(viewport - content-width) / 2` (side `1fr` tracks absorb the excess) | `--content-width` (capped) |
 
-Block grows with viewport (minus gutter on each side), caps at the section's `--content-width`.
+Direct children:
+- **No bleed modifier** (default): `grid-column: content-start / content-end` → sits in the center track, capped at `--content-width`.
+- **`bleed-desktop:both`**: at ≥ 48rem, `grid-column: bleed-start / bleed-end` → spans full viewport width (capped at viewport — the side tracks contribute their share).
+- **`bleed-desktop:inline-start`**: at ≥ 48rem, `grid-column: bleed-start / content-end` → start side bleeds, end side stays at content edge.
+- **`bleed-desktop:inline-end`**: at ≥ 48rem, `grid-column: content-start / bleed-end` → end side bleeds, start side stays.
+- **`bleed-mobile:both`**: at < 48rem, `grid-column: bleed-start / bleed-end` → mobile full-bleed regardless of desktop setting.
 
-`margin-inline: auto` centers the block when its width is below the containing block's available space.
+Mobile is a binary `both`-only enum. Single-column mobile has no edge tracks; per-side bleed has no geometric meaning there.
 
-### Section-bleed — full-width default
+## Container nesting
 
-For a block that should fill the section width (no gutter offset), capped at the bleed cap:
+Section gutter applies once, at the section's grid. Container blocks (`group`, `columns`, `media`) position via section's grid, then layout their own children via their own `gap` setting. No nested gutter math.
 
-```css
-.shopify-block[data-modifiers*='bleed:section'] {
-  inline-size: min(100%, var(--content-width, 125rem));
-  margin-inline: auto;
-}
+```html
+<theme-section>                                         <!-- bleed grid -->
+  <div class="shopify-block--group">                     <!-- direct child: positions in content track -->
+    <div class="inner">
+      <div class="shopify-block--columns">              <!-- group's child: positions in group's flex -->
+        <div class="inner">
+          <div class="shopify-block--title">…</div>      <!-- columns' child: positions in columns' grid -->
+        </div>
+      </div>
+    </div>
+  </div>
+</theme-section>
 ```
 
-Behavior:
+A `group` inside a section: positions in section's content track (default). Inside the group's `.inner`, children flow per the group's flex settings (direction, alignment, gap).
 
-| Viewport | `inline-size` resolves to |
-|---|---|
-| `< --content-width` | `viewport` (fills viewport) |
-| `≥ --content-width` | `--content-width` (capped at the section's content cap) |
+A `columns` inside that group: positions per the group's flex (one flex item). Inside the columns' `.inner`, children flow per the columns' grid tracks.
 
-Compared to the non-bleed default, the bleed sibling is exactly `2 × --gutter` wider until viewport reaches `--content-width + 2 × --gutter`, at which point both cap at the same width and the gap closes. They converge.
+Each level partitions its containing block; no level eats into the next. Deep-nesting compositions stay predictable.
 
-### Partial-bleed escape (per-side, inside a grid track)
-
-When a block sits inside a grid track (column track inside a `columns` block) and needs to escape its track to reach the section's bleed cap on one side, the negative-margin approach handles it:
-
-```css
-.shopify-block[data-modifiers*='bleed:inline-start']:first-child {
-  margin-inline-start: calc(-1 * var(--gutter));
-}
-
-.shopify-block[data-modifiers*='bleed:inline-end']:last-child {
-  margin-inline-end: calc(-1 * var(--gutter));
-}
-```
-
-The escape distance is the section gutter. Partial bleed reclaims the gutter on its side, reaching the section's content edge — which is also the bleed boundary, since the bleed ceiling equals the content cap (see § Content cap and convergence).
-
-**Position selectors are load-bearing.** Per-side bleed only makes geometric sense at edge tracks:
-
-| Block position in grid | `bleed:inline-start` | `bleed:inline-end` | `bleed:both` |
-|---|---|---|---|
-| `:first-child` (edge, start side) | ✓ Fires | (no-op, no end edge to bleed) | (no-op if siblings exist) |
-| `:last-child` (edge, end side) | (no-op, no start edge) | ✓ Fires | (no-op if siblings exist) |
-| Middle | No-op | No-op | (no-op) |
-| `:only-child` | ✓ Fires | ✓ Fires | ✓ Fires |
-
-Middle-track configurations silently no-op rather than break the layout. The modifier still emits to `data-modifiers` (for inspection/debug); the CSS selector simply doesn't match. Merchants configuring `bleed: inline-start` on a middle column see no visual effect — documented quirk.
-
-## Nested gutter rule
-
-Section gutter applies **only at the section's direct children**. Deeper nesting uses `inline-size: 100%` within its parent — no accumulated gutter shrinkage.
-
-```css
-/* Gutter offset applies only to direct children of the section */
-[data-modifiers*='theme-root'] > .shopify-block {
-  inline-size: min(calc(100% - 2 * var(--gutter)), var(--content-width, 125rem));
-}
-
-/* Nested blocks fill their containing block */
-.shopify-block .shopify-block {
-  inline-size: 100%;
-  /* Or its own width logic per the block's CSS */
-}
-```
-
-A `columns` inside a `group` inside the section gets the gutter offset once (on the outer group). The columns inside it inherits its parent group's content area without re-applying the offset. The nested columns has its own gap; each nested track gets `(parent_track_width - (n-1) × gap) / n`.
-
-Deep-nesting compositions stay predictable: each level partitions its containing block; no level eats into the next.
+**Children of containers do not reach section's bleed lines.** Section's grid-column rules only match direct children via the `>` combinator. A `bleed-desktop:both` modifier on a block nested inside a container emits to `data-modifiers` but the section's selector doesn't match — the nested block positions in its container's layout instead. This is the strict container-only bleed model in action (see `subgrid-migration.md` § Bleed model).
 
 ## Content cap and convergence
 
 The section's `--content-width` is the single ceiling for both content and bleed. Bleeding elements are content (images, decorative bands), not background — they cap at the same width as text content. There is no separate "bleed cap" constant; the bleed ceiling tracks whatever value `--content-width` resolves to on the section.
 
-The substrate default is `125rem` (2000px), set in `layer-base.css` as the `--content-width` default. Sections narrow the ceiling per-instance via the `content_width` metaobject setting; both content and bleed follow the narrowed value. A 60rem-content section gets 60rem bleed — a deliberate constraint that keeps bleed media proportional to the section's content scale.
+The substrate default is `125rem` (2000px), set in `layer-base.css` as the `--content-width` default. Sections narrow the ceiling per-instance via the `content_width` metaobject setting; both content and bleed follow the narrowed value. A 60rem-content section gets 60rem bleed bands — a deliberate constraint that keeps bleed media proportional to the section's content scale.
 
-Section-bleed and non-bleed siblings converge at viewports `≥ --content-width + 2 × --gutter`. The constant `2 × --gutter` gap between them at narrower viewports shrinks to zero at the convergence viewport and stays zero for all wider viewports. Beyond the cap, both sit centered in the viewport at the same width with the excess viewport-to-cap space visible on each side.
-
-"Narrow text, wide media" inside one section uses a `columns` block with one bleeding child and a per-block `content_width` override on the text-bearing sibling — not mismatched section-vs-block ceilings. The columns composition surfaces the merchant's intent explicitly.
+At viewports `< --content-width + 2 × --gutter`, the bleed grid's side tracks compress to `--gutter` each (the center track's `min(...)` caps it at `100% - 2 × --gutter`). Bleed children spanning bleed-start to bleed-end still cover the full viewport at narrow viewports — the side tracks ARE the gutter at that scale.
 
 Edge-to-edge backgrounds on very wide viewports live at the `.shopify-section` element (which has no max-inline-size cap) via background-color or background-image. The bleed system caps at content; the section's outer wrapper handles viewport-spanning visuals.
+
+"Narrow text, wide media" inside one section composes as a `columns` block with one bleeding child and a per-block `content_width` override on the text-bearing sibling — not mismatched section-vs-block ceilings.
 
 ## Outer/inner container architecture
 
@@ -155,8 +125,8 @@ The outer/inner split is structural, not stylistic. Future replacement (the `<th
 A card variant inside a bleeding parent works as expected:
 
 ```html
-<group bleed=both>                 <!-- outer: full-bleed band -->
-  <group container_style=card>      <!-- inner: card with own padding -->
+<group bleed_desktop=both bleed_mobile=both>   <!-- outer: full-bleed band -->
+  <group container_style=card>                  <!-- inner: card with own padding -->
     <title>…</title>
     <button>…</button>
   </group>
@@ -164,6 +134,7 @@ A card variant inside a bleeding parent works as expected:
 ```
 
 Visual outcome:
+
 - Outer group spans edge to edge (or bleed cap), painting its background across.
 - Inner card sits inside the band with its own `padding: 1.5rem`, providing breathing room for the card's contents.
 - The card's padding is independent of the outer group's bleed — they live at different scales.
@@ -174,22 +145,20 @@ This composition is encouraged for "full-bleed band with padded content card ins
 
 ### Horizontal-scroll containers
 
-Some primitives need `padding-inline` (not negative `margin-inline`) for their gutter, because they host native horizontal scroll. Negative margins would clip the scroll-snap container or break overflow detection. Primitives in this category:
+Some primitives need `padding-inline` for their gutter, because they host native horizontal scroll. The bleed grid model doesn't fit — the scrolling element needs the gutter on its side, not absorbed into section's side tracks. Primitives in this category:
 
 - `slider` / `carousel` (planned)
 - `marquee` (planned)
 - `breadcrumb` / `linklist-quick-nav` when their content overflows horizontally on narrow viewports
 - Any future primitive whose visible-but-overflowing horizontal flow must remain native-CSS-scrollable
 
-These primitives use the partial-bleed escape approach inverted — they keep the section gutter as `padding-inline` on the scroll rail, and the rail's INNER content scrolls. The gutter never escapes via negative margin in these blocks.
-
-Document in the primitive's spec when it ships.
+These primitives keep the section gutter as `padding-inline` on the scroll rail, and the rail's INNER content scrolls. Document in the primitive's spec when it ships.
 
 ### Per-block `content_width`
 
-Per-block `content_width` (set on individual blocks like `title`, `richtext`, `button`) overrides the block's `--content-width` for itself only. The default-sizing formula resolves the narrower cap inside the block's containing block — the block becomes narrower than its sibling blocks.
+Per-block `content_width` (set on individual blocks like `title`, `richtext`, `button`) overrides the block's `max-inline-size` for itself only. The block's own CSS caps at that value; `margin-inline: auto` centers it inside the section's content track.
 
-This is the right answer for "image-left + content-right with narrow title on right column": each child of the right column sets its own `content_width` metaobject. The formula caps at that value within the right column's available width. No new mechanism needed.
+This is the right answer for "image-left + content-right with narrow title on right column": each child of the right column sets its own `content_width` metaobject. The cap applies inside the right column's available width. No new mechanism needed.
 
 ## Responsiveness
 
@@ -211,7 +180,7 @@ The patterns above operate statically. Responsiveness layers on top via five pri
 | E2 | Paired mobile/desktop settings (binary at 48rem) | Values whose interpretation differs across viewport states | `mobile_margin_block_start` + `desktop_margin_block_start`; `bleed_mobile` + `bleed_desktop` |
 | E3 | Container queries for topology | Stack-below, column count recompose | Columns / group at `40` / `60` / `80` container breakpoints |
 | E4 | Intrinsic wrap (CSS-only) | Content-natural wrap with no merchant choice | `flex-wrap`, `grid-template-columns: repeat(auto-fit, minmax(…))`, `min()` on widths |
-| E5 | Single value with `min()` cap | Sizing bounded above, flowing below | `inline-size: min(100% - 2 × gutter, --content-width)` |
+| E5 | Single value with `min()` cap | Sizing bounded above, flowing below | `min(var(--content-width), calc(100% - 2 × --gutter))` on theme-root center track |
 | E6 | Paired asset settings (mobile/desktop) | Media art direction with differing aspect and asset weight | `mobile_image` + `desktop_image` rendered via `<picture><source media>` swap |
 
 ### Discouraged shapes
@@ -276,6 +245,7 @@ title  ↔  richtext  ↔  button
 ```
 
 The two values are independent settings:
+
 - `spacing` metaobject on the section → feeds `--block-rhythm-*` → governs State A.
 - `gap` setting on the columns block → governs State B.
 
@@ -287,7 +257,7 @@ A typical desktop layout sets a tighter vertical rhythm (e.g. 1.5rem between sta
 
 Block-rhythm cascades from the section's `spacing` metaobject and applies between siblings via top-margin on `:not(:first-child)`. Per-block `mobile_margin_block_start` / `desktop_margin_block_start` settings override the cascade per instance.
 
-Authoring rule: set the section rhythm to the section's *typical* spacing. Per-block overrides operate in both directions — positive to add breathing room, **negative to pull a block tighter than the rhythm**. The schema range for top-margin includes negative values.
+Authoring rule: set the section rhythm to the section's *typical* spacing. Per-block overrides operate in both directions — positive to add breathing room, negative to pull a block tighter than the rhythm. The schema range for top-margin includes negative values.
 
 Negative top-margin is the explicit exception to the rhythm grid; use it for one-off tightening.
 
@@ -301,10 +271,9 @@ Symmetric breathing room around content of varying height uses the columns / gro
 
 ## Related
 
-- `subgrid-migration.md` — planned future state: replaces the today-state patterns documented here with a named-line CSS grid model. When the migration lands, the "Partial-bleed escape" section in this doc is removed entirely; the bleed cap / default sizing sections rewrite as grid-column declarations.
-- `theme-root.md` — section's role as parametrizable implicit container; layout enum (`column` / `row` / `columns_N`); rhythm scope rule that pairs with the container patterns here
+- `theme-root.md` — bleed grid contract (named lines, rhythm scope, four responsibilities)
+- `subgrid-migration.md` — the structural overhaul that produced this model; explains the body-level appearance shift + strict container-only bleed
 - `css-standards.md` — CSS layer model, naming, variables foundation
 - `composition-strategy.md` — block / preset / section layer model
-- `modifier-system.md` — `data-modifiers` convention used for `bleed:*` flags
+- `modifier-system.md` — `data-modifiers` convention used for `bleed-desktop:*` / `bleed-mobile:*` flags
 - `validation.md` — chrome/content decoupling rule (related to section structure)
-- BACKLOG.md — active exploration scaffold for the bleed API hypothesis
