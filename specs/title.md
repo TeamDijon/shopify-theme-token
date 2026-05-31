@@ -177,4 +177,4 @@ Per `validation-contract.md` Tier 2 (theme-primitive).
 - Schema conventions (top-spacing pair, color-token setting naming): `.context/docs/schema-conventions.md`
 - Design-system metaobjects (`text_style` consumption, `icon` consumption, `theme_color` consumption): `.context/docs/design-system-metaobjects.md`
 - Modifier system (`data-modifiers` convention for `text-style:<handle>`): `.context/docs/modifier-system.md`
-- Theme-color spec (the `--color-<handle>` namespace consumed by `text_color`): `.context/docs/specs/theme-color.md`
+- Theme-color spec (the `--color-<handle>` namespace consumed by `text_color`): `.context/specs/theme-color.md`

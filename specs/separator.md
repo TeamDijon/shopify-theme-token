@@ -146,4 +146,4 @@ Per `validation-contract.md` Tier 2 (theme-primitive).
 
 - Schema conventions (top-spacing pair, color-token setting naming): `.context/docs/schema-conventions.md`
 - Container patterns (horizontal sizing, content_width cap): `.context/docs/container-patterns.md`
-- Theme-color spec (the `--color-<handle>` namespace consumed by `line_color`): `.context/docs/specs/theme-color.md`
+- Theme-color spec (the `--color-<handle>` namespace consumed by `line_color`): `.context/specs/theme-color.md`

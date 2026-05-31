@@ -294,9 +294,9 @@ Per `validation-contract.md` Tier 2 (theme-primitive).
 ## Related
 
 - Container patterns (sizing, bleed model, content cap, asymmetric responsive shapes): `.context/docs/container-patterns.md`
-- Group spec (sibling flex container; share container_style + color_scheme + bleed conventions): `.context/docs/specs/group.md`
-- Container-style spec (centralized variant CSS in `layer-theme.css`): `.context/docs/specs/container-style.md`
+- Group spec (sibling flex container; share container_style + color_scheme + bleed conventions): `.context/specs/group.md`
+- Container-style spec (centralized variant CSS in `layer-theme.css`): `.context/specs/container-style.md`
 - Subgrid migration (planned future state — strict container-only bleed, named-line grid replaces today's negative-margin bleed): `.context/docs/subgrid-migration.md`
-- Image spec (renderer for `media_type: image`): `.context/docs/specs/image.md`
-- Video spec (renderer for `media_type: video`): `.context/docs/specs/video.md`
+- Image spec (renderer for `media_type: image`): `.context/specs/image.md`
+- Video spec (renderer for `media_type: video`): `.context/specs/video.md`
 - Schema conventions (top-spacing pair, color-scheme override pattern, container-style pattern): `.context/docs/schema-conventions.md`

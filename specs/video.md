@@ -114,7 +114,7 @@ Per `validation-contract.md` Tier 2 — covered indirectly through `validation--
 
 ## Related
 
-- Media spec (primary consumer; renders `<media-video>` inside its positioned wrapper; carries the `video_mode` / `video_controls` / `video_autoplay` / `video_loop` settings through): `.context/docs/specs/media.md`
-- Image spec (sibling renderer for the `image` media_type branch; same art-direction pattern via `<picture>` / `<source media>`): `.context/docs/specs/image.md`
-- Embed spec (third-party video alternative; same `media_size` sizing API): `.context/docs/specs/embed.md`
+- Media spec (primary consumer; renders `<media-video>` inside its positioned wrapper; carries the `video_mode` / `video_controls` / `video_autoplay` / `video_loop` settings through): `.context/specs/media.md`
+- Image spec (sibling renderer for the `image` media_type branch; same art-direction pattern via `<picture>` / `<source media>`): `.context/specs/image.md`
+- Embed spec (third-party video alternative; same `media_size` sizing API): `.context/specs/embed.md`
 - A11y conventions (reduced-motion consideration for atmosphere-mode autoplay): `.context/rules/a11y-conventions.md`

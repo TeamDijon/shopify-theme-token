@@ -14,7 +14,7 @@ Ticket appears (Linear or equivalent). Classify the element against `composition
 
 ### 2. Spec
 
-Author the spec at `.context/docs/specs/<name>.md` per `specs/_template.md`. The Validation section names tier, pages, API surface, edge cases, and assertions. Spec lands on the `context` branch as its own commit, reviewed and signed off before implementation begins. Sign-off means the API, behavior, validation surface, and out-of-scope set are settled.
+Author the spec at `.context/specs/<name>.md` per `specs/_template.md`. The Validation section names tier, pages, API surface, edge cases, and assertions. Spec lands on the `context` branch as its own commit, reviewed and signed off before implementation begins. Sign-off means the API, behavior, validation surface, and out-of-scope set are settled.
 
 ### 3. Implement
 
@@ -45,7 +45,7 @@ When tickets run in parallel, these files attract conflicts. Three are append-on
 | `assets/layer-*.css` | Any substrate addition | Substrate ticket lane; gate dependent primitives |
 | `snippets/utility--css-variables.liquid` | Any new metaobject loop | Same |
 | `sections/validation.liquid` | Hub anchor per new validation page | Append-only; resolve at merge |
-| `.context/docs/specs-index.md` | Every new spec | Append-only |
+| `.context/specs-index.md` | Every new spec | Append-only |
 | `locales/en.default.json`, `locales/fr.json` | Locale keys per element | Append-only |
 
 Rule: one element per PR; substrate changes never bundled into an element PR.

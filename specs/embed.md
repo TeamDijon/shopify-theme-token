@@ -245,7 +245,7 @@ Per `validation-contract.md` Tier 2 (theme-primitive).
 
 ## Related
 
-- Media spec (sibling block specialized for Shopify-hosted media; shares `media_size` + `utility--media-sizing`): `.context/docs/specs/media.md`
+- Media spec (sibling block specialized for Shopify-hosted media; shares `media_size` + `utility--media-sizing`): `.context/specs/media.md`
 - Accessibility conventions (`accessibility.embedded_content` shared key; iframe a11y patterns): `.context/rules/a11y-conventions.md`
 - Schema conventions (top-spacing pair): `.context/docs/schema-conventions.md`
 - Design-system metaobjects (`media_size` consumption, `content_width` consumption): `.context/docs/design-system-metaobjects.md`

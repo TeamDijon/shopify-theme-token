@@ -111,7 +111,7 @@ Per `validation-contract.md` Tier 1c (utility-CSS) for the icon-rendering pipeli
 
 - Icon convention (SVG file authoring: paths, `data-edge`, `data-<part>`, `currentColor` discipline): `.context/rules/icon-convention.md`
 - Utility--inline-asset spec (the missing-asset guard the snippet routes through): inlined here — no separate spec; `snippets/utility--inline-asset.liquid` wraps `inline_asset_content`
-- Button spec (consumer; icon at start / end via `icon_position`): `.context/docs/specs/button.md`
-- Title spec (consumer; leading icon at fixed sizing): `.context/docs/specs/title.md`
-- Star-rating spec (planned consumer; uses `preset` arg to cycle full/half/empty): `.context/docs/specs/star-rating.md`
+- Button spec (consumer; icon at start / end via `icon_position`): `.context/specs/button.md`
+- Title spec (consumer; leading icon at fixed sizing): `.context/specs/title.md`
+- Star-rating spec (planned consumer; uses `preset` arg to cycle full/half/empty): `.context/specs/star-rating.md`
 - Icon metaobject (the input shape for the metaobject path): `.context/docs/metaobject-definitions.md` § `icon`

@@ -1,17 +1,17 @@
 ---
 paths:
-  - ".context/docs/specs/**/*.md"
+  - ".context/specs/**/*.md"
 ---
 
 # Spec convention
 
-Every element in the theme — substrate token, utility, primitive snippet, primitive block, preset, specialized section — earns a spec at `.context/docs/specs/<kebab-name>.md` and an entry in `specs-index.md` under its composition layer.
+Every element in the theme — substrate token, utility, primitive snippet, primitive block, preset, specialized section — earns a spec at `.context/specs/<kebab-name>.md` and an entry in `specs-index.md` under its composition layer.
 
 A spec is the contract. It describes the element's API, output, behavior, validation, and out-of-scope. It is **not** a chronicle of how the design evolved — git history covers that. Write declaratively per `reference-voice.md`.
 
 ## File placement and indexing
 
-- Path: `.context/docs/specs/<name>.md`. Name is kebab-case matching the element's filename (e.g. `theme-color`, `utility--color-contrast`, `star-rating`).
+- Path: `.context/specs/<name>.md`. Name is kebab-case matching the element's filename (e.g. `theme-color`, `utility--color-contrast`, `star-rating`).
 - Index entry: `specs-index.md` under the matching layer section (`Substrate`, `Layer 0 — Snippets`, `Layer 1 — Theme blocks`, `Layer 2 — Presets`, `Layer 3/4 — Sections`). One line, `(planned)` or `(shipped — retrofit)` status suffix.
 - Template: copy `_template.md` and fill. Sections that don't apply get `N/A` with a one-clause reason, or omit entirely when the omission is obvious from the element's nature.
 

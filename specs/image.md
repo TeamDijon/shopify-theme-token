@@ -142,6 +142,6 @@ Per `validation-contract.md` Tier 1b / Tier 2 boundary (utility-shape snippet co
 
 ## Related
 
-- Media spec (primary consumer; renders `<img>` inside its positioned wrapper): `.context/docs/specs/media.md`
-- Video spec (sibling renderer for the `video` media_type branch): `.context/docs/specs/video.md`
+- Media spec (primary consumer; renders `<img>` inside its positioned wrapper): `.context/specs/media.md`
+- Video spec (sibling renderer for the `video` media_type branch): `.context/specs/video.md`
 - Asset loading (Shopify's image pipeline boundaries): `.context/docs/asset-loading.md`

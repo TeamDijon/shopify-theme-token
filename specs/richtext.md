@@ -158,4 +158,4 @@ Per `validation-contract.md` Tier 2 (theme-primitive).
 - Schema conventions (top-spacing pair, color-token setting naming): `.context/docs/schema-conventions.md`
 - Design-system metaobjects (`content_width` consumption, `theme_color` consumption): `.context/docs/design-system-metaobjects.md`
 - Modifier system (`data-modifiers` convention; opt-in utility modifiers): `.context/docs/modifier-system.md`
-- Title spec (the heading-primitive sibling): `.context/docs/specs/title.md`
+- Title spec (the heading-primitive sibling): `.context/specs/title.md`

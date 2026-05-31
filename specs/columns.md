@@ -240,8 +240,8 @@ Per `validation-contract.md` Tier 2 (theme-primitive).
 ## Related
 
 - Container patterns (sizing, bleed model, content cap, asymmetric responsive shapes): `.context/docs/container-patterns.md`
-- Group spec (sibling flex container; share outer/inner architecture, container_style, color_scheme, bleed conventions): `.context/docs/specs/group.md`
-- Media spec (sibling container block specialized for media surfaces): `.context/docs/specs/media.md`
-- Container-style spec (centralized variant CSS in `layer-theme.css`): `.context/docs/specs/container-style.md`
+- Group spec (sibling flex container; share outer/inner architecture, container_style, color_scheme, bleed conventions): `.context/specs/group.md`
+- Media spec (sibling container block specialized for media surfaces): `.context/specs/media.md`
+- Container-style spec (centralized variant CSS in `layer-theme.css`): `.context/specs/container-style.md`
 - Subgrid migration (planned future state — strict container-only bleed, named-line grid): `.context/docs/subgrid-migration.md`
 - Schema conventions (top-spacing pair, color-scheme override pattern, container-style pattern): `.context/docs/schema-conventions.md`

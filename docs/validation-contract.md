@@ -98,7 +98,7 @@ Covers Beyond-L2 sections per `composition-strategy.md`: bespoke section files w
 
 ## What the spec carries
 
-Every spec under `.context/docs/specs/` includes a Validation section naming:
+Every spec under `.context/specs/` includes a Validation section naming:
 
 - the tier (and sub-shape if substrate)
 - the validation page(s) the implementation will ship
@@ -140,4 +140,4 @@ File-prefix rename to the contracted names landed 2026-05-29 (`--metaobject--` �
 
 - `.context/docs/validation.md` — current implementation state, hub, production-leak strategy, helper snippets
 - `.context/docs/composition-strategy.md` — the layer model the tiers map onto
-- `.context/docs/specs/` — per-element specs, each carries a Validation section
+- `.context/specs/` — per-element specs, each carries a Validation section
