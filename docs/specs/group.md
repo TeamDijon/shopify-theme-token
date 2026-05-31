@@ -7,10 +7,11 @@
 **Status**: shipped
 
 **Implementation**:
-- `snippets/group.liquid` v1.4.0 (render surface)
+- `snippets/group.liquid` v1.5.0 (render surface)
 - `blocks/group.liquid` v1.4.0 (block schema + render call)
+- `assets/theme-layout.js` v1.0.0 (inner-wrapper custom element)
 
-**Reconciled**: 2026-05-31 (subgrid migration Stage 2 — bleed enum API now actual; bleed CSS moved to section)
+**Reconciled**: 2026-05-31 (subgrid migration Stage 3 — `<theme-layout>` replaces `<div class="inner">`)
 
 **Depends on**: `snippets/utility--base-selector.liquid`, `snippets/utility--modifiers.liquid`, `snippets/utility--block-layout-vars.liquid`, `snippets/utility--dynamic-style.liquid`, `content_width` metaobject (optional), `container_style` metaobject (optional)
 
@@ -73,13 +74,13 @@ When a new L1 block ships, this whitelist needs an entry per the `composition-st
      id="<base-selector>"
      {{ block.shopify_attributes }}
      data-modifiers="direction:row,stack-below:60,bleed-desktop:inline-start,bleed-mobile:both,container-style:card,color-scheme:scheme-2">
-  <div class="inner">
+  <theme-layout>
     <!-- children rendered via {% content_for 'blocks' %} -->
-  </div>
+  </theme-layout>
 </div>
 ```
 
-**Outer/inner architecture is load-bearing.** `container-type: inline-size; container-name: group` lives on the outer (`.shopify-block--group`); the flex layout (`display: flex`, direction, alignment, gap) lives on the inner (`.inner`, parent-scoped via `.shopify-block--group > .inner`). The CSS Containment spec states that `@container <name>` queries do **not** match the element with `container-type` — they only match descendants. Putting flex on the outer would make stack-below rules silently never match. The split is structural, not stylistic.
+**Outer/inner architecture is load-bearing.** `container-type: inline-size; container-name: group` lives on the outer (`.shopify-block--group`); the flex layout (`display: flex`, direction, alignment, gap) lives on the inner `<theme-layout>`, parent-scoped via `.shopify-block--group > theme-layout`. The CSS Containment spec states that `@container <name>` queries do **not** match the element with `container-type` — they only match descendants. Putting flex on the outer would make stack-below rules silently never match. The split is structural, not stylistic.
 
 `data-modifiers` always carries at least `direction:column` (or `direction:row`); additional tokens append per setting (`stack-below`, `bleed-desktop`, `bleed-mobile`, `container-style`, `color-scheme`). Order is deterministic per the snippet's `modifier_list` builder.
 
@@ -87,7 +88,7 @@ Per-instance custom properties emit via `utility--block-layout-vars` + `utility-
 
 ## CSS
 
-Component-rooted on `.shopify-block--group` (outer) and `.inner` (inner). Layered in `@layer components`.
+Component-rooted on `.shopify-block--group` (outer) and `> theme-layout` (inner). Layered in `@layer components`.
 
 ```css
 .shopify-block--group {
@@ -127,33 +128,33 @@ Component-rooted on `.shopify-block--group` (outer) and `.inner` (inner). Layere
     }
   }
 
-  & > .inner {
+  & > theme-layout {
     display: flex;
     gap: var(--gap, 0rem);
   }
 
   /* Direction: column — vertical stack, horizontal_alignment → align-items */
-  &[data-modifiers*='direction:column'] > .inner {
+  &[data-modifiers*='direction:column'] > theme-layout {
     flex-direction: column;
     align-items: var(--horizontal-alignment, start);
   }
 
   /* Direction: row — horizontal arrangement, horizontal_alignment → justify-content, vertical_alignment → align-items */
-  &[data-modifiers*='direction:row'] > .inner {
+  &[data-modifiers*='direction:row'] > theme-layout {
     flex-direction: row;
     justify-content: var(--horizontal-alignment, start);
     align-items: var(--vertical-alignment, start);
   }
 
   /* Stack-below — flip to column when container is below the breakpoint; @container queries above it switch back to row */
-  &[data-modifiers*='stack-below'] > .inner {
+  &[data-modifiers*='stack-below'] > theme-layout {
     flex-direction: column;
     align-items: var(--horizontal-alignment, start);
   }
 }
 
 @container group (inline-size >= 40rem) {
-  .shopify-block--group[data-modifiers*='stack-below:40'] > .inner {
+  .shopify-block--group[data-modifiers*='stack-below:40'] > theme-layout {
     flex-direction: row;
     justify-content: var(--horizontal-alignment, start);
     align-items: var(--vertical-alignment, start);
@@ -190,7 +191,7 @@ Zero-emission discipline: alignment vars and gap are only emitted when they diff
 
 - **Direction × stack-below interaction.** `direction: column` ignores `stack_below` entirely (column doesn't stack). `direction: row` honors stack-below — below the breakpoint, the inner is `flex-direction: column`; at or above, it flips back to `row` via the `@container` rule. The fallback (no `@container` support, though all current engines support it) renders as column — graceful degradation.
 - **Container queries against the group's own width, not viewport.** This is the load-bearing reason for `@container` vs `@media`. A row-direction group placed inside a narrow column or sidebar stacks based on the column's inline-size — correctly — even though the viewport may be wider than the named breakpoint. Standard responsive thinking ("at 768px, stack") doesn't apply; the question is "is this group narrower than 40/60/80rem?"
-- **Outer/inner wrapper architecture is required**, not cosmetic. `@container group` queries skip the element that defines the container. If flex were on the outer, stack-below rules would silently never fire. The `.inner` wrapper exists so the flex layout sits on a descendant of the container-defining element.
+- **Outer/inner wrapper architecture is required**, not cosmetic. `@container group` queries skip the element that defines the container. If flex were on the outer, stack-below rules would silently never fire. The `<theme-layout>` wrapper exists so the flex layout sits on a descendant of the container-defining element.
 - **`space-between` in column direction normalizes to `start`.** CSS doesn't accept `align-items: space-between` (it's a `justify-content` value), and silently invalid values inherit the cascade default — which would be unpredictable. The snippet's Liquid pre-normalizes (`if direction == 'column' and horizontal_alignment == 'space-between' → horizontal_alignment = 'start'`) so the emitted `--horizontal-alignment` is always valid.
 - **Bleed math.** Mobile and desktop bleed are settled independently via the data-modifier surface and the 48rem media-query split. `bleed:both` (either breakpoint) uses the section-bleed sizing pattern: `inline-size: min(100%, var(--content-width, 125rem)); margin-inline: auto` — caps at the section's content cap (= bleed boundary per `container-patterns.md` Option A), not at the viewport. `bleed:inline-start` / `bleed:inline-end` (desktop only) use the partial-bleed escape: `margin-inline-(start|end): calc(-1 * var(--gutter))`, reclaiming the section gutter on the bleeding side. None of these depend on a centered ancestor chain.
 - **Mobile-bleed revert at desktop.** When `bleed_mobile: both` is set and `bleed_desktop: none`, the desktop media-query rule reverts `inline-size` / `max-inline-size` so the group returns to its default sizing at/above 48rem. The selector `:not([data-modifiers*='bleed-desktop'])` matches groups with no `bleed-desktop:*` modifier emitted.
@@ -246,7 +247,7 @@ Per `validation-contract.md` Tier 2 (theme-primitive).
   - `stack_below: 40` in column direction → stack-below modifier still emits if it weren't `visible_if`-gated in row only; the schema gating means the case is unreachable from the editor, but a direct snippet render could pass it. Snippet renders honor the modifier; CSS rule fires correctly (column stays column, since the `stack-below` rule reverts to column on narrow which is column already).
 - **Visual showcase**: matrix sections, each labelled. Reader confirms layout per direction × stack-below × alignment cell; bleed treatments render at the expected breakpoint with the expected per-side (or both-sides) extension to the section's content cap; container_style variants look the same as on `validation--primitive--columns` and `validation--primitive--media` (centralized CSS verification); color-scheme override propagates to descendants.
 - **Assertions** (prose; Playwright once installed):
-  - `direction:column` instances have computed `flex-direction: column` on `.inner`
+  - `direction:column` instances have computed `flex-direction: column` on `theme-layout`
   - `direction:row` + `stack-below:40` instances have `flex-direction: column` below 40rem container width, `row` at/above
   - `align-items` / `justify-content` resolve to the expected value per direction
   - `bleed_mobile:both` instances below 48rem and `bleed_desktop:both` instances at/above 48rem have `inline-size: min(100%, var(--content-width, 125rem))` and `margin-inline: auto`

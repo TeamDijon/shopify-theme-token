@@ -104,19 +104,19 @@ The three container blocks (`group`, `columns`, `media`) emit two nested wrapper
 
 ```html
 <div class="shopify-block shopify-block--group">  <!-- outer: container-type -->
-  <div class="inner">                              <!-- inner: layout rules -->
+  <theme-layout>                                   <!-- inner: layout rules -->
     {% content_for 'blocks' %}
-  </div>
+  </theme-layout>
 </div>
 ```
 
 **Why two wrappers.** The CSS Containment spec states that `@container <name>` queries do **not** match the element with `container-type` — they only match descendants. Putting the flex/grid layout on the same element as `container-type: inline-size` would make stack-below rules silently never fire. The outer hosts containment + the named container; the inner hosts the actual layout (`display: flex` / `display: grid`, `flex-direction`, `grid-template-columns`, `gap`, alignment).
 
-**Inner class is `.inner` (rscss).** Not `.shopify-block--<name>__inner` (BEM). Scoped via the outer's class — `.shopify-block--group > .inner`, `.shopify-block--columns > .inner` — so the bare `.inner` selector doesn't leak across blocks. Same convention as the rest of the theme's component-rooted CSS (`css-standards.md`).
+**Inner is `<theme-layout>` — a generic custom element** registered by `assets/theme-layout.js`. Empty class extending `HTMLElement`; exists to give the inner wrapper a custom-element tag for CSS targeting. Scoped via the outer's class — `.shopify-block--group > theme-layout`, `.shopify-block--columns > theme-layout` — so the bare `theme-layout` selector doesn't need defensive scoping inside the outer's stylesheet.
 
-**`media` follows the same pattern.** Its inner element is `<media-contents>` (overlay-content layout) — a custom element used as a scope anchor; the outer hosts containment + the media element + the overlay tint sibling.
+**`media` doesn't use `<theme-layout>`.** Its inner element is `<media-contents>` (overlay-content layout) — a custom element used as a scope anchor for absolute-positioned overlay children, not the same role as theme-layout. The outer hosts containment + the media element + the overlay tint sibling.
 
-The outer/inner split is structural, not stylistic. Future replacement (the `<theme-layout>` element discussed in `subgrid-migration.md` § Stage 3) would replace the inner `<div class="inner">` with a generic custom element, but the architectural split would remain.
+The outer/inner split is structural, not stylistic.
 
 ## Inner padding and bleed compose freely
 
