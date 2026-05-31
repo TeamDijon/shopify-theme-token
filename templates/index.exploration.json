@@ -1,9 +1,0 @@
-{
-  "sections": {
-    "main": {
-      "type": "exploration",
-      "settings": {}
-    }
-  },
-  "order": ["main"]
-}

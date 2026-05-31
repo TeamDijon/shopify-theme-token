@@ -1,7 +1,9 @@
-{% # Core Assets v1.2.0 %}
+{% # Core Assets v1.4.0 %}
 
 {% comment %}
   Changelog
+  - v1.4.0 — drop the `.shopify-section--exploration` stylesheet block. Bleed-API decisions landed with the subgrid migration; the 10 `exploration--bleed--*` scaffolds + hub + experimental `exploration-*` blocks + supporting snippets were deleted alongside this edit. `exploration--subgrid.liquid` carries its own self-contained chrome styles.
+  - v1.3.0 — drop `display: block` from the `.shopify-section--exploration token-section` exploration-scaffold override. Override defeated the substrate's bleed grid post-subgrid-migration, leaving bleed modifiers on experimental blocks (now stripped of internal bleed CSS) with nothing to gate — bleed cases rendered as plain block flow on individual `exploration--bleed--*` pages. Keep `padding-block` (block-direction; doesn't conflict with grid).
   - v1.2.0 — split `core.css` into four per-layer files (`layer-base.css`, `layer-reset.css`, `layer-theme.css`, `layer-utilities.css`) to circumvent Shopify's 15360-byte `inline_asset_content` cap. Each layer is captured via `utility--inline-asset` and concatenated, then routed through `utility--asset-loader` (mirrors the dynamic-styles pattern). No load-mechanism change — still one inline `<style>` block on first paint.
   - v1.1.0 — drop `lab.css` template-suffix branch (lab concept not in this theme)
   - v1.0.0 — initial
@@ -41,45 +43,3 @@
   render 'utility--import-map'
 %}
 
-{% stylesheet %}
-  /* ---------------------------------------------------------------------------
-     EXPLORATION SCAFFOLD — TEMPORARY (delete after bleed API decisions land).
-     Lives in the snippet-level stylesheet block (no size cap) rather than
-     core.css (which crossed the 15360-byte inline_asset_content limit). Delete
-     this block plus every exploration- block / snippet / section / template
-     once the shipped bleed API is chosen and ported to media/columns/group.
-     See BACKLOG.md, Active exploration section.
-
-     Note: utility chrome (.exploration__intro) carries only its own typographic
-     discipline. It does NOT impose max-inline-size or padding on its sibling
-     validation content — token-section's --content-width + --gutter handle that
-     production-like, so blocks flow as they would in a real section.
-     --------------------------------------------------------------------------- */
-  @layer components {
-    .shopify-section--exploration {
-      token-section {
-        display: block;
-        padding-block: 2rem 4rem;
-      }
-
-      .exploration__intro {
-        margin-block-end: 2.5rem;
-      }
-      .exploration__intro h1 {
-        margin-block-end: 0.5rem;
-      }
-      .exploration__intro p {
-        max-inline-size: 65ch;
-        opacity: 0.75;
-        margin-block: 0.5rem;
-      }
-      .exploration__intro code {
-        font-family: ui-monospace, monospace;
-        font-size: 0.9em;
-        background: rgba(0, 0, 0, 0.06);
-        padding-inline: 0.25rem;
-        border-radius: 0.25rem;
-      }
-    }
-  }
-{% endstylesheet %}
