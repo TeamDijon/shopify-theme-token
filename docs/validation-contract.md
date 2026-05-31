@@ -13,7 +13,7 @@ Companion doc: `validation.md` describes the current implementation state (the 2
 | 3 | Preset (L2) | Preset configuration robustness and cross-block cascade integration on `section.liquid` | `validation--preset--*` |
 | 4 | Specialized section (Beyond L2) | Section configuration robustness, inline-block / metaobject / dynamic-data states, empty- and partial-data fixtures | `validation--section--*` |
 
-The `validation` filename pattern stays per `validation.md`. Specialized sections may ship via either implementation route (private theme block host, or bespoke section file); the spec records the route.
+The `validation` filename pattern stays per `validation.md`. Specialized sections ship as bespoke section files with explicitly-whitelisted blocks per `composition-strategy.md` § Beyond L2; the spec records the section file and the per-section blocks it whitelists.
 
 **Preset vs section terminology.** Tier 3 validates *preset entries* of `section.liquid` — each preset gets its own page even though they share `section.liquid` as host. Tier 4 validates *specialized section files*; the section is the validated unit regardless of whether it ships zero presets (pinned sections like header/footer), one preset (most specialized sections expose themselves to the editor this way), or multiple presets (variations of the same section appear as fixtures within the section's single validation page, not separate pages).
 
@@ -92,7 +92,7 @@ The 4 current "composition" pages (`hero`, `content`, `columns-features`, `cta-b
 
 **Files:** `sections/validation--section--<name>.liquid` + `templates/index.validation--section--<name>.json`.
 
-Covers both implementation routes from `composition-strategy.md` Beyond-L2: bespoke section files and sections hosting private theme blocks. The spec records which route applies.
+Covers Beyond-L2 sections per `composition-strategy.md`: bespoke section files with explicitly-whitelisted blocks (no private theme blocks — the whitelist convention makes them unnecessary).
 
 No specialized-section validation pages exist today.
 

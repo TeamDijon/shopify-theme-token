@@ -30,14 +30,14 @@ Originally sourced from the EXPLORATION-2 inventory pass (May 2026); retrofits a
 - [button](./specs/button.md) — call-to-action primitive rendering `<a>` or `<button type="button">` depending on `link`; styled via the 3×3 `button_style` family/variant matrix; optional icon, content_width, top spacing *(shipped — retrofit)*
 - [group](./specs/group.md) — flex container with direction / stack-below (container-query driven) / alignment / gap / bleed / container-style / color-scheme override; recursive composition via explicit whitelist of the 9 L1 block types *(shipped — retrofit)*
 
-## Layer 2 — Presets
+## Section host
 
-(none yet)
+- [section](./specs/section.md) — the merchant-composable section host (`sections/section.liquid`). Renders `<theme-section>` with the `theme-root` modifier; exposes the layout / content_width / block_rhythm / color_scheme settings; whitelists the 9 shipped L1 blocks + `@app`; hosts L2 presets via its `presets[]` schema array *(shipped — retrofit)*
 
-## Layer 3 — Framing-A sections
+## Layer 2 — Presets on `section.liquid`
 
-(none yet)
+(none yet — proto-presets `hero` / `content` / `columns-features` / `cta-banner` slot here at retrofit time)
 
-## Layer 4 — Framing-B sections
+## Beyond L2 — Specialized sections
 
-(none yet)
+(none yet — `header` / `footer` retrofits earmarked; future `cart` / `featured-product` / `collection-grid` / `faq` slot here)
