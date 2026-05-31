@@ -156,16 +156,14 @@ Staged commits to keep verification tractable.
 
 ### Stage 0 — Exploration scaffold
 
-Build `sections/exploration--subgrid--*.liquid` variants that test the new bleed grid model with realistic compositions:
+`sections/exploration--subgrid.liquid` (reachable at `/?view=exploration--subgrid`) — one consolidated verification page covering the six representative cases:
 
 - Section-bleed band (full width) with content track child
 - Image-left + content-right hero (asymmetric `columns bleed:inline-start`)
 - Image-right + content-left hero (mirrored asymmetric)
 - Two-track columns with gap, both bleeding outward (full-bleed band with split content)
 - Three-track columns, content-aligned (no bleed)
-- Nested groups inside a section-bleed columns block (verify children don't independently bleed; positioning is container-driven)
-
-Each scaffold renders side-by-side with the current model for visual diffing. Tracked under BACKLOG.md § Active exploration alongside the existing bleed scaffold.
+- Nested groups inside a section-bleed columns block (verifies children don't independently bleed; positioning is container-driven, demonstrating the strict-container-only model)
 
 ### Stage 1 — Substrate cutover
 

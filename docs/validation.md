@@ -86,8 +86,6 @@ The chrome's own styling MUST stay within its own selector (`.validation__intro`
 - `padding-inline: var(--gutter)` (mobile: `var(--mobile-gutter)`) sets the inner gutter
 - Per-section `utility--dynamic-style` overrides `--content-width` when a narrower test surface is needed; token-section honors it the production way
 
-Same rule applies to the **exploration scaffold** (`sections/exploration--*`) where API hypotheses are sandboxed. The exploration `--canvas` wrapper was the surfaced anti-pattern that motivated this rule — removed in the current scaffold.
-
 Existing validation sections from the 21-page inventory carry the wrapper anti-pattern (token-section gets `max-inline-size` + `padding-inline` applied directly). Retrofit at next touch; tracked in `BACKLOG.md`.
 
 ## Schema-driven matrix
