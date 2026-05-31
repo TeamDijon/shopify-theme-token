@@ -1,7 +1,8 @@
-{% # Import map v1.2.0 %}
+{% # Import map v1.3.0 %}
 
 {% comment %}
   Changelog
+  - v1.3.0 — add `theme-layout` to module_list (generic inner-layout custom element for container blocks; per subgrid migration Stage 3)
   - v1.2.0 — add `document-utils` to module_list (document-element singletons extracted from core)
   - v1.1.0 — switch to loop-based rendering from a single module_list array for DRY maintenance; update specifiers to @theme/<name> (flat naming)
   - v1.0.0 — initial
@@ -16,7 +17,7 @@
   @example {% render 'utility--import-map' %}
 {% enddoc %}
 
-{% assign module_list = 'core,utils,dom,document-utils,events-manager,observers-manager,cache-manager,modifiers-manager,base-component' | split: ',' %}
+{% assign module_list = 'core,utils,dom,document-utils,events-manager,observers-manager,cache-manager,modifiers-manager,base-component,theme-layout' | split: ',' %}
 
 {%- if module_list.size > 0 -%}
   <script type='importmap'>

@@ -1,9 +1,10 @@
-{% # Columns v1.5.0 %}
+{% # Columns v1.6.0 %}
 
 {% comment %}
   Changelog
+  - v1.6.0 — replace inner wrapper `<div class="inner">` with `<theme-layout>` custom element (per subgrid migration Stage 3). CSS selectors update from `> theme-layout` to `> theme-layout`. Markup change only; computed layout unchanged. Per-project CSS targeting `.inner` inside columns must rename to `theme-layout`.
   - v1.5.0 — replace `bleed` boolean with responsive `bleed_desktop` (none/inline_start/inline_end/both) + `bleed_mobile` (none/both) enums. Emits `bleed-desktop:<value>` / `bleed-mobile:<value>` modifiers consumed by the section's named-line bleed grid (substrate `layer-theme.css` rewrite). Removes the snippet's own bleed CSS — section handles via `grid-column`. Per the subgrid migration (`.context/docs/subgrid-migration.md`).
-  - v1.4.0 — rename BEM-style inner wrapper class `shopify-block--columns__inner` to rscss-compliant `.inner` (scoped via `.shopify-block--columns > .inner`). Per-project CSS targeting the old class name must rename. Mirrors `group.liquid` v1.3.0.
+  - v1.4.0 — rename BEM-style inner wrapper class `shopify-block--columns__inner` to rscss-compliant `.inner` (scoped via `.shopify-block--columns > theme-layout`). Per-project CSS targeting the old class name must rename. Mirrors `group.liquid` v1.3.0.
   - v1.3.0 — read `container_style` metaobject and emit `container-style:<handle>` modifier when set. Centralized variant CSS (card / outlined / elevated) lives in `core.css` `@layer theme`.
   - v1.2.2 — emit `{{ block.shopify_attributes }}` on the root for theme-editor block selection (was missing)
   - v1.2.1 — route content_width + top-margin vars through `utility--block-layout-vars`; output unchanged
@@ -82,9 +83,9 @@
 %}
 
 <div class="shopify-block shopify-block--columns" id="{{ base_selector }}" {{ block.shopify_attributes }} {{ modifiers }}>
-  <div class="inner">
+  <theme-layout>
     {{ contents }}
-  </div>
+  </theme-layout>
 
   {% capture dynamic_style %}
     {% case columns %}
@@ -120,7 +121,7 @@
 {% stylesheet %}
   @layer components {
     /* Outer wrapper hosts the named container so descendant @container queries can match. The grid layout lives on the inner wrapper — querying the same element that defines the container never matches per spec. */
-    /* Outer wrapper hosts the named container so descendant @container queries can match. The grid layout lives on .inner. Bleed is now declared by the section's named-line grid (see `assets/layer-theme.css` and `.context/docs/subgrid-migration.md`); this snippet emits the bleed modifiers but does not own bleed CSS. */
+    /* Outer wrapper hosts the named container so descendant @container queries can match. The grid layout lives on <theme-layout>. Bleed is now declared by the section's named-line grid (see `assets/layer-theme.css` and `.context/docs/subgrid-migration.md`); this snippet emits the bleed modifiers but does not own bleed CSS. */
     .shopify-block--columns {
       container-type: inline-size;
       container-name: columns;
@@ -128,7 +129,7 @@
       max-inline-size: var(--content-width, 100%);
     }
 
-    .shopify-block--columns > .inner {
+    .shopify-block--columns > theme-layout {
       display: grid;
       grid-template-columns: var(--grid-template-columns, 1fr);
       align-items: var(--vertical-alignment, start);
@@ -136,59 +137,59 @@
     }
 
     /* Stack-below: collapse to single column when container is narrower than the breakpoint */
-    .shopify-block--columns[data-modifiers*='stack-below'] > .inner {
+    .shopify-block--columns[data-modifiers*='stack-below'] > theme-layout {
       grid-template-columns: 1fr;
     }
 
     @container columns (inline-size >= 40rem) {
-      .shopify-block--columns[data-modifiers*='stack-below:40'] > .inner {
+      .shopify-block--columns[data-modifiers*='stack-below:40'] > theme-layout {
         grid-template-columns: var(--grid-template-columns);
       }
     }
 
     @container columns (inline-size >= 60rem) {
-      .shopify-block--columns[data-modifiers*='stack-below:60'] > .inner {
+      .shopify-block--columns[data-modifiers*='stack-below:60'] > theme-layout {
         grid-template-columns: var(--grid-template-columns);
       }
     }
 
     @container columns (inline-size >= 80rem) {
-      .shopify-block--columns[data-modifiers*='stack-below:80'] > .inner {
+      .shopify-block--columns[data-modifiers*='stack-below:80'] > theme-layout {
         grid-template-columns: var(--grid-template-columns);
       }
     }
 
     /* Sticky track — pin one column while the other scrolls. `align-self: start` keeps the sticky child at its natural height so the parent grid can grow taller than it; the non-sticky child remains free to size itself, providing the scroll runway. */
-    .shopify-block--columns[data-modifiers*='sticky-track:first'] > .inner > :first-child,
-    .shopify-block--columns[data-modifiers*='sticky-track:second'] > .inner > :last-child {
+    .shopify-block--columns[data-modifiers*='sticky-track:first'] > theme-layout > :first-child,
+    .shopify-block--columns[data-modifiers*='sticky-track:second'] > theme-layout > :last-child {
       position: sticky;
       top: var(--sticky-offset, 1rem);
       align-self: start;
     }
 
     /* Disable sticky when stack-below has collapsed the grid to a single column. */
-    .shopify-block--columns[data-modifiers*='stack-below'] > .inner > * {
+    .shopify-block--columns[data-modifiers*='stack-below'] > theme-layout > * {
       position: static;
     }
 
     /* Re-enable sticky inside the same @container queries that re-enable the grid. */
     @container columns (inline-size >= 40rem) {
-      .shopify-block--columns[data-modifiers*='stack-below:40'][data-modifiers*='sticky-track:first'] > .inner > :first-child,
-      .shopify-block--columns[data-modifiers*='stack-below:40'][data-modifiers*='sticky-track:second'] > .inner > :last-child {
+      .shopify-block--columns[data-modifiers*='stack-below:40'][data-modifiers*='sticky-track:first'] > theme-layout > :first-child,
+      .shopify-block--columns[data-modifiers*='stack-below:40'][data-modifiers*='sticky-track:second'] > theme-layout > :last-child {
         position: sticky;
       }
     }
 
     @container columns (inline-size >= 60rem) {
-      .shopify-block--columns[data-modifiers*='stack-below:60'][data-modifiers*='sticky-track:first'] > .inner > :first-child,
-      .shopify-block--columns[data-modifiers*='stack-below:60'][data-modifiers*='sticky-track:second'] > .inner > :last-child {
+      .shopify-block--columns[data-modifiers*='stack-below:60'][data-modifiers*='sticky-track:first'] > theme-layout > :first-child,
+      .shopify-block--columns[data-modifiers*='stack-below:60'][data-modifiers*='sticky-track:second'] > theme-layout > :last-child {
         position: sticky;
       }
     }
 
     @container columns (inline-size >= 80rem) {
-      .shopify-block--columns[data-modifiers*='stack-below:80'][data-modifiers*='sticky-track:first'] > .inner > :first-child,
-      .shopify-block--columns[data-modifiers*='stack-below:80'][data-modifiers*='sticky-track:second'] > .inner > :last-child {
+      .shopify-block--columns[data-modifiers*='stack-below:80'][data-modifiers*='sticky-track:first'] > theme-layout > :first-child,
+      .shopify-block--columns[data-modifiers*='stack-below:80'][data-modifiers*='sticky-track:second'] > theme-layout > :last-child {
         position: sticky;
       }
     }
