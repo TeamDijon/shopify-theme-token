@@ -28,6 +28,8 @@ A spec is the contract. It describes the element's API, output, behavior, valida
 
 **Reconciled**: <YYYY-MM-DD; omit when `Implementation: pending`>
 
+**Reviewed**: <YYYY-MM-DD; omit when never reviewed>
+
 **Depends on**: <files, primitives, metaobjects, utilities the element consumes>
 
 **Consumers**: <where the element gets used>
@@ -93,6 +95,23 @@ A file change that touches contract-described surface — params, output shape, 
 - **Explicit "spec unchanged; internal-only refactor" line in the commit message** — when neither side moves; used for changes that don't touch contract surface at all.
 
 Drift signal: pin says vX, file is vY (Y > X), reconciled-date is stale. Reconciliation owed.
+
+## Review discipline
+
+`Reviewed` is a separate signal from `Reconciled`. It records when a developer (with or without an agent) read the spec end-to-end and signed off on its content — the prose still reads correctly, design assumptions hold, cross-references resolve, the spec accurately describes the intended contract.
+
+The two dates answer different questions:
+
+| Field | Question | Asserted by |
+|---|---|---|
+| `Reconciled` | Does the pin match the file's current version? | Automated audit possible (parse pin, compare to file version header) |
+| `Reviewed` | Has a human vetted the spec's prose and design rationale? | Only the human signing off |
+
+A spec can be reconciled-fresh and review-stale (pin matches the file but no one has re-read the prose since a substantial revision). Inverse is also valid (recently reviewed but file has moved since — reconcile owed).
+
+Bump `Reviewed` on any review pass, even if no content changes — the value is the sign-off, not the diff. When a review surfaces content changes, they land in the same commit; the Reviewed date covers them.
+
+Omit the field on specs that have never been reviewed (typical for freshly-drafted specs). Don't backfill the field on existing specs — add it only when a real review pass happens.
 
 ## Section ordering
 
