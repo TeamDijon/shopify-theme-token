@@ -12,7 +12,7 @@
 
 **Reconciled**: 2026-05-31
 
-**Reviewed**: pending
+**Reviewed**: 2026-05-31
 
 **Depends on**:
 - `typeface` metaobject (via the `font_family` reference field — entry's name flows into the emitted CSS `font-family` chain)
@@ -42,7 +42,7 @@ Both conventions live in the *handle* and the *setting*, not the metaobject sche
 
 | Field | Type | Required | Notes |
 |---|---|---|---|
-| `name` | Single line text | yes | Display name in admin (e.g., `Heading 1`, `Body`, `Eyebrow`). `system.handle` derives from it. | <!-- REVIEW: Derives from it but not coupled, on first creation the handle is derived from name but then changes do not propagate to the other, might be worth to document -->
+| `name` | Single line text | yes | Display name in admin (e.g., `Heading 1`, `Body`, `Eyebrow`). `system.handle` is derived from it *on entry creation only* — subsequent renames in admin do not update the handle. See Behavior § cross-cutting key. |
 | `font_family` | Metaobject reference (→ `typeface`) | no | Resolves to a `typeface` entry whose `name.value` becomes the primary font in the emitted `font-family` chain. Falls back to `settings.base_text_style.font_family.value.name.value` when blank, then to `system-ui` as a terminal anchor. |
 | `font_fallback_family` | Single line text | no | One of `sans-serif` / `serif` / `mono`. Selects which theme-settings font (`settings.sans_serif_font` / `serif_font` / `mono_font`) appends as the family + generic-fallback pair after the primary. Defaults to `sans-serif` when blank. |
 | `font_style` | Single line text | no | CSS `font-style` value. One of `normal` / `italic` / `oblique`. Defaults to `normal`. |
@@ -58,7 +58,6 @@ Type-level metadata: project default (publishable + translatable, `storefront: P
 
 The `weight` field is text-typed (rather than integer) so the regex validates the canonical 100-step values; Liquid coerces with `| default: '400'`.
 
-<!-- REVIEW: What do you think of this API ? I think it's solid and only per project needs might justify evolution ? -->
 
 ## Output shape
 
@@ -141,24 +140,24 @@ Plus `--base-*` aliases (same eight names, prefixed `--base-` instead of `--<han
 - **`weight` default.** Blank `weight` falls through to `'400'` (regular). The text-typed field's regex (`^[1-9]00$`) prevents arbitrary numeric values; only the canonical 100-step weights validate.
 - **Boolean → CSS keyword mapping.** `uppercase.value == true` → `text-transform: uppercase`; otherwise `none`. `underline.value == true` → `text-decoration: underline`; otherwise `none`. False, blank, and missing field all resolve to the `none` branch.
 - **`system.handle` is the cross-cutting key.** The same string drives: the CSS variable prefix, the auto-bind tag selector (when in `h1`–`h6`), and the `text-style:<handle>` modifier token. Renaming a handle moves all three. The metaobject's `name` field is decorative; only `system.handle` is load-bearing.
+- **Handle is set on creation, not synced.** Shopify derives `system.handle` from `name` at the moment of entry creation, then decouples them. A merchant renaming the display `name` afterward does NOT update the handle — and thus does NOT update the emitted CSS variable name or selector. Changing a handle requires deleting + re-creating the entry (with the desired name → handle derivation), then re-binding any settings that referenced the old handle. Treat handles as load-bearing identifiers fixed at creation; avoid renames that imply handle changes.
 
 ## Seed entries
 
-Recommended catalog (full details in `metaobject-definitions.md` § text_style):
+Recommended catalog (full details in `metaobject-definitions.md` § text_style). The `h1`–`h6` + `body` set is required (heading auto-bind + the `base_text_style` setting target); the rest are optional editorial roles that recur across archetypes and earn their place when a project calls for them.
 
 | Handle | Name | mobile/desktop size | line-height | weight | Role |
 |---|---|---|---|---|---|
-| `h1` | H1 | 32 / 48 | 1.2 | 700 | Auto-bind to `<h1>` |
-| `h2` | H2 | 28 / 40 | 1.25 | 700 | Auto-bind to `<h2>` |
-| `h3` | H3 | 24 / 32 | 1.3 | 600 | Auto-bind to `<h3>` |
-| `h4` | H4 | 20 / 24 | 1.4 | 600 | Auto-bind to `<h4>` |
-| `h5` | H5 | 18 / 20 | 1.4 | 600 | Auto-bind to `<h5>` |
-| `h6` | H6 | 16 / 18 | 1.5 | 600 | Auto-bind to `<h6>` |
-| `body` | Body | 16 / 16 | 1.5 | 400 | Canonical handle for the `base_text_style` setting; emits `--base-*` aliases |
-| `eyebrow` | Eyebrow | 12 / 13 | 1.4 | 600 | Optional — small uppercase pre-headings, section labels |
-| `fine-print` | Fine print | 13 / 14 | 1.4 | 400 | Optional — meta strips (timestamps, attribution, recipe yields) |
-
-The `h1`–`h6` + `body` set covers the document typography. The two extras cover editorial roles that recur across archetypes — add when a project calls for them.
+| `h1` | H1 | 32 / 48 | 1.2 | 700 | **Required** — auto-bind to `<h1>` |
+| `h2` | H2 | 28 / 40 | 1.25 | 700 | **Required** — auto-bind to `<h2>` |
+| `h3` | H3 | 24 / 32 | 1.3 | 600 | **Required** — auto-bind to `<h3>` |
+| `h4` | H4 | 20 / 24 | 1.4 | 600 | **Required** — auto-bind to `<h4>` |
+| `h5` | H5 | 18 / 20 | 1.4 | 600 | **Required** — auto-bind to `<h5>` |
+| `h6` | H6 | 16 / 18 | 1.5 | 600 | **Required** — auto-bind to `<h6>` |
+| `body` | Body | 16 / 16 | 1.5 | 400 | **Required** — `base_text_style` setting target; emits `--base-*` aliases |
+| `eyebrow` | Eyebrow | 12 / 13 | 1.4 | 600 | *Optional* — small uppercase pre-headings, section labels (consume via `uppercase: true` + `letter_spacing` on the entry) |
+| `lead` | Lead | 18 / 20 | 1.5 | 400 | *Optional* — long-form intro paragraph (blog articles, hero copy under titles) |
+| `caption` | Caption | 13 / 14 | 1.4 | 400 | *Optional* — image captions, photo credits, footnotes, fine-print disclaimers |
 
 After seeding, set `settings_data.json` → `current.base_text_style` to the `body` entry's GID so `--base-*` aliases populate.
 
@@ -198,8 +197,7 @@ Per `validation-contract.md` Tier 1a (substrate / metaobject).
 ## Out of scope
 
 - **CSS emission mechanics** — covered by `utility--css-variables.md`. This spec describes the data contract; that spec describes how the snippet composes the CSS rules.
-- **`typeface` definition** — referenced via `font_family`; the typeface metaobject has its own schema in `metaobject-definitions.md` (and may earn a dedicated spec when font-system work next touches it).
-- **Font-face emission** — the `@font-face` rules are written by `utility--font-face.liquid` (reading `typeface.font_list`, not `text_style` directly). Separate concern; this spec covers typography variables only.
+- **`typeface` + `font` metaobject definitions + `utility--font-face.liquid` emission** — covered by the planned `font-system.md` (merged spec covering all three because `font` is non-independent of `typeface`, and `utility--font-face` only emits from typeface data). This spec covers typography variables only; the font catalog itself + the `@font-face` rule emission live in the font-system spec.
 - **Per-entry font weight ramps** — `weight` is a single static value per entry. Variable-font axis controls (slnt, opsz, etc.) are not modeled. A variable-font ramp would warrant a new field or a new metaobject; out of this spec's surface.
 - **Letter-spacing in em / percent units** — `letter_spacing` is px-typed (converted to rem). Em-based tracking is not supported; merchant input is always pixels.
 - **Multi-style composition on one element** — an element binds to one text_style at a time. Combining (e.g., "h1 weight + eyebrow letter-spacing") requires either a new entry or per-element CSS overrides.

@@ -450,9 +450,10 @@ Standard name field — see [convention](#name-field-convention). Description: *
 | `h6` | H6 | 16 | 18 | 1.5 | 600 |
 | `body` | Body | 16 | 16 | 1.5 | 400 |
 | `eyebrow` | Eyebrow | 12 | 13 | 1.4 | 600 |
-| `fine-print` | Fine print | 13 | 14 | 1.4 | 400 |
+| `lead` | Lead | 18 | 20 | 1.5 | 400 |
+| `caption` | Caption | 13 | 14 | 1.4 | 400 |
 
-The h1–h6 + body set covers the document typography. The two extras cover editorial roles that recur across archetypes: `eyebrow` for small uppercase pre-headings and section labels (consume via `text-transform: uppercase` + `letter-spacing` in the entry); `fine-print` for meta strips (recipe yields, testimonial source, timestamps, attribution). Both are optional — add them when a project calls for them.
+The h1–h6 + body set covers the document typography. The optional extras cover editorial roles that recur across archetypes: `eyebrow` for small uppercase pre-headings and section labels (consume via `uppercase: true` + `letter_spacing` in the entry); `lead` for long-form intro paragraphs (blog articles, hero copy under titles); `caption` for image captions, photo credits, footnotes, and fine-print disclaimers (a single style covers both decorative and legal-ish small text). All three are optional — add them when a project calls for them. See `specs/text_style.md` § Seed entries for the full required-vs-optional contract.
 
 All entries point `font_family` at the same typeface (e.g., the merchant's primary sans-serif) and use `font_fallback_family: sans-serif`. Tune per-store post-seed.
 
