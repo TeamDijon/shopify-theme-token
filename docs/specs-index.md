@@ -27,6 +27,9 @@ Originally sourced from the EXPLORATION-2 inventory pass (May 2026); retrofits a
 
 - [rating](./specs/rating.md) — metafield-first rating display with override-checkbox safeguard; consumes `star-rating` L0; emits AggregateRating JSON-LD *(planned)*
 - [spacer](./specs/spacer.md) — empty vertical-spacer block with fixed or breakpoint-paired sizing, optional `theme_color` background *(shipped — retrofit)*
+- [separator](./specs/separator.md) — hairline `<hr>` divider with optional content_width cap and `theme_color`-driven line color (defaults to `--color-role-border`) *(shipped — retrofit)*
+- [title](./specs/title.md) — heading primitive (`h1`–`h6` / `p`) with `text_style` override, optional leading icon, alignment, content_width cap, `theme_color` foreground *(shipped — retrofit)*
+- [richtext](./specs/richtext.md) — long-form rich-text body wrapper always emitting the `prose` utility modifier; content_width drives readability width; `theme_color` foreground *(shipped — retrofit)*
 - [button](./specs/button.md) — call-to-action primitive rendering `<a>` or `<button type="button">` depending on `link`; styled via the 3×3 `button_style` family/variant matrix; optional icon, content_width, top spacing *(shipped — retrofit)*
 - [group](./specs/group.md) — flex container with direction / stack-below (container-query driven) / alignment / gap / bleed / container-style / color-scheme override; recursive composition via explicit whitelist of the 9 L1 block types *(shipped — retrofit)*
 

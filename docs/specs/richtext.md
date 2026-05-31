@@ -1,0 +1,161 @@
+# richtext
+
+**Layer**: 1
+
+**Type**: block (`blocks/richtext.liquid`) + matching snippet (`snippets/richtext.liquid`)
+
+**Status**: shipped
+
+**Implementation**:
+- `snippets/richtext.liquid` v1.2.1 (render surface)
+- `blocks/richtext.liquid` v1.2.0 (block schema + render call)
+
+**Reconciled**: 2026-05-31
+
+**Depends on**: `snippets/utility--base-selector.liquid`, `snippets/utility--modifiers.liquid`, `snippets/utility--block-layout-vars.liquid`, `snippets/utility--dynamic-style.liquid`, `content_width` metaobject (optional), `theme_color` metaobject (optional), `prose` utility from `layer-utilities.css`
+
+**Whitelisted by**: `sections/section.liquid`, `blocks/group.liquid`, `blocks/columns.liquid`, `blocks/media.liquid`
+
+## Purpose
+
+Long-form rich-text primitive. Renders a `<div>` wrapping a Shopify `richtext` setting's output (multiple paragraphs, lists, links, em/strong inline styling). Distinguishes from `title` by intent: richtext is the body-text companion that always carries the `prose` utility-modifier — `@layer utilities` rules apply paragraph spacing, list bullets, link underlines, and other typographic affordances appropriate for multi-paragraph bodies.
+
+Narrow-column readability (the ~65ch line-length sweet spot) is expressed via the `content_width` metaobject — a project seeds a `text-narrow` entry sized for prose readability and merchants pick it per-block. The `narrow` checkbox shipped in v1.0 was dropped in v1.2.0 since it overlapped with `content_width`; one setting expresses the same intent.
+
+## API
+
+Snippet args (`{% render %}`) and block schema settings cover the same surface; the snippet adds `section` / `block` / `block_id` for render context. Args fall back to `block.settings.<id>` via `| default:` chains.
+
+| Arg / Setting | Type | Required | Default | Notes |
+|---|---|---|---|---|
+| `section` | section | yes (render) | — | Snippet-only. |
+| `block` | block | yes (render) | — | Snippet-only. |
+| `block_id` | string | no | — | Snippet-only. |
+| `content` | richtext | yes | — | HTML rich-text body. Snippet `break`s when blank. |
+| `text_align` | select (`start` / `center` / `end`) | no | `"start"` | Inline text alignment. Emits `--text-align` only when ≠ `start`. |
+| `content_width` | metaobject (`content_width`) | no | blank → 100% | Caps `max-inline-size`. Self-centers via `margin-inline: auto`. Pick a `text-narrow` entry (~65ch) for prose readability; pick wider entries for full-bleed body. |
+| `text_color` | metaobject (`theme_color`) | no | blank → `--color-role-foreground` | Reads `.system.handle`; emits `--text-color: var(--color-<handle>)`. Note the role fallback is `--color-role-foreground` (body), not `--color-role-foreground-heading` — richtext is body copy. |
+| `mobile_margin_block_start` | range (0–200, step 2, px) | no | `0` | Top margin below the desktop breakpoint. |
+| `desktop_margin_block_start` | range (0–200, step 2, px) | no | `0` | Top margin at/above the desktop breakpoint. |
+
+## Output shape
+
+```html
+<div class="shopify-block shopify-block--richtext"
+     id="<base-selector>"
+     {{ block.shopify_attributes }}
+     data-modifiers="prose">
+  {content}
+</div>
+```
+
+`data-modifiers` always carries `prose`. No conditional emission; the `prose` modifier is the contract — it activates the `@layer utilities` typographic rules globally rather than re-declaring per-block.
+
+Per-instance custom properties emit via `utility--block-layout-vars` + `utility--dynamic-style` into a scoped `<style>` block keyed to `#<base-selector>`.
+
+## CSS
+
+Component-rooted on `.shopify-block--richtext`. Layered in `@layer components`.
+
+```css
+.shopify-block--richtext {
+  max-inline-size: var(--content-width, 100%);
+  margin-inline: auto;
+  color: var(--text-color, var(--color-role-foreground));
+  text-align: var(--text-align, start);
+}
+```
+
+The block's own CSS is structural-only — width, centering, color, alignment. Typographic affordances (paragraph spacing, list bullets, link decoration, blockquote treatment, code styling) live in `layer-utilities.css` under `[data-modifiers*='prose']`. The split is deliberate: the same prose treatment applies to richtext blocks, validation page bodies, and any consumer that opts in via the modifier.
+
+`margin-block-start` chains through `--mobile-margin-block-start` → `--desktop-margin-block-start` → section's `--block-rhythm-mobile/desktop` via `utility--block-layout-vars`.
+
+## CSS custom properties (exposed)
+
+Per-instance vars emitted by `utility--block-layout-vars`:
+
+| Variable | Purpose | Default |
+|---|---|---|
+| `--content-width` | `max-inline-size` cap (px from metaobject) | `100%` |
+| `--mobile-margin-block-start` | Top margin below the desktop breakpoint | `0` |
+| `--desktop-margin-block-start` | Top margin at/above the desktop breakpoint | inherits mobile |
+
+Richtext-specific vars:
+
+| Variable | Purpose | Default |
+|---|---|---|
+| `--text-color` | Body color | `var(--color-role-foreground)` |
+| `--text-align` | Inline alignment | `start` |
+
+Zero-emission discipline: `--text-color` only emitted when `text_color` is set; `--text-align` only emitted when ≠ `start`.
+
+## Behavior
+
+- **Always emits `prose` modifier.** The block doesn't ship a "plain text" mode — every richtext gets prose treatment. The contract is "rich content with affordances," not "any HTML body." Per-project escapes to non-prose treatment go through bare `<div>` markup in specialized sections, not through this block.
+- **Body color, not heading color.** `--color-role-foreground` is the scheme's body text color; `--color-role-foreground-heading` is reserved for `title`. The richtext role and title role are intentionally disjoint — a scheme can tune body vs heading independently without breaking either block's contract.
+- **`content_width` is the readability lever.** A blank `content_width` lets richtext span 100% — useful for full-bleed marketing copy. A `text-narrow` (~65ch) entry constrains line length for legible prose. The cap drives both layout and the visual rhythm of paragraphs; merchants picking a narrow value get classical-typography readability, picking a wide value get full-width body.
+- **Capped width self-centers.** `margin-inline: auto` activates when `max-inline-size` < parent width. Blank `content_width` → 100% → no centering effect.
+- **No `text_style` setting.** Richtext doesn't expose `text_style` because the underlying rich-text content already has structural elements (`<p>`, `<ul>`, `<ol>`, `<blockquote>`, `<h2>`–`<h6>` inside the rich text) — those elements bind to their respective `text_style` entries via the bare-tag pattern in `utility--css-variables`. A merchant wanting "all paragraphs in this block at large size" picks a wider `content_width` or composes a `title` block before the richtext for the emphasis.
+- **Schema input is Shopify's `richtext` type.** The setting accepts HTML markup with a restricted tag set (`<p>`, `<ul>`, `<ol>`, `<li>`, `<strong>`, `<em>`, `<a>`, etc.). Shopify enforces sanitization; the snippet emits the value directly via `{{ content }}`.
+- **Early-exit on blank content.** `content` blank → snippet `break`s; nothing renders.
+- **`{{ block.shopify_attributes }}` emission.** On the outer wrapper, for theme-editor block selection.
+
+## Locale keys
+
+Schema strings under `blocks.richtext.*` (defined in `locales/en.default.schema.json` + `locales/fr.schema.json`):
+
+- `blocks.richtext.name`
+- `blocks.richtext.settings.richtext.content` (group header)
+- `blocks.richtext.settings.content.{label,default}`
+- `blocks.richtext.settings.text_align.{label,options.{start,center,end}}`
+- `blocks.richtext.settings.content_width.{label,info}`
+- `blocks.richtext.settings.text_color.{label,info}`
+- `blocks.richtext.settings.top_spacing.content` (group header)
+- `blocks.richtext.settings.{mobile,desktop}_margin_block_start.label`
+- `blocks.richtext.presets.richtext.{name,category}`
+
+No runtime strings.
+
+## Validation
+
+Per `validation-contract.md` Tier 2 (theme-primitive).
+
+- **Tier**: primitive (L1 block-backed; no sub-component half)
+- **Page**: `sections/validation--primitive--richtext.liquid` + `templates/index.validation--primitive--richtext.json` (shipped)
+- **API surface**:
+  - **content variation**: single paragraph, multi-paragraph, list (`<ul>`, `<ol>`), links, inline em/strong — verify the `prose` rules apply (paragraph spacing, list bullets, link underline)
+  - **text_align**: `start` (default), `center`, `end`
+  - **content_width**: blank (100%), narrow (~65ch for prose readability), wide (1000px)
+  - **text_color**: blank (defaults to role-foreground) vs each shipped `theme_color` entry
+  - **Top-spacing**: independent mobile + desktop values
+- **Surface delegation**: the `prose` modifier's typographic rules are exercised at the substrate level (`layer-utilities.css` rules apply universally to anything carrying `data-modifiers*='prose'`); this page exercises the **block-side emission contract** — that the modifier is always present and the content renders inside.
+- **Edge cases**:
+  - Blank `content` → snippet `break`s; nothing renders (no root element)
+  - Content with nested `<h2>` (richtext field accepts headings) → bare-tag auto-binding via `text_style` applies the matching heading style inside the richtext block
+  - Blank `content_width` → wrapper spans 100%; `margin-inline: auto` has no visible effect
+  - `text_color` set to a handle with no matching `theme_color` entry → `--text-color: var(--color-<handle>)` emits; the CSS variable resolves to its declaration default (or unset if not declared anywhere)
+- **Visual showcase**: a vertical stack of richtext blocks demonstrating content variations × widths × alignments. Reader confirms prose rules apply (paragraph spacing, list bullets, link decoration); content_width caps line length where set; color resolution matches.
+- **Assertions** (prose; Playwright once installed):
+  - Each instance carries `data-modifiers="prose"` on the root
+  - Each instance's computed `max-inline-size` matches the configured `content_width` (or 100% when blank)
+  - Computed `color` matches `text_color` (or `--color-role-foreground` when blank)
+  - Inner `<p>` elements have non-zero `margin-block` per the prose utility's paragraph spacing rule
+  - Inner `<ul>`/`<ol>` elements have appropriate list-marker presence
+  - Inner `<a>` elements have non-`none` `text-decoration`
+- **Unit scope**: none (Liquid + CSS only)
+
+## Out of scope
+
+- **Per-block prose variations** (`prose:narrow`, `prose:compact`) — the v1.2.0 cleanup removed the `narrow` checkbox; subsequent variations belong in `content_width` (for width) or in per-project utility modifiers (for spacing density). Adding `prose:<variant>` modifiers re-creates the overlap richtext just simplified.
+- **`text_style` setting** — body typography flows from the bare-tag binding for `<p>` (and nested headings). Overriding body typography per-block isn't supported; the consistency across pages is intentional. A per-project richtext-with-style block would extend this snippet.
+- **Markdown input** — the schema is `richtext` (Shopify HTML), not markdown. A markdown-input variant would be a separate primitive.
+- **Code-block / pre-formatted treatment** — Shopify's `richtext` input doesn't expose `<pre>`/`<code>`; the prose utility doesn't style them. Documentation-heavy themes would extend with a markdown primitive or a code-block block.
+- **Drop cap / first-letter treatments** — typographic flourishes belong in per-project CSS, not in the block's exposed surface.
+
+## Related
+
+- Composition strategy (title vs richtext distinction; prose utility as a substrate concern): `.context/docs/composition-strategy.md`
+- Schema conventions (top-spacing pair, color-token setting naming): `.context/docs/schema-conventions.md`
+- Design-system metaobjects (`content_width` consumption, `theme_color` consumption): `.context/docs/design-system-metaobjects.md`
+- Modifier system (`data-modifiers` convention; opt-in utility modifiers): `.context/docs/modifier-system.md`
+- Title spec (the heading-primitive sibling): `.context/docs/specs/title.md`
