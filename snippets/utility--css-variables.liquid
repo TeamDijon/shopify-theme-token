@@ -1,7 +1,8 @@
-{% # CSS Variables v1.10.0 %}
+{% # CSS Variables v1.11.0 %}
 
 {% comment %}
   Changelog
+  - v1.11.0 — drop all `--color-role-*-rgb` companion variables (background, foreground, foreground-heading, primary, border, shadow, input-text). Translucent compositions migrate to `rgb(from var(--color-role-X) r g b / <alpha>)` relative-color syntax — drop-in replacement preserving Token's fractional `--opacity-*` alpha pattern, no channel storage needed. `::selection` and the seven derived tokens (`--color-role-foreground-muted`, `--color-role-placeholder`, `--color-role-disabled-{background,text,border}`, `--color-role-backdrop`, `--shadow-{sm,md,lg}`) all migrated. Also drops the `[data-text-style='<handle>']` selector arm from the text-style block — `data-modifiers="text-style:<handle>"` is the single canonical surface for categorical state per `modifier-system.md`. Per-project CSS using `rgba(var(--color-role-X-rgb), Y)` must migrate to the new syntax; CSS targeting `[data-text-style]` must migrate to the modifier form.
   - v1.10.0 — rename `-bg` shorthand suffixes in scheme-role vars to `-background` for naming consistency with the full-word convention used by `-foreground`, `-text`, `-border`, etc. Touches: `--color-role-primary-button-bg(-hover)?`, `--color-role-secondary-button-bg(-hover)?`, `--color-role-input-bg(-hover)?`, `--color-role-disabled-bg`. Per-project CSS overriding these names must rename.
   - v1.9.0 — rename scheme-role variables from `--color-<role>` → `--color-role-<role>` (background, foreground, foreground-heading, foreground-muted, primary, border, shadow, primary-button-*, secondary-button-*, input-*, placeholder, disabled-*, focus-ring, backdrop + their `-rgb` companions). Disjoint namespace from `theme_color`'s `--color-<handle>`: a theme_color entry handled `background` no longer collides with the scheme role. Gradient stop interpolation also renamed (`var(--color-role-<role>)`). Touches every consumer; see `.context/specs/theme-color.md` for the contract.
   - v1.8.1 — drop the empty-output guard. `::selection`, the per-scheme rules, and the gutter `:root` always emit, so `final_content` is never blank — the guard never fires its early-skip path. Direct `{{ css_variables }}` instead.
@@ -48,7 +49,7 @@
   }
 
   ::selection {
-    background-color: rgba(var(--color-role-primary-rgb), 0.3);
+    background-color: rgb(from var(--color-role-primary) r g b / 0.3);
     color: var(--color-role-foreground);
   }
 
@@ -72,22 +73,15 @@
     {% endif %}
     [data-modifiers*="color-scheme:{{ scheme.id }}"] {
       --color-role-background: {{ scheme.settings.background }};
-      --color-role-background-rgb: {{ scheme.settings.background.red }}, {{ scheme.settings.background.green }}, {{ scheme.settings.background.blue }};
       --gradient-background: {% if scheme.settings.background_gradient != blank %}{{ scheme.settings.background_gradient }}{% else %}{{ scheme.settings.background }}{% endif %};
 
       --color-role-foreground: {{ scheme.settings.foreground }};
-      --color-role-foreground-rgb: {{ scheme.settings.foreground.red }}, {{ scheme.settings.foreground.green }}, {{ scheme.settings.foreground.blue }};
 
       --color-role-foreground-heading: {{ scheme.settings.foreground_heading }};
-      --color-role-foreground-heading-rgb: {{ scheme.settings.foreground_heading.red }}, {{ scheme.settings.foreground_heading.green }}, {{ scheme.settings.foreground_heading.blue }};
       --color-role-primary: {{ scheme.settings.primary }};
-      --color-role-primary-rgb: {{ scheme.settings.primary.red }}, {{ scheme.settings.primary.green }}, {{ scheme.settings.primary.blue }};
       --color-role-border: {{ scheme.settings.border }};
-      --color-role-border-rgb: {{ scheme.settings.border.red }}, {{ scheme.settings.border.green }}, {{ scheme.settings.border.blue }};
       --color-role-shadow: {{ scheme.settings.shadow }};
-      --color-role-shadow-rgb: {{ scheme.settings.shadow.red }}, {{ scheme.settings.shadow.green }}, {{ scheme.settings.shadow.blue }};
 
-      {% comment %} Button + input sub-role colors are opaque-only; add a -rgb companion here on demand for translucent treatments. {% endcomment %}
       --color-role-primary-button-background: {{ scheme.settings.primary_button_background }};
       --color-role-primary-button-text: {{ scheme.settings.primary_button_text }};
       --color-role-primary-button-border: {{ scheme.settings.primary_button_border }};
@@ -97,7 +91,6 @@
 
       --color-role-input-background: {{ scheme.settings.input_background }};
       --color-role-input-text: {{ scheme.settings.input_text }};
-      --color-role-input-text-rgb: {{ scheme.settings.input_text.red }}, {{ scheme.settings.input_text.green }}, {{ scheme.settings.input_text.blue }};
       --color-role-input-border: {{ scheme.settings.input_border }};
 
       --opacity-subtle: {{ opacity_subtle }};
@@ -113,17 +106,17 @@
       --color-role-input-background-hover: color-mix(in oklab, var(--color-role-input-background), var(--color-role-foreground) 4%);
       --color-role-input-border-hover: color-mix(in oklab, var(--color-role-input-border), var(--color-role-foreground) 20%);
 
-      --color-role-foreground-muted: rgba(var(--color-role-foreground-rgb), var(--opacity-muted));
-      --color-role-placeholder: rgba(var(--color-role-input-text-rgb), 0.5);
-      --color-role-disabled-background: rgba(var(--color-role-foreground-rgb), var(--opacity-subtle));
-      --color-role-disabled-text: rgba(var(--color-role-foreground-rgb), 0.4);
-      --color-role-disabled-border: rgba(var(--color-role-foreground-rgb), var(--opacity-border-soft));
+      --color-role-foreground-muted: rgb(from var(--color-role-foreground) r g b / var(--opacity-muted));
+      --color-role-placeholder: rgb(from var(--color-role-input-text) r g b / 0.5);
+      --color-role-disabled-background: rgb(from var(--color-role-foreground) r g b / var(--opacity-subtle));
+      --color-role-disabled-text: rgb(from var(--color-role-foreground) r g b / 0.4);
+      --color-role-disabled-border: rgb(from var(--color-role-foreground) r g b / var(--opacity-border-soft));
       --color-role-focus-ring: var(--color-role-primary);
-      --color-role-backdrop: rgba(var(--color-role-shadow-rgb), 0.5);
+      --color-role-backdrop: rgb(from var(--color-role-shadow) r g b / 0.5);
 
-      --shadow-sm: 0 1px 2px rgba(var(--color-role-shadow-rgb), 0.06);
-      --shadow-md: 0 4px 12px rgba(var(--color-role-shadow-rgb), 0.10);
-      --shadow-lg: 0 8px 24px rgba(var(--color-role-shadow-rgb), 0.14);
+      --shadow-sm: 0 1px 2px rgb(from var(--color-role-shadow) r g b / 0.06);
+      --shadow-md: 0 4px 12px rgb(from var(--color-role-shadow) r g b / 0.10);
+      --shadow-lg: 0 8px 24px rgb(from var(--color-role-shadow) r g b / 0.14);
     }
   {% endfor %}
 
@@ -217,7 +210,6 @@
     {% if hn_style_list contains style_handle %}
       {{ style_handle }},
     {% endif %}
-    [data-text-style='{{ style_handle }}'],
     [data-modifiers*='text-style:{{ style_handle }}'] {
       font-family: var(--{{ style_handle }}-font-family);
       font-style: var(--{{ style_handle }}-font-style);

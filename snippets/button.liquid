@@ -1,7 +1,8 @@
-{% # Button v1.3.0 %}
+{% # Button v1.4.0 %}
 
 {% comment %}
   Changelog
+  - v1.4.0 — drop the internal `--button-color-rgb` intermediate. Outline-hover translucency migrates to `rgb(from var(--button-color) r g b / var(--opacity-subtle, 0.05))` relative-color syntax (paired with `utility--css-variables` v1.11.0 dropping `--color-role-*-rgb` companions). No external API change — per-project overrides of `--button-color-rgb` would break, but the property was never documented as exposed.
   - v1.3.0 — rename exposed `--button-bg` / `--button-fg` custom properties to `--button-background` / `--button-foreground` for naming consistency with the substrate's full-word convention; transition now uses substrate motion vars (`var(--duration-fast) var(--ease-out)`) instead of hardcoded `0.15s ease-out`. Per-project overrides of `--button-bg` / `--button-fg` must rename.
   - v1.2.3 — internal: scheme-role var refs migrate to `--color-role-*` namespace (no API change)
   - v1.2.2 — emit `{{ block.shopify_attributes }}` on the root for theme-editor block selection (was missing)
@@ -111,7 +112,6 @@
          variant overrides the color vars; selectors anchor on the trailing
          dash of the family prefix so substring matches stay scoped. */
       --button-color: var(--color-role-primary);
-      --button-color-rgb: var(--color-role-primary-rgb);
       --button-on-color: var(--color-role-primary-button-text);
 
       --button-background: var(--button-color);
@@ -170,7 +170,6 @@
         [data-modifiers*='button-style:link-secondary']
       ) {
         --button-color: var(--color-role-foreground);
-        --button-color-rgb: var(--color-role-foreground-rgb);
         --button-on-color: var(--color-role-background);
       }
 
@@ -183,7 +182,6 @@
         [data-modifiers*='button-style:link-tertiary']
       ) {
         --button-color: var(--color-role-background);
-        --button-color-rgb: var(--color-role-background-rgb);
         --button-on-color: var(--color-role-foreground);
       }
 
@@ -212,7 +210,7 @@
       }
 
       &[data-modifiers*='button-style:outline-']:hover {
-        background-color: rgba(var(--button-color-rgb), var(--opacity-subtle, 0.05));
+        background-color: rgb(from var(--button-color) r g b / var(--opacity-subtle, 0.05));
       }
 
       &[data-modifiers*='button-style:link-']:hover {

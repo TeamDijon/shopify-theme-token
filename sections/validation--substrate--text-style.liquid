@@ -1,20 +1,21 @@
-{% # Validation - Text style v1.1.1 %}
+{% # Validation - Text style v1.2.0 %}
 
 {% comment %}
   Changelog
+  - v1.2.0 — migrate specimen attribute from `data-text-style="<handle>"` to `data-modifiers="text-style:<handle>"` per the unified-modifier convention (paired with `utility--css-variables` v1.11.0 dropping the `[data-text-style='<handle>']` selector arm). `data-modifiers` is the canonical home for categorical state per `modifier-system.md`.
   - v1.1.1 — schema `name` shortened to "Text style" (drop "Validation - " prefix; the URL path is the source of truth and the prefix bumped longer names past Shopify's 25-char schema-name limit)
   - v1.1.0 — render `validation--breadcrumb` at the top so the developer can navigate back to the hub
   - v1.0.0 — initial
 
   Visual test page for the `text_style` metaobject. Iterates every entry,
   surfaces the raw metaobject fields as a metadata strip, and renders a
-  pangram specimen with `data-text-style="<handle>"` so the actual
+  pangram specimen with `data-modifiers="text-style:<handle>"` so the actual
   consumption path (CSS custom properties → cascade selector) is what's
   tested rather than the metaobject values in isolation.
 
   Diagnostic intent:
-  1. Each handle resolves through `[data-text-style="<handle>"]`, which
-     `utility--css-variables.liquid` emits as the consumption selector.
+  1. Each handle resolves through `[data-modifiers*="text-style:<handle>"]`,
+     which `utility--css-variables.liquid` emits as the consumption selector.
   2. The rendered specimen matches the metadata strip — if the strip
      says weight 700 but the specimen looks light, the metaobject and
      CSS pipeline disagree.
@@ -38,7 +39,7 @@
     <h1>Text style</h1>
     <p>
       Source: <code>metaobjects.text_style.values</code>. Consumed via
-      <code>[data-text-style="&lt;handle&gt;"]</code> (and on bare
+      <code>[data-modifiers*="text-style:&lt;handle&gt;"]</code> (and on bare
       <code>h1</code>–<code>h6</code> when the handle matches). Each row
       lists the raw metaobject fields and renders a pangram specimen so
       a mismatch between metadata and rendered output flags a broken
@@ -92,7 +93,7 @@
           {% endif %}
         </header>
 
-        <p class="text-style-row__specimen" data-text-style="{{ handle }}">
+        <p class="text-style-row__specimen" data-modifiers="text-style:{{ handle }}">
           The quick brown fox jumps over the lazy dog. AaBbCc 0123456789
         </p>
       </li>
