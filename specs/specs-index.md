@@ -24,7 +24,7 @@ Originally sourced from the EXPLORATION-2 inventory pass (May 2026); retrofits a
 - [star-rating](./star-rating.md) — 5-star visual using `icon-star` full/half/empty presets; resolves a numeric 0–5 rating into per-star presets via 0.5 increments; carries its own SR-only label *(planned)*
 - [price-with-compare](./price-with-compare.md) — current price + optional compare-at (strikethrough) + optional save pill; emits raw cents + currency ISO in `data-*` for a JS update path on variant change; SR-only label combines the price story *(planned)*
 - [inventory-status](./inventory-status.md) — variant inventory state pill (in-stock / low-stock / pre-order / out-of-stock); resolves four states from Shopify variant fields, emits `data-modifiers="state:<value>"`, colors per state from theme palette + scheme muted token *(planned)*
-- [pagination](./pagination.md) — numbered (SEO-friendly) or load-more (JS-driven) pagination with shared markup contract *(planned)*
+- [pagination](./pagination.md) — two-mode pagination: numbered (SEO-friendly anchors, `<nav>` landmark, ellipsis-collapse window) or load-more (button + `aria-live` progress, JS append via `pagination.js`); shared `data-modifiers="type:<mode>"` styling surface *(planned)*
 - [badge](./badge.md) — generic tone-colored pill (label + optional icon), tint/solid styles driven by semantic color tokens *(planned)*
 - [article-card](./article-card.md) — blog article tile (image / date / title / excerpt / author) with pseudo-overlay whole-card link *(planned)*
 - [form-field](./form-field.md) — label + control + help + error unit (text-family / textarea / select / checkbox) with full ARIA wiring *(planned)*
