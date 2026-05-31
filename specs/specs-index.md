@@ -27,7 +27,7 @@ Originally sourced from the EXPLORATION-2 inventory pass (May 2026); retrofits a
 - [pagination](./pagination.md) — two-mode pagination: numbered (SEO-friendly anchors, `<nav>` landmark, ellipsis-collapse window) or load-more (button + `aria-live` progress, JS append via `pagination.js`); shared `data-modifiers="type:<mode>"` styling surface *(planned)*
 - [badge](./badge.md) — generic tone-colored pill (label + optional icon); 6 tones (neutral / success / warning / error / info / accent — mixed palette + scheme-role sourcing) × 2 styles (tint via `color-mix`, solid); per-tone CSS centralized in the snippet's stylesheet *(planned)*
 - [article-card](./article-card.md) — blog article tile (image / date / title / excerpt / author) with `::after` pseudo-overlay making the whole card clickable; opt-in line-clamp via `excerpt-clamp` modifier; localized date + responsive image *(planned)*
-- [form-field](./form-field.md) — label + control + help + error unit (text-family / textarea / select / checkbox) with full ARIA wiring *(planned)*
+- [form-field](./form-field.md) — atomic field: label + control + help + error with full ARIA wiring (`for`/`id`, `aria-describedby`, `aria-invalid`, `aria-required`, `role="alert"`); 9 types incl. text-family / textarea / select / checkbox; variable-shadow override for error-state border *(planned)*
 - [payment-icons-strip](./payment-icons-strip.md) — row of accepted payment-method icons from `shop.enabled_payment_types` *(planned)*
 - [tooltip](./tooltip.md) — popover-API toggletip (pointer / keyboard / touch), non-interactive content, JS-enhanced hover + placement *(planned)*
 

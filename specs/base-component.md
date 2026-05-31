@@ -37,12 +37,12 @@ The class exposes a small surface: one constructor, one lifecycle hook, five get
 | Member | Kind | Returns | Behavior |
 |---|---|---|---|
 | `constructor()` | constructor | instance | Calls `super()`. No instance state initialized — all managers are lazy. |
-| `disconnectedCallback()` | lifecycle | — | Web Components hook fired when the element detaches from the DOM. Calls `.clear()` on every manager that was instantiated (`this._events`, `this._observers`, `this._cache`, `this._modifiers`). Managers never accessed remain `undefined` and aren't cleared. |
+| `disconnectedCallback()` | lifecycle | — | Web Components hook fired when the element detaches from the DOM. Calls `.clear()` on every manager that was instantiated (`this._events`, `this._observers`, `this._cache`, `this._modifiers`). Managers never accessed remain `undefined` and aren't cleared. | <!-- REVIEW: Wording could benefit from saying they were never there, aren't cleared is awkward, minor nitpick -->
 | `get events` | getter | `EventsManager` | Lazy: constructs `new EventsManager()` on first access, retains on `this._events`, returns the same instance on subsequent accesses. |
 | `get observers` | getter | `ObserversManager` | Lazy. Same pattern as `events`. |
 | `get cache` | getter | `CacheManager` | Lazy. Same pattern as `events`. |
 | `get modifiers` | getter | `ModifiersManager` | Lazy: constructs `new ModifiersManager(this)` (binds the manager to *this* element). Same retention pattern. |
-| `get section` | getter | `HTMLElement \| null` | Returns `this.closest(".shopify-section")` — the Shopify section wrapper around the component. When no match (component used outside a section context), logs a `console.warn` with the element reference and returns `null`. Not cached; recomputes on each access. |
+| `get section` | getter | `HTMLElement \| null` | Returns `this.closest(".shopify-section")` — the Shopify section wrapper around the component. When no match (component used outside a section context), logs a `console.warn` with the element reference and returns `null`. Not cached; recomputes on each access. | <!-- REVIEW: Can you have a look at ZAG sections and see if caching would benefit section. Most likely no (that would make the CacheManager always mounted + highly marginal, sanity check and curiosity at best) -->
 
 The class is exported as a named export (`export class BaseComponent extends HTMLElement`). No default export — consistent with the JS asset convention.
 
