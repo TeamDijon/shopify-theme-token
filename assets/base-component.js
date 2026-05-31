@@ -1,7 +1,11 @@
 /**
  * Base custom element for the theme library.
  * @module @theme/base-component
- * @version 1.0.0
+ * @version 1.1.0
+ *
+ * Changelog
+ * - v1.1.0 — register as `<token-section>` (was `<theme-section>`). Per-project markup using the old tag must rename. Modifier `theme-root` is unchanged.
+ * - v1.0.0 — initial
  */
 
 import { EventsManager } from "@theme/events-manager";
@@ -85,4 +89,4 @@ export class BaseComponent extends HTMLElement {
   }
 }
 
-window.customElements.define("theme-section", BaseComponent);
+window.customElements.define("token-section", BaseComponent);

@@ -27,7 +27,7 @@
   assign base_selector = 'shopify-section-' | append: section.id
 %}
 
-<theme-section data-modifiers="theme-root">
+<token-section data-modifiers="theme-root">
   {% render 'validation--breadcrumb' %}
 
   <header class="validation__intro">
@@ -52,7 +52,7 @@
   {% else %}
     <p class="block-validation-suite__empty">No blocks declared in the template.</p>
   {% endif %}
-</theme-section>
+</token-section>
 
 {% capture dynamic_style %}
   {% if max_inline_size and max_inline_size != blank %}
@@ -85,7 +85,7 @@
 {% stylesheet %}
   @layer components {
     .shopify-section--validation--primitive--embed {
-      theme-section {
+      token-section {
         display: block;
         max-inline-size: var(--max-inline-size, 80rem);
         margin-inline: auto;

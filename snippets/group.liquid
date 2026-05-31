@@ -1,10 +1,11 @@
-{% # Group v1.5.0 %}
+{% # Group v1.6.0 %}
 
 {% comment %}
   Changelog
-  - v1.5.0 — replace inner wrapper `<div class="inner">` with `<theme-layout>` custom element (per subgrid migration Stage 3). CSS selectors update from `> theme-layout` to `> theme-layout`. Markup change only; computed layout unchanged. Per-project CSS targeting `.inner` inside group must rename to `theme-layout`.
+  - v1.6.0 — inner wrapper tag renamed `<theme-layout>` → `<token-layout>` (theme fingerprint pass paired with `<theme-section>` → `<token-section>`). CSS selectors update `> theme-layout` → `> token-layout`. Per-project CSS targeting the old tag must rename.
+  - v1.5.0 — replace inner wrapper `<div class="inner">` with `<theme-layout>` custom element (per subgrid migration Stage 3). CSS selectors update from `> .inner` to `> theme-layout`. Markup change only; computed layout unchanged. Per-project CSS targeting `.inner` inside group must rename to `theme-layout`.
   - v1.4.0 — replace `bleed` boolean with responsive `bleed_desktop` (none/inline_start/inline_end/both) + `bleed_mobile` (none/both) enums. Emits `bleed-desktop:<value>` / `bleed-mobile:<value>` modifiers consumed by the section's named-line bleed grid (substrate `layer-theme.css` rewrite). Removes the snippet's own bleed CSS — section handles via `grid-column`. Per the subgrid migration (`.context/docs/subgrid-migration.md`); strict container-only bleed model.
-  - v1.3.0 — rename BEM-style inner wrapper class `shopify-block--group__inner` to rscss-compliant `.inner` (scoped via `.shopify-block--group > theme-layout`). Restructure stylesheet to native nesting on the outer class. Per-project CSS targeting the old class name must rename.
+  - v1.3.0 — rename BEM-style inner wrapper class `shopify-block--group__inner` to rscss-compliant `.inner` (scoped via `.shopify-block--group > token-layout`). Restructure stylesheet to native nesting on the outer class. Per-project CSS targeting the old class name must rename.
   - v1.2.0 — read `container_style` metaobject and emit `container-style:<handle>` modifier when set. Centralized variant CSS (card / outlined / elevated) lives in `core.css` `@layer theme`.
   - v1.1.2 — emit `{{ block.shopify_attributes }}` on the root for theme-editor block selection (was missing)
   - v1.1.1 — route content_width + top-margin vars through `utility--block-layout-vars`; output unchanged
@@ -83,9 +84,9 @@
 %}
 
 <div class="shopify-block shopify-block--group" id="{{ base_selector }}" {{ block.shopify_attributes }} {{ modifiers }}>
-  <theme-layout>
+  <token-layout>
     {{ contents }}
-  </theme-layout>
+  </token-layout>
 
   {% capture dynamic_style %}
     {% if gap and gap > 0 %}
@@ -107,38 +108,38 @@
 
 {% stylesheet %}
   @layer components {
-    /* Outer wrapper hosts the named container so descendant @container queries can match. The flex layout lives on <theme-layout> — querying the same element that defines the container never matches per spec. Bleed is now declared by the section's named-line grid (see `assets/layer-theme.css` and `.context/docs/subgrid-migration.md`); this snippet emits the bleed modifiers but does not own bleed CSS. */
+    /* Outer wrapper hosts the named container so descendant @container queries can match. The flex layout lives on <token-layout> — querying the same element that defines the container never matches per spec. Bleed is now declared by the section's named-line grid (see `assets/layer-theme.css` and `.context/docs/subgrid-migration.md`); this snippet emits the bleed modifiers but does not own bleed CSS. */
     .shopify-block--group {
       container-type: inline-size;
       container-name: group;
 
       max-inline-size: var(--content-width, 100%);
 
-      & > theme-layout {
+      & > token-layout {
         display: flex;
         gap: var(--gap, 0rem);
       }
 
-      &[data-modifiers*='direction:column'] > theme-layout {
+      &[data-modifiers*='direction:column'] > token-layout {
         flex-direction: column;
         align-items: var(--horizontal-alignment, start);
       }
 
-      &[data-modifiers*='direction:row'] > theme-layout {
+      &[data-modifiers*='direction:row'] > token-layout {
         flex-direction: row;
         justify-content: var(--horizontal-alignment, start);
         align-items: var(--vertical-alignment, start);
       }
 
       /* Stack-below: collapse to column when container is narrower than the breakpoint */
-      &[data-modifiers*='stack-below'] > theme-layout {
+      &[data-modifiers*='stack-below'] > token-layout {
         flex-direction: column;
         align-items: var(--horizontal-alignment, start);
       }
     }
 
     @container group (inline-size >= 40rem) {
-      .shopify-block--group[data-modifiers*='stack-below:40'] > theme-layout {
+      .shopify-block--group[data-modifiers*='stack-below:40'] > token-layout {
         flex-direction: row;
         justify-content: var(--horizontal-alignment, start);
         align-items: var(--vertical-alignment, start);
@@ -146,7 +147,7 @@
     }
 
     @container group (inline-size >= 60rem) {
-      .shopify-block--group[data-modifiers*='stack-below:60'] > theme-layout {
+      .shopify-block--group[data-modifiers*='stack-below:60'] > token-layout {
         flex-direction: row;
         justify-content: var(--horizontal-alignment, start);
         align-items: var(--vertical-alignment, start);
@@ -154,7 +155,7 @@
     }
 
     @container group (inline-size >= 80rem) {
-      .shopify-block--group[data-modifiers*='stack-below:80'] > theme-layout {
+      .shopify-block--group[data-modifiers*='stack-below:80'] > token-layout {
         flex-direction: row;
         justify-content: var(--horizontal-alignment, start);
         align-items: var(--vertical-alignment, start);

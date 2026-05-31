@@ -5,7 +5,7 @@
   - v1.1.0 — narrow content-width to 80rem (production-like for visibility; matches the validation-page convention); chrome follows content width (drop 65ch caps on intro / case-label paragraphs)
   - v1.0.0 — initial Stage 0 verification scaffold
 
-  Stage 0 verification scaffold for the subgrid migration. Demonstrates the new named-line bleed grid model on `<theme-section>` with six representative cases. Each case is a direct child of theme-section (or two siblings: a label + the demonstration block); section's `grid-column` rules in `assets/layer-theme.css` resolve positioning.
+  Stage 0 verification scaffold for the subgrid migration. Demonstrates the new named-line bleed grid model on `<token-section>` with six representative cases. Each case is a direct child of token-section (or two siblings: a label + the demonstration block); section's `grid-column` rules in `assets/layer-theme.css` resolve positioning.
 
   Reachable at /?view=exploration--subgrid. Temporary scaffold per BACKLOG.md § Active exploration.
 {% endcomment %}
@@ -14,11 +14,11 @@
   assign base_selector = 'shopify-section-' | append: section.id
 %}
 
-<theme-section data-modifiers="theme-root,color-scheme:scheme-1">
+<token-section data-modifiers="theme-root,color-scheme:scheme-1">
   <header class='subgrid-intro'>
     <h1>Subgrid bleed grid — Stage 0 verification</h1>
     <p>
-      Six cases exercising the new named-line bleed grid on <code>&lt;theme-section&gt;</code>. Each demonstration block sits as a direct child of the section; its <code>bleed-desktop</code> / <code>bleed-mobile</code> modifiers gate <code>grid-column</code> rules on the section's named bleed lines (<code>bleed-start</code> / <code>content-start</code> / <code>content-end</code> / <code>bleed-end</code>). See <code>.context/docs/subgrid-migration.md</code>.
+      Six cases exercising the new named-line bleed grid on <code>&lt;token-section&gt;</code>. Each demonstration block sits as a direct child of the section; its <code>bleed-desktop</code> / <code>bleed-mobile</code> modifiers gate <code>grid-column</code> rules on the section's named bleed lines (<code>bleed-start</code> / <code>content-start</code> / <code>content-end</code> / <code>bleed-end</code>). See <code>.context/docs/subgrid-migration.md</code>.
     </p>
   </header>
 
@@ -94,7 +94,7 @@
       <small>nested without bleed — positions in outer track</small>
     </div>
   </div>
-</theme-section>
+</token-section>
 
 {% capture dynamic_style %}
   --content-width: 80rem;
@@ -113,7 +113,7 @@
 {% stylesheet %}
   @layer components {
     .shopify-section--exploration--subgrid {
-      theme-section {
+      token-section {
         padding-block: 2rem 4rem;
       }
 

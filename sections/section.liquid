@@ -1,9 +1,10 @@
-{% # Section v1.4.0 %}
+{% # Section v1.5.0 %}
 
 {% comment %}
   Changelog
+  - v1.5.0 — rename custom element `<theme-section>` → `<token-section>` (theme fingerprint pass for porting agnostically). Per-project CSS using the tag selector `theme-section { ... }` must rename. Modifier value `theme-root` is unchanged (substrate selectors keep matching `[data-modifiers*='theme-root']`).
   - v1.4.0 — drop `layout` select setting per the subgrid migration. theme-section becomes an always-bleed-grid (no row/columns_N layout presets); merchants wanting row or multi-track compositions wrap in a `group` or `columns` block. Substrate CSS in `assets/layer-theme.css` no longer reads a `layout:<value>` modifier; emission of that modifier is removed.
-  - v1.3.0 — add `layout` select setting (`column` / `row` / `columns_2/3/4`); emit `theme-root,layout:<value>,color-scheme:<scheme>` in `data-modifiers`. theme-section becomes a parametrizable implicit container per the theme-root contract — substrate CSS in `assets/layer-theme.css` gates layout presets on the layout modifier. See `.context/docs/theme-root.md`.
+  - v1.3.0 — add `layout` select setting (`column` / `row` / `columns_2/3/4`); emit `theme-root,layout:<value>,color-scheme:<scheme>` in `data-modifiers`. token-section becomes a parametrizable implicit container per the theme-root contract — substrate CSS in `assets/layer-theme.css` gates layout presets on the layout modifier. See `.context/docs/theme-root.md`.
   - v1.2.0 — replace `@theme` blocks wildcard with an explicit whitelist of the 9 shipped L1 blocks (+ `@app`) per the block-whitelisting convention in `composition-strategy.md`
   - v1.1.0 — add `block_rhythm` setting (spacing metaobject) + emit `--block-rhythm-{mobile,desktop}` variables for the inter-block margin rule in `core.css`
   - v1.0.0 — initial
@@ -15,9 +16,9 @@
   assign base_selector = 'shopify-section-' | append: section.id
 %}
 
-<theme-section data-modifiers="theme-root,color-scheme:{{ section.settings.color_scheme }}">
+<token-section data-modifiers="theme-root,color-scheme:{{ section.settings.color_scheme }}">
   {% content_for 'blocks' %}
-</theme-section>
+</token-section>
 
 {% capture dynamic_style %}
   {% if content_width and content_width != blank %}

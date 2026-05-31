@@ -28,11 +28,11 @@
   assign base_selector = 'shopify-section-' | append: section.id
 %}
 
-<theme-section data-modifiers="theme-root,color-scheme:{{ color_scheme }}">
+<token-section data-modifiers="theme-root,color-scheme:{{ color_scheme }}">
   {% render 'validation--breadcrumb' %}
 
   {% content_for 'blocks' %}
-</theme-section>
+</token-section>
 
 {% capture dynamic_style %}
   --block-rhythm-mobile: 1.5rem;
@@ -59,7 +59,7 @@
 
 {% stylesheet %}
   @layer components {
-    .shopify-section--validation--preset--cta-banner theme-section {
+    .shopify-section--validation--preset--cta-banner token-section {
       display: block;
       max-inline-size: 56rem;
       margin-inline: auto;
@@ -69,7 +69,7 @@
     }
 
     /* Centre the inner group on the section's main axis. */
-    .shopify-section--validation--preset--cta-banner theme-section > .shopify-block--group {
+    .shopify-section--validation--preset--cta-banner token-section > .shopify-block--group {
       margin-inline: auto;
     }
   }

@@ -27,7 +27,7 @@
   assign accent_color = metaobjects.theme_color.accent
 %}
 
-<theme-section data-modifiers="theme-root">
+<token-section data-modifiers="theme-root">
   {% render 'validation--breadcrumb' %}
 
   <header class="validation__intro">
@@ -77,7 +77,7 @@
       </li>
     {% endfor %}
   </ol>
-</theme-section>
+</token-section>
 
 {% capture dynamic_style %}
   {% if max_inline_size and max_inline_size != blank %}
@@ -109,7 +109,7 @@
 {% stylesheet %}
   @layer components {
     .shopify-section--validation--substrate--spacing {
-      theme-section {
+      token-section {
         display: block;
         max-inline-size: var(--max-inline-size, 80rem);
         margin-inline: auto;

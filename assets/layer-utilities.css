@@ -1,5 +1,5 @@
 @layer utilities {
-  /* Prose modifier — rich-content spacing utility. Lives in `@layer utilities` (not nested under `theme-section`) so specialized sections (`<theme-cart>`, `<theme-header>`, `<theme-overlay>`) and any non-section context style rich content the same way. */
+  /* Prose modifier — rich-content spacing utility. Lives in `@layer utilities` (not nested under `token-section`) so specialized sections (`<token-cart>`, `<token-header>`, `<theme-overlay>`) and any non-section context style rich content the same way. */
   [data-modifiers*="prose"] {
     & > *:not(style) {
       margin-block: 1rem;

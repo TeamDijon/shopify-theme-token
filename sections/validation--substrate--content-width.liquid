@@ -26,7 +26,7 @@
   assign sample_content = 'The quick brown fox jumps over the lazy dog while a verbose narrator describes the entire scene in unnecessary detail.'
 %}
 
-<theme-section data-modifiers="theme-root">
+<token-section data-modifiers="theme-root">
   {% render 'validation--breadcrumb' %}
 
   <header class="validation__intro">
@@ -70,7 +70,7 @@
       </li>
     {% endfor %}
   </ol>
-</theme-section>
+</token-section>
 
 {% capture dynamic_style %}
   {% if max_inline_size and max_inline_size != blank %}
@@ -102,7 +102,7 @@
 {% stylesheet %}
   @layer components {
     .shopify-section--validation--substrate--content-width {
-      theme-section {
+      token-section {
         display: block;
         max-inline-size: var(--max-inline-size, 80rem);
         margin-inline: auto;

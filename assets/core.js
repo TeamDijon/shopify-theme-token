@@ -7,7 +7,7 @@
  * @version 1.2.0
  *
  * Changelog
- * - v1.2.0 — re-export `ThemeLayout` from @theme/theme-layout (registers the `<theme-layout>` custom element used as the inner wrapper of container blocks; per subgrid migration Stage 3)
+ * - v1.2.0 — re-export `TokenLayout` from @theme/token-layout (registers the `<token-layout>` custom element used as the inner wrapper of container blocks; per subgrid migration Stage 3)
  * - v1.1.0 — extract document-level singletons (documentModifiers, documentScroll, documentScrollbar) into @theme/document-utils so this file stays focused on entry-point + namespace duties
  * - v1.0.0 — initial
  */
@@ -29,7 +29,7 @@ export { ModifiersManager } from "@theme/modifiers-manager";
 
 // Components
 export { BaseComponent } from "@theme/base-component";
-export { ThemeLayout } from "@theme/theme-layout";
+export { TokenLayout } from "@theme/token-layout";
 
 // ---- window.theme namespace (backward compat) ----
 
@@ -41,7 +41,7 @@ import { ObserversManager } from "@theme/observers-manager";
 import { CacheManager } from "@theme/cache-manager";
 import { ModifiersManager } from "@theme/modifiers-manager";
 import { BaseComponent } from "@theme/base-component";
-import { ThemeLayout } from "@theme/theme-layout";
+import { TokenLayout } from "@theme/token-layout";
 
 window.theme = window.theme || {};
 
@@ -63,7 +63,7 @@ window.theme.managers.ModifiersManager = ModifiersManager;
 
 window.theme.components = window.theme.components || {};
 window.theme.components.BaseComponent = BaseComponent;
-window.theme.components.ThemeLayout = ThemeLayout;
+window.theme.components.TokenLayout = TokenLayout;
 
 // ---- Initialization ----
 

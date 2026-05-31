@@ -29,11 +29,11 @@
   assign base_selector = 'shopify-section-' | append: section.id
 %}
 
-<theme-section data-modifiers="theme-root,color-scheme:{{ color_scheme }}">
+<token-section data-modifiers="theme-root,color-scheme:{{ color_scheme }}">
   {% render 'validation--breadcrumb' %}
 
   {% content_for 'blocks' %}
-</theme-section>
+</token-section>
 
 {% capture dynamic_style %}
   --block-rhythm-mobile: 0;
@@ -60,7 +60,7 @@
 
 {% stylesheet %}
   @layer components {
-    .shopify-section--validation--preset--columns-features theme-section {
+    .shopify-section--validation--preset--columns-features token-section {
       display: block;
       max-inline-size: 80rem;
       margin-inline: auto;
