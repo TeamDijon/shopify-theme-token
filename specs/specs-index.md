@@ -21,7 +21,7 @@ Originally sourced from the EXPLORATION-2 inventory pass (May 2026); retrofits a
 - [image](./image.md) — responsive Shopify image renderer with optional mobile art direction (`<picture>` wrapping with mobile `<source>`); exposes loading / fetchpriority / preload knobs; two width ladders *(shipped — retrofit)*
 - [video](./video.md) — Shopify-hosted video renderer wrapping `<video>` in `<media-video>`; atmosphere vs content playback profiles; mp4 source extraction from `video.sources`; mobile art-direction via second `<source>` *(shipped — retrofit)*
 - [icon](./icon.md) — inline SVG icon loader from `assets/icon-*.svg` with dual-API (metaobject ref OR file_name string); injects `aria-hidden="true"` + optional `data-preset` (escaped); empty-on-missing via `utility--inline-asset` *(shipped — retrofit)*
-- [star-rating](./star-rating.md) — 5-star visual using `icon-star` full/half/empty presets *(planned)*
+- [star-rating](./star-rating.md) — 5-star visual using `icon-star` full/half/empty presets; resolves a numeric 0–5 rating into per-star presets via 0.5 increments; carries its own SR-only label *(planned)*
 - [price-with-compare](./price-with-compare.md) — current price + optional compare-at + optional save pill, with raw `data-*` for JS update path *(planned)*
 - [inventory-status](./inventory-status.md) — variant inventory state pill (in-stock / low-stock / pre-order / out-of-stock) with threshold + JS update path *(planned)*
 - [pagination](./pagination.md) — numbered (SEO-friendly) or load-more (JS-driven) pagination with shared markup contract *(planned)*
