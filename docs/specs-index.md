@@ -31,7 +31,10 @@ Originally sourced from the EXPLORATION-2 inventory pass (May 2026); retrofits a
 - [title](./specs/title.md) — heading primitive (`h1`–`h6` / `p`) with `text_style` override, optional leading icon, alignment, content_width cap, `theme_color` foreground *(shipped — retrofit)*
 - [richtext](./specs/richtext.md) — long-form rich-text body wrapper always emitting the `prose` utility modifier; content_width drives readability width; `theme_color` foreground *(shipped — retrofit)*
 - [button](./specs/button.md) — call-to-action primitive rendering `<a>` or `<button type="button">` depending on `link`; styled via the 3×3 `button_style` family/variant matrix; optional icon, content_width, top spacing *(shipped — retrofit)*
+- [media](./specs/media.md) — image or video container with overlay-content support; sizing via `media_size` (fill/ratio/relative/fixed); art direction; bleed (with centered-ancestor footgun); image_fit cover/contain; container_style; color_scheme override; narrow overlay-content whitelist (`title`, `richtext`, `button`, `group`) *(shipped — retrofit)*
+- [embed](./specs/embed.md) — third-party video iframe for YouTube and Vimeo; URL parsing for 7 supported shapes (incl. Vimeo unlisted-hash); lazy-loaded; sizing via shared `media_size` utility; editor-only diagnostic for unparseable URLs *(shipped — retrofit)*
 - [group](./specs/group.md) — flex container with direction / stack-below (container-query driven) / alignment / gap / bleed / container-style / color-scheme override; recursive composition via explicit whitelist of the 9 L1 block types *(shipped — retrofit)*
+- [columns](./specs/columns.md) — CSS Grid container with seven preset ratios (2 / 3 / 4 / 1-2 / 2-1 / 1-3 / 3-1); stack-below via `@container` queries against own width; sticky-track support for 2-track layouts; bleed (shared footgun); container_style; color_scheme override; recursive nesting *(shipped — retrofit)*
 
 ## Section host
 
