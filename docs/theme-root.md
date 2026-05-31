@@ -18,6 +18,10 @@ The marker is a static identity value, authored directly in each section's Liqui
 
 Generic appearance rules match all theme-roots via `[data-modifiers*='theme-root']`. Specialized-section-specific styling uses tag selectors (`theme-cart { ... }`) when the role matters.
 
+**Substring-match safety.** `theme-root` must remain a unique substring across every `data-modifiers` value the theme emits. Modifier values like `layout:theme-root-style` would false-match the `[data-modifiers*='theme-root']` selector and apply substrate appearance rules where they don't belong. The convention is to keep `theme-root` as a reserved bare token; never use it as a substring inside another modifier value.
+
+**Agnostic component extraction.** Component CSS reads scheme tokens (`var(--color-role-*)`), typography tokens, and other cascading variables — never the `[data-modifiers*='theme-root']` selector directly. Where those tokens get applied (`body` vs `theme-root`) is Token's internal scoping choice, not a contract the component knows about. To lift a component into another theme: copy the snippet + stylesheet, ensure the destination applies the same variable set somewhere up the cascade (body, root, or its own theme-root analogue), no further changes required. The selector enumeration stays inside the substrate.
+
 ## Five responsibilities
 
 A theme-root carries five responsibilities. They co-locate on the element by design — they're tightly coupled in practice and separating them would impose more cost than it saves.
