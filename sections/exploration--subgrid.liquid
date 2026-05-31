@@ -1,10 +1,18 @@
-{% # Exploration: subgrid bleed grid v1.0.0 %}
+{% # Exploration: subgrid bleed grid v1.1.0 %}
 
 {% comment %}
+  Changelog
+  - v1.1.0 — narrow content-width to 80rem (production-like for visibility; matches the validation-page convention); chrome follows content width (drop 65ch caps on intro / case-label paragraphs)
+  - v1.0.0 — initial Stage 0 verification scaffold
+
   Stage 0 verification scaffold for the subgrid migration. Demonstrates the new named-line bleed grid model on `<theme-section>` with six representative cases. Each case is a direct child of theme-section (or two siblings: a label + the demonstration block); section's `grid-column` rules in `assets/layer-theme.css` resolve positioning.
 
   Reachable at /?view=exploration--subgrid. Temporary scaffold per BACKLOG.md § Active exploration.
 {% endcomment %}
+
+{% liquid
+  assign base_selector = 'shopify-section-' | append: section.id
+%}
 
 <theme-section data-modifiers="theme-root,color-scheme:scheme-1">
   <header class='subgrid-intro'>
@@ -88,6 +96,11 @@
   </div>
 </theme-section>
 
+{% capture dynamic_style %}
+  --content-width: 80rem;
+{% endcapture %}
+{% render 'utility--dynamic-style', base_selector: base_selector, css_content: dynamic_style %}
+
 {% schema %}
 {
   "name": "Subgrid exploration",
@@ -112,7 +125,6 @@
         }
 
         p {
-          max-inline-size: 65ch;
           opacity: 0.8;
           margin-block: 0.5rem 0;
         }
