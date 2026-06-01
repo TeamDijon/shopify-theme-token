@@ -8,7 +8,7 @@
 
 **Implementation**: pending
 
-**Reviewed**: pending
+**Reviewed**: 2026-06-01
 
 **Depends on**: `IntersectionObserver` (Web platform built-in)
 
