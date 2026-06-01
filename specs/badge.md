@@ -4,7 +4,7 @@
 
 **Type**: snippet (`snippets/badge.liquid`)
 
-**Status**: spec (not yet implemented)
+**Status**: spec
 
 **Implementation**: pending
 

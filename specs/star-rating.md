@@ -4,7 +4,7 @@
 
 **Type**: snippet (`snippets/star-rating.liquid`)
 
-**Status**: spec (not yet implemented)
+**Status**: spec
 
 **Implementation**: pending
 

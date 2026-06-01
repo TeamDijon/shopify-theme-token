@@ -4,7 +4,7 @@
 
 **Type**: block (`blocks/rating.liquid`) + matching snippet (`snippets/rating.liquid`)
 
-**Status**: spec (not yet implemented)
+**Status**: spec
 
 **Implementation**: pending
 

@@ -4,7 +4,7 @@
 
 **Type**: metaobject (`theme_color`)
 
-**Status**: shipped (retrofit)
+**Status**: shipped
 
 **Implementation**:
 - `snippets/utility--css-variables.liquid` v1.11.0 (CSS variable emitter — `:root` `--color-<handle>` lines)

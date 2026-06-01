@@ -4,7 +4,7 @@
 
 **Type**: utility-js (`assets/hydrate.js`)
 
-**Status**: spec (not yet implemented)
+**Status**: spec
 
 **Implementation**: pending
 

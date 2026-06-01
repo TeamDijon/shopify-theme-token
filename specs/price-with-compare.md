@@ -4,7 +4,7 @@
 
 **Type**: snippet (`snippets/price-with-compare.liquid`)
 
-**Status**: spec (not yet implemented)
+**Status**: spec
 
 **Implementation**: pending
 

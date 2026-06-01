@@ -16,7 +16,7 @@ Originally sourced from the EXPLORATION-2 inventory pass (May 2026); retrofits a
 - [hydrate](./hydrate.md) — single-function utility-js for deferring expensive `connectedCallback` setup until an element approaches the viewport (`hydrateOnVisible`); 200px pre-load lookahead; fire-once + auto-disconnect; opt-in per specialized-section subclass, not a BaseComponent-level abstraction *(planned)*
 - [font-system](./font-system.md) — merged substrate spec for the font catalog: `font` + `typeface` metaobjects + `utility--font-face.liquid` emitter. Walks typefaces → fonts → `@font-face` rules; handles static + variable-weight modes, format mapping (woff2/woff/otf/ttf), skip rules; `font-display: swap` fixed *(shipped — retrofit)*
 - [modifiers-manager](./modifiers-manager.md) — class that reads and mutates the `data-modifiers` attribute on a target element; lazy-instantiated per theme-* element via `BaseComponent` + singleton on `documentElement` *(shipped — retrofit)*
-- [container-style](./container-style.md) — named container variant (card / outlined / elevated); handle drives a centralized `[data-modifiers*='container-style:<handle>']` rule in `layer-theme.css` scoped across `group` / `columns` / `media` *(shipped — retrofit)*
+- [container-style](./container-style.md) — named container variant (handles project-seeded; no canonical set); handle drives a centralized `[data-modifiers*='container-style:<handle>']` rule in `layer-theme.css` scoped across `group` / `columns` / `media` *(shipped — retrofit)*
 
 ## Layer 0 — Snippets
 
@@ -41,14 +41,14 @@ Originally sourced from the EXPLORATION-2 inventory pass (May 2026); retrofits a
 - [title](./title.md) — heading primitive (`h1`–`h6` / `p`) with `text_style` override, optional leading icon, alignment, content_width cap, `theme_color` foreground *(shipped — retrofit)*
 - [richtext](./richtext.md) — long-form rich-text body wrapper always emitting the `prose` utility modifier; content_width drives readability width; `theme_color` foreground *(shipped — retrofit)*
 - [button](./button.md) — call-to-action primitive rendering `<a>` or `<button type="button">` depending on `link`; styled via the 3×3 `button_style` family/variant matrix; optional icon, content_width, top spacing *(shipped — retrofit)*
-- [media](./media.md) — image or video container with overlay-content support; sizing via `media_size` (fill/ratio/relative/fixed); art direction; bleed (with centered-ancestor footgun); image_fit cover/contain; container_style; color_scheme override; narrow overlay-content whitelist (`title`, `richtext`, `button`, `group`) *(shipped — retrofit)*
+- [media](./media.md) — image or video container with overlay-content support; sizing via `media_size` (fill/ratio/relative/fixed); art direction; bleed (shared off-center-track edge case documented); image_fit cover/contain; container_style; color_scheme override; narrow overlay-content whitelist (`title`, `richtext`, `button`, `group`) *(shipped — retrofit)*
 - [embed](./embed.md) — third-party video iframe for YouTube and Vimeo; URL parsing for 7 supported shapes (incl. Vimeo unlisted-hash); lazy-loaded; sizing via shared `media_size` utility; editor-only diagnostic for unparseable URLs *(shipped — retrofit)*
 - [group](./group.md) — flex container with direction / stack-below (container-query driven) / alignment / gap / bleed / container-style / color-scheme override; recursive composition via explicit whitelist of the 9 L1 block types *(shipped — retrofit)*
 - [columns](./columns.md) — CSS Grid container with seven preset ratios (2 / 3 / 4 / 1-2 / 2-1 / 1-3 / 3-1); stack-below via `@container` queries against own width; sticky-track support for 2-track layouts; bleed (shared footgun); container_style; color_scheme override; recursive nesting *(shipped — retrofit)*
 
 ## Section host
 
-- [section](./section.md) — the merchant-composable section host (`sections/section.liquid`). Renders `<token-section>` with the `theme-root` modifier; exposes the layout / content_width / block_rhythm / color_scheme settings; whitelists the 9 shipped L1 blocks + `@app`; hosts L2 presets via its `presets[]` schema array *(shipped — retrofit)*
+- [section](./section.md) — the merchant-composable section host (`sections/section.liquid`). Renders `<token-section>` with the `theme-root` modifier; exposes the content_width / block_rhythm / color_scheme settings; whitelists the 9 shipped L1 blocks + `@app`; hosts L2 presets via its `presets[]` schema array *(shipped — retrofit)*
 
 ## Layer 2 — Presets on `section.liquid`
 

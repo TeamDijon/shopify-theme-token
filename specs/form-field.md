@@ -4,7 +4,7 @@
 
 **Type**: snippet (`snippets/form-field.liquid`)
 
-**Status**: spec (not yet implemented)
+**Status**: spec
 
 **Implementation**: pending
 
