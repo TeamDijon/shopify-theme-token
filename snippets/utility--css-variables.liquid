@@ -1,7 +1,8 @@
-{% # CSS Variables v1.11.0 %}
+{% # CSS Variables v1.12.0 %}
 
 {% comment %}
   Changelog
+  - v1.12.0 — gradient emission gains per-stop opacity hooks. Each `--gradient-<handle>` declaration now wraps its scheme-role stops in `rgb(from var(--color-role-X) r g b / var(--gradient-<handle>-<start|end>-opacity))`, and a sibling `--gradient-<handle>-start-opacity: 1` + `--gradient-<handle>-end-opacity: 1` pair emits alongside. Consumers can override the opacity at block-level (`--gradient-hero-start-opacity: 0.7;`) to soften either stop without composing a new gradient. Default behavior unchanged (α=1 on both stops). Per-project CSS reading `--gradient-<handle>` directly continues to work; only the resolved value gains alpha-aware composition.
   - v1.11.0 — drop all `--color-role-*-rgb` companion variables (background, foreground, foreground-heading, primary, border, shadow, input-text). Translucent compositions migrate to `rgb(from var(--color-role-X) r g b / <alpha>)` relative-color syntax — drop-in replacement preserving Token's fractional `--opacity-*` alpha pattern, no channel storage needed. `::selection` and the seven derived tokens (`--color-role-foreground-muted`, `--color-role-placeholder`, `--color-role-disabled-{background,text,border}`, `--color-role-backdrop`, `--shadow-{sm,md,lg}`) all migrated. Also drops the `[data-text-style='<handle>']` selector arm from the text-style block — `data-modifiers="text-style:<handle>"` is the single canonical surface for categorical state per `modifier-system.md`. Per-project CSS using `rgba(var(--color-role-X-rgb), Y)` must migrate to the new syntax; CSS targeting `[data-text-style]` must migrate to the modifier form.
   - v1.10.0 — rename `-bg` shorthand suffixes in scheme-role vars to `-background` for naming consistency with the full-word convention used by `-foreground`, `-text`, `-border`, etc. Touches: `--color-role-primary-button-bg(-hover)?`, `--color-role-secondary-button-bg(-hover)?`, `--color-role-input-bg(-hover)?`, `--color-role-disabled-bg`. Per-project CSS overriding these names must rename.
   - v1.9.0 — rename scheme-role variables from `--color-<role>` → `--color-role-<role>` (background, foreground, foreground-heading, foreground-muted, primary, border, shadow, primary-button-*, secondary-button-*, input-*, placeholder, disabled-*, focus-ring, backdrop + their `-rgb` companions). Disjoint namespace from `theme_color`'s `--color-<handle>`: a theme_color entry handled `background` no longer collides with the scheme role. Gradient stop interpolation also renamed (`var(--color-role-<role>)`). Touches every consumer; see `.context/specs/theme-color.md` for the contract.
@@ -39,12 +40,14 @@
       --color-{{ theme_color.system.handle }}: {{ theme_color.hex_code.value }};
     {% endfor %}
 
-    {% # Gradients — scheme-adaptive: color stops reference per-scheme role vars, so one definition re-resolves per scheme. `background` handle is reserved for the scheme background-gradient. %}
+    {% # Gradients — scheme-adaptive: color stops reference per-scheme role vars wrapped in `rgb(from … / var(--gradient-<handle>-<start|end>-opacity))`, so one definition re-resolves per scheme and consumers can override either stop's alpha at block-level. `background` handle is reserved for the scheme background-gradient. %}
     {% for gradient in metaobjects.gradient.values %}
       {% if gradient.system.handle == 'background' or gradient.color_start.value == blank or gradient.color_end.value == blank %}
         {% continue %}
       {% endif %}
-      --gradient-{{ gradient.system.handle }}: linear-gradient({{ gradient.angle.value | default: 135 }}deg, var(--color-role-{{ gradient.color_start.value }}), var(--color-role-{{ gradient.color_end.value }}));
+      --gradient-{{ gradient.system.handle }}-start-opacity: 1;
+      --gradient-{{ gradient.system.handle }}-end-opacity: 1;
+      --gradient-{{ gradient.system.handle }}: linear-gradient({{ gradient.angle.value | default: 135 }}deg, rgb(from var(--color-role-{{ gradient.color_start.value }}) r g b / var(--gradient-{{ gradient.system.handle }}-start-opacity)), rgb(from var(--color-role-{{ gradient.color_end.value }}) r g b / var(--gradient-{{ gradient.system.handle }}-end-opacity)));
     {% endfor %}
   }
 
