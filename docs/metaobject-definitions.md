@@ -219,8 +219,8 @@ Standard name field — see [convention](#name-field-convention). Description: *
 
 **Runtime notes:**
 
-- Iterated by `utility--css-variables`, which emits `--gradient-<system.handle>: linear-gradient(<angle>deg, var(--color-role-<color_start>), var(--color-role-<color_end>))` in `:root`. Full contract in `specs/gradient.md`.
-- Stops reference per-scheme `--color-<role>` variables, so one definition re-resolves against whichever color scheme the consuming element sits in — no per-scheme gradient emission. Consume as `background: var(--gradient-<handle>)`.
+- Iterated by `utility--css-variables`, which emits a three-variable block per entry — `--gradient-<handle>-start-opacity: 1`, `--gradient-<handle>-end-opacity: 1`, and `--gradient-<handle>: linear-gradient(<angle>deg, rgb(from var(--color-role-<color_start>) r g b / var(--gradient-<handle>-start-opacity)), rgb(from var(--color-role-<color_end>) r g b / var(--gradient-<handle>-end-opacity)))` — in `:root`. Full contract in `specs/gradient.md`.
+- Stops reference per-scheme `--color-role-<role>` variables wrapped in `rgb(from … / α)` composition, so one definition re-resolves against whichever color scheme the consuming element sits in. Consume as `background: var(--gradient-<handle>)`; override either opacity input at block-level (`--gradient-hero-start-opacity: 0.7`) to soften a stop without composing a new gradient.
 - **Reserved handle:** `background` — the color-scheme system owns `--gradient-background` (each scheme's background gradient). A `gradient` entry with that handle is skipped at emit time; don't use it.
 - Linear only; a `type` (linear/radial) field can be added later if needed.
 
@@ -230,7 +230,7 @@ Standard name field — see [convention](#name-field-convention). Description: *
 |---|---|---|---|---|
 | `hero` | Hero | 135 | `primary` | `background` |
 
-Yields `--gradient-hero: linear-gradient(135deg, var(--color-role-primary), var(--color-role-background))`. The gradient re-resolves per scheme — same definition, different visual per consuming element's color scheme.
+Yields `--gradient-hero` alongside `--gradient-hero-start-opacity: 1` and `--gradient-hero-end-opacity: 1`. The gradient re-resolves per scheme — same definition, different visual per consuming element's color scheme.
 
 ### `typeface`
 

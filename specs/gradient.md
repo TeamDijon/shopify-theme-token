@@ -7,12 +7,12 @@
 **Status**: shipped
 
 **Implementation**:
-- `snippets/utility--css-variables.liquid` v1.11.0 (CSS variable emitter — `:root` gradient block, one `--gradient-<handle>` per non-reserved entry)
+- `snippets/utility--css-variables.liquid` v1.12.0 (CSS variable emitter — `:root` gradient block, one `--gradient-<handle>` + paired `--gradient-<handle>-start-opacity` / `--gradient-<handle>-end-opacity` per non-reserved entry)
 - Metaobject definition itself — created per `metaobject-definitions.md` § `gradient`
 
-**Reconciled**: 2026-05-31
+**Reconciled**: 2026-06-01 (paired with v1.12.0 — gradient emission now wraps scheme-role stops in `rgb(from … / var(--gradient-<handle>-<start|end>-opacity))` and emits paired opacity-input variables defaulting to `1`; α=1 default keeps shipped behavior unchanged, consumers gain per-stop alpha overrides)
 
-**Reviewed**: pending
+**Reviewed**: 2026-06-01
 
 **Depends on**: theme settings `color_schemes` (the scheme role tokens — `--color-role-background` / `--color-role-foreground` / `--color-role-primary` — that gradient stops interpolate). No direct `theme_color` dependency — gradients use *roles*, not palette entries.
 
@@ -20,9 +20,9 @@
 
 ## Purpose
 
-A named scheme-adaptive linear gradient. Each entry defines an angle + two scheme-role endpoints (`background` / `foreground` / `primary`); the entry's handle becomes a `--gradient-<handle>` CSS variable emitted in `:root`, with stops as `var(--color-role-<endpoint>)` references. One declaration, scheme-aware output — `--gradient-hero` resolves to one set of colors under `scheme-1`, a different set under `scheme-2`, automatically.
+A named scheme-adaptive linear gradient. Each entry defines an angle + two **scheme-role endpoints** (`background` / `foreground` / `primary`, validated by the metaobject schema — not literal colors). The entry's handle becomes a `--gradient-<handle>` CSS variable emitted in `:root`, accompanied by `--gradient-<handle>-start-opacity` / `--gradient-<handle>-end-opacity` (default `1`) consumers can override at block-level.
 
-The design choice is to bind gradient stops to **roles, not literal colors.** A `linear-gradient(#c2410c, #ffffff)` would look the same in every scheme; `linear-gradient(var(--color-role-primary), var(--color-role-background))` re-resolves per scheme. The metaobject's `color_start` / `color_end` fields are role names, not color values — a hard validation in the metaobject schema.
+The role binding is the load-bearing design choice. A `linear-gradient(#c2410c, #ffffff)` would look identical in every scheme; `linear-gradient(var(--color-role-primary), var(--color-role-background))` re-resolves per scheme — one declaration, scheme-adaptive output.
 
 ## Schema (definition contract)
 
@@ -42,21 +42,36 @@ Two design constraints encoded in the validation:
 
 ## Output shape
 
-The emitter writes one line per entry inside the `:root` block that follows the theme-color palette:
+The emitter writes a three-line block per entry inside the `:root` block that follows the theme-color palette:
 
 ```css
 :root {
   /* …theme_color palette… */
 
-  --gradient-hero: linear-gradient(135deg, var(--color-role-primary), var(--color-role-background));
-  /* one line per non-reserved gradient entry */
+  --gradient-hero-start-opacity: 1;
+  --gradient-hero-end-opacity: 1;
+  --gradient-hero: linear-gradient(
+    135deg,
+    rgb(from var(--color-role-primary) r g b / var(--gradient-hero-start-opacity)),
+    rgb(from var(--color-role-background) r g b / var(--gradient-hero-end-opacity))
+  );
+  /* three lines per non-reserved gradient entry */
+}
+```
+
+The two opacity variables default to `1`, so the shipped behavior is identical to a plain `linear-gradient(angle, color, color)`. Consumers wanting a translucent stop override either variable at block-level:
+
+```css
+.hero-banner {
+  --gradient-hero-start-opacity: 0.7;
+  background: var(--gradient-hero);
 }
 ```
 
 Skipped emissions:
 
 - **Reserved handle `background`** — the color-scheme system owns `--gradient-background` (each scheme's background-gradient setting, emitted in the per-scheme block). An entry with `system.handle == 'background'` is skipped here to prevent collision. Editor-side authoring should avoid the handle.
-- **Incomplete entries** — when `color_start.value` or `color_end.value` is blank, no line emits. Skipping is safer than emitting a malformed `linear-gradient(135deg, var(--color-role-), var(--color-role-)` declaration.
+- **Incomplete entries** — when `color_start.value` or `color_end.value` is blank, no line emits. Skipping is safer than emitting a malformed `linear-gradient(…, var(--color-role-), var(--color-role-))` declaration.
 
 ## CSS
 
@@ -66,18 +81,20 @@ N/A at the metaobject layer — emission rules live in `utility--css-variables`'
 
 | Variable | Type | Source |
 |---|---|---|
-| `--gradient-<handle>` | CSS `linear-gradient(<angle>deg, <var>, <var>)` | one per entry; angle + two role-token references |
+| `--gradient-<handle>` | CSS `linear-gradient(<angle>deg, rgb(from …), rgb(from …))` | one per entry; angle + two role-token references wrapped in alpha-aware composition |
+| `--gradient-<handle>-start-opacity` | number `0–1` | default `1`; per-stop alpha for the first stop; overridable at block-level |
+| `--gradient-<handle>-end-opacity` | number `0–1` | default `1`; per-stop alpha for the second stop; overridable at block-level |
 
-Note that `--gradient-background` is a **separate variable** owned by the color-scheme system (see Out of scope) — it's emitted per scheme inside the role-token block, not from this metaobject. The two namespaces are disjoint: this metaobject emits `--gradient-<arbitrary-handle>` in `:root`; the scheme system emits `--gradient-background` inside scheme rule blocks.
+`--gradient-background` is a **separate variable** owned by the color-scheme system (see Out of scope § `--gradient-background`); it's emitted per scheme inside the role-token block, not from this metaobject.
 
 ## Behavior
 
-- **Stops reference scheme role tokens, not literal colors.** `color_start.value` (e.g., `primary`) interpolates as `var(--color-role-primary)` in the emitted `linear-gradient(...)`. The stored gradient declaration is a single line; CSS variable resolution at consumption time picks up whichever scheme is active on the consuming element. One definition → scheme-adaptive output.
-- **`angle` default at `135deg`.** When blank, the emitter falls through to `135deg`. The choice is conventional (diagonal top-left → bottom-right). The metaobject schema also sets `default: 135`, so the fallback rarely fires in practice.
-- **Reserved handle: `background`.** An entry with handle `background` is skipped during emission. The color-scheme system uses `--gradient-background` for the per-scheme background gradient (set per scheme via `scheme.settings.background_gradient`, falling back to the flat `--color-role-background` value when absent). The two surfaces would clash if a user-defined entry emitted `--gradient-background` in `:root` — the per-scheme rule blocks come later in the cascade but at equal specificity, so the consequence would be a tangled override chain. Skipping the user entry keeps the system's invariant simple.
-- **Incomplete entries skip emission.** A gradient metaobject with blank `color_start` or `color_end` produces no `--gradient-<handle>` line. The runtime tolerates partial entries by skipping rather than emitting a malformed declaration.
-- **Scheme-role validation is a content invariant, not a runtime guard.** The metaobject schema's `choices` validation (`background` / `foreground` / `primary`) prevents merchants from typing arbitrary strings into the field. The emitter trusts the validated input — it doesn't re-check at render time. An off-list value that somehow reaches the runtime (e.g., via a Shopify admin bypass) would emit `var(--color-role-<bogus>)`, which CSS resolves to the variable's `initial` value (an empty token), and the gradient stop falls through to the spec's `invalid` color (transparent). Diagnosable at a glance — the stop looks "missing" — but not actively guarded.
-- **`system.handle` is the load-bearing key.** The handle drives the emitted variable name. Renaming an entry's handle moves every consumer's `var(--gradient-<old>)` to undefined. `name` is decorative.
+- **`angle` default at `135deg`.** When blank, the emitter falls through to `135deg` (conventional diagonal). The metaobject schema also sets `default: 135`, so the fallback rarely fires in practice.
+- **Reserved handle `background` skipped.** See Output shape § skipped emissions and Out of scope § `--gradient-background` for the full collision rationale.
+- **Incomplete entries skip emission.** A gradient with blank `color_start` or `color_end` produces no `--gradient-<handle>` line. Skipping over emitting a malformed declaration.
+- **Per-stop opacity defaults to `1`.** The `--gradient-<handle>-start-opacity` / `-end-opacity` variables emit at `1` per entry. Consumers override either at block-level (`--gradient-hero-start-opacity: 0.7`) to soften a stop without composing a new gradient. The opacity inputs flow through the `rgb(from var(--color-role-X) r g b / α)` syntax that the substrate already uses for translucent treatments per `utility--css-variables` v1.11.0 — same vocabulary, applied at the gradient layer.
+- **Scheme-role validation is a content invariant, not a runtime guard.** The metaobject schema's `choices` validation (`background` / `foreground` / `primary`) prevents arbitrary strings at authoring. The emitter trusts the validated input — no re-check at render time. An off-list value reaching the runtime (admin schema bypass) emits `var(--color-role-<bogus>)`, which CSS resolves to the variable's `initial` value, and the `rgb(from <initial> …)` composition falls to the spec's invalid-color behavior. Diagnosable at a glance; not actively guarded.
+- **`system.handle` is the load-bearing key.** The handle drives the emitted variable names (`--gradient-<handle>` + the two opacity inputs). Renaming an entry's handle moves every consumer's `var(--gradient-<old>)` to undefined. `name` is decorative.
 
 ## Seed entries
 
@@ -102,17 +119,20 @@ Per `validation-contract.md` Tier 1a (substrate / metaobject).
 - **API surface** (matrix to exercise):
   - **Per-entry gradient catalog**: each `gradient` metaobject entry rendered as a swatch — a sized box with `background: var(--gradient-<handle>)`. Reader confirms the rendered gradient matches the angle + role pair on the entry.
   - **Scheme cycling**: every gradient entry shown under each color scheme (parent block carries `color-scheme:scheme-N` modifier). Reader confirms the gradient re-resolves visually per scheme — same declaration, different colors because the role tokens themselves change.
+  - **Per-stop opacity override**: a row where the swatch overrides `--gradient-<handle>-start-opacity: 0.5` at block-level. Reader confirms the first stop renders translucent against the page background; the second stop stays opaque.
   - **Reserved-handle behavior**: a developer-test entry with handle `background` exists transiently → confirm no `--gradient-background` emission in `:root` (DevTools); only the per-scheme `--gradient-background` (set inside scheme rule blocks) is present.
   - **Incomplete-entry behavior**: a developer-test entry with blank `color_start` → confirm no emission.
 - **Edge cases**:
   - Entry with `angle` blank → emits `135deg` (the emitter's `| default: 135` fallback)
   - Entry with `system.handle == 'background'` → no emission at this surface; per-scheme `--gradient-background` is separate
-  - Entry with `color_start` and `color_end` set to the same role → emits a no-op gradient (`linear-gradient(Xdeg, var(--color-role-Y), var(--color-role-Y))` resolves to a flat color); accepted, not flagged
-  - Off-list role value (would require admin schema bypass) → emits `var(--color-role-<bogus>)`, which CSS treats as invalid; the gradient stop falls to transparent
-- **Visual showcase**: a grid of gradient swatches, one per entry, each labeled with handle + angle + role pair. The grid renders under three scheme-override children (scheme-1 inherited, scheme-2 + scheme-3 overridden) so a reader can verify scheme re-resolution at a glance.
+  - Entry with `color_start` and `color_end` set to the same role → emits a no-op gradient (a flat color); accepted, not flagged
+  - Off-list role value (would require admin schema bypass) → emits `rgb(from var(--color-role-<bogus>) r g b / 1)`, which CSS treats as invalid; the gradient stop falls to transparent
+  - Per-stop opacity overridden to `0` → that stop renders fully transparent, leaving the gradient looking like a fade-to-page-background on that end
+- **Visual showcase**: a grid of gradient swatches, one per entry, each labeled with handle + angle + role pair. The grid renders under three scheme-override children (scheme-1 inherited, scheme-2 + scheme-3 overridden) so a reader can verify scheme re-resolution at a glance. A second row demonstrates per-stop opacity overrides (start=0.5, end=0.5, both=0.7) on the same entry.
 - **Assertions** (prose; Playwright once installed):
-  - Computed `background` on a swatch styled `background: var(--gradient-hero)` matches `linear-gradient(135deg, <scheme-1-primary-hex>, <scheme-1-background-hex>)`.
-  - The same swatch inside a `color-scheme:scheme-2` ancestor matches `linear-gradient(135deg, <scheme-2-primary-hex>, <scheme-2-background-hex>)` — different hexes, identical declaration.
+  - Computed `background` on a swatch styled `background: var(--gradient-hero)` resolves to a `linear-gradient(135deg, rgb(…) ,rgb(…))` whose two stops match the active scheme's `--color-role-primary` and `--color-role-background` hexes at α=1.
+  - The same swatch inside a `color-scheme:scheme-2` ancestor resolves to a gradient with different rgb stop values — different hexes, identical declaration.
+  - A swatch overriding `--gradient-hero-start-opacity: 0.5` resolves to a gradient whose first stop has α=0.5; the second stop stays α=1.
   - A `--gradient-<handle>` lookup on `:root` for `handle == 'background'` returns the empty string (no emission); the per-scheme block sets `--gradient-background` only inside scheme rule scopes.
 - **Unit scope**: none (metaobject layer; no JS).
 
@@ -122,8 +142,15 @@ Per `validation-contract.md` Tier 1a (substrate / metaobject).
 - **`--gradient-background` (per-scheme background gradient)** — a *separate* variable, emitted by the color-scheme block of `utility--css-variables`, not by this metaobject. Per-scheme settings (`scheme.settings.background_gradient`) drive it; the `background` handle on this metaobject is reserved (skipped) to avoid the namespace collision.
 - **Radial / conic / mesh gradients** — schema is linear-only by design. Adding a radial variant would require a new field (`type: linear | radial`) and emission branching. Defer until a consumer demands it.
 - **Stops beyond two** — schema is two-stop only (`color_start` + `color_end`). Three-stop or N-stop gradients require schema changes (a multi-line text field for stops? a list of role pairs?). Defer until a consumer demands it.
-- **Per-stop alpha** — stops are opaque scheme-role references. Translucent gradients require either an alpha-bearing variant of the role tokens (would need its own emission path) or composition at the consumer side (`background: linear-gradient(135deg, rgb(from var(--color-role-primary) r g b / 0.5), …)`). Per-project; not modeled at the metaobject layer.
-- **Non-role color stops** — the validation list (`background` / `foreground` / `primary`) is intentional. A merchant wanting a gradient bound to a `theme_color` palette entry (rather than a scheme role) would need either a schema extension or a custom CSS rule outside this metaobject. The role binding is the load-bearing design choice — it's what makes gradients scheme-adaptive.
+- **Non-role color stops** — the validation list (`background` / `foreground` / `primary`) is intentional. Role-binding is the load-bearing design choice that makes gradients scheme-adaptive. Per-project surfaces wanting a palette-fixed gradient (e.g., a brand-driven banner that should look identical across schemes) compose at the consumer side using `theme_color` palette variables directly:
+
+  ```css
+  .promo-banner {
+    background: linear-gradient(135deg, var(--color-brand-orange), var(--color-cream));
+  }
+  ```
+
+  This is project-CSS territory, not a metaobject extension. Splitting the schema into "role select OR palette picker" would erode the scheme-adaptive invariant for limited per-project gain.
 
 ## Related
 
