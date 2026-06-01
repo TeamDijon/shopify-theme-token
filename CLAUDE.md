@@ -8,9 +8,9 @@ A `SessionStart` hook runs `git -C .context pull --ff-only` automatically. If it
 
 ## Doc placement guideline
 
-A pattern earns its own file in `.context/docs/` when it's referenced from 2+ rules. Otherwise, inline the pattern in the single rule that needs it.
+A pattern earns its own file in `.context/docs/` when it's referenced from 2+ rules **or 2+ specs**. Otherwise, inline the pattern in the single rule / spec that needs it.
 
-**Exception:** `.context/docs/architecture.md` is the orientation doc (repo layout, render model, asset pipeline, CSS layers, conventions). It's an entry point, not a referenced pattern, and is exempt from the 2+ rule guideline.
+**Exceptions:** the orientation docs `.context/docs/architecture.md` (codebase layout) and `.context/docs/knowledge-architecture.md` (knowledge layer — rules / docs / specs / skills) are entry points, not referenced patterns, and are exempt from the 2+ guideline.
 
 ## Rule "Related" sections
 
@@ -18,7 +18,11 @@ List only references the body doesn't already make. If everything's already inli
 
 ## Codebase architecture
 
-For the high-level map (repo layout, render model, asset pipeline, CSS layers, conventions), see `.context/docs/architecture.md`.
+For the codebase-side map (repo layout, render model, asset pipeline, CSS layers, conventions), see `.context/docs/architecture.md`.
+
+## Knowledge architecture
+
+For the knowledge-layer map (how rules / docs / specs / skills relate, where to start by task type, content placement rules), see `.context/docs/knowledge-architecture.md`.
 
 ## Playwright debug artifacts
 
