@@ -1,7 +1,8 @@
-{% # CSS Variables v1.12.0 %}
+{% # CSS Variables v1.13.0 %}
 
 {% comment %}
   Changelog
+  - v1.13.0 — emit `--spacing-<handle>` for every `spacing` metaobject entry (mobile value in :root, desktop value in nested @media (width >= 48rem)). Substrate (`assets/layer-base.css`) seeds `--spacing-xs/sm/md/lg/xl` defaults; metaobject entries with matching handles override via cascade position. Non-matching handles add new spacing slots that coexist with the substrate scale. Components consume the unified namespace anywhere (`var(--spacing-md)` for static, `var(--spacing-<dynamic>)` via per-instance dynamic-style for picked). Block-rhythm migrates from `--block-rhythm-mobile/desktop` (px values emitted by section.liquid) to a single `--block-rhythm: var(--spacing-<picked-handle>)` reference, resolving responsively through the spacing token's @media branch. layer-theme.css updates from `var(--block-rhythm-mobile)` / `var(--block-rhythm-desktop)` to `var(--block-rhythm)` for the inter-block margin rule.
   - v1.12.0 — gradient emission gains per-stop opacity hooks. Each `--gradient-<handle>` declaration now wraps its scheme-role stops in `rgb(from var(--color-role-X) r g b / var(--gradient-<handle>-<start|end>-opacity))`, and a sibling `--gradient-<handle>-start-opacity: 1` + `--gradient-<handle>-end-opacity: 1` pair emits alongside. Consumers can override the opacity at block-level (`--gradient-hero-start-opacity: 0.7;`) to soften either stop without composing a new gradient. Default behavior unchanged (α=1 on both stops). Per-project CSS reading `--gradient-<handle>` directly continues to work; only the resolved value gains alpha-aware composition.
   - v1.11.0 — drop all `--color-role-*-rgb` companion variables (background, foreground, foreground-heading, primary, border, shadow, input-text). Translucent compositions migrate to `rgb(from var(--color-role-X) r g b / <alpha>)` relative-color syntax — drop-in replacement preserving Token's fractional `--opacity-*` alpha pattern, no channel storage needed. `::selection` and the seven derived tokens (`--color-role-foreground-muted`, `--color-role-placeholder`, `--color-role-disabled-{background,text,border}`, `--color-role-backdrop`, `--shadow-{sm,md,lg}`) all migrated. Also drops the `[data-text-style='<handle>']` selector arm from the text-style block — `data-modifiers="text-style:<handle>"` is the single canonical surface for categorical state per `modifier-system.md`. Per-project CSS using `rgba(var(--color-role-X-rgb), Y)` must migrate to the new syntax; CSS targeting `[data-text-style]` must migrate to the modifier form.
   - v1.10.0 — rename `-bg` shorthand suffixes in scheme-role vars to `-background` for naming consistency with the full-word convention used by `-foreground`, `-text`, `-border`, etc. Touches: `--color-role-primary-button-bg(-hover)?`, `--color-role-secondary-button-bg(-hover)?`, `--color-role-input-bg(-hover)?`, `--color-role-disabled-bg`. Per-project CSS overriding these names must rename.
@@ -225,7 +226,7 @@
     }
   {% endfor %}
 
-  {% # Spacing %}
+  {% # Spacing — gutter from theme settings, plus `--spacing-<handle>` per spacing metaobject entry. Substrate-aligned handles (xs/sm/md/lg/xl in layer-base.css) override their substrate defaults via cascade position; custom handles add new slots without colliding. %}
   {% liquid
     assign mobile_gutter = settings.mobile_gutter | divided_by: 16.0 | round: 3
     assign desktop_gutter = settings.desktop_gutter | divided_by: 16.0 | round: 3
@@ -235,11 +236,19 @@
     --desktop-gutter: {{ desktop_gutter }}rem;
     --gutter: var(--mobile-gutter);
 
-    {% if mobile_gutter != desktop_gutter %}
-      @media (width >= 48rem) {
+    {% for spacing in metaobjects.spacing.values %}
+      --spacing-{{ spacing.system.handle }}: {{ spacing.mobile_value.value }}px;
+    {% endfor %}
+
+    @media (width >= 48rem) {
+      {% if mobile_gutter != desktop_gutter %}
         --gutter: var(--desktop-gutter);
-      }
-    {% endif %}
+      {% endif %}
+
+      {% for spacing in metaobjects.spacing.values %}
+        --spacing-{{ spacing.system.handle }}: {{ spacing.desktop_value.value }}px;
+      {% endfor %}
+    }
   }
 {% endcapture %}
 

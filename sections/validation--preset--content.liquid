@@ -10,11 +10,11 @@
   title + richtext + button stacked vertically inside a centered
   readable column. Exercises:
 
-  - Inter-block rhythm: the section emits `--block-rhythm-mobile` and
-    `--block-rhythm-desktop` on token-section; each block snippet's
-    `margin-block-start` chains those vars as its inner fallback. The
-    visible gap between the three top-level blocks is the rhythm in
-    action (verify via computed margin-block-start).
+  - Inter-block rhythm: the section emits `--block-rhythm` on
+    token-section; the centralized rule in `layer-theme.css` reads
+    `var(--block-rhythm)` as the inner fallback for the inter-block
+    margin. The visible gap between the three top-level blocks is the
+    rhythm in action (verify via computed margin-block-start).
   - The color_scheme modifier on the section root cascading into the
     inner blocks (button text/bg, link color in richtext, foreground).
   - content_width capping the inner column for readability.
@@ -36,8 +36,7 @@
 
 {% capture dynamic_style %}
   /* Hardcoded block_rhythm — see comment in section file. */
-  --block-rhythm-mobile: 1rem;
-  --block-rhythm-desktop: 1.5rem;
+  --block-rhythm: var(--spacing-md);
 {% endcapture %}
 {% render 'utility--dynamic-style', base_selector: base_selector, css_content: dynamic_style %}
 

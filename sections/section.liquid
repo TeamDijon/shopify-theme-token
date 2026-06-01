@@ -1,7 +1,8 @@
-{% # Section v1.5.0 %}
+{% # Section v1.6.0 %}
 
 {% comment %}
   Changelog
+  - v1.6.0 — block-rhythm now consumes the unified `--spacing-<handle>` namespace (paired with utility--css-variables v1.13.0 + layer-base.css spacing scale). Per-section dynamic style emits `--block-rhythm: var(--spacing-<picked-handle>)` instead of duplicating mobile/desktop px values; responsiveness propagates through the spacing token's @media branch. layer-theme.css inter-block margin rule reads `var(--block-rhythm)` (no mobile/desktop split at the section level). Merchant-facing setting unchanged.
   - v1.5.0 — rename custom element `<theme-section>` → `<token-section>` (theme fingerprint pass for porting agnostically). Per-project CSS using the tag selector `theme-section { ... }` must rename. Modifier value `theme-root` is unchanged (substrate selectors keep matching `[data-modifiers*='theme-root']`).
   - v1.4.0 — drop `layout` select setting per the subgrid migration. theme-section becomes an always-bleed-grid (no row/columns_N layout presets); merchants wanting row or multi-track compositions wrap in a `group` or `columns` block. Substrate CSS in `assets/layer-theme.css` no longer reads a `layout:<value>` modifier; emission of that modifier is removed.
   - v1.3.0 — add `layout` select setting (`column` / `row` / `columns_2/3/4`); emit `theme-root,layout:<value>,color-scheme:<scheme>` in `data-modifiers`. token-section becomes a parametrizable implicit container per the theme-root contract — substrate CSS in `assets/layer-theme.css` gates layout presets on the layout modifier. See `.context/docs/theme-root.md`.
@@ -25,8 +26,7 @@
     --content-width: {{ content_width.width.value }}px;
   {% endif %}
   {% if block_rhythm and block_rhythm != blank %}
-    --block-rhythm-mobile: {{ block_rhythm.mobile_value.value }}px;
-    --block-rhythm-desktop: {{ block_rhythm.desktop_value.value }}px;
+    --block-rhythm: var(--spacing-{{ block_rhythm.system.handle }});
   {% endif %}
 {% endcapture %}
 {% render 'utility--dynamic-style', base_selector: base_selector, css_content: dynamic_style %}

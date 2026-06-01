@@ -35,8 +35,7 @@
 </token-section>
 
 {% capture dynamic_style %}
-  --block-rhythm-mobile: 1.5rem;
-  --block-rhythm-desktop: 2.5rem;
+  --block-rhythm: var(--spacing-lg);
 {% endcapture %}
 {% render 'utility--dynamic-style', base_selector: base_selector, css_content: dynamic_style %}
 

@@ -29,6 +29,21 @@
   --radius-default: 0.5rem;
   --radius-large: 1rem;
   --radius-pill: 9999px;
+
+  /* Border-width scale — px on purpose (border weight is device-relative, not user-typography-relative; matches industry convention from Tailwind / Bootstrap / Material). */
+  --border-thin: 1px;
+  --border-default: 2px;
+  --border-thick: 3px;
+
+  /* A11y — AA touch-target floor (44px at 16px root). Components apply via min-block-size + min-inline-size. */
+  --touch-target-min: 2.75rem;
+
+  /* Spacing scale — T-shirt slots; `spacing` metaobject entries with matching handles override these defaults via cascade position (emitted later in utility--css-variables, same :root). Non-matching metaobject entries add new `--spacing-<handle>` slots without colliding. Block-rhythm consumes this namespace via `--block-rhythm: var(--spacing-<picked-handle>);` set per-section. */
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2.5rem;
 }
 
 /* Cross-document view transitions — progressive enhancement (Chromium, Safari 18.2+; ignored elsewhere) */

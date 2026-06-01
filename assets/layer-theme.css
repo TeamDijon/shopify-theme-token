@@ -109,12 +109,12 @@
     }
   }
 
-  /* Block rhythm — inter-block vertical spacing for direct children of any theme-root that aren't the first. Reads per-instance override first (--mobile/desktop-margin-block-start), falls through to the section's --block-rhythm-* cascade, defaults to 0. Scoped to direct children so nested blocks (inside group, columns, media) use the parent's gap, not the section's rhythm — see `.context/docs/theme-root.md` § Rhythm scope. */
+  /* Block rhythm — inter-block vertical spacing for direct children of any theme-root that aren't the first. Reads per-instance override first (--mobile/desktop-margin-block-start), falls through to the section's --block-rhythm cascade (set per-section as var(--spacing-<picked-handle>) — responsive resolution baked in via the spacing token's @media branch). Defaults to 0. Scoped to direct children so nested blocks (inside group, columns, media) use the parent's gap, not the section's rhythm — see `.context/docs/theme-root.md` § Rhythm scope. */
   [data-modifiers*='theme-root'] > .shopify-block:not(:first-child) {
-    margin-block-start: var(--mobile-margin-block-start, var(--block-rhythm-mobile, 0rem));
+    margin-block-start: var(--mobile-margin-block-start, var(--block-rhythm, 0rem));
 
     @media (width >= 48rem) {
-      margin-block-start: var(--desktop-margin-block-start, var(--block-rhythm-desktop, 0rem));
+      margin-block-start: var(--desktop-margin-block-start, var(--block-rhythm, 0rem));
     }
   }
 

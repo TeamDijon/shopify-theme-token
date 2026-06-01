@@ -35,11 +35,15 @@
     <p>
       Source: <code>metaobjects.spacing.values</code>. Each entry holds
       a <code>mobile_value</code> and <code>desktop_value</code> pair
-      (px). Sections consume it as <code>block_rhythm</code> and emit
-      <code>--block-rhythm-mobile</code> /
-      <code>--block-rhythm-desktop</code>. The validation here uses the
-      <code>spacer</code> snippet at <code>breakpoint:40</code> (640px)
-      to render each entry as a colored bar — height swaps from
+      (px). Emitted globally by <code>utility--css-variables</code> v1.13.0+
+      as <code>--spacing-&lt;handle&gt;</code> (mobile in <code>:root</code>,
+      desktop in nested <code>@media (width >= 48rem)</code>). Substrate-aligned
+      handles (<code>xs</code>/<code>sm</code>/<code>md</code>/<code>lg</code>/<code>xl</code>)
+      override the <code>layer-base.css</code> defaults via cascade position.
+      Sections consume the namespace through <code>block_rhythm</code>, emitting
+      <code>--block-rhythm: var(--spacing-&lt;handle&gt;)</code>. The validation
+      here uses the <code>spacer</code> snippet at <code>breakpoint:40</code>
+      (640px) to render each entry as a colored bar — height swaps from
       <code>mobile_value</code> to <code>desktop_value</code> when the
       viewport crosses 640px. Resize to validate.
     </p>
