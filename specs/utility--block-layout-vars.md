@@ -25,7 +25,7 @@
 
 A centralized emitter for the three CSS custom properties shared by every L1 block's per-instance dynamic style: a max-inline-size cap (`--content-width`) and the mobile/desktop top-margin override pair (`--mobile-margin-block-start` / `--desktop-margin-block-start`). The utility consolidates the px→rem conversion, the breakpoint contract, and the skip-on-default logic so blocks don't re-implement them and can't drift independently.
 
-Centralization matters because the same three variables flow through the block-rhythm cascade rule in `layer-theme.css` — every L1 block must emit them in the same shape, with the same units, at the same scope. Inlining the emission per-block would multiply the drift surface by 9; routing through this utility makes the contract pinnable + drift-detectable in one place.
+The same three variables flow through the block-rhythm cascade rule in `layer-theme.css`; every L1 block emits them in the same shape, with the same units, at the same scope. Routing through this utility makes the contract pinnable + drift-detectable in one place.
 
 ## API
 
@@ -141,7 +141,7 @@ Per `validation-contract.md` Tier 1b (substrate / utility-snippet).
 
 ## Related
 
-- `theme-root.md` — describes the block-rhythm cascade rule structure (`layer-theme.css` § Rhythm cascade) that consumes the per-instance margin vars
+- `.context/docs/theme-root.md` — describes the block-rhythm cascade rule structure (`layer-theme.css` § Rhythm cascade) that consumes the per-instance margin vars
 - `content-width.md` — the metaobject this utility reads via the `content_width` arg
 - `spacing.md` — the metaobject that drives section-level `--block-rhythm`; the per-block margin override pair (this utility's job) acts as the override layer atop the section's rhythm
 - `utility--dynamic-style.md` (planned) — the snippet that scopes the captured CSS to `#shopify-block-<id>`

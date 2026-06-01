@@ -150,7 +150,7 @@ Per `validation-contract.md` Tier 1a (substrate / metaobject).
 ## Related
 
 - `section.md` — primary consumer; emits `--content-width` per section's `content_width` setting; describes the bleed-grid named-line cap that consumes the variable
-- `theme-root.md` — describes the bleed-grid + content cap structure (named-line columns + `min(...)` clamp)
+- `.context/docs/theme-root.md` — describes the bleed-grid + content cap structure (named-line columns + `min(...)` clamp)
 - `richtext.md`, `title.md`, `button.md`, `group.md`, `columns.md`, `media.md` — per-block override consumers; each carries its own `content_width` setting that overrides the section's value within its scope
 - `.context/docs/metaobject-definitions.md` § `content_width` — setup contract (Shopify admin metaobject definition schema, field types, recommended seed entries)
 - `.context/docs/design-system-metaobjects.md` — catalog-wide consumer patterns (load-bearing handles, override scopes)

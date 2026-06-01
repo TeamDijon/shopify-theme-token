@@ -184,7 +184,7 @@ A `quote` snippet renders inside an L1 wrapper (`pull-quote` at `font-size: 1.5r
 
 In pull-quote: `font-size: 1em` resolves to 1.5rem (inherited), `3em` mark resolves to 4.5rem, `2.5em` padding to 3.75rem. In body context: same em values resolve to 1rem / 3rem / 2.5rem. Internal ratios stay invariant; absolute values track the inherited typography. The 1rem rail gap and 2px border stay constant across both contexts.
 
-### Why this matters
+### Consumer impact
 
 A primitive designed without this regime forces consumers to override per-context (`pull-quote.md` setting `--quote-mark-size: 4.5rem` to maintain the visual ratio against its 1.5rem text). The em pattern moves the work into the primitive — consumers wrap with their chosen `text_style` and let CSS inheritance flow.
 

@@ -173,7 +173,7 @@ Per `validation-contract.md` Tier 1a (substrate / metaobject).
 - `design-constants.md` — substrate-side spec covering `--spacing-xs/sm/md/lg/xl` defaults in `layer-base.css`. The dual-emission cascade-override pattern is documented there + here.
 - `utility--css-variables.md` — the substrate emitter that materializes the metaobject loop. Defers the data contract + cascade-override semantics to this spec.
 - `section.md` — primary block-rhythm consumer; emits `--block-rhythm: var(--spacing-<picked-handle>)` per its `block_rhythm` setting.
-- `theme-root.md` — describes the block-rhythm cascade rule structure (the rule lives in `layer-theme.css`, scoped to `[data-modifiers*='theme-root']` elements).
+- `.context/docs/theme-root.md` — describes the block-rhythm cascade rule structure (the rule lives in `layer-theme.css`, scoped to `[data-modifiers*='theme-root']` elements).
 - `.context/docs/metaobject-definitions.md` § `spacing` — setup contract (Shopify admin metaobject definition schema, field types, recommended seed entries).
 - `.context/docs/design-system-metaobjects.md` — catalog-wide consumer patterns (load-bearing handles, override scopes, T-shirt vs semantic naming).
 - `.context/docs/architecture.md` § Block-level conventions — "Per-block top-spacing is an escape hatch, not the base rhythm" rule explaining the raw-px override pattern complementing the metaobject.
