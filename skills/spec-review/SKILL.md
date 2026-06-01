@@ -37,7 +37,9 @@ All inline REVIEW markers on a spec have been discussed and reached resolution (
    - Bump implementation versions with changelog entries per affected file
    - Update the spec's `Implementation` pin if the file version moved
    - Update `Reconciled` with a brief note explaining the bump's relation to the review
-6. **Run `theme-check`** + light visual smoke (Playwright on the affected surface) if the changes touched anything renderable.
+
+   For doc-only reviews (no source-file changes): the `Implementation` pin and `Reconciled` date stay unchanged. The Reviewed date alone signals the pass.
+6. **Run `theme-check`** + light visual smoke (Playwright on the affected surface) if the changes touched anything renderable. Invoke the `playwright-cleanup` skill before the cycle closes when smoke generated artifacts.
 7. **Stage commits separately by branch:**
    - Context branch: spec edits + any `.context/docs/` drift fixes
    - Main branch: code propagations

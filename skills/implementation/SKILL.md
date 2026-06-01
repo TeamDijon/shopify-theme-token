@@ -38,7 +38,7 @@ A spec with `Status: shipped` describes a contract that the implementation file 
    - Major (`vX.0.0`) for breaking API changes
    - Minor (`vX.Y.0`) for additive changes
    - Patch (`vX.Y.Z`) for fixes / contract-neutral refactors
-   - Add a changelog entry per file (`{% comment %} Changelog ... {% endcomment %}` for Liquid, JSDoc Changelog list for JS)
+   - Add a changelog entry per file. Liquid: a top-of-file `{% comment %}` block headed `Changelog` with `- vX.Y.Z — note` bullets. JS: a `Changelog` section inside the module-level JSDoc block (with `@module` + `@version` tags) using the same bullet format.
 6. **Update the spec's `Implementation` pin** to the new file:version pairs.
 7. **Update the spec's `Reconciled` date** to today, with a brief note describing the implementation pass.
 8. **For first-time builds**, flip the spec's `Status: spec` → `Status: shipped` and update specs-index.md entry status `(planned)` → `(shipped — first implementation)`.

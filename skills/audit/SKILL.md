@@ -21,7 +21,7 @@ An implementation + validation cycle has completed. Before declaring the ticket 
 
 ## Checklist
 
-1. **Inventory the symbols / paths / handles that moved during the cycle.** Examples:
+1. **Inventory the symbols / paths / handles that moved during the cycle.** Quick mechanical pass: `git log --oneline <cycle-start>..HEAD` on both branches surfaces the touched files; `git diff <cycle-start>..HEAD -- '<file>'` shows the changed lines. Categorize what's surfaced:
    - New CSS variable names emitted (`--color-role-foreground-muted`)
    - New / renamed modifiers (`text-style:<handle>`)
    - New / renamed class names (`TokenCart`)

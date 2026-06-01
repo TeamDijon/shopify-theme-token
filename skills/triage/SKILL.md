@@ -32,9 +32,9 @@ A business need lands — Linear ticket, merchant request, design brief, or a de
 7. **Surface open design questions** — anything that can't be resolved by reading existing docs/specs. These need user input before spec authoring begins. Examples: settings shape, default values, presets included in v1, scope of v1 vs deferred.
 8. **Order the work** by dependency: which spec must be authored first because others depend on it?
 
-## Outputs
+## Done state
 
-A punch list with:
+A punch list is documented (chat surface or a working note) containing:
 
 - Restated business need
 - Layer-by-layer breakdown of work (substrate touches / L0 / L1 / L2 / specialized)
@@ -44,9 +44,7 @@ A punch list with:
 - Open design questions ranked by blocking severity
 - Suggested authoring order
 
-## Done state
-
-The punch list is documented (chat surface, or a working note) and any blocking design questions have been resolved with the developer before proceeding to spec authoring.
+Any blocking design questions have been resolved with the developer before proceeding to spec authoring.
 
 ## Handoff
 
