@@ -74,13 +74,7 @@ The block's own CSS is structural-only — width, centering, color, alignment. T
 
 ## CSS custom properties (exposed)
 
-Per-instance vars emitted by `utility--block-layout-vars`:
-
-| Variable | Purpose | Default |
-|---|---|---|
-| `--content-width` | `max-inline-size` cap (px from metaobject) | `100%` |
-| `--mobile-margin-block-start` | Top margin below the desktop breakpoint | `0` |
-| `--desktop-margin-block-start` | Top margin at/above the desktop breakpoint | inherits mobile |
+Per-instance vars emitted by `utility--block-layout-vars` — see that spec for the variable contract + emission rules. Block-specific fallbacks consumed via `var(--<name>, <fallback>)` in this block's CSS: `--content-width` → `100%`; `--mobile-margin-block-start` → `0`; `--desktop-margin-block-start` → inherits mobile.
 
 Richtext-specific vars:
 

@@ -137,13 +137,7 @@ Component-rooted on `.shopify-block--button`. Layered in `@layer components`. Va
 
 ## CSS custom properties (exposed)
 
-Per-instance vars emitted by `utility--block-layout-vars` (shared with every L1 block):
-
-| Variable | Purpose | Default |
-|---|---|---|
-| `--content-width` | `max-inline-size` cap (px from metaobject) | `none` |
-| `--mobile-margin-block-start` | Top margin below the desktop breakpoint | `0` |
-| `--desktop-margin-block-start` | Top margin at/above the desktop breakpoint | inherits mobile |
+Per-instance vars emitted by `utility--block-layout-vars` — see that spec for the variable contract + emission rules. Block-specific fallbacks consumed via `var(--<name>, <fallback>)` in this block's CSS: `--content-width` → `none`; `--mobile-margin-block-start` → `0`; `--desktop-margin-block-start` → inherits mobile.
 
 Button-specific vars defined in the snippet's stylesheet (overridable by per-project CSS or future container-style variants):
 

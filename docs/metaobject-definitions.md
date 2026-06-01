@@ -179,6 +179,8 @@ Standard name field — see [convention](#name-field-convention). Description: *
 
 ### `gradient`
 
+Consumer contract, runtime behavior, load-bearing handles, and canonical seed entries live in `specs/gradient.md`. This section covers setup-time definition only.
+
 **Type:**
 
 | Setting | Value |
@@ -217,13 +219,6 @@ Standard name field — see [convention](#name-field-convention). Description: *
 - Description: Color-scheme role for the second stop
 - Validation: List of allowed values — `background`, `foreground`, `primary`
 
-**Runtime notes:**
-
-- Iterated by `utility--css-variables`, which emits a three-variable block per entry — `--gradient-<handle>-start-opacity: 1`, `--gradient-<handle>-end-opacity: 1`, and `--gradient-<handle>: linear-gradient(<angle>deg, rgb(from var(--color-role-<color_start>) r g b / var(--gradient-<handle>-start-opacity)), rgb(from var(--color-role-<color_end>) r g b / var(--gradient-<handle>-end-opacity)))` — in `:root`. Full contract in `specs/gradient.md`.
-- Stops reference per-scheme `--color-role-<role>` variables wrapped in `rgb(from … / α)` composition, so one definition re-resolves against whichever color scheme the consuming element sits in. Consume as `background: var(--gradient-<handle>)`; override either opacity input at block-level (`--gradient-hero-start-opacity: 0.7`) to soften a stop without composing a new gradient.
-- **Reserved handle:** `background` — the color-scheme system owns `--gradient-background` (each scheme's background gradient). A `gradient` entry with that handle is skipped at emit time; don't use it.
-- Linear only; a `type` (linear/radial) field can be added later if needed.
-
 **Recommended entries** (one starter seed; extend per-project):
 
 | Handle | Name | angle | color_start | color_end |
@@ -233,6 +228,8 @@ Standard name field — see [convention](#name-field-convention). Description: *
 Yields `--gradient-hero` alongside `--gradient-hero-start-opacity: 1` and `--gradient-hero-end-opacity: 1`. The gradient re-resolves per scheme — same definition, different visual per consuming element's color scheme.
 
 ### `typeface`
+
+Consumer contract, runtime behavior, load-bearing handles, and canonical seed entries live in `specs/font-system.md`. This section covers setup-time definition only.
 
 **Type:**
 
@@ -258,14 +255,11 @@ Standard name field — see [convention](#name-field-convention). Description: *
 - Description: *"Fonts (weight/style variants) that make up this typeface. Each font emits one `@font-face` declaration."*
 - Validation: `metaobject_definition_id` pinned to the `font` type
 
-**Runtime notes:**
-
-- `name.value` is read by `utility--font-face` and emitted as the quoted `font-family` value in `@font-face` rules. Also accessed indirectly via `text_style.font_family.value.name.value` in `utility--css-variables` to compose the `--<style>-font-family` CSS variable.
-- `font_list.value` is iterated by `utility--font-face` to emit one `@font-face` per referenced font. Typefaces with a blank `name` or empty `font_list` are skipped.
-
 **Recommended entries:** store-specific. Seeds depend on the typefaces and font files the theme ships with. No canonical set.
 
 ### `font`
+
+Consumer contract, runtime behavior, load-bearing handles, and canonical seed entries live in `specs/font-system.md`. This section covers setup-time definition only.
 
 **Type:**
 
@@ -322,16 +316,11 @@ Standard name field — see [convention](#name-field-convention). Description: *
 - Description: *"Variable font weight range end (100-900). Only used when `Weight` is blank."*
 - Validation: `regex: ^[1-9]00$`
 
-**Runtime notes:**
-
-- Weight is stored as text+regex (not `number_integer`) to enforce 100-step canonical values; `utility--font-face` coerces with `| plus: 0` for the comparison.
-- **Variable-font mode trigger:** `weight` blank → `"" | plus: 0` → `0` → the `< 100` branch fires and the range fields are read. The blank-weight path is the only way to enter variable mode — the regex blocks any explicit `< 100` value.
-- A font is skipped (no `@font-face` emitted) if its `asset_list` is empty, or if it's in variable mode with missing/invalid range bounds.
-- `name` is never read; only the other fields are consumed.
-
 **Recommended entries:** store-specific. One entry per font file (or variable-font range) the theme ships. No canonical set.
 
 ### `text_style`
+
+Consumer contract, runtime behavior, load-bearing handles, and canonical seed entries live in `specs/text_style.md`. This section covers setup-time definition only.
 
 **Type:**
 
@@ -429,15 +418,6 @@ Standard name field — see [convention](#name-field-convention). Description: *
 - Description: *"If enabled, adds underline decoration."*
 - Validation: *(none)*
 
-**Runtime notes:**
-
-- The entry's `system.handle` is the prefix for emitted CSS variables: `--<handle>-font-family`, `--<handle>-font-size`, `--<handle>-line-height`, `--<handle>-font-weight`, `--<handle>-letter-spacing`, `--<handle>-text-transform`, `--<handle>-text-decoration`, `--<handle>-font-style`.
-- The same handle is also the value for the `[data-modifiers*="text-style:<handle>"]` selector that applies the style — the unified modifier surface for non-heading-tag elements.
-- **`h1`-`h6` auto-bind:** entries with handles `h1`, `h2`, `h3`, `h4`, `h5`, or `h6` get auto-applied to the matching bare HTML element (`h1 { ... }`). Naming heading entries with these handles wires them up to the document automatically — no attribute needed.
-- **`--base-*` aliases:** when an entry matches the `base_text_style` setting, all its properties are re-exported as `--base-font-family`, `--base-font-size`, etc. Any element can `var(--base-font-family)` to inherit "the theme's default body typography" without referencing a specific handle.
-- Px-to-rem conversion (mobile/desktop font size, letter spacing) happens in Liquid via `÷ 16.0`. Merchants enter px; the CSS receives rem.
-- `weight` is stored as text+regex (matching `font.weight`) to enforce canonical 100-step values; Liquid coerces with `| default: '400'`.
-
 **Recommended entries** (h1–h6 use auto-bind handles; `body` is the canonical handle for the `base_text_style` setting):
 
 | Handle | Name | mobile_font_size | desktop_font_size | line_height | weight |
@@ -460,6 +440,8 @@ All entries point `font_family` at the same typeface (e.g., the merchant's prima
 After seeding, set `settings_data.json` → `current.base_text_style` to the `body` entry's GID so `--base-*` aliases populate.
 
 ### `content_width`
+
+Consumer contract, runtime behavior, load-bearing handles, and canonical seed entries live in `specs/content_width.md`. This section covers setup-time definition only.
 
 **Type:**
 
@@ -484,11 +466,6 @@ Standard name field — see [convention](#name-field-convention). Description: *
 - Description: *"Maximum content width in px. Used as the section's `max-inline-size`."*
 - Validation: *(none)*
 
-**Runtime notes:**
-
-- Read by `sections/section.liquid` via the section's `content_width` setting; emitted as `--content-width: <value>px` into the section's dynamic style.
-- When no entry is selected, [layer-theme.css](assets/layer-theme.css) falls back to `var(--content-width, 125rem)` — the **2000px theme default**, which acts as a big-screen protection. Most screens (≤1920px) render full-width within this cap. The outer `3200px` background-stop guard lives elsewhere in `layer-theme.css`.
-
 **Recommended entries** (no `default` entry — blank section setting falls through to the 2000px CSS fallback):
 
 | Handle | Name | width |
@@ -499,6 +476,8 @@ Standard name field — see [convention](#name-field-convention). Description: *
 | `wide` | Wide | 1400 |
 
 ### `icon`
+
+Consumer contract, runtime behavior, load-bearing handles, and canonical seed entries live in `specs/icon.md`. This section covers setup-time definition only.
 
 **Type:**
 
@@ -531,16 +510,11 @@ Standard name field — see [convention](#name-field-convention). Description: *
 - Description: *"Optional CSS hook. Emitted as `data-preset` on the SVG root for CSS targeting."*
 - Validation: *(none)*
 
-**Runtime notes:**
-
-- Read by `snippets/icon.liquid` via the dual-API pattern: caller passes either an `icon` metaobject reference (from a schema setting or `metaobjects.icon.<handle>`) or the primitive `file_name` string directly.
-- The snippet resolves to `assets/icon-<file_name>.svg` and inlines it via `utility--inline-asset` (yields empty markup if the SVG is missing — no broken render).
-- `preset.value` (or the `preset` arg) is emitted as `data-preset="<value>"` on the SVG root, providing a CSS hook (e.g., `[data-preset="inline-badge"] { ... }`).
-- The `file_name` regex prevents typos like `Chevron`, `arrow.svg`, or `my icon` from saving — only lowercase slugs are accepted.
-
 **Recommended entries:** one entry per `assets/icon-*.svg` file in the theme. Handle = file_name = the slug between `icon-` and `.svg` (e.g., `arrow` for `assets/icon-arrow.svg`). Display name = title-cased version (e.g., `Arrow`). An agent should enumerate the assets directory at setup time rather than rely on a static list — the icon set evolves with the theme.
 
 ### `button_style`
+
+Consumer contract, runtime behavior, load-bearing handles, and canonical seed entries live in `specs/button_style.md`. This section covers setup-time definition only.
 
 **Type:**
 
@@ -558,12 +532,6 @@ Type-level metadata: follows [convention](#type-level-metadata-convention), no d
 
 Standard name field — see [convention](#name-field-convention). Description: *"Display label for this button style (e.g., 'Solid primary', 'Outline secondary'). The auto-generated handle is what the CSS targets."*
 
-**Runtime notes:**
-
-- Consumed by `snippets/button.liquid`. Each entry's `system.handle` is appended to `data-modifiers` as `button-style:<handle>`, which the snippet's `{% stylesheet %}` block targets via `[data-modifiers*='button-style:<handle>']`. See [`modifier-system.md`](modifier-system.md) for why static visual variants belong in `data-modifiers` rather than CSS classes.
-- Handle set is a **3×3 family/variant matrix**: family `solid-` / `outline-` / `link-` × variant `-primary` (accent) / `-secondary` (black) / `-tertiary` (white). The button snippet's CSS uses CSS custom properties to compose these — families set bg/border/decoration/padding, variants set the color token. Off-list handles fall through to the default `solid-primary` appearance. New variants are added by extending `snippets/button.liquid`'s stylesheet, not the metaobject schema.
-- **No additional fields needed** — the named-variant pattern is sufficient. The CSS for each variant lives in the button snippet's `{% stylesheet %}` block, not in field values.
-
 **Recommended entries** (the full 3×3 matrix the snippet's stylesheet covers):
 
 | Handle | Name |
@@ -579,6 +547,8 @@ Standard name field — see [convention](#name-field-convention). Description: *
 | `link-tertiary` | Link tertiary |
 
 ### `container_style`
+
+Consumer contract, runtime behavior, load-bearing handles, and canonical seed entries live in `specs/container-style.md`. This section covers setup-time definition only.
 
 **Type:**
 
@@ -596,12 +566,6 @@ Type-level metadata: follows [convention](#type-level-metadata-convention), no d
 
 Standard name field — see [convention](#name-field-convention). Description: *"Display label for this container style (e.g., 'Card', 'Outlined', 'Elevated'). The auto-generated handle is what the CSS targets."*
 
-**Runtime notes:**
-
-- Consumed by the three container blocks (`group`, `columns`, `media`) via a `container_style` metaobject setting. Each entry's `system.handle` is appended to the block's `data-modifiers` as `container-style:<handle>`. CSS rules live centrally in `assets/layer-theme.css` `@layer theme`, scoped to `:where(.shopify-block--group, .shopify-block--columns, .shopify-block--media)[data-modifiers*='container-style:<handle>']` so all three consumers share the same visual treatment.
-- Same named-selector pattern as [`button_style`](#button_style). Adding a new variant means extending `layer-theme.css` with a new rule, then seeding the metaobject entry — no field changes.
-- **No additional fields needed** — the named-variant pattern bundles its visual configuration (border, radius, shadow, padding) into the CSS rule, not into field values.
-
 **Recommended entries** (3 starter seeds; extend per-project for project-specific variants like `panel`, `bordered-dashed`, etc.):
 
 | Handle | Name |
@@ -616,6 +580,8 @@ Default CSS for each:
 - `elevated` — padding + `--radius-default` + scheme background + stronger shadow
 
 ### `media_size`
+
+Consumer contract, runtime behavior, load-bearing handles, and canonical seed entries live in `specs/media_size.md`. This section covers setup-time definition only.
 
 **Type:**
 
@@ -649,21 +615,6 @@ Standard name field — see [convention](#name-field-convention). Description: *
 - Description: *"CSS value for the chosen mode: ratio like `16/9`, viewport unit like `100svh`, or fixed like `400px`. Leave blank for `fill`."*
 - Validation: *(none)*
 
-**Runtime notes:**
-
-- Adopted from the [Liquified.dev `media-block-spec.md`](C:/Users/troph/Desktop/MX/Code/Liquified.dev/docs/media-block-spec.md). Three sizing modes via the `type` field, plus one special handle-routed mode (`fill`), plus a "blank entry" mode for natural ratio.
-- **Mode → CSS mapping** (the media block consumes this):
-
-  | Selection | type | value | Emitted CSS |
-  |---|---|---|---|
-  | Block setting unset | — | — | none — image renders at natural ratio |
-  | Aspect ratio | `ratio` | e.g., `16/9` | `aspect-ratio: 16/9` |
-  | Relative height | `relative` | e.g., `100svh` | `block-size: 100svh` |
-  | Fixed height | `fixed` | e.g., `400px` | `block-size: 400px` |
-  | Fill parent | handle: `fill` | — | — | `block-size: 100%` |
-
-- **`object-fit: cover` is hardcoded** in the media block CSS. Per-context overrides (e.g., a product gallery needing `contain`) live in the consuming block's stylesheet, not in this metaobject.
-
 **Recommended entries** (adopted from the Liquified.dev spec):
 
 | Handle | Name | type | value |
@@ -679,6 +630,8 @@ Standard name field — see [convention](#name-field-convention). Description: *
 | `fill` | Fill | *(blank)* | *(blank)* |
 
 ### `spacing`
+
+Consumer contract, runtime behavior, load-bearing handles, and canonical seed entries live in `specs/spacing.md`. This section covers setup-time definition only.
 
 **Type:**
 
@@ -709,15 +662,6 @@ Standard name field — see [convention](#name-field-convention). Description: *
 - Cardinality: One
 - Description: *"Spacing value on desktop (≥768px), in px."*
 - Validation: *(none)*
-
-**Runtime notes:**
-
-- Two-value-per-token design (vs. Horizon's single-value-with-global-scale): allows exotic entries like `0px` mobile / `48px` desktop without re-architecting the scale system.
-- Emitted globally by `utility--css-variables` v1.13.0+ as `--spacing-<handle>` (mobile value in `:root`, desktop value in nested `@media (width >= 48rem)`). Available anywhere via `var(--spacing-<handle>)` — components reading the unified spacing namespace get responsive resolution at use-site through the @media branch.
-- **Auto-overrides substrate defaults via cascade position.** Substrate (`assets/layer-base.css`) seeds `--spacing-xs/sm/md/lg/xl` defaults; metaobject entries with matching handles emit later in the same `:root` and win the cascade. Custom-handled entries (`hero-section`, `card-inset`, etc.) add new `--spacing-<handle>` slots that coexist with the substrate scale without colliding. See `.context/specs/design-constants.md` for the override mechanics.
-- **Load-bearing handles**: `xs`, `sm`, `md`, `lg`, `xl` — these names align with the substrate T-shirt slots. Renaming a substrate-aligned entry in admin loses the override (the substrate default reapplies at the renamed slot; the renamed entry becomes a custom slot under its new handle). Per-project entries with any other handle name freely.
-- Consumed by section schemas as a `block_rhythm` setting (vertical space between child blocks; section v1.6.0+ emits `--block-rhythm: var(--spacing-<picked-handle>)` and layer-theme.css reads `var(--block-rhythm)` for the inter-block margin rule). Optionally by individual blocks for top/bottom override (rare — most blocks inherit the section rhythm).
-- **Padding stays inline** as range fields on blocks where it matters (sections with backgrounds, blocks with internal padding). Padding is structural, not rhythmic, so it doesn't share the token model.
 
 **Recommended entries** (load-bearing T-shirt handles + optional explicit-zero):
 

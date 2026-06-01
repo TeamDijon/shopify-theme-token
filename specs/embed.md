@@ -156,12 +156,7 @@ The default `aspect-ratio: 16 / 9` on the root provides a fallback before any `s
 
 ## CSS custom properties (exposed)
 
-Per-instance vars emitted by `utility--block-layout-vars`:
-
-| Variable | Purpose | Default |
-|---|---|---|
-| `--content-width` | `max-inline-size` cap (px from metaobject) | `100%` |
-| `--mobile-margin-block-start` / `--desktop-margin-block-start` | Top margin per breakpoint | `0` |
+Per-instance vars emitted by `utility--block-layout-vars` — see that spec for the variable contract + emission rules. Block-specific fallbacks consumed via `var(--<name>, <fallback>)` in this block's CSS: `--content-width` → `100%`; `--mobile-margin-block-start` / `--desktop-margin-block-start` → `0`.
 
 Embed-specific vars emitted by `utility--media-sizing` (vars mode):
 
