@@ -8,7 +8,7 @@
 
 **Implementation**: pending
 
-**Reviewed**: pending
+**Reviewed**: 2026-06-01
 
 **Depends on**:
 - Substrate typography cascade (inherits `<blockquote>` styling from `assets/layer-base.css` / `assets/core.css` — body font, foreground color, paragraph rhythm)
@@ -141,12 +141,12 @@ The default (no marks) is a left-border-rail blockquote — the conventional edi
 | `--quote-mark-size` | Decorative mark glyph size | `3em` |
 | `--quote-mark-color` | Decorative mark glyph color | `var(--color-role-primary)` |
 
-`em`-relative defaults so quotes nested in larger typography (e.g., a `pull-quote` L1 with `font-size: 1.5rem` on its container) scale proportionally without per-consumer overrides.
+**Typographic defaults use `em`; structural and device defaults use `rem` / `px`.** Em resolves against the cascaded `font-size` — a quote inside a pull-quote at 1.5rem inherits that value, so the mark glyph (`3em`), cite text (`0.875em`), and mark-padding (`2.5em`) all scale proportionally without per-consumer overrides. Rail-mode padding (`1rem`) and border (`2px`) stay constant across contexts because they're structural, not typographic. The regime is documented in `css-standards.md` § Unit choice in custom-property defaults.
 
 ## Behavior
 
 - **Early exit on blank `content`.** A `quote` render with empty `content` produces no output — protects consumers passing a metafield that's not set. The L1 wrapper (figure / card / etc.) should also handle the empty case at its own layer to avoid an empty surrounding shell.
-- **`<p>` wrapping is automatic.** Plain strings emit as a single `<p>`; inline_richtext preserves paragraph breaks. The `<blockquote>` always carries paragraph children, never naked text.
+- **`<p>` wrapping is automatic with `contains '<p>'` discrimination.** The snippet routes on whether `content` already contains a `<p>` tag: richtext sources (which Shopify always pre-wraps in `<p>`) emit verbatim; plain-string sources (`single_line_text_field` / `multi_line_text_field`, which escape HTML angle brackets at output) get wrapped in a single `<p>`. The `<blockquote>` always carries paragraph children, never naked text. The discrimination is reliable because non-richtext sources can't smuggle literal `<p>` into output — Shopify's HTML escaping at the data-field layer prevents the false-positive case.
 - **`cite_url` without `cite_text` populates the attribute only.** The HTML `cite` attribute is the canonical source pointer regardless of whether a visible `<cite>` block renders. Crawlers and assistive tech can discover the source; the visible UI stays minimal.
 - **`<cite>` font-style is normalized to `normal`.** UA defaults italicize `<cite>`; the snippet overrides since per-locale typography varies (italic vs. oblique vs. straight is editorial-design territory, not semantic). Consumers wanting italic re-apply via the override knob.
 - **Decorative mark is opening-only by default.** The `::before` glyph renders left of the quoted text. Pseudo-elements aren't announced by SR; no `aria-hidden` needed. A closing `::after` is intentionally omitted — the cite element provides the visual closure of the quote block. Consumers wanting both marks add `::after` themselves.
@@ -193,7 +193,6 @@ Per `validation-contract.md` Tier 2 (theme-primitive — snippet-half group).
 
 ## Implementation-time decisions
 
-- **Multi-paragraph rendering choice.** Two options: (a) consumer passes a richtext string and the snippet emits it verbatim (Shopify pre-wraps in `<p>` for richtext fields); (b) consumer passes a plain string and the snippet wraps in a single `<p>` itself. Both work. Lean: accept either — detect by string content (presence of `<p>` already) or always single-wrap and let consumers use richtext if they need breaks. Defer the detection logic shape to the build pass.
 - **Close-mark opt-in surface.** If a consumer wants both opening + closing marks (more editorial than the default), should the snippet expose a second modifier value (`marks:both`) or leave it to consumer-side CSS? Lean: leave to consumer CSS (`::after` on the consumer's wrapper). Revisit if 2+ consumers want the same closing-mark treatment.
 - **Locale-aware glyphs.** Some locales prefer guillemets (`«` `»`, French / Spanish) over English double-quotation-marks. The CSS could use `content: open-quote` with a per-locale `quotes` property declaration in the substrate. Defer to the locale-keys / typography pass; static glyphs are the shipped default.
 - **`<cite>` italic / non-italic.** Snippet ships `font-style: normal`. If editorial design later wants italic, the override is `--quote-cite-font-style` (add the variable then). Defer until a consumer expresses the need.

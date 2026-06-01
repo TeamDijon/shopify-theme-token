@@ -4,7 +4,7 @@ The loop that takes a UI need from ticket to shipped, validated element. Describ
 
 ## The loop
 
-Five stages. Each produces an artifact that gates the next.
+Six phases. Each produces an artifact that gates the next. The `.claude/skills/<phase>/` skills carry the per-phase runbooks (triage, spec-author, spec-review, implementation, validation, audit).
 
 ### 1. Triage
 
@@ -12,21 +12,27 @@ Ticket appears (Linear or equivalent). Classify the element against `composition
 
 **Foundational track exception.** Substrate elements (metaobjects, utility snippets, JS modules) and retrofits of pre-existing primitives don't enter via tickets. Layer assignment comes from architectural design (substrate) or from existing code (retrofits). These skip Triage formally; the spec stage records the contract at the inhabited layer. Layer-tension observations live in the spec's Purpose or Implementation-time decisions section.
 
-### 2. Spec
+### 2. Spec authoring
 
-Author the spec at `.context/specs/<name>.md` per `specs/_template.md`. The Validation section names tier, pages, API surface, edge cases, and assertions. Spec lands on the `context` branch as its own commit, reviewed and signed off before implementation begins. Sign-off means the API, behavior, validation surface, and out-of-scope set are settled.
+Author the spec at `.context/specs/<name>.md` per `specs/_template.md`. The Validation section names tier, pages, API surface, edge cases, and assertions. Spec lands on the `context` branch as its own commit with `Reviewed: pending`, ready for the review phase.
 
-### 3. Implement
+### 3. Spec review
+
+Developer reads the spec end-to-end and signs off via `Reviewed: <date>`. When the developer places inline `<!-- REVIEW: -->` markers on the spec, the review phase closes by applying the settled marker resolutions, propagating any code-side renames or behavioral changes the review triggered, bumping the `Reviewed` date, and auditing adjacent docs for drift. Sign-off means the API, behavior, validation surface, and out-of-scope set are settled.
+
+The implementation phase reads better starting from a reviewed spec — when firing implementation against a `Reviewed: pending` spec, the developer should confirm the spec is settled enough to build (informational gate, not formal enforcement; see the `implementation` skill).
+
+### 4. Implementation
 
 Per-ticket branch off `main`. Produce snippets / blocks / sections / assets / locales per the spec. For new L1 blocks, update each whitelist named in the spec's `Whitelisted by` field (`section.liquid`, `group`, `columns`, etc.) — the spec is the checklist. Theme-check passes; pre-commit hooks pass. Implementation matches the spec exactly — divergences trigger a spec amendment, not silent drift.
 
-### 4. Validate
+### 5. Validation
 
 Same ticket branch. Author the validation page(s) per the spec's Validation section. The JSON template bakes the matrix for Tiers 2/3/4; the section iterates `metaobjects.<type>.values` for Tier 1a. Hub registers an anchor for the new page. Page is reachable at `?view=validation--<...>`.
 
-### 5. Review
+### 6. Audit (cycle close-out)
 
-Visual eyeball at the validation URL, plus theme-check pass and (once installed) Playwright assertion green report. Sign-off triggers merge to `main`. Spec's `Status` field updates from `spec` to `shipped`.
+Scan supporting docs / rules / sibling specs for drift introduced during the cycle. Grep cross-references to changed symbols, verify pin versions on sibling specs, update `specs-index.md` status entries, flag changelog discipline gaps. Output: drift fixes committed on context or flagged for follow-up. Run before declaring the unit of work done. Sign-off triggers merge to `main`. Spec's `Status` field updates from `spec` to `shipped`.
 
 ## Git strategy
 

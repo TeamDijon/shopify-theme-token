@@ -117,6 +117,27 @@ Every spec carries the `Reviewed` field as a `pending` placeholder until its fir
 
 Templates in `_template.md` lock the order. Don't reorder — readers learn to scan by position. Sections without content get a one-line `N/A — <reason>` or get omitted when nature obviously excludes them (e.g. metaobjects have no CSS section; CSS-only utilities have no Locale keys).
 
+### Type-specific variants
+
+A few section names + omissions vary by spec type:
+
+| Spec type | Section variants |
+|---|---|
+| **Metaobject** (`Type: metaobject`) | Replace `## API` with `## Schema (definition contract)` — metaobjects have a field definition, not a call interface. Add `## Seed entries` after Schema listing the recommended catalog. `## CSS` is typically N/A (metaobjects contribute data; the consuming snippet emits CSS). `## CSS custom properties (exposed)` is present for metaobjects that emit named CSS variables via `utility--css-variables` (e.g. `theme_color`, `gradient`, `spacing`, `text_style`); N/A for catalogs without variable emission (e.g. `icon`, `button_style`). `## A11y` and `## Locale keys` are typically N/A. |
+| **utility-js** (`Type: utility-js`) | `## CSS`, `## CSS custom properties (exposed)`, `## A11y`, `## Locale keys` all typically N/A. JS modules contribute behavior, not rendered DOM. |
+| **utility-css** (`Type: utility-css`) | `## A11y` typically N/A unless the utility-CSS specifically encodes accessibility patterns (focus rings, reduced-motion). `## Locale keys` N/A. |
+| **L0 snippet / L1 block / section** | All template sections apply. A11y as a standalone section earns its keep when the element has substantial accessibility surface (semantic element choice + ARIA + keyboard / focus). Mark the standalone section N/A or fold a couple of bullets into Behavior when the surface is light. |
+
+`## Related` is universal — every spec carries it as the final section per the CLAUDE.md guideline: list only references the body doesn't already make.
+
+### CSS custom property header
+
+The canonical header is `## CSS custom properties (exposed)`. Variants like `(emitted)` are drift; the template uses `(exposed)` and consumers should match. The column order in the per-property table is `| Variable | Type | Source |` (substrate variable catalogs) or `| Variable | Purpose | Default |` (component-CSS specs documenting their consumer-overridable surface).
+
+### Spec filename convention
+
+Spec filenames use kebab-case (`text-style.md`, `content-width.md`, `button-style.md`) uniformly across the corpus. For metaobject-type specs, this means the filename diverges from the underlying Shopify type key (which uses snake_case: `text_style` / `content_width` / `button_style`). The type key appears in the Schema field tables and Implementation pin where it's load-bearing; the spec name follows kebab-case for filesystem consistency with non-metaobject specs.
+
 ## Validation vs QoL
 
 Per `validation-contract.md`, validation is the tier-specific harness proving the spec is honored. QoL is a separate developer-facing surface — a token browser, preset library, bare-tag showcase.

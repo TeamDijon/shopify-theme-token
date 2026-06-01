@@ -14,9 +14,20 @@ A spec with `Status: shipped` describes a contract that the implementation file 
 
 ## Inputs
 
-- Approved spec (`Reviewed` dated)
+- Spec (ideally with `Reviewed: <date>`; see below if `pending`)
 - Spec's `Implementation` field naming target file(s) (or `pending` for first build)
 - Convention docs the implementation must follow (`snippet-convention.md`, `block-convention.md`, `section-convention.md`, `js-asset-convention.md`, etc.)
+
+### When the spec is `Reviewed: pending`
+
+Implementation reads better starting from a reviewed spec — the spec-review phase catches API ambiguities, voice drift, and design oversights before code commits to them. When firing implementation against a spec whose `Reviewed` field is still `pending`, surface this to the developer before proceeding:
+
+> "This spec hasn't been reviewed (`Reviewed: pending`). The spec-review phase usually catches API ambiguities and design oversights before implementation locks them in. Do you want to:
+> (a) Run a quick review pass first
+> (b) Proceed with implementation now (the developer signs off implicitly by greenlighting)
+> (c) Pause until the spec is reviewed in a separate cycle"
+
+This is an informational gate, not a formal precondition. The developer's confirmation routes the flow.
 
 ## Checklist
 
