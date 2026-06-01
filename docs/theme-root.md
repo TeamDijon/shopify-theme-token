@@ -117,13 +117,15 @@ The block-rhythm cascade applies to direct children of a theme-root, not to all 
 
 ```css
 [data-modifiers*='theme-root'] > .shopify-block:not(:first-child) {
-  margin-block-start: var(--mobile-margin-block-start, var(--block-rhythm-mobile, 0rem));
+  margin-block-start: var(--mobile-margin-block-start, var(--block-rhythm, 0rem));
 
   @media (width >= 48rem) {
-    margin-block-start: var(--desktop-margin-block-start, var(--block-rhythm-desktop, 0rem));
+    margin-block-start: var(--desktop-margin-block-start, var(--block-rhythm, 0rem));
   }
 }
 ```
+
+The section sets `--block-rhythm: var(--spacing-<picked-handle>)` per its `block_rhythm` setting. Responsive resolution (mobile vs desktop value) lives in the spacing token's own `@media` branch in `utility--css-variables`; the `@media` here is for the per-block margin override path.
 
 Inside container blocks (`group`, `columns`, `media`), the parent's `gap` setting governs between-child spacing. The rhythm cascade doesn't reach those nested blocks — the `> .shopify-block` direct-child selector limits scope to one level deep.
 
@@ -172,10 +174,10 @@ The substrate's `layer-theme.css` carries the bleed grid, bleed-direction rules,
 
   /* Rhythm cascade — direct children of any theme-root */
   [data-modifiers*='theme-root'] > .shopify-block:not(:first-child) {
-    margin-block-start: var(--mobile-margin-block-start, var(--block-rhythm-mobile, 0rem));
+    margin-block-start: var(--mobile-margin-block-start, var(--block-rhythm, 0rem));
 
     @media (width >= 48rem) {
-      margin-block-start: var(--desktop-margin-block-start, var(--block-rhythm-desktop, 0rem));
+      margin-block-start: var(--desktop-margin-block-start, var(--block-rhythm, 0rem));
     }
   }
 }

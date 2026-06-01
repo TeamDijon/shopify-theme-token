@@ -83,19 +83,19 @@ Every section carries these settings before its custom ones:
 
 The section's `data-modifiers` carries `theme-root` (identity) and `color-scheme:<id>` (theming context); no `layout` modifier. Under the subgrid model, token-section is always a bleed grid (named-line columns: `bleed-start` / `content-start` / `content-end` / `bleed-end`); row / multi-track compositions live inside container blocks (`group` / `columns`). See `.context/docs/theme-root.md` § Bleed grid.
 
-`block_rhythm` emits `--block-rhythm-mobile` / `--block-rhythm-desktop` CSS variables via `utility--dynamic-style`. The matching rule lives in `layer-theme.css` scoped to theme-roots:
+`block_rhythm` emits `--block-rhythm: var(--spacing-<picked-handle>)` via `utility--dynamic-style` — points at the unified spacing namespace emitted by `utility--css-variables`, where responsive resolution lives in the spacing token's `@media` branch. The matching rule lives in `layer-theme.css` scoped to theme-roots:
 
 ```css
 [data-modifiers*='theme-root'] > .shopify-block:not(:first-child) {
-  margin-block-start: var(--mobile-margin-block-start, var(--block-rhythm-mobile, 0rem));
+  margin-block-start: var(--mobile-margin-block-start, var(--block-rhythm, 0rem));
 
   @media (width >= 48rem) {
-    margin-block-start: var(--desktop-margin-block-start, var(--block-rhythm-desktop, 0rem));
+    margin-block-start: var(--desktop-margin-block-start, var(--block-rhythm, 0rem));
   }
 }
 ```
 
-The `> .shopify-block:not(:first-child)` selector limits rhythm to direct children of a theme-root, one level deep; nested blocks inside container blocks (`group`, `columns`, `media`) use the parent's `gap` instead. The per-block fallback chain (`--mobile-margin-block-start` → `--block-rhythm-mobile` → `0rem`) lets per-block overrides win, fall through to the section rhythm, then to zero.
+The `> .shopify-block:not(:first-child)` selector limits rhythm to direct children of a theme-root, one level deep; nested blocks inside container blocks (`group`, `columns`, `media`) use the parent's `gap` instead. The per-block fallback chain (`--mobile-margin-block-start` → `--block-rhythm` → `0rem`) lets per-block overrides win, fall through to the section rhythm, then to zero. The `@media` in `layer-theme.css` exists for the per-block mobile/desktop margin override path; `--block-rhythm` itself resolves responsively through its referenced `--spacing-<handle>`.
 
 See `.context/rules/section-convention.md` for the full section structure.
 

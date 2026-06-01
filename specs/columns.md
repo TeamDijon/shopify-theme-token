@@ -138,7 +138,7 @@ Component-rooted on `.shopify-block--columns` (outer) and `> token-layout` (inne
 
 `container_style` variant rules live centrally in `layer-theme.css` (shared with `group` and `media`). See `specs/container-style.md`.
 
-`margin-block-start` chains through `--mobile-margin-block-start` → `--desktop-margin-block-start` → section's `--block-rhythm-mobile/desktop` via `utility--block-layout-vars`.
+`margin-block-start` chains through `--mobile-margin-block-start` → `--desktop-margin-block-start` → section's `--block-rhythm` via `utility--block-layout-vars` (the section sets `--block-rhythm: var(--spacing-<picked-handle>)`).
 
 ## CSS custom properties (exposed)
 

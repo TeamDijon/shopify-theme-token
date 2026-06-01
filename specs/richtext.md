@@ -70,7 +70,7 @@ Component-rooted on `.shopify-block--richtext`. Layered in `@layer components`.
 
 The block's own CSS is structural-only — width, centering, color, alignment. Typographic affordances (paragraph spacing, list bullets, link decoration, blockquote treatment, code styling) live in `layer-utilities.css` under `[data-modifiers*='prose']`. The split is deliberate: the same prose treatment applies to richtext blocks, validation page bodies, and any consumer that opts in via the modifier.
 
-`margin-block-start` chains through `--mobile-margin-block-start` → `--desktop-margin-block-start` → section's `--block-rhythm-mobile/desktop` via `utility--block-layout-vars`.
+`margin-block-start` chains through `--mobile-margin-block-start` → `--desktop-margin-block-start` → section's `--block-rhythm` via `utility--block-layout-vars` (the section sets `--block-rhythm: var(--spacing-<picked-handle>)`).
 
 ## CSS custom properties (exposed)
 

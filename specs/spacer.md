@@ -94,7 +94,7 @@ All emitted per-instance via `utility--dynamic-style`, only when the source sett
 ## Behavior
 
 - **Mode selection**: `breakpoint=none` uses `--spacer-block-size` only. `breakpoint != none` switches to `--mobile-spacer-block-size` (below threshold) and `--desktop-spacer-block-size` (at/above), via `data-modifiers="breakpoint:<value>"` CSS attribute selectors
-- **Top-margin chain**: `margin-block-start` inherits the section's `--block-rhythm-mobile` / `--block-rhythm-desktop` cascade. The block-rhythm system flows naturally — no explicit top-spacing setting needed on this block
+- **Top-margin chain**: `margin-block-start` inherits the section's `--block-rhythm` cascade (the section sets `--block-rhythm: var(--spacing-<picked-handle>)`). The block-rhythm system flows naturally — no explicit top-spacing setting needed on this block
 - **px → rem conversion**: settings are px-valued in the editor; emitted as rem (`px / 16`) to honor root font scale
 - **A11y**: block is semantically empty (`<div>` with no children); no label needed — invisible to assistive technology by virtue of having no content
 - **Reduced motion / forced colors**: no animations, no interactive states — nothing to honor
@@ -125,7 +125,7 @@ Per `validation-contract.md`:
 - **Edge cases**:
   - spacer_block_size=0 → no `--spacer-block-size` emitted; block collapses to 0
   - background_color blank → transparent (no `--background-color` emitted)
-  - block-rhythm context: spacer placed in a section with `--block-rhythm-mobile/desktop` set → `margin-block-start` inherits the rhythm value
+  - block-rhythm context: spacer placed in a section with `--block-rhythm` set → `margin-block-start` inherits the rhythm value
   - placed inside row-direction container → out-of-scope (anti-pattern; not validation-tested)
 - **Visual showcase**: matrix of cells per breakpoint mode × size, with and without background. Reader confirms vertical gaps render at the expected heights and switch at the expected viewports.
 - **Assertions**: prose — each cell's computed `block-size` matches setting × viewport, correct background, modifier attribute present/absent per mode. Selectors + expectations once Playwright lands.

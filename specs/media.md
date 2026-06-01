@@ -172,7 +172,7 @@ Component-rooted on `.shopify-block--media`. Layered in `@layer components`.
 
 `container_style` variant rules live centrally in `layer-theme.css` `@layer theme`, scoped via `:where(.shopify-block--group, .shopify-block--columns, .shopify-block--media)[data-modifiers*='container-style:<handle>']`. The variant CSS for `card` / `outlined` / `elevated` doesn't live in this snippet — see `specs/container-style.md`.
 
-`margin-block-start` chains through `--mobile-margin-block-start` → `--desktop-margin-block-start` → section's `--block-rhythm-mobile/desktop` via `utility--block-layout-vars`.
+`margin-block-start` chains through `--mobile-margin-block-start` → `--desktop-margin-block-start` → section's `--block-rhythm` via `utility--block-layout-vars` (the section sets `--block-rhythm: var(--spacing-<picked-handle>)`).
 
 ## CSS custom properties (exposed)
 

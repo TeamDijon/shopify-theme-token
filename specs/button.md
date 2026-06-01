@@ -133,7 +133,7 @@ Component-rooted on `.shopify-block--button`. Layered in `@layer components`. Va
 }
 ```
 
-`margin-block-start` chains through `--mobile-margin-block-start` → `--desktop-margin-block-start` → section's `--block-rhythm-mobile/desktop` via the `utility--block-layout-vars` cascade.
+`margin-block-start` chains through `--mobile-margin-block-start` → `--desktop-margin-block-start` → section's `--block-rhythm` via the `utility--block-layout-vars` cascade (the section sets `--block-rhythm: var(--spacing-<picked-handle>)`).
 
 ## CSS custom properties (exposed)
 
@@ -170,7 +170,7 @@ Button-specific vars defined in the snippet's stylesheet (overridable by per-pro
 - **Hover treatments per family.** `solid-*` darkens the bg via `color-mix(in oklab, var(--button-background), black 12%)`. `outline-*` adds a translucent tint of `--button-color` (uses the `-rgb` companion + `--opacity-subtle` fallback `0.05`). `link-*` reduces opacity to `0.75`, no background. All three differ deliberately — same intent (signal hover), shape-appropriate execution. Minimal by design — per-project button styles typically override the base ruleset wholesale; a future hover-state custom-property layer (`--button-background-hover`, `--button-foreground-hover`) is the additive path if "override hover only, keep base" becomes a real pattern.
 - **Reduced motion.** `transition: var(--duration-fast) var(--ease-out)` (substrate motion vars defined in `layer-theme.css`) zeroes to `0s` under `@media (prefers-reduced-motion)`. The hover treatment still fires; only the animation is suppressed.
 - **Focus ring.** `:focus-visible` outlines via `var(--color-role-focus-ring)` with `0.125rem` outline + `0.25rem` offset. Inherited from the scheme; no per-instance override.
-- **Block-rhythm integration.** The block's `margin-block-start` chain falls through per-instance settings → section's `--block-rhythm-*` cascade → 0, courtesy of `utility--block-layout-vars`. A button placed without explicit top spacing inherits the section's rhythm; an authored value overrides it.
+- **Block-rhythm integration.** The block's `margin-block-start` chain falls through per-instance settings → section's `--block-rhythm` → 0, courtesy of `utility--block-layout-vars`. A button placed without explicit top spacing inherits the section's rhythm; an authored value overrides it.
 - **`{{ block.shopify_attributes }}` emission.** Renders the theme-editor block-selection hook directly on the root. On a direct `{% render %}` outside a block context, `block` is nil and the expression resolves to blank — safe no-op.
 
 ## Locale keys

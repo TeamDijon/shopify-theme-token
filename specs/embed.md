@@ -152,7 +152,7 @@ html[data-modifiers*='shopify-design-mode'] .shopify-block--embed > .diagnostic 
 
 The default `aspect-ratio: 16 / 9` on the root provides a fallback before any `sizing:*` modifier matches — if `media_size` is blank, the iframe still renders at 16:9. The `sizing:ratio` rule overrides only when `media_size` populates `--media-ratio`.
 
-`margin-block-start` chains through `--mobile-margin-block-start` → `--desktop-margin-block-start` → section's `--block-rhythm-mobile/desktop` via `utility--block-layout-vars`.
+`margin-block-start` chains through `--mobile-margin-block-start` → `--desktop-margin-block-start` → section's `--block-rhythm` via `utility--block-layout-vars` (the section sets `--block-rhythm: var(--spacing-<picked-handle>)`).
 
 ## CSS custom properties (exposed)
 

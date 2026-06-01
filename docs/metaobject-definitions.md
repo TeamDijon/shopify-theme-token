@@ -713,28 +713,24 @@ Standard name field — see [convention](#name-field-convention). Description: *
 **Runtime notes:**
 
 - Two-value-per-token design (vs. Horizon's single-value-with-global-scale): allows exotic entries like `0px` mobile / `48px` desktop without re-architecting the scale system.
-- Consumed by section schemas as a `block_rhythm` setting (vertical space between child blocks) and optionally by individual blocks for top/bottom override (rare — most blocks inherit the section rhythm).
-- Section CSS pattern:
-  ```css
-  .shopify-section {
-    --block-rhythm: var(--block-rhythm-mobile, 1.5rem);
-    @media (width >= 48rem) { --block-rhythm: var(--block-rhythm-desktop, 1.5rem); }
-
-    & :where(.shopify-block) + .shopify-block { margin-block-start: var(--block-rhythm); }
-  }
-  ```
-  The `:where()` keeps specificity at zero so per-block overrides work; the sibling combinator gets margin-collapse semantics for free.
+- Emitted globally by `utility--css-variables` v1.13.0+ as `--spacing-<handle>` (mobile value in `:root`, desktop value in nested `@media (width >= 48rem)`). Available anywhere via `var(--spacing-<handle>)` — components reading the unified spacing namespace get responsive resolution at use-site through the @media branch.
+- **Auto-overrides substrate defaults via cascade position.** Substrate (`assets/layer-base.css`) seeds `--spacing-xs/sm/md/lg/xl` defaults; metaobject entries with matching handles emit later in the same `:root` and win the cascade. Custom-handled entries (`hero-section`, `card-inset`, etc.) add new `--spacing-<handle>` slots that coexist with the substrate scale without colliding. See `.context/specs/design-constants.md` for the override mechanics.
+- **Load-bearing handles**: `xs`, `sm`, `md`, `lg`, `xl` — these names align with the substrate T-shirt slots. Renaming a substrate-aligned entry in admin loses the override (the substrate default reapplies at the renamed slot; the renamed entry becomes a custom slot under its new handle). Per-project entries with any other handle name freely.
+- Consumed by section schemas as a `block_rhythm` setting (vertical space between child blocks; section v1.6.0+ emits `--block-rhythm: var(--spacing-<picked-handle>)` and layer-theme.css reads `var(--block-rhythm)` for the inter-block margin rule). Optionally by individual blocks for top/bottom override (rare — most blocks inherit the section rhythm).
 - **Padding stays inline** as range fields on blocks where it matters (sections with backgrounds, blocks with internal padding). Padding is structural, not rhythmic, so it doesn't share the token model.
 
-**Recommended entries:**
+**Recommended entries** (load-bearing T-shirt handles + optional explicit-zero):
 
 | Handle | Name | mobile_value | desktop_value |
 |---|---|---|---|
 | `none` | None | 0 | 0 |
-| `tight` | Tight | 8 | 12 |
-| `default` | Default | 16 | 24 |
-| `spacious` | Spacious | 32 | 48 |
-| `loose` | Loose | 64 | 96 |
+| `xs` | Extra small | 4 | 8 |
+| `sm` | Small | 8 | 12 |
+| `md` | Medium | 16 | 24 |
+| `lg` | Large | 32 | 48 |
+| `xl` | Extra large | 64 | 96 |
+
+The T-shirt handles align with the substrate scale in `layer-base.css` — overriding their defaults via the cascade. Stores migrating from the prior seed (`tight`/`default`/`spacious`/`loose`) keep working as custom-handled entries until renamed; the substrate defaults apply to the T-shirt slots in the meantime.
 
 ## Related
 

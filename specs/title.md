@@ -82,7 +82,7 @@ Component-rooted on `.shopify-block--title`. Layered in `@layer components`.
 
 Typography (font-family, size, weight, line-height, letter-spacing) is **not** declared on `.shopify-block--title`. The bare-tag binding in `utility--css-variables` (matching `h1`–`h6`, `p`) or the `[data-modifiers*='text-style:<handle>']` rule supplies typography. Title-block CSS only handles structure (width, centering, color, alignment) and the inline-icon adjacency.
 
-`margin-block-start` chains through `--mobile-margin-block-start` → `--desktop-margin-block-start` → section's `--block-rhythm-mobile/desktop` via `utility--block-layout-vars`.
+`margin-block-start` chains through `--mobile-margin-block-start` → `--desktop-margin-block-start` → section's `--block-rhythm` via `utility--block-layout-vars` (the section sets `--block-rhythm: var(--spacing-<picked-handle>)`).
 
 ## CSS custom properties (exposed)
 

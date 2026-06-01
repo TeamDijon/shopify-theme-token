@@ -70,7 +70,7 @@ Component-rooted on `.shopify-block--separator`. Layered in `@layer components`.
 
 The outer `inline-size: 100%` is load-bearing inside flex parents — `<hr>` has no intrinsic width, and `margin-inline: auto` + `max-inline-size` alone leave the wrapper at zero size on a flex item. The explicit 100% guarantees a width to size against.
 
-`margin-block-start` chains through `--mobile-margin-block-start` → `--desktop-margin-block-start` → section's `--block-rhythm-mobile/desktop` via `utility--block-layout-vars`.
+`margin-block-start` chains through `--mobile-margin-block-start` → `--desktop-margin-block-start` → section's `--block-rhythm` via `utility--block-layout-vars` (the section sets `--block-rhythm: var(--spacing-<picked-handle>)`).
 
 ## CSS custom properties (exposed)
 

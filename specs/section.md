@@ -41,7 +41,7 @@ Section settings — appear in the editor sidebar:
 | Setting | Type | Required | Default | Notes |
 |---|---|---|---|---|
 | `content_width` | metaobject (`content_width`) | no | blank → 125rem substrate default | Caps the section's center grid track (`min(--content-width, 100% - 2 × --gutter)`). Emitted as `--content-width: <value>px` in the section's dynamic style. Cascades to descendants as the bleed cap (`container-patterns.md` § Content cap and convergence). |
-| `block_rhythm` | metaobject (`spacing`) | no | blank → 0 | Vertical rhythm between direct block children. Emits `--block-rhythm-mobile` / `--block-rhythm-desktop` CSS variables; the rhythm cascade rule in `layer-theme.css` applies them via `[data-modifiers*='theme-root'] > .shopify-block:not(:first-child)` (see `theme-root.md` § Rhythm scope). |
+| `block_rhythm` | metaobject (`spacing`) | no | blank → 0 | Vertical rhythm between direct block children. Emits `--block-rhythm: var(--spacing-<picked-handle>)` (responsive resolution baked into the spacing token's @media branch); the rhythm cascade rule in `layer-theme.css` applies it via `[data-modifiers*='theme-root'] > .shopify-block:not(:first-child)` (see `theme-root.md` § Rhythm scope). |
 | `color_scheme` | color_scheme | yes (schema-defaulted) | `"scheme-1"` | Section's color scheme. Emitted as `color-scheme:<id>` in `data-modifiers`; the per-scheme rules in `utility--css-variables` re-emit `--color-role-*` tokens scoped to the modifier-bearing element. |
 
 The `layout` setting was dropped in v1.4.0 as part of the subgrid migration — token-section is always a bleed grid; merchants wanting row / multi-track compositions wrap children in a `group` or `columns` block. See `subgrid-migration.md` § Open questions (resolved: dropped).
@@ -90,8 +90,7 @@ Per-instance vars emitted into the section's dynamic style block (scoped to `#sh
 | Variable | Source | Default |
 |---|---|---|
 | `--content-width` | `content_width.width.value` (px) when setting populated | 125rem (substrate default in `layer-base.css`) |
-| `--block-rhythm-mobile` | `block_rhythm.mobile_value.value` (px) when setting populated | `0rem` (substrate default in the rhythm cascade rule) |
-| `--block-rhythm-desktop` | `block_rhythm.desktop_value.value` (px) when setting populated | `0rem` |
+| `--block-rhythm` | `var(--spacing-<block_rhythm.system.handle>)` when setting populated; resolves responsively through the spacing token's @media branch | `0rem` (substrate default in the rhythm cascade rule) |
 
 Modifier-driven (not vars): `theme-root` (identity, matches bleed-grid + rhythm selectors), `color-scheme:<id>` (matches per-scheme tokens). Children's bleed modifiers (`bleed-desktop:<value>`, `bleed-mobile:<value>`) match section's grid-column rules — emitted by container blocks, not by the section itself.
 
@@ -135,7 +134,7 @@ Per `validation-contract.md` Tier 3 (preset / L2). The host section itself is ex
   - **disabled_on**: section not offered inside header / footer section groups.
 - **Edge cases**:
   - `content_width` blank → falls through to the 125rem substrate default; no `--content-width` declaration emitted in the dynamic style block.
-  - `block_rhythm` blank → no `--block-rhythm-*` declarations; rhythm cascade rule's `0rem` fallback applies (no inter-block spacing).
+  - `block_rhythm` blank → no `--block-rhythm` declaration; rhythm cascade rule's `0rem` fallback applies (no inter-block spacing).
   - Container block (group / columns / media) with `bleed-desktop:both` placed inside another container → outer's grid-column rule doesn't match (`>` direct-child requirement); nested container positions in parent's layout, no bleed. Strict container-only bleed model in action.
   - App block (`@app`) inserted alongside theme blocks → app block renders inside `<token-section>`, inherits body-level appearance defaults; section's block-rhythm cascade applies to it via the direct-child selector; section's `grid-column` default sits it in the content track.
 - **Assertions** (prose; Playwright once installed):

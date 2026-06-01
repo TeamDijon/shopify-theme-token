@@ -107,10 +107,10 @@ CSS in `assets/layer-theme.css`:
 
   /* Rhythm cascade — direct children of any theme-root */
   [data-modifiers*='theme-root'] > .shopify-block:not(:first-child) {
-    margin-block-start: var(--mobile-margin-block-start, var(--block-rhythm-mobile, 0rem));
+    margin-block-start: var(--mobile-margin-block-start, var(--block-rhythm, 0rem));
 
     @media (width >= 48rem) {
-      margin-block-start: var(--desktop-margin-block-start, var(--block-rhythm-desktop, 0rem));
+      margin-block-start: var(--desktop-margin-block-start, var(--block-rhythm, 0rem));
     }
   }
 
