@@ -97,7 +97,7 @@ Per `validation-contract.md` Tier 1d (substrate / utility-js).
 
 ## Related
 
-- `core.md` (planned spec) — re-exports `dom` into `window.Token.dom` for inline-script consumers
+- `core.md` — re-exports `dom` into `window.Token.dom` for inline-script consumers
 - `cache-manager.md` — the `dom` cache type is purpose-built for memoizing DOM lookups across element lifetime; consumers reading `dom.pageContent` repeatedly compose with the cache
 - `base-component.md` — the `section` getter pattern (closest('.shopify-section') memoized via `CacheManager`) is the per-element analog of this document-level catalog
 - `.context/rules/js-asset-convention.md` — file structure (`@module @theme/dom`, JSDoc, changelog) the implementation file follows

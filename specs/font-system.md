@@ -2,7 +2,7 @@
 
 **Layer**: substrate
 
-**Type**: composite — `font` metaobject + `typeface` metaobject + utility-snippet (`snippets/utility--font-face.liquid`). Merged spec because `font` is non-independent (consumed only by `typeface.font_list`) and `utility--font-face` only exists to make typefaces usable.
+**Type**: metaobject + utility-snippet (`snippets/utility--font-face.liquid`)
 
 **Status**: shipped
 
@@ -34,7 +34,7 @@ Three-part substrate covering the theme's font catalog:
 2. **`typeface` metaobject** — a font family. Has a display `name` (the CSS `font-family` value) and a list of `font` entries (one per variant the family ships).
 3. **`utility--font-face.liquid`** — the emitter that walks typefaces, then their font lists, and writes one `@font-face` declaration per font file. Output is captured by `utility--core-assets` and routed through the inline-CSS asset loader.
 
-The three are merged into one spec because they're conceptually one system: `font` exists only to be referenced by `typeface.font_list`; `typeface` exists to be consumed by `text_style.font_family` + emitted as `@font-face` rules; the emitter only exists to make typefaces usable in CSS. Spec'ing them separately would imply independent contracts that don't exist.
+The three are merged into one spec because they're conceptually one system: `font` is referenced only by `typeface.font_list`; `typeface` is consumed by `text_style.font_family` and emitted as `@font-face` rules; the emitter materializes typefaces into CSS. None has an independent contract.
 
 ## Schema (definition contract)
 
@@ -237,7 +237,7 @@ Per `validation-contract.md` Tier 1a (substrate / metaobject) for the data-layer
 
 ## Related
 
-- `text_style.md` — primary consumer of `typeface` (via `font_family` field). The typeface's `name` flows into emitted `--<style>-font-family` chains.
+- `text-style.md` — primary consumer of `typeface` (via `font_family` field). The typeface's `name` flows into emitted `--<style>-font-family` chains.
 - `utility--css-variables.md` — substrate emitter for `--<style>-font-family` and `--base-*` aliases; reads `text_style.font_family.value.name.value` (which dereferences to typeface.name).
 - `theme-color.md` — sibling substrate metaobject spec (for calibration on the spec shape).
 - `gradient.md` — sibling substrate metaobject spec (similar metaobject-emitter pair, but emission domain is gradients in `utility--css-variables` rather than its own snippet).

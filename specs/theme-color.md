@@ -1,4 +1,4 @@
-# theme_color
+# theme-color
 
 **Layer**: substrate
 
@@ -62,7 +62,7 @@ Two emission contexts.
 
 The meta tag's content is the literal `hex_code.value` of the chosen entry — not a `var()` reference, since `<meta>` does not resolve custom properties.
 
-## CSS custom properties (emitted)
+## CSS custom properties (exposed)
 
 | Variable | Source | Default |
 |---|---|---|
@@ -142,3 +142,11 @@ A separate spec deliverable from validation, even when the implementation shares
 - **Gradient stops** — the `gradient` metaobject composes stops by referencing `--color-role-<role>` for scheme-adaptive stops. A theme_color handle is not a valid stop name.
 - **Runtime contrast computation** — handled by `snippets/utility--color-contrast.liquid` (its own spec). theme_color's spec is the input shape; the contrast utility is a separate consumer.
 - **Translucent companion (`-rgb`)** for theme_color entries — additive; revisit when a consumer needs `rgba(var(--color-<handle>-rgb), <alpha>)` directly off a palette color rather than a scheme role.
+
+## Related
+
+- `utility--css-variables.md` — the substrate emitter that materializes `theme_color` entries into `--color-<handle>` declarations + the per-scheme `--color-role-*` namespace
+- `utility--color-contrast.md` — sibling utility consuming `hex_code.value` to pick legible foreground on arbitrary backgrounds
+- `gradient.md` — sibling metaobject; gradient stops reference `--color-role-*` (scheme-driven), not `--color-<handle>` (palette), so the two namespaces stay disjoint
+- `.context/docs/metaobject-definitions.md` § `theme_color` — setup contract (Shopify admin metaobject definition schema, recommended seed entries)
+- `.context/docs/design-system-metaobjects.md` — catalog-wide consumer patterns; load-bearing handles list

@@ -14,9 +14,7 @@
 
 **Depends on**: Liquid built-in `color_contrast` filter
 
-**Consumers**: `sections/validation--substrate--theme-color.liquid` — picks the legible foreground for the "on-self" swatch per `theme_color` entry
-
-No production consumers yet; the only user today is the theme_color validation page. Future foreground-on-arbitrary-background contexts (sections sourcing a background hex from a `theme_color` setting and wanting auto-legible text) are the next likely consumers.
+**Consumers**: `sections/validation--substrate--theme-color.liquid` — picks the legible foreground for the "on-self" swatch per `theme_color` entry. No production consumers yet; future foreground-on-arbitrary-background contexts (sections sourcing a background hex from a `theme_color` setting and wanting auto-legible text) are the next likely consumers.
 
 ## Purpose
 

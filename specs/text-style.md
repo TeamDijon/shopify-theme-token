@@ -1,4 +1,4 @@
-# text_style
+# text-style
 
 **Layer**: substrate
 

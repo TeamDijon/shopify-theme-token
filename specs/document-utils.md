@@ -173,6 +173,6 @@ Per `validation-contract.md` Tier 1d (substrate / utility-js).
 
 - `modifiers-manager.md` — the class that `documentModifiers` instantiates; full API surface lives there
 - `events-manager.md`, `observers-manager.md`, `cache-manager.md` — sibling substrate utility-js specs (per-element manager pattern; this module is the document-level counterpart for shared singletons)
-- `core.md` (planned spec) — re-exports these singletons into `window.Token.utils.*` for inline-script consumers; the v1.1.0 extraction note documents the move from core.js to document-utils.js
+- `core.md` — re-exports these singletons into `window.Token.utils.*` for inline-script consumers; the v1.1.0 extraction note documents the move from core.js to document-utils.js
 - `utils.md` — pure-utility sibling spec (no DOM coupling); document-utils is the DOM-coupled sibling
 - `.context/rules/js-asset-convention.md` — file structure (`@module @theme/document-utils`, JSDoc per export) the implementation file follows

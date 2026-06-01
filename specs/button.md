@@ -225,3 +225,11 @@ Per `validation-contract.md` Tier 2 (theme-primitive).
 - **Dropdown / menu buttons** — separate primitive (paired with `popup` or `disclosure` once those land); the button block stays single-action.
 - **Cap on the base set** — the 3×3 family/variant matrix is Token's base ship, not an architectural ceiling. Projects extend by adding `button_style` metaobject entries paired with matching CSS rules. The constraint that keeps appearance authored (rather than open-ended for merchants) is the CSS-rule requirement, not the metaobject schema.
 - **Per-button background override** beyond what `button_style` exposes — the variant matrix is the agreed customization surface. Off-axis tweaks (e.g. "make this button red on this page only") belong in per-project block-style CSS, not in the spec's API.
+
+## Related
+
+- `button-style.md` — the metaobject driving the variant catalog this block consumes via `[data-modifiers*='button-style:<handle>']` selectors
+- `icon.md` — the optional leading-icon consumer; reads `icon` metaobject reference passed via the block's setting
+- `utility--block-layout-vars.md` — emits the three per-instance vars (`--content-width`, `--mobile-margin-block-start`, `--desktop-margin-block-start`) this block consumes
+- `.context/docs/modifier-system.md` — the categorical-state surface that `button-style:<handle>` lives in
+- `.context/rules/block-convention.md`, `.context/rules/snippet-convention.md` — authoring conventions for the paired block + snippet files

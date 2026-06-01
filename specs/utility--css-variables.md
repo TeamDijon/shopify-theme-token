@@ -263,7 +263,7 @@ Per `validation-contract.md` Tier 1b (substrate / utility-snippet).
 
 - **`theme_color` definition contract** — covered by `theme-color.md`. This spec covers only emission of `--color-<handle>` lines from those entries.
 - **`gradient` metaobject definition** — belongs in a future `gradient.md` substrate spec. Field schema, seed entries, and consumer patterns live there; this spec covers only the `--gradient-<handle>` emission shape and skip rules.
-- **`text_style` metaobject definition** — belongs in a future `text_style.md` substrate spec. Field schema, the `h1`–`h6` handle convention, base-text-style settings binding, and per-style sizing semantics live there; this spec covers only how those entries translate into CSS variables + selectors.
+- **`text_style` metaobject definition** — belongs in a future `text-style.md` substrate spec. Field schema, the `h1`–`h6` handle convention, base-text-style settings binding, and per-style sizing semantics live there; this spec covers only how those entries translate into CSS variables + selectors.
 - **`typeface` / `font` metaobject definitions** — covered by `metaobject-definitions.md`; this snippet reads font-family transitively via `text_style.font_family`, but the typeface / font schemas themselves are out of this spec's surface.
 - **`<meta name="theme-color">` head tag** — covered by `utility--meta-theme-color.liquid` (its own snippet). Both consume `theme_color` entries; this spec emits to `:root`, that snippet emits to `<head>`.
 - **Asset pipeline / inline-CSS routing** — captured by `utility--core-assets`, piped through `utility--asset-loader`. This spec describes the snippet's output text; loader routing is out of scope.

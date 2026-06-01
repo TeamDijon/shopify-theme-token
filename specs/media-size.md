@@ -1,4 +1,4 @@
-# media_size
+# media-size
 
 **Layer**: substrate
 

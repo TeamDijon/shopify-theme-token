@@ -77,7 +77,7 @@ N/A — JS module.
 - **No-op when nothing changes.** `add` skips the write when every argument's key already exists. `remove` skips when no key matches. `clear` always calls `removeAttribute` even when the attribute is absent (cheap; idempotent).
 - **Empty set drops the attribute.** `remove`, when leaving zero tokens, calls `removeAttribute` rather than `setAttribute("data-modifiers", "")`. Keeps the rendered HTML clean and lets `:not([data-modifiers])` selectors match a fully-cleared element.
 - **No event emission.** Mutations don't dispatch a `change` event or call observers. Callers that need to react to mutations should observe the attribute themselves (`MutationObserver`) — uncommon; the manager assumes the caller owns the mutation and the reaction. Cross-component coordination uses `theme-events.js` (typed bus, Bucket B), not modifier emission — categorical state and semantic state transitions are separate channels.
-- **`add` does not update existing keys.** Design choice — `add("step:validating")` followed by `add("step:submitting")` leaves the attribute as `step:validating`, not `step:submitting`. To swap a key's value, `remove("step")` then `add("step:submitting")`. The two-step makes the swap intent visible at the call site. The silent no-op when the key already exists is a footgun for unfamiliar callers; the trap is documented here as the agent-first guard rail. If usage data later shows the footgun lands, an `upsert(modifier)` method is the additive fix — narrower than the dropped `setValue`.
+- **`add` does not update existing keys.** `add("step:validating")` followed by `add("step:submitting")` leaves the attribute as `step:validating`, not `step:submitting`. Value swaps go through explicit `remove("step")` + `add("step:submitting")` — the two-step makes the swap intent visible at the call site. An `upsert(modifier)` method is the additive fix when usage data shows a real need.
 - **Chainability.** All mutating methods return `this`. Reads (`has`) return their value, not the instance.
 
 ### Lifecycle (when used via BaseComponent)
@@ -143,3 +143,11 @@ Per `validation-contract.md` Tier 1d (substrate / utility-js).
 - **Cross-element batch operations**. One manager, one element. Bulk apply-to-many wraps `forEach` at the caller — out of scope here.
 - **Attribute-name configurability**. `data-modifiers` is hardcoded. A second attribute (e.g. `data-state`) would warrant a separate manager class, not a parameterized one — keeping the constructor signature single-arg is the design ceiling.
 - **Validation / schema enforcement**. The manager accepts any string as a key or value. Casing rules (kebab for keys, source-matching for values) are documented in `modifier-system.md` but not enforced at the JS layer.
+
+## Related
+
+- `base-component.md` — primary consumer; describes the lazy-getter / `disconnectedCallback` lifecycle driving `.clear()`
+- `document-utils.md` — exports `documentModifiers`, the html-element singleton instance of this class
+- `events-manager.md`, `observers-manager.md`, `cache-manager.md` — sibling substrate utility-js specs sharing the same v2.0.0 evolution pattern
+- `.context/docs/modifier-system.md` — the `data-modifiers` vocabulary (when/why), complementing this spec's API surface
+- `.context/rules/js-asset-convention.md` — file structure conventions

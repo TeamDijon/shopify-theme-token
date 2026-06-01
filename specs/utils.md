@@ -151,6 +151,6 @@ Per `validation-contract.md` Tier 1d (substrate / utility-js).
 
 - `base-component.md` — uses none of these directly today; future consumers (specialized sections from Bucket B) will compose `throttle` / `debounce` around event handlers
 - `cache-manager.md` — sibling substrate utility-js spec; covers element-scoped memoization (different concern from these pure utilities)
-- `dom.js` (planned spec) — sibling substrate utility-js with DOM-level lazy getters
-- `core.js` (planned spec) — re-exports these utilities to `window.Token.utils.*` for inline-script consumers
+- `dom.md` — sibling substrate utility-js with DOM-level lazy getters
+- `core.md` — re-exports these utilities to `window.Token.utils.*` for inline-script consumers
 - `.context/rules/js-asset-convention.md` — file structure (`@module @theme/utils`, JSDoc per export, changelog) the implementation file follows

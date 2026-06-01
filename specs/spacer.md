@@ -140,4 +140,7 @@ Per `validation-contract.md`:
 
 ## Related
 
-- Container patterns (rail-edge use, rhythm vs gap, vertical-alignment alternative): `.context/docs/container-patterns.md`
+- `section.md` — describes the block-rhythm cascade that spacer's `margin-block-start` inherits from
+- `theme-color.md` — `background_color` setting reads the metaobject for the optional colored band
+- `.context/docs/container-patterns.md` — rail-edge use, rhythm vs gap, vertical-alignment alternative
+- `.context/docs/design-system-metaobjects.md` — catalog-wide consumer patterns; spacing handle vocabulary

@@ -201,7 +201,7 @@ Per `validation-contract.md` Tier 1c (substrate / utility-css).
 ## Related
 
 - `utility--css-variables.md` — the scheme-dependent counterpart. The two files together cover the theme's full CSS-variable surface: constants here, scheme/settings-driven there.
-- `theme-color.md`, `text_style.md`, `gradient.md`, `container-style.md` — sibling substrate specs covering the design-system metaobjects. They depend on constants from this file (`--radius-*` for container-style variants, `--duration-*` for transitions).
+- `theme-color.md`, `text-style.md`, `gradient.md`, `container-style.md` — sibling substrate specs covering the design-system metaobjects. They depend on constants from this file (`--radius-*` for container-style variants, `--duration-*` for transitions).
 - `.context/docs/asset-loading.md` — explains the inline-CSS asset routing through `utility--core-assets`. `layer-base.css` is the first of the four per-layer files concatenated into the inline `<style>` block.
 - `.context/docs/css-standards.md` — component-rooted CSS naming, cascade layers convention, `:focus-visible` patterns.
 - `.context/rules/a11y-conventions.md` — focus + reduced-motion accessibility rules consumed by this file's reduced-motion override and focus-ring contract.

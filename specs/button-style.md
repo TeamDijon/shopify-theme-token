@@ -1,4 +1,4 @@
-# button_style
+# button-style
 
 **Layer**: substrate
 

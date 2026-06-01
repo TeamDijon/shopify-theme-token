@@ -1,6 +1,6 @@
 # section
 
-**Layer**: section host (Tier 3 host per `validation-contract.md`; carries L2 presets)
+**Layer**: 3
 
 **Type**: section host (`sections/section.liquid`)
 
@@ -83,7 +83,7 @@ Appearance defaults (typography, color, background, transitions, form-input styl
 
 The outer `.shopify-section` adds no theme-managed rules per the two-wrapper split (`section-convention.md` § Architecture).
 
-## CSS custom properties (emitted)
+## CSS custom properties (exposed)
 
 Per-instance vars emitted into the section's dynamic style block (scoped to `#shopify-section-<section.id>`):
 

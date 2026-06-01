@@ -1,4 +1,4 @@
-# container_style
+# container-style
 
 **Layer**: substrate
 

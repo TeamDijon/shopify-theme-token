@@ -24,7 +24,7 @@
 
 ## Purpose
 
-Blog-article tile primitive — image + date + title + excerpt + optional author, with whole-card clickability. The card is one of the few primitives that composes an interactive overlay link (`::after` pseudo on the title anchor) — this pattern lets the entire card act as a clickable surface while keeping the accessible-name story clean (one anchor, the title).
+Blog-article tile primitive — image + date + title + excerpt + optional author, with whole-card clickability. The card is one of the few primitives that composes an interactive overlay link (`::after` pseudo on the title anchor) — this pattern lets the entire card act as a clickable surface with a single anchor (the title) carrying the accessible name.
 
 The snippet is a sub-component primitive — never the root of a theme block. Consumed inline by archetype sections (blog-index, related-articles); the section owns the surrounding grid layout, the card owns its own composition + clickability.
 

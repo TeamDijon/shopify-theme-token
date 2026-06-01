@@ -93,7 +93,7 @@ Consumed by:
 
 - **Skip-on-default.** Each of the three vars is conditionally emitted. The conditions are: `content_width != blank`, `mobile_margin_block_start > 0`, `desktop_margin_block_start > 0`. Zero or blank values produce no declaration, preserving the cascade fallback chain.
 - **px → rem conversion for margins.** Both margin-block-start values are stored as px integers in the block's range setting (Shopify schema convention) but emitted in rem (`value | divided_by: 16.0 | round: 3`). The conversion centralizes the px-to-rem divisor so all 9 consumers share the same unit semantics. Three-decimal rounding (`round: 3`) preserves sub-pixel precision at typical font-sizes without emitting excessive trailing digits.
-- **`content_width` stays in px.** Unlike the margin pair, `--content-width` emits in px because the consuming bleed-grid `min(var(--content-width), 100% - 2 * var(--gutter))` rule reads against px-based gutter math. The unit asymmetry is documented in `content_width.md` and `theme-root.md`.
+- **`content_width` stays in px.** Unlike the margin pair, `--content-width` emits in px because the consuming bleed-grid `min(var(--content-width), 100% - 2 * var(--gutter))` rule reads against px-based gutter math. The unit asymmetry is documented in `content-width.md` and `theme-root.md`.
 - **No internal validation.** The snippet trusts its inputs — invalid metaobject references, malformed number values, etc. fall through to whatever Liquid produces (empty strings, `NaN` from divided_by, etc.). The block's setting schema is the validation layer; the utility just emits.
 - **Order-stable output.** Emission order is fixed: `content_width` → mobile margin → desktop margin. Predictable for debugging via DevTools.
 - **No newline emission within declarations.** Each `echo 'css declaration;'` produces one declaration per line in the captured string. Whitespace between lines comes from Liquid's standard echo handling.
@@ -142,7 +142,7 @@ Per `validation-contract.md` Tier 1b (substrate / utility-snippet).
 ## Related
 
 - `theme-root.md` — describes the block-rhythm cascade rule structure (`layer-theme.css` § Rhythm cascade) that consumes the per-instance margin vars
-- `content_width.md` — the metaobject this utility reads via the `content_width` arg
+- `content-width.md` — the metaobject this utility reads via the `content_width` arg
 - `spacing.md` — the metaobject that drives section-level `--block-rhythm`; the per-block margin override pair (this utility's job) acts as the override layer atop the section's rhythm
 - `utility--dynamic-style.md` (planned) — the snippet that scopes the captured CSS to `#shopify-block-<id>`
 - `section.md` — describes the section-level emission that the per-block override layer sits on top of
