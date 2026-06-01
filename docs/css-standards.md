@@ -190,6 +190,19 @@ A primitive designed without this regime forces consumers to override per-contex
 
 The substrate's responsibility: name the typographic context once at the wrapping element (via `text_style` modifiers or direct `font-size`). The primitive's responsibility: use em internally so its inner proportions follow.
 
+## Per-instance generic variable names + cascade inheritance
+
+Block-level dynamic-style emissions use **generic variable names** scoped per-instance (`--background-color`, `--text-color`, `--text-align`, `--content-width`, `--mobile-margin-block-start`, etc.) rather than component-prefixed names (`--richtext-text-color`). The scoping comes from `utility--dynamic-style`'s `#shopify-block-<id> { ... }` wrapper.
+
+**Cascade inheritance through block nesting is by design.** A `title` block with no `text_color` set, placed inside a `group` block that emits `--text-color: #foo`, inherits the group's value via CSS cascade. The title's component CSS reads `var(--text-color, var(--color-role-foreground-heading))`, so when the group's per-instance scope sets `--text-color`, the title reads the inherited value before falling through to the role-token default.
+
+This is the intended behavior — parent blocks contextualize their descendants' typography / color decisions without requiring the descendants to opt in. A merchant grouping a title + richtext under a single `group` with a foreground-color setting gets the color applied uniformly without per-block configuration.
+
+**Implications:**
+- Don't prefix variable names with the block name (`--richtext-text-color`) when the variable's intent is cascade-able. The generic name is the point.
+- Per-block component CSS uses `var(--<name>, <block-specific fallback>)` to express "inherit from parent context if set, otherwise this block's default."
+- Block-specific variables that should NOT cascade (e.g., `--spacer-block-size` — only meaningful on a spacer) keep the component prefix.
+
 ## Focus and motion
 
 - `:focus-visible` outlines use `--focus-ring-width` / `--focus-ring-offset` + `--color-role-focus-ring`; never `outline: none` without a replacement.
