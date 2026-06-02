@@ -4,9 +4,11 @@
 
 **Type**: utility-js (`assets/hydrate.js`)
 
-**Status**: spec
+**Status**: shipped
 
-**Implementation**: pending
+**Implementation**: `assets/hydrate.js` v1.0.0 (single named export `hydrateOnVisible`)
+
+**Reconciled**: 2026-06-02 — first build; matches spec API + Behavior. Added `hydrate` to `snippets/utility--import-map.liquid` v1.5.0 module_list. Not re-exported via `core.js` / `window.Token` (opt-in per ESM consumer, per spec).
 
 **Reviewed**: 2026-06-01
 
