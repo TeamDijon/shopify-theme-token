@@ -55,9 +55,10 @@ This is an informational gate, not a formal precondition. The developer's confir
 8. **For first-time builds**, flip the spec's `Status: spec` → `Status: shipped` and update specs-index.md entry status `(planned)` → `(shipped — first implementation)`.
 9. **Run `theme-check`** — must report zero offenses.
 10. **Light visual smoke** via the dev server + Playwright if the implementation is renderable. Catch obvious rendering regressions.
-11. **Stage commits:**
+11. **Append to `.context/specs/_spec-feedback.md`** when the implementation pass surfaced friction against the spec contract — gaps, ambiguities, decisions punted to the implementer, overlap or voice drift in the spec body. Row carries Worked / Friction / Tightening + candidate slugs in `<target>:<short-desc>` form. Skip when the implementation was friction-free; empty rows are noise. See the file's preamble for the Pass enum and slug conventions.
+12. **Stage commits:**
     - Main branch: code changes (one commit per logical unit, or one for the whole element if cohesive)
-    - Context branch: spec pin + Reconciled + Status updates
+    - Context branch: spec pin + Reconciled + Status updates + `_spec-feedback.md` row (when appended)
 
 ## Done state
 
