@@ -10,7 +10,7 @@
 
 **Reconciled**: 2026-06-01
 
-**Reviewed**: pending
+**Reviewed**: 2026-06-02
 
 **Depends on**: none — leaf module, no `@theme/*` imports. Uses Web Platform built-ins: `requestAnimationFrame` / `cancelAnimationFrame` (throttle), `setTimeout` / `clearTimeout` (debounce), `getComputedStyle` + `document.documentElement` (root-font-size).
 
