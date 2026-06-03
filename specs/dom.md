@@ -10,7 +10,7 @@
 
 **Reconciled**: 2026-06-01
 
-**Reviewed**: pending
+**Reviewed**: 2026-06-02
 
 **Depends on**: none — leaf module, no `@theme/*` imports. Uses Web Platform built-ins: `document.getElementById`.
 
@@ -20,11 +20,11 @@
 
 ## Purpose
 
-A single object (`dom`) exposing lazy getters for document-level structural elements that the theme reliably ships. Each getter calls `document.getElementById('<id>')` on read; missing elements warn via `console.warn` and return `null`.
+A single object (`dom`) cataloging document-level structural elements by stable, unique ID. Each property maps one well-known element to a `document.getElementById('<id>')` lookup performed lazily on read; missing elements warn via `console.warn` and return `null`.
 
-The module is intentionally **small** after v2.0.0 — it carries only `pageContent` today. Earlier versions exposed forward-looking getters (`header`, `footer`, `miniCart`, `cart`, `miniSearch`, `search`) for unshipped sections; these emitted console noise during dev whenever something touched them, encoded IDs that might not match the future sections, and were trimmed in v2.0.0. Each will be re-added when its section ships with a confirmed ID.
+The catalog carries only `pageContent` today — each future getter (header, footer, cart, search, etc.) lands when its section ships with a confirmed ID. Speculative additions create dev-time `console.warn` noise and risk encoding IDs that don't match the future markup.
 
-Pattern: lookups happen on read (lazy), not on module load. The cost is one `getElementById` call per access — fast (browser-optimized) but uncached. Consumers needing repeated access cache the reference themselves.
+Lookups are live, uncached. Consumers needing repeated access cache the reference themselves (e.g., via `CacheManager`'s `dom` cache type).
 
 ## API
 
@@ -43,7 +43,7 @@ Future getters will be added as sections ship — each entry pairs an ID (confir
 | `dom.cart` / `dom.miniCart` | `getElementById('<id>')` | Cart drawer / mini-cart specialized sections ship |
 | `dom.search` / `dom.miniSearch` | `getElementById('<id>')` | Search overlay / mini-search specialized sections ship |
 
-None of these exist on the shipped surface today. The v2.0.0 trim removed them to avoid the dev-time `console.warn` noise from accessing them before the underlying sections existed.
+None of these exist on the shipped surface today. Each entry lands with the section that owns its rendered markup.
 
 ## Output shape
 
@@ -64,7 +64,6 @@ N/A — JS module.
 - **`null` returned on missing element.** Consumers must handle the null case. The warning helps diagnose; the return value lets the consumer's code branch (skip the operation, fall back to a different element, etc.) without crashing.
 - **No element creation.** The module does not create elements that don't exist. Consumers wanting a guaranteed reference compose `dom.pageContent ?? document.createElement('main')` themselves — out of scope for this leaf module.
 - **No element mutation.** The module is a read-only catalog. Mutations (attribute changes, content swaps) happen at the consumer layer; this module is just a resolver.
-- **Trim policy.** The v2.0.0 trim removed 6 forward-looking getters. New getters are added only when the corresponding section ships with a confirmed ID. The discipline prevents the catalog drifting from the actual rendered markup.
 - **Re-export through core.js as `window.Token.dom`.** Inline scripts and Liquid templates access via `window.Token.dom.pageContent`. The module-specifier import (`import { dom } from '@theme/dom'`) is the modern path for ES module consumers.
 
 ## Locale keys
@@ -91,7 +90,7 @@ Per `validation-contract.md` Tier 1d (substrate / utility-js).
 - **Element creation.** The module reads existing markup; doesn't create elements. Consumers wanting a guaranteed reference compose at their layer.
 - **Element mutation.** Read-only catalog.
 - **Caching.** Lookups are lazy on read; no internal caching. Consumers wanting repeated access cache via `CacheManager` (the `dom` cache type is purpose-built).
-- **Query selectors.** Only `getElementById` is used today. Adding `querySelector`-based getters (e.g., `dom.firstButton`) is possible but hasn't earned its keep — IDs are sufficient for the document-level structural elements the module catalogs.
+- **Query selectors.** The catalog is keyed by unique ID — one named property per well-known element. `querySelector`-based getters (collection lookups, class-based selectors, ancestor walks) belong in the consumer or in `CacheManager`'s lookup cache; not in this resolver.
 - **Per-section element catalogs.** Each section's internal elements are the section's concern — this module is for *document-level* structural references shared across the theme.
 - **Custom-element references.** Custom elements upgrade asynchronously; a getter returning `<token-cart>` might be defined-but-not-upgraded. The module doesn't wait for `customElements.whenDefined`. Consumers needing upgrade-aware access compose with `customElements.whenDefined('<tag>')`.
 
