@@ -10,7 +10,7 @@
 
 **Reconciled**: 2026-06-01
 
-**Reviewed**: pending
+**Reviewed**: 2026-06-02
 
 **Depends on**: none — leaf module, no `@theme/*` imports. Wraps three Web Platform built-ins: `ResizeObserver`, `IntersectionObserver`, `MutationObserver`.
 
@@ -73,8 +73,9 @@ N/A — JS module.
 - **Per-type observe signatures preserved.** `ResizeObserver.observe(element, options)`, `IntersectionObserver.observe(element)` (options on constructor), `MutationObserver.observe(element, options)` — the manager routes correctly per `type`.
 - **Invalid `type` throws.** The `switch` block has a `default` case that throws `Error("Invalid observer type: <type>")` — the manager is strict about its whitelist. Adding a new observer type would mean extending the switch.
 - **`remove` disconnects per-record.** When two records match `(element, type, handler)` (duplicate add), `remove` disconnects both observers. The disconnect is per-instance, not per-target — `MutationObserver.disconnect()` clears its observation entirely (correct since the observer instance is single-target as created by the manager).
-- **No error swallowing.** Per the v2.0.0 changelog, the manager removed defensive try/catch wrappers. Invalid arguments (non-Element element) throw from the platform `observe` call. Diagnosable; not silently absorbed.
-- **No sugar methods.** v3.0.0 dropped `resize()`, `intersection()`, `mutation()` convenience methods. Callers use the canonical `add(element, type, handler, options)` form. Matches `CacheManager`'s no-sugar design — fewer surface points to maintain, type literal is the explicit contract.
+- **Element-disconnect divergence.** When an observed element disconnects from the DOM, the platform observer still holds a reference but no further callbacks fire (nothing to observe). The manager's record persists until `remove` / `removeFrom` / `clear` runs — `has()` will return `true` for a record whose target is detached. Functionally safe (no leak path; the reference releases when the manager record clears or the element gets garbage-collected), but the bookkeeping diverges from observable state until cleanup runs.
+- **No error swallowing.** Invalid arguments (non-Element element) throw from the platform `observe` call. Diagnosable; not silently absorbed.
+- **No sugar methods.** The canonical `add(element, type, handler, options)` form is the only entry point — no per-type convenience methods (`resize()` / `intersection()` / `mutation()`). Matches `CacheManager`'s no-sugar design; fewer surface points to maintain, type literal is the explicit contract.
 - **`clear()` is the BaseComponent contract.** Like the sibling managers, `clear()` is what BaseComponent calls in `disconnectedCallback`. Re-attaching elements lose all observers; consumers re-emit on reattach if needed.
 
 ### Lifecycle (when used via BaseComponent)
@@ -114,7 +115,7 @@ Per `validation-contract.md` Tier 1d (substrate / utility-js).
 - **Shared observer across elements.** Each `add` creates a new observer. A consumer wanting one `IntersectionObserver` watching 100 elements (common pattern for viewport-aware lists) constructs the observer outside the manager and feeds elements to `observer.observe(...)` directly. The manager's bookkeeping cost would dominate for that pattern.
 - **`PerformanceObserver` / `ReportingObserver` / future observer types.** The manager's whitelist is the three DOM-related observers. Adding new types means extending the `switch` block + the type-literal union; defer until a real consumer needs them.
 - **Throttle / debounce wiring.** Callers compose `throttle` / `debounce` from `utils.js` around their handler before passing to `add`. The manager stores whatever it's given.
-- **Per-type sugar methods.** v3.0.0 explicitly dropped `resize()` / `intersection()` / `mutation()`. The canonical `add(element, type, handler, options)` form is the contract; callers use the type literal directly.
+- **Per-type sugar methods.** Not provided. The canonical `add(element, type, handler, options)` form is the contract; callers use the type literal directly.
 - **Schema validation of options.** The manager forwards options to the platform constructors / observe calls verbatim. Invalid option shapes throw from the platform. No pre-validation.
 
 ## Related
