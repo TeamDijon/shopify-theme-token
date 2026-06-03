@@ -10,7 +10,7 @@
 
 **Reconciled**: 2026-05-29
 
-**Reviewed**: pending
+**Reviewed**: 2026-06-02
 
 **Depends on**: none — leaf module, no `@theme/*` imports
 
@@ -76,8 +76,8 @@ N/A — JS module.
 - **Single attribute write per mutation.** `add(...)` and `remove(...)` compute the new attribute string and call `setAttribute` once at the end — no incremental writes per argument. Chained mutations (`mgr.add(...).remove(...)`) produce two writes, one per call.
 - **No-op when nothing changes.** `add` skips the write when every argument's key already exists. `remove` skips when no key matches. `clear` always calls `removeAttribute` even when the attribute is absent (cheap; idempotent).
 - **Empty set drops the attribute.** `remove`, when leaving zero tokens, calls `removeAttribute` rather than `setAttribute("data-modifiers", "")`. Keeps the rendered HTML clean and lets `:not([data-modifiers])` selectors match a fully-cleared element.
-- **No event emission.** Mutations don't dispatch a `change` event or call observers. Callers that need to react to mutations should observe the attribute themselves (`MutationObserver`) — uncommon; the manager assumes the caller owns the mutation and the reaction. Cross-component coordination uses `theme-events.js` (typed bus, Bucket B), not modifier emission — categorical state and semantic state transitions are separate channels.
-- **`add` does not update existing keys.** `add("step:validating")` followed by `add("step:submitting")` leaves the attribute as `step:validating`, not `step:submitting`. Value swaps go through explicit `remove("step")` + `add("step:submitting")` — the two-step makes the swap intent visible at the call site. An `upsert(modifier)` method is the additive fix when usage data shows a real need.
+- **No event emission.** Mutations don't dispatch a `change` event or call observers. The component that mutates a modifier owns the reaction — no listener roundtrip needed; cross-component coordination flows through `theme-events.js` (typed bus, Bucket B), not modifier-attribute observation. Categorical state and semantic state transitions are separate channels. Callers that genuinely need to react to *external* modifier mutations attach a `MutationObserver` themselves.
+- **`add` is key-level, not value-level.** When the key already exists in the attribute, the call is a no-op — the existing value stays. Variadic; multiple new keys can be added in one call producing one DOM write.
 - **Chainability.** All mutating methods return `this`. Reads (`has`) return their value, not the instance.
 
 ### Lifecycle (when used via BaseComponent)
@@ -136,8 +136,9 @@ Per `validation-contract.md` Tier 1d (substrate / utility-js).
 
 ## Out of scope
 
-- **Multi-value per key**. The "no atomic update" design is intentional: each key holds at most one value. Composite states (`state:loading + state:validating`) get modeled as two keys (`step:validating`, `phase:loading`) or a structured value (`state:loading-validating`), not duplicate-key tokens. Adding multi-value support would force value-aware `remove` semantics across the API.
-- **Atomic value swap** (`replace` / `setValue`). v2.0.0 explicitly dropped `setValue` after usage data showed it was rarely reached. The explicit `remove(key)` + `add(key:value)` pair is the sanctioned swap; the verbosity is a feature.
+- **Multi-value per key**. Each key holds at most one value. Composite states (`state:loading + state:validating`) get modeled as two keys (`step:validating`, `phase:loading`) or a structured value (`state:loading-validating`), not duplicate-key tokens. Adding multi-value support would force value-aware `remove` semantics across the API.
+- **Overwrite-on-add semantic.** `add` on an existing key is a no-op — value isn't replaced. The Set/Map/classList "overwrite or set" convention isn't followed here; routing value swaps through `add` would lose call-site visibility on swap intent.
+- **Atomic value swap** (`replace` / `setValue` / `upsert`). Not provided. The two-step `remove(key)` + `add(key:value)` pair is the sanctioned swap (see "Overwrite-on-add semantic" above for the rationale). If usage data shows a real need, `upsert(modifier)` is the additive fix.
 - **Class-attribute mirroring**. The manager does not sync to `element.classList`. CSS hooks live on `[data-modifiers*='...']` selectors only.
 - **Event emission**. No `modifierchange` event. Consumers needing reactivity attach their own `MutationObserver` or coordinate via the caller that triggered the mutation.
 - **Cross-element batch operations**. One manager, one element. Bulk apply-to-many wraps `forEach` at the caller — out of scope here.
