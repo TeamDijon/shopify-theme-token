@@ -18,6 +18,34 @@ All inline REVIEW markers on a spec have been discussed and reached resolution (
 - The resolution per marker (from the discussion thread)
 - Any code-side propagation the review settled (renames, version bumps, behavioral changes)
 
+## Marker convention
+
+REVIEW markers carry an intent prefix that signals the expected response shape: `<!-- REVIEW: <Prefix> - <body> -->`.
+
+| Prefix | Marker shape | Expected response |
+|---|---|---|
+| `Question` | Open analysis ask | Propose direction; spec changes likely |
+| `Check` | Pointed verification of a claim or assumption | Confirm or push back; may or may not lead to spec changes |
+| `Spec` | Direct edit instruction | Apply; push back if the direction is wrong |
+| `Chat` | Conversational ask for the developer's understanding | Explain; no spec changes expected |
+
+Examples:
+
+```
+<!-- REVIEW: Question - Thoughts on the API? -->
+<!-- REVIEW: Check - Is the cache really lazy here? -->
+<!-- REVIEW: Spec - Replace "uncommon" with the actual reason. -->
+<!-- REVIEW: Chat - Out of curiosity, any potential consumers come to mind? -->
+```
+
+Inline modulators inside the body fine-tune scope: `Question - Briefly, ...` for a terse take; `Spec - Apply directly, ...` to skip the proposal step.
+
+Markers without a prefix are treated as `Question` by default (broadest shape).
+
+## Unmarked observations
+
+The reviewing agent may surface friction it noticed beyond the developer's markers — voice drift, missing Behavior bullets, cross-spec pattern matches. Default policy: include them in a labeled section in the review reply, scannable separately from marker discussions. The developer accepts or dismisses each; rejected unmarked observations get logged as feedback if they indicate scope creep.
+
 ## Checklist
 
 1. **Verify zero unresolved markers remain:** `grep -n 'REVIEW:' <spec-file>`. If any unresolved markers exist, surface them; do not proceed.
