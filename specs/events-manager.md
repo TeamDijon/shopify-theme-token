@@ -10,7 +10,7 @@
 
 **Reconciled**: 2026-06-01
 
-**Reviewed**: pending
+**Reviewed**: 2026-06-02
 
 **Depends on**: none — leaf module, no `@theme/*` imports
 
@@ -59,7 +59,8 @@ N/A — JS module.
 - **Options carried verbatim.** The `options` argument (boolean capture flag or `{ capture, passive, once, signal }` object) is stored alongside the listener and replayed exactly on removal. `removeEventListener` requires the options to match the original add to actually detach the listener — the manager preserves them so callers don't have to.
 - **No options match on remove.** `remove(element, type, handler)` removes every record matching `(element, type, handler)` regardless of stored options. A caller that attached the same handler twice with different options removes both records in one `remove` call. The DOM-level `removeEventListener` is called once per record with that record's options.
 - **No deduplication on add.** Calling `add(el, "click", handler)` twice attaches the listener twice in the DOM and stores two records. The browser's `addEventListener` itself deduplicates identical `(type, handler, capture)` triples (per the spec), but the manager doesn't pre-check — it forwards the call and stores the record. Callers needing dedupe use `has()` first or de-dupe at their own layer.
-- **No error swallowing.** Per the v2.0.0 changelog, the manager removed defensive try/catch wrappers. Invalid arguments (non-EventTarget element, non-function handler) throw the platform error from `addEventListener` directly. Diagnosable; not silently absorbed.
+- **No error swallowing.** Invalid arguments (non-EventTarget element, non-function handler) throw the platform error from `addEventListener` directly. Diagnosable; not silently absorbed.
+- **AbortSignal divergence.** When a caller passes `{ signal }` and the signal aborts, the DOM layer detaches the listener but the manager's record persists until `remove` / `removeFrom` / `clear` runs. Functionally safe (a later `remove` is a no-op on an already-detached listener), but `has()` will return `true` for a record the DOM no longer holds. Callers using `AbortSignal`-based teardown should treat the manager's record as authoritative-by-time, not authoritative-by-DOM-state.
 - **`clear()` is the BaseComponent contract.** BaseComponent's `disconnectedCallback` calls `.clear()` on its lazy-instantiated managers. Components that re-attach to the DOM (custom element re-attach is allowed by the platform) lose all listeners on detach; re-emitting initial listeners on re-attach is the consumer's responsibility.
 - **Reference equality matters for handlers.** Inline-arrow-function handlers passed to `add` aren't equal across calls — a consumer doing `mgr.add(el, "click", () => doThing())` then trying `mgr.remove(el, "click", () => doThing())` will not find the record. Standard `addEventListener` discipline (store the handler reference; pass the same reference to add + remove).
 - **No event bus, no dispatching.** The manager only attaches/detaches listeners on existing elements. Custom event dispatch and cross-component event coordination are out of scope (Bucket B's `theme-events.js` will own that channel when it ships).
