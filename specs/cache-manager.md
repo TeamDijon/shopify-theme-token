@@ -10,7 +10,7 @@
 
 **Reconciled**: 2026-06-01
 
-**Reviewed**: pending
+**Reviewed**: 2026-06-02
 
 **Depends on**: none — leaf module, no `@theme/*` imports
 
@@ -53,15 +53,15 @@ N/A — JS module.
 
 ## Behavior
 
-- **`dom` type pre-initialized.** The constructor seeds `#caches` with `["dom", new Map()]`. The common pattern (`cache.get("dom", "section", () => this.closest(".shopify-section"))`) works without an explicit cache-type setup. Other types auto-vivify.
+- **`dom` type pre-initialized.** The constructor seeds `#caches` with `["dom", new Map()]` — one Map allocation at construction time. The common pattern (`cache.get("dom", "section", () => this.closest(".shopify-section"))`) works without an explicit cache-type setup. Other types auto-vivify on first `set` / `get`.
 - **`get` is the lazy-memoize entry point.** First call computes via `computeFunction`, stores, returns. Subsequent calls return the cached value. The compute function isn't called when the cache hits — guard expensive setup behind `cache.get` to avoid redundant work.
 - **TTL is per-entry, not per-cache.** Different keys in the same cache type can have different TTLs. Useful when caching one piece of data fresh-for-30-seconds and another fresh-for-an-hour.
 - **TTL stored as absolute timestamp.** `expiresAt = Date.now() + ttl` is captured at `set` time. Comparing against `Date.now()` at `get` time tells whether the entry is fresh. Time-shifts (system clock changes mid-session) could theoretically misbehave; not guarded against (negligible in practice).
 - **Expired entries auto-delete on `get`.** The first `get` after expiry drops the entry from the cache + calls `computeFunction` to recompute. No background cleanup; expired entries persist in memory until the next `get` touches them.
-- **`has` is TTL-blind.** An expired entry still reports `true` from `has`. The function checks Map presence, not freshness. Callers needing freshness use `get` (which recomputes on expiry); `has` is for "is there any record at this key" semantics.
+- **`has` is TTL-blind.** An expired entry still reports `true` from `has`. The function checks Map presence, not freshness — `get` is the freshness-aware path (recomputes on expiry). The typical access pattern (`get(type, key, computeFn)`) doesn't reach for `has` at all; `has` exists for introspection where "is there any record at this key" is the relevant question.
 - **`set` returns the stored value.** Symmetric with `get` returning the cached value. Useful for chaining (`const value = cache.set("dom", "thing", computeThing())` reads naturally).
 - **`clear` is selective or full.** `cache.clear("dom")` empties just the dom cache; `cache.clear(["dom", "api"])` empties multiple; `cache.clear()` empties all. The selective form lets a component invalidate one concern without flushing unrelated caches.
-- **No error swallowing.** Per the v2.0.0 changelog, the manager removed defensive try/catch wrappers and over-engineered methods (`getTypes`, `getSize`, `removeIf`). Invalid arguments throw from native Map operations. Diagnosable; not silently absorbed.
+- **No error swallowing.** Invalid arguments throw from native Map operations. Diagnosable; not silently absorbed.
 - **`computeFunction` errors propagate.** When `get` calls the compute function and it throws, the error reaches the caller; no entry is stored. Subsequent `get` calls re-attempt.
 
 ### Lifecycle (when used via BaseComponent)
@@ -111,7 +111,7 @@ Per `validation-contract.md` Tier 1d (substrate / utility-js).
 - **Background cleanup of expired entries.** Expired entries persist in memory until the next `get` touches them. A long-lived component with TTL'd entries it never re-reads keeps the entries indefinitely. Not a real-world issue for the current scale; revisit if memory pressure surfaces.
 - **LRU eviction / size limits.** The cache has no maximum size; entries accumulate until `clear` runs. Per-component caches are bounded by the component's lifetime (cleared on disconnect); document-level caches are bounded by the page session.
 - **Cross-instance cache sharing.** Each `CacheManager` instance is independent. A shared cache across components would mean a singleton — out of scope for this class. Document-level singletons live in `document-utils.js`.
-- **Cache invalidation by predicate.** v2.0.0 explicitly dropped `removeIf`. Selective invalidation happens by type (`clear("api")`) or full (`clear()`). Per-key invalidation needs a `delete` method — not currently exposed, added when a real consumer needs it.
+- **Cache invalidation by predicate.** Not provided. Selective invalidation happens by type (`clear("api")`) or full (`clear()`). Per-key invalidation (a `delete` method) would be the additive fix when usage data shows a real need.
 - **Serialization / persistence.** The cache is in-memory only. Survive-reload caching uses platform APIs (`localStorage`, IndexedDB) outside this class.
 
 ## Related
