@@ -10,7 +10,7 @@
 
 **Reconciled**: 2026-06-01
 
-**Reviewed**: pending
+**Reviewed**: 2026-06-02
 
 **Depends on**:
 - `@theme/modifiers-manager` — `ModifiersManager` class, used to construct the `documentModifiers` singleton bound to `document.documentElement`
@@ -32,7 +32,7 @@ Three document-level singletons that don't fit the per-element manager pattern. 
 | `documentScroll` | Scroll-lock helper. Locks the page scroll while a modal/drawer is open by freezing `scrollY` into `inset-block-start` + adding the `locked-scroll` modifier. |
 | `documentScrollbar` | Scrollbar-width tracking + `--scrollbar-width` CSS variable emission. Lazy ResizeObserver on `document.documentElement`. |
 
-The module was extracted from `core.js` in core v1.1.0 to keep the entry point focused on imports + namespace duties. Document-level singletons accrete here as new patterns land (future: theme switcher, locale flags, etc.).
+The module holds document-level singletons that don't fit the per-element manager pattern. New patterns accrete here as they land (future: theme switcher, locale flags, etc.).
 
 ## API
 
@@ -71,7 +71,7 @@ A small object exposing one property:
 **Lock mechanism** (when set to `true`):
 1. `document.documentElement.style.scrollBehavior = "auto"` (prevents the lock from animating)
 2. `document.documentElement.style.insetBlockStart = -<scrollY>px` (visually freezes the viewport at its current scroll position)
-3. `documentModifiers.add("locked-scroll")` (CSS hook for `position: fixed` or `overflow: hidden` rules on the html / body)
+3. `documentModifiers.add("locked-scroll")` (CSS hook consumed by `position: fixed` rules on html/body — pairs with the inset-block-start freeze in step 2)
 
 **Unlock mechanism** (when set to `false`):
 1. `documentModifiers.remove("locked-scroll")` (removes the CSS hook)
@@ -173,6 +173,6 @@ Per `validation-contract.md` Tier 1d (substrate / utility-js).
 
 - `modifiers-manager.md` — the class that `documentModifiers` instantiates; full API surface lives there
 - `events-manager.md`, `observers-manager.md`, `cache-manager.md` — sibling substrate utility-js specs (per-element manager pattern; this module is the document-level counterpart for shared singletons)
-- `core.md` — re-exports these singletons into `window.Token.utils.*` for inline-script consumers; the v1.1.0 extraction note documents the move from core.js to document-utils.js
+- `core.md` — re-exports these singletons into `window.Token.utils.*` for inline-script consumers
 - `utils.md` — pure-utility sibling spec (no DOM coupling); document-utils is the DOM-coupled sibling
 - `.context/rules/js-asset-convention.md` — file structure (`@module @theme/document-utils`, JSDoc per export) the implementation file follows
