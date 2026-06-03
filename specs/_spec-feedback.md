@@ -76,6 +76,8 @@ Candidates lifted into real edits. Preserves the trail so a future reviewer can 
 
 | Landed | Candidate | Target file | Commit |
 |---|---|---|---|
+| 2026-06-02 | `voice:version-history-belongs-in-changelog` | `reference-voice.md` — new bullet under "Avoid" naming version-history references as residue (7 recurrences / 14 sites across substrate-JS wave 2026-06-02) | `c42508e` |
+| 2026-06-02 | `template:itd-vs-oos-split` (broadened: OOS is canonical non-features home) | `_template.md` — three section-description tightenings (Behavior: current-state-only clarifier; ITD: choices-made-during-build boundary; OOS: expanded scope description) | `c42508e` |
 
 ## Archived (demoted)
 
@@ -90,3 +92,4 @@ Dated entries from the developer's review passes. One row per review pass, even 
 
 | Date | Promoted | Demoted | Note |
 |---|---|---|---|
+| 2026-06-02 | `voice:version-history-belongs-in-changelog` (7×14 sites); `template:itd-vs-oos-split` (2 recurrences, broadened framing) | — | First periodic-review pass on the spec-feedback mechanism, run at the end of the substrate-JS review wave (8 specs reviewed in one day). Three singleton candidates (`template:throw-path-bullet`, `convention:no-window-token-explicit`, `template:design-principle-upfront-purpose`) defer to the next pass — too thin to promote on one occurrence. Both promotions landed as `c42508e` on context. |
