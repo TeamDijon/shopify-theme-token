@@ -52,6 +52,8 @@ Component-rooted per `css-standards.md`. Sketch the structural rules; full imple
 
 ## Behavior
 
+Describe current-state behavior only. Forward-looking deferrals ("would be the additive fix if…") belong in Out of scope; choices made during the build belong in Implementation-time decisions.
+
 - Branch behavior per API combination
 - Early-exit conditions
 - Edge-case handling (blank inputs, malformed data, missing dependencies)
@@ -80,13 +82,15 @@ Per `validation-contract.md`:
 
 ## Implementation-time decisions
 
-Open questions deferred to the build pass — small choices that don't gate spec sign-off but need a call before the file ships. Omit the section when none apply (typical for retrofit specs of shipped elements).
+Open questions deferred to the build pass — small choices that don't gate spec sign-off but need a call before the file ships. This section is for choices that get made *during* implementation, not forward-looking deferrals (those belong in Out of scope). Omit the section when none apply (typical for retrofit specs of shipped elements).
 
 ## Seed entries (metaobject-type specs only)
 
 For metaobject-type specs, list the recommended seeded catalog (handle / name / field values) per `metaobject-definitions.md` § <type>. The seed table is what the implementation step writes into a fresh store; load-bearing handles (those the runtime / CSS treats as canonical) are flagged here. Omit this section entirely for non-metaobject specs.
 
 ## Out of scope
+
+The canonical home for what the element does NOT do — absent methods, deliberate non-features, design boundaries against common API intuitions, forward-looking "if needed, additive path X" deferrals. When a non-feature or deferral is referenced in another section, OOS is the destination.
 
 - Explicit non-goals — patterns or features this element does NOT cover, so the next reader doesn't ask "should it do X?"
 

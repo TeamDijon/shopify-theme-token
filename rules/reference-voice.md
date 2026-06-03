@@ -11,6 +11,7 @@ Reference docs (conventions, specs, architecture, rules) state **what is** — n
 Avoid:
 - **Motivational framing** — "prevents the common failure mode", "makes X work"
 - **Journey / correction residue** — "more precisely", "actually", "not a workaround"
+- **Version-history references** — "Per v2.0.0…", "Was renamed in v1.3.0", "Earlier versions exposed…". This spec's history lives in the changelog comment / git log; the body describes the current contract. Implementation pin headers and Related-section cross-spec convergence references (e.g., "same v2.0.0 evolution pattern as modifiers-manager") are the only sanctioned places version literals appear.
 - **Rhetorical questions as rules** — write the rule as a statement
 - **Defensive rebuttals** — "not the X you'd assume"; state the positive rule only
 - **Editorializing** — "the most common mistake is…", "it's worth noting"
