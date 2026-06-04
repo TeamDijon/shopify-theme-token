@@ -34,10 +34,12 @@
     <h1>Spacing</h1>
     <p>
       Source: <code>metaobjects.spacing.values</code>. Each entry holds
-      a <code>mobile_value</code> and <code>desktop_value</code> pair
-      (px). Emitted globally by <code>utility--css-variables</code> v1.13.0+
-      as <code>--spacing-&lt;handle&gt;</code> (mobile in <code>:root</code>,
-      desktop in nested <code>@media (width >= 48rem)</code>). Substrate-aligned
+      a <code>mobile_value</code> and optional <code>desktop_value</code>
+      pair (merchant-facing px). Emitted globally by <code>utility--css-variables</code>
+      v1.14.0+ as <code>--spacing-&lt;handle&gt;</code> in rem
+      (mobile in <code>:root</code>, desktop in nested
+      <code>@media (width >= 48rem)</code> when <code>desktop_value</code> is set;
+      skipped otherwise so the mobile value carries through). Substrate-aligned
       handles (<code>xs</code>/<code>sm</code>/<code>md</code>/<code>lg</code>/<code>xl</code>)
       override the <code>layer-base.css</code> defaults via cascade position.
       Sections consume the namespace through <code>block_rhythm</code>, emitting

@@ -1,7 +1,8 @@
-{% # CSS Variables v1.13.0 %}
+{% # CSS Variables v1.14.0 %}
 
 {% comment %}
   Changelog
+  - v1.14.0 — `--spacing-<handle>` emission harmonized to rem (was px), matching gutter / text-style / block-layout-vars / substrate-defaults. Merchant-px input converted via `divided_by: 16.0 | round: 3` at emit time. `@media (width >= 48rem)` branch now skips entries with blank `desktop_value` — mobile value carries through at all viewports via CSS cascade (useful for static-size entries that don't scale at the breakpoint). Schema relaxation: `desktop_value` becomes optional. Per-project CSS doing arithmetic on `--spacing-<handle>` (e.g., `calc(var(--spacing-md) * 2)`) gets rem-typed results instead of px; semantically equivalent at default root font-size, now scales with user accessibility preferences.
   - v1.13.0 — emit `--spacing-<handle>` for every `spacing` metaobject entry (mobile value in :root, desktop value in nested @media (width >= 48rem)). Substrate (`assets/layer-base.css`) seeds `--spacing-xs/sm/md/lg/xl` defaults; metaobject entries with matching handles override via cascade position. Non-matching handles add new spacing slots that coexist with the substrate scale. Components consume the unified namespace anywhere (`var(--spacing-md)` for static, `var(--spacing-<dynamic>)` via per-instance dynamic-style for picked). Block-rhythm migrates from `--block-rhythm-mobile/desktop` (px values emitted by section.liquid) to a single `--block-rhythm: var(--spacing-<picked-handle>)` reference, resolving responsively through the spacing token's @media branch. layer-theme.css updates from `var(--block-rhythm-mobile)` / `var(--block-rhythm-desktop)` to `var(--block-rhythm)` for the inter-block margin rule.
   - v1.12.0 — gradient emission gains per-stop opacity hooks. Each `--gradient-<handle>` declaration now wraps its scheme-role stops in `rgb(from var(--color-role-X) r g b / var(--gradient-<handle>-<start|end>-opacity))`, and a sibling `--gradient-<handle>-start-opacity: 1` + `--gradient-<handle>-end-opacity: 1` pair emits alongside. Consumers can override the opacity at block-level (`--gradient-hero-start-opacity: 0.7;`) to soften either stop without composing a new gradient. Default behavior unchanged (α=1 on both stops). Per-project CSS reading `--gradient-<handle>` directly continues to work; only the resolved value gains alpha-aware composition.
   - v1.11.0 — drop all `--color-role-*-rgb` companion variables (background, foreground, foreground-heading, primary, border, shadow, input-text). Translucent compositions migrate to `rgb(from var(--color-role-X) r g b / <alpha>)` relative-color syntax — drop-in replacement preserving Token's fractional `--opacity-*` alpha pattern, no channel storage needed. `::selection` and the seven derived tokens (`--color-role-foreground-muted`, `--color-role-placeholder`, `--color-role-disabled-{background,text,border}`, `--color-role-backdrop`, `--shadow-{sm,md,lg}`) all migrated. Also drops the `[data-text-style='<handle>']` selector arm from the text-style block — `data-modifiers="text-style:<handle>"` is the single canonical surface for categorical state per `modifier-system.md`. Per-project CSS using `rgba(var(--color-role-X-rgb), Y)` must migrate to the new syntax; CSS targeting `[data-text-style]` must migrate to the modifier form.
@@ -237,7 +238,8 @@
     --gutter: var(--mobile-gutter);
 
     {% for spacing in metaobjects.spacing.values %}
-      --spacing-{{ spacing.system.handle }}: {{ spacing.mobile_value.value }}px;
+      {%- assign mobile_value_rem = spacing.mobile_value.value | divided_by: 16.0 | round: 3 -%}
+      --spacing-{{ spacing.system.handle }}: {{ mobile_value_rem }}rem;
     {% endfor %}
 
     @media (width >= 48rem) {
@@ -246,7 +248,10 @@
       {% endif %}
 
       {% for spacing in metaobjects.spacing.values %}
-        --spacing-{{ spacing.system.handle }}: {{ spacing.desktop_value.value }}px;
+        {%- if spacing.desktop_value.value != blank -%}
+          {%- assign desktop_value_rem = spacing.desktop_value.value | divided_by: 16.0 | round: 3 -%}
+          --spacing-{{ spacing.system.handle }}: {{ desktop_value_rem }}rem;
+        {%- endif -%}
       {% endfor %}
     }
   }
