@@ -6,26 +6,27 @@
 
 **Status**: shipped
 
-**Implementation**: `snippets/utility--css-variables.liquid` v1.11.0 (CSS variable emitter)
+**Implementation**: `snippets/utility--css-variables.liquid` v1.14.0 (CSS variable emitter)
 
-**Reconciled**: 2026-05-31
+**Reconciled**: 2026-06-04 (v1.12 added gradient per-stop opacity hooks; v1.13 added spacing-metaobject emission; v1.14 harmonized spacing emission to rem)
 
-**Reviewed**: 2026-05-31
+**Reviewed**: 2026-06-04
 
 **Depends on**:
 - `theme_color` metaobject (`system.handle`, `hex_code.value`)
 - `gradient` metaobject (`system.handle`, `angle.value`, `color_start.value`, `color_end.value`)
 - `text_style` metaobject (many fields — see `.context/docs/design-system-metaobjects.md`)
 - `typeface` metaobject (transitively via `text_style.font_family`)
+- `spacing` metaobject (`system.handle`, `mobile_value.value`, `desktop_value.value`)
 - Theme settings: `color_schemes` (built-in), `base_text_style`, `mono_font`, `serif_font`, `sans_serif_font`, `mobile_gutter`, `desktop_gutter`
 
 **Consumers**: `snippets/utility--core-assets.liquid` — captures this snippet's output alongside `utility--font-face` and routes the combined block through `utility--asset-loader` as inline CSS
 
 ## Purpose
 
-The design-system CSS variable emitter. Translates the design-system metaobjects (`theme_color`, `gradient`, `text_style`) and theme settings (`color_schemes`, gutters, base text style) into CSS custom properties on `:root` and per-scheme rule blocks. The output is the substrate every L0 / L1 / section consumer reads from when sourcing color, typography, or spacing.
+The design-system CSS variable emitter — the single capture-and-route surface for substrate-level CSS custom properties. Translates four design-system metaobjects (`theme_color`, `gradient`, `text_style`, `spacing`) and theme settings (`color_schemes`, gutters, base text style) into CSS custom properties on `:root` and per-scheme rule blocks. The per-scheme block is the distinctive surface: it's where the substrate becomes scheme-adaptive, and where every L0 / L1 / section consumer sources color, typography, and spacing.
 
-Five emission domains: theme palette (`--color-<handle>`), gradient catalog (`--gradient-<handle>`), color-scheme role tokens (`--color-role-*`), text-style typography (`--<handle>-font-*` + `--base-*` aliases), and gutter spacing (`--gutter`). The color-scheme role token system is the surface `theme-color.md` § Out of scope defers to — its contract lives here.
+Six emission domains: theme palette (`--color-<handle>`), gradient catalog (`--gradient-<handle>` + per-stop opacity hooks), color-scheme role tokens (`--color-role-*`), text-style typography (`--<handle>-font-*` + `--base-*` aliases), gutter spacing (`--gutter`), and named spacing tokens (`--spacing-<handle>`). The color-scheme role token system is the surface `theme-color.md` § Out of scope defers to — its contract lives here.
 
 ## API
 
@@ -39,7 +40,7 @@ The dependency surface is enumerated in `Depends on` above. Callers wrap the ren
 
 ## Output shape
 
-Six emission blocks captured together and echoed once. Block order is fixed; the per-scheme block depends on theme colors / gradients being declared first so that scheme-targeting selectors don't override the `:root` palette.
+Seven emission blocks captured together and echoed once. Block order is fixed; the per-scheme block depends on theme colors / gradients being declared first so that scheme-targeting selectors don't override the `:root` palette. The spacing block emits late so its metaobject entries override substrate T-shirt slots from `layer-base.css` via cascade position.
 
 ### 1. Theme palette (`:root`)
 
@@ -57,12 +58,18 @@ Definition contract is owned by `theme-color.md`; this spec covers only emission
 
 ```css
 :root {
-  --gradient-primary: linear-gradient(135deg, var(--color-role-foreground), var(--color-role-background));
-  /* one line per non-reserved gradient entry; angle defaults to 135deg when blank */
+  --gradient-primary: linear-gradient(
+    135deg,
+    rgb(from var(--color-role-foreground) r g b / var(--gradient-primary-start-opacity)),
+    rgb(from var(--color-role-background) r g b / var(--gradient-primary-end-opacity))
+  );
+  --gradient-primary-start-opacity: 1;
+  --gradient-primary-end-opacity: 1;
+  /* triplet per non-reserved gradient entry; angle defaults to 135deg when blank */
 }
 ```
 
-Scheme-adaptive: stops reference per-scheme role tokens (`var(--color-role-<start>)`, `var(--color-role-<end>)`), so one declaration re-resolves under each scheme block. The `background` handle is reserved for the per-scheme background-gradient and skips emission here. Entries with blank `color_start` or `color_end` skip emission.
+Scheme-adaptive: stops reference per-scheme role tokens (`var(--color-role-<start>)`, `var(--color-role-<end>)`), so one declaration re-resolves under each scheme block. Each stop's alpha is opacity-hooked — consumers override `--gradient-<handle>-start-opacity` or `--gradient-<handle>-end-opacity` at block scope to soften either stop without composing a new gradient (defaults: α=1 on both). The `background` handle is reserved for the per-scheme background-gradient and skips emission here. Entries with blank `color_start` or `color_end` skip emission.
 
 ### 3. `::selection`
 
@@ -189,6 +196,25 @@ Selector auto-bind: text_style handles `h1`–`h6` get the corresponding tag sel
 
 `--gutter` is the responsive alias every layout consumer reads; the explicit `--mobile-gutter` / `--desktop-gutter` are available for callers that need the breakpoint values directly. Source is `settings.mobile_gutter` / `settings.desktop_gutter` (pixel values converted to rem at the 16px divisor).
 
+### 7. Named spacing tokens (`:root` + nested `@media`)
+
+```css
+:root {
+  --spacing-xs: 0.25rem;   /* one line per spacing metaobject entry */
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  /* ... */
+
+  @media (width >= 48rem) {
+    --spacing-md: 1.5rem;  /* desktop override per entry; emitted only when desktop_value is set */
+  }
+}
+```
+
+One `--spacing-<handle>` per `spacing` metaobject entry. Merchant input is in px (the `mobile_value` / `desktop_value` schema fields); emission converts to rem at write time via `divided_by: 16.0 | round: 3`, matching the codebase-wide merchant-px / front-end-rem convention. The `@media (width >= 48rem)` branch skips entries with blank `desktop_value` — the mobile value carries through at all viewports via CSS cascade.
+
+Entries whose handles match the substrate T-shirt slots (`xs` / `sm` / `md` / `lg` / `xl` from `layer-base.css`) override the substrate defaults via cascade position — same variable namespace, later wins. Entries with custom handles add new spacing slots that coexist with the substrate scale.
+
 ## CSS
 
 N/A — utility emits CSS as captured text, not as a per-element stylesheet attached to any markup.
@@ -198,7 +224,7 @@ N/A — utility emits CSS as captured text, not as a per-element stylesheet atta
 | Group | Variables | Source |
 |---|---|---|
 | Theme palette | `--color-<handle>` (one per entry) | `theme_color.hex_code.value` |
-| Gradients | `--gradient-<handle>` (one per non-reserved entry) | `gradient` metaobject; scheme-adaptive via role-token interpolation |
+| Gradients | `--gradient-<handle>` + `--gradient-<handle>-start-opacity` + `--gradient-<handle>-end-opacity` (triplet per non-reserved entry) | `gradient` metaobject; scheme-adaptive via role-token interpolation; per-stop alpha overridable at consumer scope (defaults: α=1) |
 | Scheme background | `--color-role-background`, `--gradient-background` | `scheme.settings.background` (+ optional `background_gradient`) |
 | Scheme foreground | `--color-role-foreground`, `--color-role-foreground-heading`, `--color-role-foreground-muted` (derived) | `scheme.settings` + opacity scale |
 | Scheme primary | `--color-role-primary`, `--color-role-focus-ring` (alias) | `scheme.settings.primary` |
@@ -211,6 +237,7 @@ N/A — utility emits CSS as captured text, not as a per-element stylesheet atta
 | Text styles | `--<handle>-font-family`, `-font-style`, `-font-size`, `-line-height`, `-font-weight`, `-letter-spacing`, `-text-transform`, `-text-decoration` (×8 per style) | `text_style` metaobject |
 | Base aliases | `--base-font-family`, `-font-style`, `-font-size`, `-line-height`, `-font-weight`, `-letter-spacing`, `-text-transform`, `-text-decoration` | text_style matching `settings.base_text_style` |
 | Gutter | `--mobile-gutter`, `--desktop-gutter`, `--gutter` | `settings.{mobile,desktop}_gutter` |
+| Named spacing | `--spacing-<handle>` (one per `spacing` entry; mobile value in `:root`, desktop value in `@media (width >= 48rem)` when set) | `spacing` metaobject; px-to-rem at the 16-divisor; substrate-aligned handles override `layer-base.css` defaults via cascade position |
 
 ## Behavior
 
@@ -218,6 +245,7 @@ N/A — utility emits CSS as captured text, not as a per-element stylesheet atta
 - **Brightness-derived opacity threshold at 64/255.** `scheme.settings.background | color_brightness < 64` selects the dark-scheme opacity scale (wider — 0.15 / 0.60 / 0.25); above the threshold uses the light-scheme scale (tighter — 0.05 / 0.40 / 0.10). The threshold separates near-black grounds from mid/light tones where subtle overlays disappear unless boosted.
 - **Hover variants computed via `color-mix(in oklab, …)`.** Perceptual color space. Mixes are toward `black` for primary buttons (12% — uniform darkening), toward `var(--color-role-foreground)` for secondary buttons (8%) and input fields (4% background / 20% border) so hover state reads against the surrounding ground.
 - **Gradient stops reference role tokens, not hex.** A `gradient` metaobject's `color_start` / `color_end` are role-token handles (e.g., `foreground`, `primary`). The emitted `--gradient-<handle>` interpolates `var(--color-role-<start>)` / `var(--color-role-<end>)`, so the same gradient declaration re-resolves under each scheme — one definition, scheme-adaptive output.
+- **Per-stop opacity hooks on every gradient.** Each `--gradient-<handle>` wraps its scheme-role stops in `rgb(from var(--color-role-X) r g b / var(--gradient-<handle>-<start|end>-opacity))`, and emits sibling `--gradient-<handle>-start-opacity: 1` + `--gradient-<handle>-end-opacity: 1` declarations alongside. Consumers override the opacity at block scope (`--gradient-hero-start-opacity: 0.7;`) to soften either stop without composing a new gradient. Default behavior is α=1 on both stops — visually identical to a literal `linear-gradient(angle, role-A, role-B)` while preserving the per-instance softening hook.
 - **Reserved gradient handle: `background`.** The `background` handle is skipped in the top-level gradient loop; the per-scheme block emits `--gradient-background` from `scheme.settings.background_gradient` (with a fall-through to the flat background color when no gradient is set on the scheme).
 - **Incomplete gradient entries skip emission.** A gradient metaobject with blank `color_start` or `color_end` produces no `--gradient-<handle>` line. The runtime tolerates partial entries by skipping rather than emitting a malformed `linear-gradient(…, var(--color-role-), …)` declaration.
 - **`--base-*` aliases gate on `text_style == settings.base_text_style`.** Exactly one text_style emits the alias set (the one referenced by the project's `base_text_style` setting). Consumers reading `var(--base-font-family)` resolve to the project default body typography; the body rule in `layer-theme.css` is the canonical consumer.
@@ -227,6 +255,9 @@ N/A — utility emits CSS as captured text, not as a per-element stylesheet atta
 - **font-size auto-fill on zero.** When both `mobile_font_size` and `desktop_font_size` are 0 → both fall through to 1rem. When one is 0, the other backfills (a single-breakpoint declaration becomes both breakpoints).
 - **`line_height` zero fallback.** Blank line_height (resolves to 0) falls through to 1.5.
 - **font-family fallback chain.** Per-style font-family resolves through three layers: the style's `font_family.value.name.value`, then the `default_font_family` (from `settings.base_text_style.font_family.value.name.value` with terminal fallback `system-ui`), then a `fallback_family` selected by `text_style.font_fallback_family.value` (`mono` / `serif` / `sans` → maps to `settings.{mono,serif,sans_serif}_font.{family, fallback_families}`). The chain emits as a CSS `font-family: <primary>, <fallback-family>, <fallback-families-list>;` declaration.
+- **Spacing emission is rem from merchant-px input.** `mobile_value` and `desktop_value` from the `spacing` metaobject are px integers (the merchant's mental unit); the emitter converts to rem at write time via `divided_by: 16.0 | round: 3`. Matches the codebase-wide merchant-px / front-end-rem convention (gutter, text-style sizes, content-width, per-block margin overrides). Spacing scales with the user's root font-size preference (accessibility-friendly).
+- **Spacing `@media` branch skips blank `desktop_value`.** Entries that ship without a desktop value emit only the `:root` line; the mobile value carries through at all viewports via CSS cascade. Useful for static-size entries that don't scale at the breakpoint.
+- **Spacing override is cascade-driven, not auto-bind.** Substrate (`layer-base.css`) seeds `--spacing-xs/sm/md/lg/xl` defaults; the metaobject loop emits later in the same `:root`. Matching handles override by cascade position; non-matching handles add new slots that coexist. The auto-bind framing used for `text_style`'s `h1`–`h6` (handle → HTML tag selector) doesn't apply here — spacing has no semantic HTML anchor, just shared variable names.
 
 ## Locale keys
 
@@ -243,7 +274,10 @@ Per `validation-contract.md` Tier 1b (substrate / utility-snippet).
   - **Text-style selector binding**: each `text_style` entry shown via tag binding (when `h1`–`h6`) and `[data-modifiers*='text-style:<handle>']`. Reader confirms identical typography across both selector surfaces.
   - **Base alias resolution**: an element styled via `--base-*` aliases. Reader confirms the computed values match the text_style referenced by `settings.base_text_style`.
   - **Gradient under each scheme**: every non-reserved gradient entry rendered as a swatch under each scheme. Reader confirms color stops re-resolve per scheme (same declaration, different appearance).
+  - **Gradient per-stop opacity override**: a gradient swatch with `--gradient-<handle>-start-opacity: 0.5;` set inline. Reader confirms the start stop softens to 50% without breaking the scheme-adaptive resolution.
   - **Gutter responsive switch**: a guide element with `inline-size: var(--gutter)` shown at narrow and wide viewports.
+  - **Spacing emission per entry**: every `spacing` metaobject entry rendered as a labeled bar; reader confirms each `--spacing-<handle>` resolves to the expected rem value at narrow + wide viewports.
+  - **Substrate override via cascade**: a `--spacing-md` entry with a non-substrate value (e.g., 18px); reader confirms DevTools resolves `--spacing-md` to the metaobject's rem value, not the substrate `1rem` default.
 - **Edge cases**:
   - text_style with mobile == desktop font-size → no `@media` override emitted (DevTools inspection)
   - text_style with both font-sizes blank → both fall through to 1rem
@@ -251,6 +285,8 @@ Per `validation-contract.md` Tier 1b (substrate / utility-snippet).
   - gradient with reserved `background` handle → no `--gradient-background` line in the top-level `:root` block; appears only in per-scheme blocks
   - gradient with blank `color_start` or `color_end` → entry produces no emission
   - dark scheme (`background | color_brightness < 64`) → wider opacity scales; subtle / muted overlays read stronger
+  - spacing entry with blank `desktop_value` → `@media (width >= 48rem)` branch skips emission for that handle; mobile value carries through at all viewports
+  - spacing entry handle matching a substrate T-shirt slot (`xs`/`sm`/`md`/`lg`/`xl`) → cascade-position override of `layer-base.css` default for that slot
 - **Visual showcase**: a single section with three scheme-override children (scheme-1 inherited, scheme-2 + scheme-3 overridden). Inside each, the full role-token palette as labeled swatches (background, foreground, foreground-heading, primary, border, shadow, button preview, input preview). A separate row catalogs every text_style by handle, showing tag binding vs attribute binding side-by-side. A third row catalogs gradients per scheme. A fourth row demonstrates the gutter at narrow and wide viewports.
 - **Assertions** (prose; Playwright once installed):
   - Computed `--color-role-background` on `[data-modifiers*='color-scheme:scheme-2']` equals the scheme-2 background hex; on the outer ancestor it equals scheme-1's background.
@@ -262,9 +298,10 @@ Per `validation-contract.md` Tier 1b (substrate / utility-snippet).
 ## Out of scope
 
 - **`theme_color` definition contract** — covered by `theme-color.md`. This spec covers only emission of `--color-<handle>` lines from those entries.
-- **`gradient` metaobject definition** — belongs in a future `gradient.md` substrate spec. Field schema, seed entries, and consumer patterns live there; this spec covers only the `--gradient-<handle>` emission shape and skip rules.
-- **`text_style` metaobject definition** — belongs in a future `text-style.md` substrate spec. Field schema, the `h1`–`h6` handle convention, base-text-style settings binding, and per-style sizing semantics live there; this spec covers only how those entries translate into CSS variables + selectors.
-- **`typeface` / `font` metaobject definitions** — covered by `metaobject-definitions.md`; this snippet reads font-family transitively via `text_style.font_family`, but the typeface / font schemas themselves are out of this spec's surface.
+- **`gradient` metaobject definition** — covered by `gradient.md`. Field schema, seed entries, and consumer patterns live there; this spec covers only the `--gradient-<handle>` emission shape, the per-stop opacity hook contract, and skip rules.
+- **`text_style` metaobject definition** — covered by `text-style.md`. Field schema, the `h1`–`h6` handle convention, base-text-style settings binding, and per-style sizing semantics live there; this spec covers only how those entries translate into CSS variables + selectors.
+- **`spacing` metaobject definition** — covered by `spacing.md`. Field schema, seed entries, and the cascade-position override pattern against substrate defaults are documented there; this spec covers only the `--spacing-<handle>` emission shape.
+- **`typeface` / `font` metaobject definitions** — covered by `font-system.md`; this snippet reads font-family transitively via `text_style.font_family`, but the typeface / font schemas themselves are out of this spec's surface.
 - **`<meta name="theme-color">` head tag** — covered by `utility--meta-theme-color.liquid` (its own snippet). Both consume `theme_color` entries; this spec emits to `:root`, that snippet emits to `<head>`.
 - **Asset pipeline / inline-CSS routing** — captured by `utility--core-assets`, piped through `utility--asset-loader`. This spec describes the snippet's output text; loader routing is out of scope.
 - **Per-block dynamic styles** — handled by `utility--dynamic-style`. This spec emits *theme-level* variables that consumers inherit; per-instance overrides live in a separate per-block asset.
@@ -272,7 +309,11 @@ Per `validation-contract.md` Tier 1b (substrate / utility-snippet).
 ## Related
 
 - `theme-color.md` — `theme_color` metaobject contract; consumer of the `--color-<handle>` emission. Its Out of scope explicitly defers the color-scheme role token system to this spec.
+- `gradient.md` — `gradient` metaobject contract; provides the field schema this spec reads to emit `--gradient-<handle>` triplets (gradient + start-opacity + end-opacity).
+- `text-style.md` — `text_style` metaobject contract; provides the typography field schema this spec emits as `--<handle>-font-*` declarations + `--base-*` aliases.
+- `spacing.md` — `spacing` metaobject contract; provides the merchant-px schema this spec emits as `--spacing-<handle>` rem declarations.
+- `font-system.md` — `typeface` / `font` metaobject contracts; this spec reads font-family transitively via `text_style.font_family`.
 - `utility--color-contrast.md` — sibling substrate utility; complementary picker for foreground-on-arbitrary-background cases where the surrounding scheme can't be relied on.
-- `.context/docs/metaobject-definitions.md` — definitions for `theme_color`, `gradient`, `text_style`, `typeface`, `font`. The setup contract for every metaobject this snippet reads.
+- `.context/docs/metaobject-definitions.md` — definitions for `theme_color`, `gradient`, `text_style`, `typeface`, `font`, `spacing`. The setup contract for every metaobject this snippet reads.
 - `.context/docs/design-system-metaobjects.md` — catalog-wide consumer patterns (referencing, fallback chains, override scopes).
 - `.context/docs/asset-loading.md` — inline-CSS routing through `utility--core-assets` and `utility--asset-loader`.
