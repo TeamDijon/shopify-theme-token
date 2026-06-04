@@ -10,7 +10,7 @@
 
 **Reconciled**: 2026-06-04 (v1.1.0 — content_width emission harmonized to rem, matching the margin pair and the codebase-wide merchant-px/front-end-rem convention)
 
-**Reviewed**: pending
+**Reviewed**: 2026-06-04
 
 **Depends on**:
 - `content_width` metaobject — reads `.width.value` for the `--content-width` declaration
@@ -95,7 +95,6 @@ Consumed by:
 - **px → rem conversion for all three vars.** All three values are stored as px (margins via Shopify range setting, content_width via the metaobject's `width` field) but emitted in rem (`value | divided_by: 16.0 | round: 3`). Matches the codebase-wide merchant-px / front-end-rem convention (gutter, text-style sizes, spacing metaobject). Three-decimal rounding (`round: 3`) preserves sub-pixel precision at typical font-sizes without emitting excessive trailing digits.
 - **No internal validation.** The snippet trusts its inputs — invalid metaobject references, malformed number values, etc. fall through to whatever Liquid produces (empty strings, `NaN` from divided_by, etc.). The block's setting schema is the validation layer; the utility just emits.
 - **Order-stable output.** Emission order is fixed: `content_width` → mobile margin → desktop margin. Predictable for debugging via DevTools.
-- **No newline emission within declarations.** Each `echo 'css declaration;'` produces one declaration per line in the captured string. Whitespace between lines comes from Liquid's standard echo handling.
 - **Cascade-aware design.** The skipped-on-default logic plus the consumer-side `var(--content-width, <fallback>)` chain plus the block-rhythm cascade rule's `var(--block-rhythm, 0rem)` fallback together create a four-layer cascade: per-block override → section's content_width / block_rhythm → substrate default → zero. Each layer fills in only when meaningful; intermediate layers naturally fall through.
 
 ## A11y
