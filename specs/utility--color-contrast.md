@@ -37,9 +37,9 @@ The defaults (`#000000` / `#ffffff`) are the extreme pair; the snippet doesn't r
 A bare color string echoed into the template at the render site. No HTML, no surrounding tags, no whitespace decoration beyond what the surrounding `{% render %}` tag formatting introduces. Callers wrap in `{% capture %}` to assign the result to a variable, then `| strip` and interpolate.
 
 ```liquid
-{% capture fg %}{% render 'utility--color-contrast', background: theme_color.hex_code.value %}{% endcapture %}
-{% assign fg = fg | strip %}
-<element style="--contrast: {{ fg }};">…</element>
+{% capture foreground %}{% render 'utility--color-contrast', background: theme_color.hex_code.value %}{% endcapture %}
+{% assign foreground = foreground | strip %}
+<element style="--contrast: {{ foreground }};">…</element>
 ```
 
 The `| strip` is a caller obligation — the captured value carries leading/trailing whitespace from the `{% render %}` tag's formatting, which breaks inline-style parsing in strict contexts.
