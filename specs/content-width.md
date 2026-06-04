@@ -86,7 +86,7 @@ The variable has cascade semantics — set on a section, inherited by descendant
 
 ## Behavior
 
-- **Single px value per entry.** Not responsive (no mobile/desktop pair). Inline caps tend to be a single value across viewports; differential caps compose via separate entries + per-breakpoint pickers (out of scope today; revisit if usage shows real need).
+- **Single px value per entry.** Not responsive (no mobile/desktop pair). Inline caps tend to be a single value across viewports; differential caps compose via separate entries + per-breakpoint pickers.
 - **Merchant-px input, front-end-rem emission.** The schema accepts px integers (the merchant's mental unit); the emitter converts to rem at write time via `divided_by: 16.0 | round: 3`. Matches the codebase-wide convention (gutter, text-style sizes, spacing metaobject, per-block margin overrides). Spacing-aware accessibility scaling (root font-size adjustments propagate to the cap) applies here too.
 - **`width` validated by schema as decimal.** Currently no `min` / `max` validation enforced — merchants could enter `5` or `999999`. The bleed-grid `min(...)` clamp prevents the ultra-wide case from breaking layout (viewport-gutter math always wins); the ultra-narrow case is a merchant-responsibility footgun.
 - **`system.handle` is the load-bearing key.** Merchants pick entries by handle via the metaobject picker setting; the section / block then emits the entry's `width` value. Renaming an entry's handle in admin moves consumers' selections (the picker stores a GID reference, not the handle string), so the contract is GID-stable; handle changes affect URL-friendly names but not emission.

@@ -16,7 +16,7 @@
 
 **Consumers**:
 - `assets/base-component.js` v1.2.0 — every `<token-*>` custom element exposes a lazy `.cache` getter. The `dom` cache type is pre-initialized so `this.cache.get("dom", "section", () => …)` works without setup. `disconnectedCallback` calls `.clear()`. Full contract in `base-component.md`.
-- `BaseComponent.section` getter — uses `this.cache.get("dom", "section", () => this.closest(".shopify-section"))` to memoize the DOM lookup across the element's lifetime (per the v1.2.0 reconciliation note).
+- `BaseComponent.section` getter — uses `this.cache.get("dom", "section", () => this.closest(".shopify-section"))` to memoize the DOM lookup across the element's lifetime.
 
 ## Purpose
 

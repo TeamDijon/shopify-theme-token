@@ -125,7 +125,7 @@ Recommended catalog (load-bearing T-shirt handles + optional explicit-zero, full
 | `lg` | Large | 32 | 48 |
 | `xl` | Extra large | 64 | 96 |
 
-The T-shirt handles align with `layer-base.css`'s substrate scale — overriding their defaults via the cascade. Stores migrating from the prior seed (`tight`/`default`/`spacious`/`loose`) keep working as custom-handled entries until renamed; the substrate defaults apply to the T-shirt slots in the meantime.
+The T-shirt handles align with `layer-base.css`'s substrate scale — overriding their defaults via the cascade. Custom handles that don't match a T-shirt slot add new `--spacing-<handle>` variables without overriding anything.
 
 The `none` handle is the explicit-zero option for block-rhythm (no inter-block margin). It has no substrate counterpart, so it just adds a new `--spacing-none` slot that resolves to `0px`. Useful as a `block_rhythm` picker option when a section needs no rhythm cascade.
 

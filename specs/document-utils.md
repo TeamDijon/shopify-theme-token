@@ -32,7 +32,7 @@ Three document-level singletons that don't fit the per-element manager pattern. 
 | `documentScroll` | Scroll-lock helper. Locks the page scroll while a modal/drawer is open by freezing `scrollY` into `inset-block-start` + adding the `locked-scroll` modifier. |
 | `documentScrollbar` | Scrollbar-width tracking + `--scrollbar-width` CSS variable emission. Lazy ResizeObserver on `document.documentElement`. |
 
-The module holds document-level singletons that don't fit the per-element manager pattern. New patterns accrete here as they land (future: theme switcher, locale flags, etc.).
+The module holds document-level singletons that don't fit the per-element manager pattern.
 
 ## API
 

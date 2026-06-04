@@ -103,7 +103,7 @@ N/A — JS module.
 - **`throttle`'s `this` binding.** The throttled function preserves `this` via a curried closure (`later(this)`); a throttled method called via `obj.method(...)` retains `obj` as the callback's `this`. Useful for class methods used as event handlers without binding.
 - **`debounce` resets on each call.** Every call clears the pending timer and schedules a new one. A rapid burst of N calls within `delay` ms produces exactly 1 invocation, after the burst ends + `delay` ms.
 - **`debounce` default delay 100ms.** A sensible "wait a tenth of a second" for input-driven flows. Callers wanting longer (search, autocomplete typically 250–500 ms) or shorter (UI repaints typically 16–50 ms) pass an explicit delay.
-- **`.cancel()` parity.** Both `throttle` and `debounce` expose `.cancel()` — resolves the symmetry gap surfaced in BACKLOG D5. Important for component-disconnect or route-transition flows where pending callbacks would fire on a torn-down target.
+- **`.cancel()` parity.** Both `throttle` and `debounce` expose `.cancel()`. Important for component-disconnect or route-transition flows where pending callbacks would fire on a torn-down target.
 - **No `.flush()`.** Neither helper exposes a synchronous-flush method (force-fire the pending callback immediately). The use case is rare in this theme's UI patterns; add if a consumer surfaces a real need.
 - **Pure functions, no internal state shared across instances.** Each `throttle(callback)` / `debounce(callback)` call creates a fresh closure with its own pending state. Two throttled wrappers around the same callback have independent rAF queues.
 
