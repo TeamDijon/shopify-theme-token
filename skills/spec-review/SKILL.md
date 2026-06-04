@@ -76,7 +76,13 @@ The reviewing agent may surface friction it noticed beyond the developer's marke
    - `grep -rn '<changed-symbol>' .context/` — verify cross-references stay accurate
    - Sibling specs that pin the same implementation file: check their pin versions
    - Rules / convention docs that document patterns the review changed: update if drifted
-9. **Verify final state:** the spec has no markers, has a dated `Reviewed`, and all pinned versions reflect post-review state.
+9. **Audit Implementation + Consumers pins against current file versions.** For each `**Implementation**:` and `**Consumers**:` entry naming a versioned file, open the file and verify the version header matches. Three failure modes to catch:
+   - **Missing pins on consumer references** — add `vX.Y.Z (role)` per `spec-convention.md`'s canonical format
+   - **Stale pins where the file moved forward on contract-neutral changes** — bump the pin + refresh `Reconciled` with a scope note explaining the intervening bumps don't touch this spec's contract surface
+   - **Format violations** (`v1.2.0+` non-canonical suffix, missing role parenthetical, prose-only references) — rewrite to `path/to/file vX.Y.Z (role)`
+
+   Shared-emitter files (e.g., `utility--css-variables.liquid`) propagate drift to every spec pinning them; check sibling specs after closing a single review.
+10. **Verify final state:** the spec has no markers, has a dated `Reviewed`, and all pinned versions reflect post-review state.
 
 ## Done state
 

@@ -14,6 +14,8 @@
 
 One paragraph: what this element is, when to reach for it, what distinguishes it from sibling primitives at the same layer. The spec describes the element's contract at the layer triage has assigned — layer placement and rationale live upstream.
 
+When the element has a distinctive design principle — what makes its contract unlike a naive implementation (an invariant being held, a tradeoff being made, a design boundary being defended) — Purpose ¶1 leads with it. Reader assembles the contract from the lead sentence instead of by induction across API / Behavior / Out-of-scope.
+
 ## API (or Schema for metaobject-type specs)
 
 For most element types — snippets, blocks, sections, JS utilities — name this section `## API` and list the call interface:
