@@ -153,7 +153,7 @@ Per `validation-contract.md` Tier 1d (substrate / utility-js).
 - **Analytics / telemetry initialization.** Out of scope. The theme provides infrastructure; analytics is per-project (Shopify analytics, third-party tools, etc.).
 - **Polyfills.** No polyfill imports. The theme baseline is modern browsers (ES modules + custom elements + `IntersectionObserver` etc. all supported). Per-project polyfill loading happens outside this module.
 - **Bundle splitting / tree-shaking.** The re-exports are eager; tree-shaking applies at the build/bundler layer (not used today — Shopify themes load JS via `<script type="module">` directly). When a build pipeline ships, tree-shaking will work against `@theme/core` re-exports since they're standard ES re-exports.
-- **Per-page route-aware initialization.** `init()` fires once per page load. SPA-style page transitions (Bucket B's `morph` + `section-renderer`) would need to coordinate with the section-renderer's lifecycle, not re-fire `init`.
+- **Per-page route-aware initialization.** `init()` fires once per page load. Any future SPA-style page-transition layer would coordinate with its own lifecycle hooks; `init()` doesn't re-fire on intra-page navigation.
 
 ## Related
 
