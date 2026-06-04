@@ -7,15 +7,15 @@
 **Status**: shipped
 
 **Implementation**:
-- `snippets/utility--css-variables.liquid` v1.13.0 (CSS variable emitter — `--spacing-<handle>` per entry, mobile value in `:root`, desktop value in nested `@media (width >= 48rem)`)
+- `snippets/utility--css-variables.liquid` v1.14.0 (CSS variable emitter — `--spacing-<handle>` per entry, mobile value in `:root`, desktop value in nested `@media (width >= 48rem)`; merchant-px input converted to rem at emit time; `@media` branch skips entries with blank `desktop_value`)
 - `sections/section.liquid` v1.6.0 (`block_rhythm` setting consumer — emits `--block-rhythm: var(--spacing-<picked-handle>)` per section)
 - `assets/layer-theme.css` (block-rhythm cascade rule — reads `var(--block-rhythm)` for inter-block margin)
 - `assets/layer-base.css` (substrate defaults seed `--spacing-xs/sm/md/lg/xl` for the T-shirt slots; metaobject entries with matching handles override these via cascade position)
 - Metaobject definition itself — created per `metaobject-definitions.md` § `spacing`
 
-**Reconciled**: 2026-06-01 (paired with the design-constants cycle: utility--css-variables v1.13.0 + section.liquid v1.6.0 + layer-base.css spacing scale addition + block-rhythm namespace migration)
+**Reconciled**: 2026-06-04 (utility--css-variables.liquid bumped to v1.14.0 — harmonized to rem emission like the rest of the codebase, optional `desktop_value` with skip-on-blank semantic)
 
-**Reviewed**: pending
+**Reviewed**: 2026-06-04
 
 **Depends on**: substrate `--spacing-xs/sm/md/lg/xl` defaults in `layer-base.css` — the metaobject's substrate-aligned handles override these defaults via cascade position. No other primitive or utility dependencies.
 
@@ -38,12 +38,12 @@ The substrate **does not auto-bind** in the way `text_style`'s `h1`–`h6` bind 
 | Field | Type | Required | Notes |
 |---|---|---|---|
 | `name` | Single line text | yes | Display name in admin (e.g., `Medium`, `Spacious`, `Hero-section`). `system.handle` derives from it on creation. |
-| `mobile_value` | Number (decimal) | yes | Spacing value on mobile, in **px**. Emitted as `--spacing-<handle>: <value>px` in `:root`. |
-| `desktop_value` | Number (decimal) | yes | Spacing value on desktop (≥768px), in **px**. Emitted as `--spacing-<handle>: <value>px` inside `@media (width >= 48rem)`. |
+| `mobile_value` | Number (decimal) | yes | Spacing value on mobile, in **px** (merchant-facing unit). Emitted as `--spacing-<handle>: <px/16>rem` in `:root`. |
+| `desktop_value` | Number (decimal) | no | Spacing value on desktop (≥768px), in **px** (merchant-facing unit). Emitted as `--spacing-<handle>: <px/16>rem` inside `@media (width >= 48rem)` when present. When blank, the `@media` branch skips this entry — the mobile value carries through at all viewports. |
 
 Type-level metadata: project default (publishable + translatable, `storefront: PUBLIC_READ`). Full definition in `metaobject-definitions.md`.
 
-**Two-value-per-token** is the load-bearing schema choice. Horizon-style single-value-with-a-scale-multiplier doesn't accommodate exotic entries (e.g., `0px` mobile / `48px` desktop for a section that needs no rhythm on mobile but breathing room on desktop). The two-value catalog stays flat and explicit; merchants set arbitrary pairs without re-architecting the scale.
+**Two-value-per-token** is the load-bearing schema choice. The catalog allows arbitrary mobile/desktop pairs (e.g., `0px` mobile / `48px` desktop for a section that needs no rhythm on mobile but breathing room on desktop) without re-architecting the scale. Merchants set asymmetric values directly; the catalog stays flat and explicit.
 
 ## Output shape
 
@@ -55,22 +55,24 @@ The emitter writes one variable per entry inside the `:root` block, plus matchin
   /* …gradient block… */
   /* …gutter…  */
 
-  --spacing-xs: 4px;
-  --spacing-sm: 8px;
-  --spacing-md: 16px;
-  --spacing-lg: 32px;
-  --spacing-xl: 64px;
-  --spacing-hero-section: 80px;  /* per-project custom handle */
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 2rem;
+  --spacing-xl: 4rem;
+  --spacing-hero-section: 5rem;  /* per-project custom handle */
+  --spacing-static: 1.5rem;      /* per-project entry with no desktop_value */
 
   @media (width >= 48rem) {
     --gutter: var(--desktop-gutter);
 
-    --spacing-xs: 8px;
-    --spacing-sm: 12px;
-    --spacing-md: 24px;
-    --spacing-lg: 48px;
-    --spacing-xl: 96px;
-    --spacing-hero-section: 120px;
+    --spacing-xs: 0.5rem;
+    --spacing-sm: 0.75rem;
+    --spacing-md: 1.5rem;
+    --spacing-lg: 3rem;
+    --spacing-xl: 6rem;
+    --spacing-hero-section: 7.5rem;
+    /* --spacing-static: not overridden — mobile value carries through */
   }
 }
 ```
@@ -87,7 +89,7 @@ N/A at the metaobject layer — emission rules live in `utility--css-variables`'
 
 | Variable | Type | Source |
 |---|---|---|
-| `--spacing-<handle>` | `<value>px` (mobile in `:root`, desktop in nested `@media`) | one per metaobject entry; substrate-aligned handles override `layer-base.css` defaults via cascade position |
+| `--spacing-<handle>` | `<value>rem` (mobile in `:root`, desktop in nested `@media` when `desktop_value` is set) | one per metaobject entry; substrate-aligned handles override `layer-base.css` defaults via cascade position |
 
 The substrate defaults exposed by `layer-base.css` (`--spacing-xs/sm/md/lg/xl`) are documented in `design-constants.md`. This spec doesn't duplicate them — the metaobject's job is the override / extension surface on top of those defaults.
 
@@ -97,7 +99,8 @@ The substrate defaults exposed by `layer-base.css` (`--spacing-xs/sm/md/lg/xl`) 
 - **Mobile in `:root`, desktop in nested `@media (width >= 48rem)`.** The two-branch emission matches the metaobject's two-value schema. CSS variables are substituted at use-site (per Variables Level 1 spec), so consumers reading `var(--spacing-md)` get the right value per viewport automatically — no need for consumer-side media queries.
 - **`system.handle` is the load-bearing key.** Renaming an entry's handle in admin changes the emitted variable name. T-shirt handles (`xs`/`sm`/`md`/`lg`/`xl`) align with substrate defaults — renaming away from them loses the override (substrate default reapplies at the slot; the renamed entry becomes a custom slot under its new handle).
 - **`name` is decorative.** Display label for the admin. Not consumed at runtime. Renaming `name` doesn't change emission; renaming `handle` does.
-- **px values, not rem.** The metaobject emits px integers (per schema). The substrate defaults in `layer-base.css` use rem (typography-relative). The mixing of units in the catalog is visible to anyone debugging computed styles but functionally fine — both resolve to pixel values. A merchant wanting typography-relative spacing keeps the substrate defaults; a merchant setting metaobject entries gets fixed px regardless of root font.
+- **Merchant-px input, front-end-rem emission.** The schema fields accept px integers (the merchant's mental unit); the emitter converts to rem at write time via `divided_by: 16.0 | round: 3`. The catalog reads uniformly in rem to match the substrate defaults in `layer-base.css` and the codebase-wide emission pattern (gutter, text-style sizes, per-block margin overrides). Spacing scales with the user's root font-size preference (accessibility-friendly).
+- **Blank `desktop_value` → mobile carries through.** When `desktop_value` is left blank for an entry, the `@media` branch skips that entry; the `:root` mobile value applies at all viewports via CSS cascade. Useful for static-size entries (padding tokens that don't scale at the breakpoint) — merchant enters mobile only, no need to repeat the value at desktop.
 - **Block-rhythm is a consumer, not the owner.** `section.liquid`'s `block_rhythm` setting picks a `spacing` metaobject entry; the section emits `--block-rhythm: var(--spacing-<picked-handle>)`. The block-rhythm cascade rule in `layer-theme.css` reads `var(--block-rhythm)` for the inter-block margin. Block-rhythm doesn't "own" the spacing catalog — it consumes the namespace through the picked handle.
 - **Per-instance consumer override via indirection.** Component CSS that wants a per-instance handle override uses the two-tier pattern:
   ```css
@@ -107,7 +110,7 @@ The substrate defaults exposed by `layer-base.css` (`--spacing-xs/sm/md/lg/xl`) 
   ```
   Per-instance `{% style %}` block sets `--component-spacing: var(--spacing-<picked-handle>)` from a block setting. The component CSS provides a sensible default (`--spacing-md`); the per-instance override swaps to any handle by name. CSS resolves the chain at use-site; the cascade picks the active value.
 - **Responsive resolution propagates through `var()` chains.** A per-section `--block-rhythm: var(--spacing-md)` doesn't bake in the current value of `--spacing-md` — it stores the var reference. At each read (`margin-block-start: var(--block-rhythm)`), the resolution happens fresh against whichever scope's `--spacing-md` is active. So responsive behavior (mobile vs desktop) flows through the chain without re-emission at each layer.
-- **Per-block top-spacing is *not* metaobject-driven.** Every block carries `mobile_margin_block_start` / `desktop_margin_block_start` as raw px ranges (not a `spacing` picker). Per-block margins are instance-specific overrides on top of the section's rhythm — the section sets the baseline, blocks override individually. Forcing per-block margins through the metaobject would explode the catalog or over-constrain merchants.
+- **Per-block top-spacing is *not* metaobject-driven.** Every block carries `mobile_margin_block_start` / `desktop_margin_block_start` as raw px ranges (not a `spacing` picker), emitted as rem via the standard `divided_by: 16.0 | round: 3` conversion (per `utility--block-layout-vars.md`). Per-block margins are instance-specific overrides on top of the section's rhythm — the section sets the baseline, blocks override individually. Forcing per-block margins through the metaobject would explode the catalog or over-constrain merchants.
 
 ## Seed entries
 
@@ -144,15 +147,16 @@ Per `validation-contract.md` Tier 1a (substrate / metaobject).
   - **Custom-slot coexistence**: a per-project handle (e.g., `hero-section`) — DevTools confirms `--spacing-hero-section` is emitted; substrate `--spacing-xs/sm/md/lg/xl` defaults remain visible (unless also overridden).
   - **Block-rhythm consumer**: a preset using a `block_rhythm`-picked entry → section emits `--block-rhythm: var(--spacing-<handle>)` in its dynamic-style block; child blocks' computed `margin-block-start` matches the picked entry's responsive value.
 - **Edge cases**:
-  - `mobile_value` blank → emits `--spacing-<handle>: px;` (malformed declaration; falls through to substrate default for the slot if substrate-aligned, or to `var()` fallback chain otherwise). Schema validation should prevent this at authoring; runtime tolerates by falling through.
-  - `mobile_value == desktop_value` → both branches emit the same value (no skip-on-same-value logic at emit time; minor redundancy in output, no visual impact).
-  - `mobile_value == 0` and `desktop_value == 0` (the `none` seed) → emits `--spacing-none: 0px` in both branches; consuming as `var(--spacing-none)` resolves to `0px`.
+  - `mobile_value` blank → emits `--spacing-<handle>: rem;` (malformed declaration; falls through to substrate default for the slot if substrate-aligned, or to `var()` fallback chain otherwise). Schema validation should prevent this at authoring; runtime tolerates by falling through.
+  - `desktop_value` blank → `@media` branch skips this entry; mobile value carries through at all viewports via CSS cascade.
+  - `mobile_value == desktop_value` → both branches emit the same rem value (no skip-on-same-value logic at emit time; minor redundancy in output, no visual impact).
+  - `mobile_value == 0` and `desktop_value == 0` (the `none` seed) → emits `--spacing-none: 0rem` in both branches; consuming as `var(--spacing-none)` resolves to `0px`.
   - Custom handle matching no substrate slot → just adds the new `--spacing-<handle>`; no override.
   - Renamed handle in admin → CSS variable name changes; consumers referencing the old name (via per-project CSS, dynamic style, etc.) get an undefined variable resolving to their fallback chain.
 - **Visual showcase**: vertical stack of colored bars per metaobject entry, labeled with handle + mobile px + desktop px. Reader resizes across 640px breakpoint to verify the height swap. A second row demonstrates the substrate-override case (DevTools-side validation): a `md` entry with a non-substrate value overrides the rem-based default.
 - **Assertions** (prose; Playwright once installed):
-  - Computed `--spacing-md` on `:root` at viewport `< 48rem` equals the metaobject's `mobile_value` (px) when a `md`-handled entry exists; equals `1rem` (substrate default, ≈16px) otherwise.
-  - Same property at viewport `>= 48rem` equals `desktop_value` (px) when entry exists; equals `1rem` otherwise.
+  - Computed `--spacing-md` on `:root` at viewport `< 48rem` equals the metaobject's `mobile_value` converted to rem (`<mobile_value/16>rem`) when a `md`-handled entry exists; equals `1rem` (substrate default) otherwise.
+  - Same property at viewport `>= 48rem` equals `desktop_value` converted to rem when entry has a `desktop_value`; equals the mobile-rem value when `desktop_value` is blank (carry-through via CSS cascade); equals `1rem` otherwise.
   - A non-substrate-aligned handle (`--spacing-hero-section`) returns its emitted value at both breakpoints; the substrate T-shirt slot values remain intact (e.g., `getComputedStyle(root).getPropertyValue('--spacing-md')` still returns the `md` slot value).
   - Block-rhythm consumer: a section with `block_rhythm: md` has computed `--block-rhythm` resolving to `var(--spacing-md)`'s active value; direct-child blocks' `margin-block-start` matches.
 - **Unit scope**: none (metaobject layer; no JS).
