@@ -46,7 +46,16 @@ Periodic review is developer-prompted. Natural moments:
 - Before invoking a planned audit phase
 - When the Promotion candidates section feels crowded enough to act on
 
-During review, candidates get judged on signal strength: recurrence count, fit with existing template structure, whether retrofit cost across shipped specs is justified by the clarity gain. A promotion or demotion lands as its own commit on `context`, with the moved row migrated from Promotion candidates to the matching archived section.
+During review, candidates get judged on:
+
+- **Recurrence** — has the pattern surfaced 2+ times across reviews?
+- **Generality** — does the proposed rule apply broadly (every spec body / every authoring pass / every review close) or only to a niche (specific element type, specific work shape)? **High generality is required for promotion**; niche candidates stay in the table as soft rules.
+- **Fit** — does the rule land in an existing doc structure (sibling bullet in `reference-voice.md`, section header in `_template.md`) or require a new artifact?
+- **Retrofit cost** — is the lift worth the corpus-wide pass to comply?
+
+Niche but recurring patterns (low generality, high recurrence) are **not failures of the mechanism** — the candidates table itself functions as a soft-rule register that reviewers consult during relevant work. Some candidates legitimately live there indefinitely. Demotion of a promoted rule that proves niche in practice (low fire rate, cognitive cost > clarity gain) is the release valve.
+
+A promotion or demotion lands as its own commit on `context`, with the moved row migrated from Promotion candidates to the matching archived section.
 
 ## Log
 
