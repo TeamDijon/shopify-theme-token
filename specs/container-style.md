@@ -12,7 +12,7 @@
 
 **Reconciled**: 2026-05-31 (pin format clarified — substrate CSS pinned by description rather than version; structural anchor is the `:where()` selector chain in `@layer theme`)
 
-**Reviewed**: pending
+**Reviewed**: 2026-06-04
 
 **Depends on**: none — substrate-root token type
 
@@ -23,7 +23,9 @@
 
 ## Purpose
 
-A named container variant — visual identity (border, background, padding, shadow) applied to one of the three container blocks (`group`, `columns`, `media`) via a single metaobject reference. The handle drives a `[data-modifiers*='container-style:<handle>']` selector matched centrally in `layer-theme.css`'s `@layer theme`, scoped across all three container consumers so the same handle yields the same visual treatment regardless of which container block selected it.
+A named container variant catalog. Each entry's `system.handle` drives the `[data-modifiers*='container-style:<handle>']` CSS selector in `layer-theme.css`'s `@layer theme`, scoped across the three container blocks (`group`, `columns`, `media`) so the same handle yields the same visual treatment regardless of which container selected it. The catalog is **schema-light** — the only field is `name` (admin-display) — because the visual configuration (border, background, padding, shadow) lives in CSS, not metaobject fields.
+
+The **seeded** handle set (`card` / `outlined` / `elevated`) is the vocabulary the substrate ships. Per-project additions extend the catalog freely — handles can describe brand-specific variants (`panel`, `bordered-dashed`, `concave`, etc.). The only requirement: each new handle pairs with a matching variant rule in `layer-theme.css` (or the project's override stylesheet).
 
 Same handle-as-CSS-hook pattern as `button_style`: the intent ("I want this to look like a card") is decoupled from the appearance definition. The merchant picks a handle on a container block; the project's CSS defines what `card` looks like.
 
@@ -56,6 +58,8 @@ Variant CSS lives in `layer-theme.css` `@layer theme`:
 
 `:where()` keeps specificity at zero so per-block stylesheets can override without escalation.
 
+**The contract is symmetric.** Every metaobject entry expects a matching variant rule in `layer-theme.css` `@layer theme` (or the project's override stylesheet for per-project additions). Seeding an entry without its CSS rule means the block emits the modifier but renders with default chrome — diagnostic, not styled.
+
 ## CSS
 
 N/A at the metaobject layer — the rules live in `layer-theme.css`, owned by the substrate-level variant ruleset. The metaobject contributes only the handle name; the CSS file holds the appearance.
@@ -80,7 +84,7 @@ N/A — variants drive concrete visual values (border, shadow, padding, backgrou
 | `outlined` | Outlined | Padding + `--radius-default` + foreground-color border, no fill |
 | `elevated` | Elevated | Padding + `--radius-default` + scheme background + stronger shadow |
 
-Per-project projects may extend with brand-specific variants (`panel`, `bordered-dashed`, `concave`, etc.) per the extension pattern above.
+Projects may extend with brand-specific variants (`panel`, `bordered-dashed`, `concave`, etc.) per the extension pattern above.
 
 ## Locale keys
 
