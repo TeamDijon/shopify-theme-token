@@ -7,13 +7,13 @@
 **Status**: shipped
 
 **Implementation**:
-- `snippets/utility--css-variables.liquid` v1.11.0 (CSS variable emitter — `:root` `--color-<handle>` lines)
+- `snippets/utility--css-variables.liquid` v1.14.0 (CSS variable emitter — `:root` `--color-<handle>` lines)
 - `snippets/utility--meta-theme-color.liquid` v1.1.0 (head meta tag emitter)
 - Metaobject definition itself — created per `metaobject-definitions.md` § `theme_color`
 
-**Reconciled**: 2026-05-31
+**Reconciled**: 2026-06-04 (pin bump v1.11.0 → v1.14.0 on `utility--css-variables.liquid` — intervening versions added gradient per-stop opacity hooks, spacing emission, and px→rem harmonization, none of which touch theme-color's `--color-<handle>` emission line)
 
-**Reviewed**: pending
+**Reviewed**: 2026-06-04
 
 **Depends on**: none — substrate-root token type
 
@@ -68,12 +68,10 @@ The meta tag's content is the literal `hex_code.value` of the chosen entry — n
 |---|---|---|
 | `--color-<handle>` | One per `metaobjects.theme_color.values` entry — `hex_code.value` | n/a (no global fallback; rule-by-rule callers should provide one if a handle may be absent) |
 
-`-rgb` companion variables are **not** emitted for theme_color entries. Translucent treatments (`rgba(var(--color-<handle>-rgb), <alpha>)`) currently rely on scheme-role tokens, which carry `-rgb` companions emitted by the scheme block of `utility--css-variables`. Adding `-rgb` for theme_color entries is an additive change; spec says no until a consumer needs it.
-
 ## Behavior
 
 - **Emission iterates active entries.** Draft entries are not exposed at the storefront and therefore do not emit.
-- **No reserved handles.** Unlike `gradient` (where `background` is owned by the scheme system) or `media_size` (where `fill` triggers a special-case branch), every `theme_color` handle is treated identically. Handle collisions with `--color-role-*` names cause no conflict — the two namespaces are disjoint after the role rename.
+- **No reserved handles.** Unlike `gradient` (where `background` is owned by the scheme system) or `media_size` (where `fill` triggers a special-case branch), every `theme_color` handle is treated identically. Handle collisions with `--color-role-*` names cause no conflict — the two namespaces are disjoint.
 - **Blank `hex_code`.** The field is required at the definition level; a populated entry that somehow ships a blank `hex_code` emits a malformed declaration (`--color-<handle>: ;`) which the browser drops. Defensive guard is not added — entries are merchant-controlled and the cost of a malformed line is one ignored declaration. Out of scope for the spec.
 - **Load-bearing handles.** These handles are referenced by component CSS as `var(--color-<handle>)`. Renaming them in admin silently breaks the consuming rules:
   - `success` — positive state (inventory in-stock, form success, confirmation badges)
@@ -82,8 +80,6 @@ The meta tag's content is the literal `hex_code.value` of the chosen entry — n
   - `info` — neutral informational state (tips, neutral notices)
 
   Brand/neutral handles (`accent`, `white`, `off-white`, `black`, `muted`) are referenced from settings on blocks (`background_color`, `text_color`, etc.) by GID, so renames are safe for those.
-
-- **Hex re-extraction is restricted.** All CSS consumers read `var(--color-<handle>)` rather than `hex_code.value` directly. The only re-extraction site is `utility--meta-theme-color` (the `<meta>` tag, which can't consume custom properties).
 
 ## Seed entries
 
@@ -142,6 +138,7 @@ A separate spec deliverable from validation, even when the implementation shares
 - **Gradient stops** — the `gradient` metaobject composes stops by referencing `--color-role-<role>` for scheme-adaptive stops. A theme_color handle is not a valid stop name.
 - **Runtime contrast computation** — handled by `snippets/utility--color-contrast.liquid` (its own spec). theme_color's spec is the input shape; the contrast utility is a separate consumer.
 - **Translucent companion (`-rgb`)** for theme_color entries — additive; revisit when a consumer needs `rgba(var(--color-<handle>-rgb), <alpha>)` directly off a palette color rather than a scheme role.
+- **Merchant-chosen handles prefixed `role-`** — a `theme_color` entry handled `role-primary` (or any `role-<x>`) emits `--color-role-primary`, which the per-scheme block of `utility--css-variables` then overrides because scheme rules emit after the theme_color loop in `:root`. Merchants are expected not to prefix handles with `role-`; the theme does not enforce or warn. Cosmetic / debug-visible only — the scheme-assigned value wins at use-site.
 
 ## Related
 
