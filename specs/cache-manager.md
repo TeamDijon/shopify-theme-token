@@ -100,8 +100,8 @@ Per `validation-contract.md` Tier 1d (substrate / utility-js).
   - **Chainability**: `clear` returns `this`. `set` returns the value (not `this`) — asymmetric on purpose, since callers typically want the value back.
   - **Auto-vivification**: `cache.set("custom-type", "key", value)` works without explicit type setup; `has("custom-type", "key")` returns `true` after.
   - **Edge cases**:
-    - `ttl: 0` → entry expires immediately (`Date.now() > Date.now() + 0` is false at set, but borderline; in practice, the next `get` will compute fresh). Effectively "never cache" semantics.
-    - `ttl: null` (default) → no expiry; entry persists until `clear`.
+    - `ttl: 0` → falsy in the `ttl ? Date.now() + ttl : null` ternary; `expiresAt` is `null`; entry persists indefinitely. Same as omitting `ttl` entirely — effectively "no expiry" semantics, matching the universal cache convention.
+    - `ttl: null` (default) → no expiry; entry persists until `clear`. Same path as `ttl: 0` (both falsy).
     - Storing `undefined` as a value → cached; `get` returns `undefined`; `has` returns `true` (the key exists with an undefined value).
     - Compute function returning a Promise → the Promise is stored as-is (not awaited); next `get` returns the same Promise reference. Callers needing async-safe caching should await before `set`-ing.
 
