@@ -7,14 +7,14 @@
 **Status**: shipped
 
 **Implementation**:
-- `snippets/media.liquid` (consumer — reads the picked entry's `type` + `value` to emit `aspect-ratio` / `block-size` / `block-size: 100%` per the mode dispatch)
-- `snippets/embed.liquid` (consumer — same dispatch logic for iframe sizing)
-- `snippets/utility--media-sizing.liquid` (helper — centralizes the mode-to-CSS emission logic so `media` and `embed` share the resolution)
+- `snippets/media.liquid` v1.4.0 (consumer — reads the picked entry's `type` + `value` to emit `aspect-ratio` / `block-size` / `block-size: 100%` per the mode dispatch)
+- `snippets/embed.liquid` v1.2.0 (consumer — same dispatch logic for iframe sizing)
+- `snippets/utility--media-sizing.liquid` v1.1.0 (helper — centralizes the mode-to-CSS emission logic so `media` and `embed` share the resolution)
 - Metaobject definition itself — created per `metaobject-definitions.md` § `media_size`
 
-**Reconciled**: 2026-06-01
+**Reconciled**: 2026-06-04 (pin-format conformance — added version pins to consumer references per `spec-convention.md`; no code changes)
 
-**Reviewed**: pending
+**Reviewed**: 2026-06-04
 
 **Depends on**: none — substrate-root token type. Consumed by media-bearing primitives.
 
@@ -42,7 +42,7 @@ The "blank entry" mode (block setting unset) is the implicit fifth case — no C
 
 Type-level metadata: project default (publishable + translatable, `storefront: PUBLIC_READ`). Full definition in `metaobject-definitions.md`.
 
-**Two optional fields covering three modes; one handle-routed special.** The 3+1 design is documented in BACKLOG (Cluster 3 observation #6) as a known minor inconsistency — `ratio` / `relative` / `fixed` use `type`+`value`, while `fill` uses neither. Uniformizing (e.g., `type: "fill"` with blank value) was considered + declined: the handle-routed special is documented and works; cosmetic-only fix doesn't earn a schema migration.
+**Two optional fields covering three modes; one handle-routed special.** The 3+1 design is a minor inconsistency — `ratio` / `relative` / `fixed` use `type`+`value`, while `fill` uses neither. The handle-routed special is documented and works; uniformizing (e.g., `type: "fill"` with blank value) would be cosmetic-only.
 
 ## Output shape
 
