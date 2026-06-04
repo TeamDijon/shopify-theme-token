@@ -33,7 +33,8 @@
     <h1>Content width</h1>
     <p>
       Source: <code>metaobjects.content_width.values</code>. Read by
-      consumers as <code>.width.value</code> (px) and emitted as the
+      consumers as <code>.width.value</code> (merchant-facing px),
+      converted to rem at emit time and written as the
       <code>--content-width</code> CSS variable, which constrains the
       element's <code>max-inline-size</code>. Each row renders a real
       <code>title</code> snippet with the entry's <code>content_width</code>

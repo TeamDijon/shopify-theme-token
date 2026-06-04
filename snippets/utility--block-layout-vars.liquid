@@ -1,9 +1,15 @@
-{% # Block layout vars v1.0.0 %}
+{% # Block layout vars v1.1.0 %}
+
+{% comment %}
+  Changelog
+  - v1.1.0 — `--content-width` emission harmonized to rem (was px), matching the margin pair and the codebase-wide merchant-px / front-end-rem convention. Merchant input still px (via the metaobject's `width` field); converted at emit time via `divided_by: 16.0 | round: 3`. Doc string's "centralizes the px→rem divisor" claim is now accurate for all three vars (was previously true only for the margin pair).
+  - v1.0.0 — initial
+{% endcomment %}
 
 {% doc %}
   @description Emits the CSS custom properties shared by every block's `dynamic_style` tail: the `content_width` cap and the mobile/desktop top-margin overrides. Emits only the non-default lines (skips blanks and zeros). Centralizes the px→rem divisor and the breakpoint contract so blocks don't re-implement them and can't drift.
 
-  @param {metaobject} [content_width] - `content_width` metaobject. Emits `--content-width: <px>px` when present. Pass blank to omit (e.g. richtext in narrow mode).
+  @param {metaobject} [content_width] - `content_width` metaobject. Emits `--content-width: <px/16>rem` when present. Pass blank to omit (e.g. richtext in narrow mode).
   @param {number} [mobile_margin_block_start] - Top margin px below the desktop breakpoint. Emits `--mobile-margin-block-start` (rem) when > 0.
   @param {number} [desktop_margin_block_start] - Top margin px at or above the breakpoint. Emits `--desktop-margin-block-start` (rem) when > 0.
 
@@ -12,9 +18,10 @@
 
 {% liquid
   if content_width != blank
+    assign content_width_rem = content_width.width.value | divided_by: 16.0 | round: 3
     echo '--content-width: '
-    echo content_width.width.value
-    echo 'px;'
+    echo content_width_rem
+    echo 'rem;'
   endif
 
   if mobile_margin_block_start and mobile_margin_block_start > 0
