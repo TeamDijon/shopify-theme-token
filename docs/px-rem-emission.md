@@ -2,7 +2,7 @@
 
 Merchant-px input, front-end-rem emission. Settings authored in px (range inputs, metaobject Number fields), CSS values emitted in rem via `value | divided_by: 16.0 | round: 3`. Consumers read in rem and never see px.
 
-The conversion happens at the emission site — every utility that writes a CSS custom property from a px-typed merchant setting applies the divisor before writing. The substrate stays accessibility-friendly because rem scales with the user's root font-size preference; a merchant tuning a 16px value gets `1rem` which scales when the user adjusts their browser's default text size.
+The conversion happens at the emission site — every utility that writes a CSS custom property from a px-typed merchant setting applies the divisor before writing. Rem scales with the user's root font-size preference, so a merchant tuning a 16px value gets `1rem` that scales when the user adjusts their browser's default text size — the substrate preserves user accessibility preferences without per-merchant configuration.
 
 ## Conversion
 
@@ -31,7 +31,8 @@ Substrate emitters applying the convention:
 - `snippets/utility--css-variables.liquid` — text-style font sizes, letter-spacing, gutter, spacing tokens
 - `snippets/utility--block-layout-vars.liquid` — per-block content-width + margin pair
 - `sections/section.liquid` — per-section content-width inline emission
-- `snippets/utility--font-face.liquid` — font-weight ranges (no conversion needed; numeric)
+
+`snippets/utility--font-face.liquid` doesn't apply the convention — its `font-weight` field is numeric (100–900 dimensionless) and emits as-is; no px / rem unit involved on either side.
 
 Substrate specs documenting the convention at their emission boundary: `spacing.md`, `content-width.md`, `text-style.md`, `utility--block-layout-vars.md`, `utility--css-variables.md`.
 

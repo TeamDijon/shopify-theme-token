@@ -10,7 +10,7 @@
 
 **Reconciled**: 2026-06-04
 
-**Reviewed**: pending
+**Reviewed**: 2026-06-04
 
 **Depends on**: none — leaf module. Extends Web Platform `HTMLElement`.
 
@@ -21,7 +21,7 @@
 
 A semantically-empty custom element that anchors the inner wrapper of container blocks (`group`, `columns`). Exists to give the inner wrapper a custom-element tag — replacing `<div class="inner">` — so consumers can target `> token-layout` from the outer block's CSS without a stylistic class. The class has no methods, no lifecycle behavior, no managers; it's a substrate anchor whose value is purely structural.
 
-The pattern earns its keep because container blocks (`group` / `columns`) have a recurring need: distinguishing the outer block element (carrying the `data-modifiers` attribute, schema settings, container-style variants) from the inner layout element (carrying the actual flex / grid layout rules). With `<div class="inner">` the inner gets a stylistic class that has to be re-declared in every container block's CSS; with `<token-layout>` the inner gets a stable tag selector that lives at the substrate.
+Container blocks (`group` / `columns`) distinguish the outer block element (carrying the `data-modifiers` attribute, schema settings, container-style variants) from the inner layout element (carrying the actual flex / grid layout rules). With `<div class="inner">` the inner gets a stylistic class re-declared in every container block's CSS; with `<token-layout>` the inner gets a stable tag selector at the substrate.
 
 ## API
 
@@ -54,7 +54,7 @@ N/A — the element emits no CSS variables.
 - **Empty class — substrate anchor.** No methods, no properties, no lifecycle hooks. The class exists to give the inner wrapper a custom-element tag.
 - **Global registration at module load.** Importing `@theme/token-layout` triggers `customElements.define("token-layout", TokenLayout)` as a side effect. `core.js` imports the module so the registration runs on theme initialization. No idempotency guard — the module loads once per page; double-registration would throw, which signals a load-order bug.
 - **No `BaseComponent` extension.** This element doesn't need per-element managers (`events` / `observers` / `cache` / `modifiers`). Extending `BaseComponent` would pay 4-getter overhead per `<token-layout>` instance for no benefit; staying on `HTMLElement` keeps the cost zero.
-- **Forward-compatible extension surface.** The class body is empty today; future enhancements (per-instance behavior, custom-property exposure, slot-like APIs) can extend `TokenLayout` without touching the consumer markup. The migration cost is paid once, at the substrate, not at every container block.
+- **Forward-compatible extension surface.** The class body is empty; future enhancements (per-instance behavior, custom-property exposure, slot-like APIs) extend `TokenLayout` without touching consumer markup.
 
 ## A11y
 

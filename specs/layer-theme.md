@@ -15,7 +15,7 @@
 
 **Reconciled**: 2026-06-04
 
-**Reviewed**: pending
+**Reviewed**: 2026-06-04
 
 **Depends on**:
 - `design-constants.md` (`assets/layer-base.css`) — reads `--duration-*`, `--ease-*`, `--radius-default` for transitions + container-style variants
@@ -31,9 +31,9 @@
 
 ## Purpose
 
-The most load-bearing substrate CSS file — aggregates five rule groups that compose the theme's outer-flow, body-level appearance, layout grid, rhythm cascade, and container-variant catalog into one `@layer theme` block. The grouping is by selector-cohesion: outer-flow at universal scope (applies to apps + chrome), body-level at every-element scope (theme defaults), `theme-root` at opt-in scope (sections opting into the bleed grid). Each layer's blast radius matches its concern.
+Aggregates five rule groups composing the theme's outer-flow, body-level appearance, layout grid, rhythm cascade, and container-variant catalog into one `@layer theme` block. The grouping is by selector-cohesion: outer-flow at universal scope (applies to apps + chrome), body-level at every-element scope (theme defaults), `theme-root` at opt-in scope (sections opting into the bleed grid). Each layer's blast radius matches its concern.
 
-The file is the substrate-most CSS payload after `layer-base.css`. Where `layer-base.css` carries scheme-independent constants (motion, radius, z-index, spacing defaults), `layer-theme.css` carries the rules those constants and the per-scheme tokens compose into. Per-block / per-component CSS lives in each block's `{% stylesheet %}` block, not here.
+Where `layer-base.css` carries scheme-independent constants (motion, radius, z-index, spacing defaults), `layer-theme.css` carries the rules those constants and the per-scheme tokens compose into. Per-block / per-component CSS lives in each block's `{% stylesheet %}` block, not here.
 
 ## API
 
@@ -164,7 +164,7 @@ N/A — this file consumes CSS variables from `design-constants.md` + `utility--
 
 ## Behavior
 
-- **Five rule groups, by selector cohesion.** Each group's selector chain is the structural anchor; the rule body holds the styles. The file is pinned by description per `spec-convention.md` § Substrate stylesheets — versioning the whole file would force every spec referencing one rule group to reconcile on every change anywhere in the file.
+- **Five rule groups, by selector cohesion.** Each group's selector chain is the structural anchor; the rule body holds the styles. Pinned by description per `spec-convention.md` § Substrate stylesheets.
 - **Outer-section wrapper applies universally.** `.shopify-section` styles ours + app sections + chrome equally. Only outer-flow concerns belong here. Content-level styling (typography, background, transitions) goes on `body` so it cascades through every element including apps.
 - **Body-level appearance is the cascade fountainhead.** Every element inherits body's typography + color + transition defaults unless overridden. App sections without their own styling adopt these defaults; apps with explicit styling override per normal cascade.
 - **Theme-root bleed grid opts in via the `theme-root` modifier.** Sections without the modifier render as block-level elements with no grid. Sections with it get the three-track named-line grid. Specialized sections that need their own layout opt out by overriding `display` per `theme-root.md` § Specialized-section opt-out.
@@ -173,7 +173,7 @@ N/A — this file consumes CSS variables from `design-constants.md` + `utility--
 - **Block-rhythm cascade resolves through `var()` chain, not Liquid.** The per-block override → section rhythm → 0rem floor cascade is implemented entirely by the consumer-side `var(--upper, var(--lower, <floor>))` chain plus skip-on-default emission. See `dynamic-style-pattern.md` § Skip-on-default + var-fallback cascade.
 - **Container-style selectors keep specificity at zero.** `:where()` wraps the block-class enum so the rule contributes no specificity. Per-block stylesheets + per-project overrides cascade naturally without `!important` or specificity wars.
 - **Three-block enum on container-style is intentional.** `group` / `columns` / `media` are the three container blocks; the enum names them explicitly. Adding a fourth container block requires updating the selector chain on every variant rule. Trade-off documented in `container-style.md` Out of scope (root-marker migration path).
-- **`125rem` content-width fallback is the substrate's big-screen floor.** When no `content_width` is picked at the section or block level, the cap reads `125rem` (= 2000px at default 16px root). Wider than 99% of viewports — effectively "no cap until ultra-wide displays".
+- **`125rem` content-width fallback is the substrate's big-screen floor.** When no `content_width` is picked at the section or block level, the cap reads `125rem` (= 2000px at default 16px root). The fallback scales with root font-size; intended as a no-cap floor for ultra-wide displays.
 - **No JavaScript dependency.** The file is pure CSS. Every behavior here resolves at the browser's layout step; no runtime helper is needed.
 
 ## A11y
@@ -218,12 +218,14 @@ Per `validation-contract.md` Tier 1c (substrate / utility-css).
 
 - **Aggregator-file vs per-concern files.** The 5 rule groups could live in 5 separate files (`layer-theme-outer.css`, `layer-theme-body.css`, etc.) but the cascade interaction (outer applies universally, body cascades through, theme-root opts in) is easier to reason about when they're in one file with one `@layer theme` block. Multi-file would also force `utility--core-assets` to concatenate more inputs in fixed order.
 - **`:where()` for container-style variants vs class-based selectors.** `:where()` keeps specificity at zero, so per-block stylesheets (e.g., `group.liquid`'s `{% stylesheet %}` block) can override without specificity escalation. A class-based selector would force per-block override rules to either escalate specificity or use `!important`.
+- **Hardcoded values where the substrate variable exists.** The file currently hardcodes a few values that map numerically to substrate variables: form-input border uses `0.0625rem solid` rather than `var(--border-thin)`; focus-visible outline uses `0.125rem` rather than `var(--focus-ring-width)` and `0.125rem` rather than `var(--focus-ring-offset)`; container-style box-shadows use `rgba(0, 0, 0, 0.08)` and `rgba(0, 0, 0, 0.1)` rather than `--color-role-shadow`-derived alpha. Values match the substrate scale numerically but don't consume the variables. Future cleanup; not a contract concern (computed values are identical to the var-consuming form).
+- **`:focus-visible` border-color override on form inputs.** Inside the body-level form-input cascade, `:focus-visible` sets `border-color: var(--color-role-primary)` in addition to the standard outline. The override is documented inline in the file but not surfaced as a named pattern in the spec body — captured here for the design-history record.
 
 ## Out of scope
 
 - **Reset rules.** Covered by `assets/layer-reset.css` (`@layer reset` body); this file just inherits the layer order declared in `design-constants.md`. The reset rules themselves are out of this spec's surface.
 - **Substrate constants (z-index, motion, radius, border, touch-target, spacing defaults).** Owned by `design-constants.md` (`assets/layer-base.css`). This file consumes them via `var()`.
-- **Per-scheme color-role tokens.** Owned by the planned `color-scheme.md` spec; the per-scheme rule block in `utility--css-variables.liquid` populates `--color-role-*`. This file consumes via `var()`.
+- **Per-scheme color-role tokens.** Owned by `color-scheme.md`; the per-scheme rule block in `utility--css-variables.liquid` populates `--color-role-*`. This file consumes via `var()`.
 - **Text-style font properties.** Owned by `text-style.md`; the `--<handle>-font-*` and `--base-*` aliases are populated by `utility--css-variables.liquid`. This file consumes via `var()`.
 - **Per-block / per-section CSS rules.** Every block / section carries its own `{% stylesheet %}` block scoped to `.shopify-block--<name>` or the section's element. This file only carries rules that apply across multiple blocks / sections (outer-flow, body cascade, bleed grid, rhythm cascade, container variants).
 - **Utility classes (`sr-only`, `prose`, etc.).** Owned by `assets/layer-utilities.css` (planned spec). This file doesn't carry utility-class rules.

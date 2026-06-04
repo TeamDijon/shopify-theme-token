@@ -12,7 +12,7 @@
 
 **Reconciled**: 2026-06-04
 
-**Reviewed**: pending
+**Reviewed**: 2026-06-04
 
 **Depends on**:
 - `snippets/utility--asset-loader.liquid` (downstream — receives the scoped CSS as inline content)
@@ -96,7 +96,7 @@ N/A — this utility scopes whatever properties the caller's captured content em
 - **Skip-on-blank-content.** `utility--dynamic-style` early-exits when `css_content` is blank — no `<style>` block emitted. Pairs with the consumer-side `{% if value %}…{% endif %}` guards that skip individual declarations when their inputs are blank; the wrapping capture naturally evaluates to empty when every declaration skips, triggering the early-exit. See `dynamic-style-pattern.md` § Skip-on-default + var-fallback cascade for the multi-layer pattern this enables.
 - **Skip-on-blank-selector.** Same early-exit when `base_selector` is blank — no `<style>` block emitted. Defensive against caller misuse (forgetting to compute the id).
 - **One `<style>` block per call site.** The utility doesn't bundle multiple call sites into one block — each render emits its own scoped block. Bundling would require a centralized capture surface, which doesn't generalize across block + section layers.
-- **`base-selector` branch precedence is deterministic.** `block` > `identifier` > section-only. The branch is exclusive — passing both `block` and `identifier` resolves to `block` (the `identifier` path is silently ignored). Documented at the snippet's @example; callers should pass one or the other.
+- **`base-selector` branch precedence is deterministic.** `block` > `identifier` > section-only. The branch is exclusive — passing both `block` and `identifier` resolves to `block` (the `identifier` path is silently ignored). Callers pass one or the other.
 - **Section-only fallback for section-level rendering.** When a section emits its own dynamic style (not block-level), the call is `render 'utility--base-selector', section: section` with no `block` and no `identifier` — produces `shopify-section-<section.id>`. This is the path `section.liquid` uses for its own dynamic style.
 - **`identifier` path for section-rendered components.** When a snippet is rendered directly from a section (not from a block) but needs its own scoped style — e.g., a section-chrome helper — pass `identifier: 'custom-id'` to produce `shopify-section-<section.id>__block-<identifier>`. The double underscore separates the section context from the identifier scope.
 - **Captured-id requires `| strip`.** `utility--base-selector` echoes its output; the surrounding `{% capture %}` tag introduces whitespace. Callers strip the captured string before interpolating into HTML attributes or render args. Documented in `dynamic-style-pattern.md` § The flow.
@@ -135,7 +135,7 @@ Per `validation-contract.md` Tier 1b (substrate / utility-snippet).
 
 ## Implementation-time decisions
 
-- **One-file scoping vs caller-side scoping.** Both utilities are one-shot wrappers — the alternative was inlining the `#<id> { … }` boilerplate at every caller. The utility's value is the centralized scoping convention + skip-on-blank semantics + asset-pipeline integration; the cost is a render call per instance. Net: utility wins because it standardizes the call shape across 9+ consumers.
+- **One-file scoping vs caller-side scoping.** Both utilities are one-shot wrappers — the alternative was inlining the `#<id> { … }` boilerplate at every caller. The utility standardizes the call shape across 9+ consumers; per-instance cost is one render call.
 - **Paired vs merged file.** The two utilities live in separate files because `base-selector` has independent use cases (id-only computation for `data-base-selector` attributes, JS-side `getElementById` lookups). Merging would force every `base-selector` consumer to import the heavier `dynamic-style` machinery. The pair is the convention; either-alone is supported.
 
 ## Out of scope
@@ -151,4 +151,4 @@ Per `validation-contract.md` Tier 1b (substrate / utility-snippet).
 - `.context/docs/dynamic-style-pattern.md` — pattern doc covering the full per-instance CSS flow, the skip-on-default + var-fallback cascade, and the per-iteration custom-property variant
 - `.context/specs/utility--block-layout-vars.md` — the canonical L1-block consumer; emits the three shared per-instance vars (`--content-width`, `--mobile-margin-block-start`, `--desktop-margin-block-start`) through this utility's scoping wrapper
 - `.context/docs/asset-loading.md` — inline-CSS routing through `utility--asset-loader` (the downstream this utility feeds)
-- `.context/specs/section.md` (planned) — section-layer consumer; emits `--content-width` + `--block-rhythm` per-section via this utility
+- `.context/specs/section.md` — section-layer consumer; emits `--content-width` + `--block-rhythm` per-section via this utility

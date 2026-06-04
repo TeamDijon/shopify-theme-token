@@ -10,7 +10,7 @@
 
 **Reconciled**: 2026-06-04
 
-**Reviewed**: pending
+**Reviewed**: 2026-06-04
 
 **Depends on**:
 - Shopify theme settings `color_schemes` — built-in `color_scheme_group` setting populating per-scheme background / foreground / primary / border / shadow + button sub-roles + input sub-roles + optional `background_gradient`
@@ -24,9 +24,7 @@
 
 ## Purpose
 
-A scheme-adaptive role-keyed CSS variable namespace. Every L0 / L1 / section block reads from `--color-role-*` tokens; the per-scheme rule block populates them with scheme-specific values. A modifier-bearing element (`data-modifiers="color-scheme:scheme-2"`) re-scopes its subtree to the picked scheme's tokens without leaking to siblings; descendants read the tokens transparently.
-
-The distinctive design principle: **role-keyed tokens decouple consumers from the active scheme**. Block CSS reads `var(--color-role-primary)` once; the same declaration resolves to scheme-1's primary in the default subtree, scheme-2's primary inside a scheme-2-modified subtree, scheme-3's primary inside a scheme-3-modified subtree. No conditional Liquid, no per-scheme overrides at the block level — the substrate carries the scheme dispatch via cascade scoping.
+**Role-keyed tokens decouple consumers from the active scheme.** Every L0 / L1 / section block reads from `--color-role-*` tokens; the per-scheme rule block populates them with scheme-specific values. A modifier-bearing element (`data-modifiers="color-scheme:scheme-2"`) re-scopes its subtree to the picked scheme's tokens without leaking to siblings; descendants read the tokens transparently. Block CSS reads `var(--color-role-primary)` once; the same declaration resolves to scheme-1's primary in the default subtree, scheme-2's primary inside a scheme-2-modified subtree. No conditional Liquid, no per-scheme overrides at the block level — the substrate carries the scheme dispatch via cascade scoping.
 
 The namespace is **deliberately disjoint** from `theme_color`'s `--color-<handle>` namespace (per `theme-color.md`). A `theme_color` entry whose handle happens to be `background` emits `--color-background` and does not interact with `--color-role-background` — the role-token system is per-scheme assignment; the palette is scheme-independent.
 
@@ -43,7 +41,7 @@ Per-scheme rule blocks, emitted in order: scheme-1 unioned with `:root` (so the 
 [data-modifiers*="color-scheme:scheme-1"] {
   /* --- 1. Direct color settings (literal values from scheme.settings.*) --- */
   --color-role-background: #ffffff;
-  --gradient-background: linear-gradient(...);  /* or fallback to --color-role-background when scheme.background_gradient is unset */
+  --gradient-background: linear-gradient(...);  /* or fallback to the scheme's background hex literal (numerically identical to --color-role-background) when scheme.background_gradient is unset */
   --color-role-foreground: #1a1a1a;
   --color-role-foreground-heading: #000000;
   --color-role-primary: #c2410c;
@@ -69,6 +67,7 @@ Per-scheme rule blocks, emitted in order: scheme-1 unioned with `:root` (so the 
   --color-role-primary-button-border-hover:     color-mix(in oklab, var(--color-role-primary-button-border), black 12%);
   --color-role-primary-button-text-hover:       var(--color-role-primary-button-text);
   --color-role-secondary-button-background-hover: color-mix(in oklab, var(--color-role-secondary-button-background), var(--color-role-foreground) 8%);
+  --color-role-secondary-button-text-hover:       var(--color-role-secondary-button-text);  /* passes through */
   --color-role-secondary-button-border-hover:     color-mix(in oklab, var(--color-role-secondary-button-border), black 12%);
   --color-role-input-background-hover:            color-mix(in oklab, var(--color-role-input-background), var(--color-role-foreground) 4%);
   --color-role-input-border-hover:                color-mix(in oklab, var(--color-role-input-border), var(--color-role-foreground) 20%);
@@ -77,13 +76,13 @@ Per-scheme rule blocks, emitted in order: scheme-1 unioned with `:root` (so the 
   --color-role-foreground-muted: rgb(from var(--color-role-foreground) r g b / var(--opacity-muted));
   --color-role-placeholder:      rgb(from var(--color-role-input-text) r g b / 0.5);
   --color-role-disabled-background: rgb(from var(--color-role-foreground) r g b / var(--opacity-subtle));
-  --color-role-disabled-text:       rgb(from var(--color-role-foreground) r g b / var(--opacity-muted));
+  --color-role-disabled-text:       rgb(from var(--color-role-foreground) r g b / 0.4);  /* hardcoded across schemes */
   --color-role-disabled-border:     rgb(from var(--color-role-foreground) r g b / var(--opacity-border-soft));
   --color-role-focus-ring: var(--color-role-primary);  /* alias, opaque */
   --color-role-backdrop:   rgb(from var(--color-role-shadow) r g b / 0.5);
-  --shadow-sm: 0 0.0625rem 0.1875rem rgb(from var(--color-role-shadow) r g b / 0.08);
-  --shadow-md: 0 0.25rem 0.75rem    rgb(from var(--color-role-shadow) r g b / 0.10);
-  --shadow-lg: 0 0.5rem 1.5rem      rgb(from var(--color-role-shadow) r g b / 0.12);
+  --shadow-sm: 0 1px 2px   rgb(from var(--color-role-shadow) r g b / 0.06);
+  --shadow-md: 0 4px 12px  rgb(from var(--color-role-shadow) r g b / 0.10);
+  --shadow-lg: 0 8px 24px  rgb(from var(--color-role-shadow) r g b / 0.14);
 }
 
 [data-modifiers*="color-scheme:scheme-2"] { /* same four-group shape, scheme-2 values */ }
@@ -115,15 +114,16 @@ Described above in Output shape. The implementation is the per-scheme rule block
 | | `--color-role-primary-button-text-hover` | passes through | Text unchanged on hover |
 | **Button: secondary** | `--color-role-secondary-button-{background,text,border}` | `scheme.settings.secondary_button_*` | Direct scheme-setting values |
 | | `--color-role-secondary-button-background-hover` | `color-mix(…, foreground 8%)` | Shift toward foreground |
+| | `--color-role-secondary-button-text-hover` | passes through | Text unchanged on hover |
 | | `--color-role-secondary-button-border-hover` | `color-mix(…, black 12%)` | Darkening shift |
 | **Input** | `--color-role-input-{background,text,border}` | `scheme.settings.input_*` | Direct scheme-setting values |
 | | `--color-role-input-{background,border}-hover` | `color-mix(…, foreground 4%/20%)` | Shifts toward foreground at varying weights |
 | | `--color-role-placeholder` (derived) | `--color-role-input-text` × 0.5 alpha via `rgb(from)` | Placeholder color (50% input-text opacity) |
-| **Disabled** | `--color-role-disabled-background` | `--color-role-foreground` × `--opacity-subtle` | Subtle disabled-state fill |
-| | `--color-role-disabled-text` | `--color-role-foreground` × `--opacity-muted` | Muted disabled-state text |
-| | `--color-role-disabled-border` | `--color-role-foreground` × `--opacity-border-soft` | Disabled-state border |
+| **Disabled** | `--color-role-disabled-background` | `--color-role-foreground` × `--opacity-subtle` | Subtle disabled-state fill (alpha scales per scheme) |
+| | `--color-role-disabled-text` | `--color-role-foreground` × `0.4` (hardcoded) | Disabled-state text; alpha hardcoded across schemes for consistent mid-tone readability |
+| | `--color-role-disabled-border` | `--color-role-foreground` × `--opacity-border-soft` | Disabled-state border (alpha scales per scheme) |
 | **Opacity scales** | `--opacity-subtle`, `--opacity-muted`, `--opacity-border-soft` | Brightness-conditional (dark vs light scheme) | Branch on `scheme.settings.background \| color_brightness < 64` |
-| **Shadows** | `--shadow-sm`, `--shadow-md`, `--shadow-lg` | `--color-role-shadow` × increasing alpha depth via `rgb(from)` | Three preset elevation shadows |
+| **Shadows** | `--shadow-sm`, `--shadow-md`, `--shadow-lg` | `--color-role-shadow` × alphas 0.06 / 0.10 / 0.14 via `rgb(from)`; dimensions in px (`0 1px 2px` / `0 4px 12px` / `0 8px 24px`) | Three preset elevation shadows; px dimensions per the device-pixel rationale (same as border-width scale) |
 
 ## Behavior
 
@@ -135,8 +135,9 @@ Described above in Output shape. The implementation is the per-scheme rule block
 - **Hover variants composed via `color-mix(in oklab, …)`.** Perceptual color space. Primary buttons darken toward black 12% (uniform across primary). Secondary buttons shift toward foreground 8% so hover reads against the surrounding ground. Inputs shift toward foreground at 4% (background) / 20% (border) — border picks up more contrast than background. Primary button text passes through unchanged on hover (no color shift; only the background / border change).
 - **`color-mix` for color mixing; `rgb(from)` for transparency.** Two distinct syntaxes for two distinct intents. Hover variants (color shifts toward another color) use `color-mix(in oklab, ...)`. Translucent compositions (alpha applied to an opaque source) use `rgb(from var(--color-role-X) r g b / α)`. Distinguishable at a glance — readers don't have to parse the operation to know the intent.
 - **Derived translucent tokens preserve the fractional `--opacity-*` chain.** `--color-role-foreground-muted` is `rgb(from var(--color-role-foreground) r g b / var(--opacity-muted))`. The opacity reference lets the brightness-derived scale drive multiple derived tokens without re-declaring the alpha per token. Pairs with the brightness threshold to produce scheme-appropriate translucence.
+- **Disabled-text alpha is hardcoded across schemes.** `--color-role-disabled-text` uses a hardcoded `0.4` alpha rather than `var(--opacity-muted)` (which scales per scheme). The hardcode keeps disabled text at a consistent mid-tone readability target regardless of scheme background — on light schemes `--opacity-muted` is 0.40 (which matches), on dark schemes it's 0.60 (where disabled text would read too prominent). Disabled-background and disabled-border continue to consume the per-scheme opacity vars (`--opacity-subtle`, `--opacity-border-soft`) because their visual targets are scheme-dependent.
 - **Focus-ring is an alias.** `--color-role-focus-ring: var(--color-role-primary)` — opaque, single alias. Per-project re-pointing happens at the source (`--color-role-primary`) rather than per-consumer; the alias-by-reference shape keeps the focus-ring color in sync with the primary color automatically.
-- **`--shadow-{sm,md,lg}` compose alpha depth via `rgb(from)`.** Three preset elevation shadows — `sm` (0.08 alpha), `md` (0.10 alpha), `lg` (0.12 alpha). Color source is `--color-role-shadow`; depth scales with size. Per-scheme: dark schemes get the same shadow color but the alpha values are uniform across schemes (not brightness-conditional).
+- **`--shadow-{sm,md,lg}` compose alpha depth via `rgb(from)`.** Three preset elevation shadows — `sm` (0.06 alpha), `md` (0.10 alpha), `lg` (0.14 alpha). Color source is `--color-role-shadow`; depth scales with size on a +0.04 increment per step. Dimensions emitted in px (`0 1px 2px` / `0 4px 12px` / `0 8px 24px`) per the device-pixel rationale that governs the border-width scale and `--radius-pill`; alpha values are uniform across schemes (not brightness-conditional — only the shadow color shifts with the scheme).
 - **No JavaScript dependency.** Scheme switching at runtime happens via toggling the `data-modifiers="color-scheme:scheme-N"` attribute on the section / element root. CSS variables re-resolve immediately; the body's transition (`--duration-base var(--ease-standard)` from `layer-theme.css`) animates the change.
 - **Scheme set is open-ended.** Token ships with three seed schemes (scheme-1/2/3). Per-project schemes (scheme-4, scheme-5, etc.) follow the same emission shape — merchants add them via Shopify's color-schemes setting; the snippet iterates without modification.
 
@@ -183,9 +184,9 @@ Per `validation-contract.md` Tier 1c (substrate / utility-css).
 ## Implementation-time decisions
 
 - **Selector union for scheme-1 vs per-scheme-only.** Scheme-1 targets `:root` AND its modifier selector; subsequent schemes target only their modifier. The union lets the document inherit scheme-1's tokens by default — without it, every section would need to explicitly carry `color-scheme:scheme-1` to opt in.
-- **Brightness threshold at 64/255 vs alternative thresholds.** 64 separates near-black grounds (where subtle overlays disappear at low alpha) from mid/light grounds (where subtle overlays read at low alpha). Tested empirically; not derived from a specific luminance formula. Per-project override is possible by editing the threshold in `utility--css-variables.liquid`.
-- **`color-mix(in oklab, ...)` vs `lch` / `hsl`.** Oklab is perceptually uniform (mixes look smooth across the spectrum). `lch` is also perceptual but has gamut-clipping artifacts at extreme values. `hsl` mixes in RGB-derived space which produces muddy mid-tones. Oklab is the current consensus for perceptual mixing.
-- **`rgb(from var(--*) r g b / α)` vs `rgba(var(--*-rgb), α)`.** Relative-color syntax (`rgb(from`) reads channels from an opaque source without requiring a pre-computed `-rgb` companion variable. The legacy `-rgb` pattern (companion variable per role) required storing channels separately — doubled the variable surface. Relative-color is a drop-in replacement preserving the fractional `--opacity-*` alpha format, with no channel-storage overhead. Migration completed in `utility--css-variables.liquid` v1.11.0.
+- **Brightness threshold at 64/255 vs alternative thresholds.** 64 separates near-black grounds (where subtle overlays disappear at low alpha) from mid/light grounds (where subtle overlays read at low alpha). Per-project override is possible by editing the threshold in `utility--css-variables.liquid`.
+- **`color-mix(in oklab, ...)` vs `lch` / `hsl`.** Oklab is perceptually uniform; `lch` clips at extreme gamut values; `hsl` mixes in RGB-derived space and produces muddy mid-tones.
+- **`rgb(from var(--*) r g b / α)` vs `rgba(var(--*-rgb), α)`.** Relative-color syntax (`rgb(from`) reads channels from an opaque source without requiring a pre-computed `-rgb` companion variable. The companion-variable pattern would double the variable surface (one `-rgb` triplet per role); relative-color reads channels at use-site, preserving the fractional `--opacity-*` alpha format with no channel-storage overhead.
 
 ## Out of scope
 
