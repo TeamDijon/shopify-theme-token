@@ -82,6 +82,20 @@ Most field references resolve by GID, so handle renames are safe. A few patterns
 
 If you need to rename one of these, audit consumers first.
 
+## Extending a substrate scale (two-emitter cascade-position override)
+
+When a substrate stylesheet seeds a named scale (e.g., `assets/layer-base.css` seeds `--spacing-xs/sm/md/lg/xl`) and a metaobject catalogs the same scale (e.g., `spacing` entries via `utility--css-variables`), the two emitters live in the same `:root` and the metaobject's later emission wins by cascade position. No special-case logic in either emitter — matching handles override, non-matching handles add new slots.
+
+The pattern works wherever a substrate provides a default scale that a project might want to extend or rebase per-brand without a separate `--project-<scale>-<handle>` namespace. Candidates: `--spacing-*` (active today, via `spacing`), hypothetical future `--radius-*` (via a `radius` metaobject), `--duration-*` (via a `motion` metaobject).
+
+The contract names three commitments:
+
+1. **Substrate seeds first** in `layer-base.css` (or equivalent) — provides defaults for the named handles every L0/L1 consumer can read unconditionally
+2. **Metaobject emits later** in `utility--css-variables` (after the substrate file in the inline-CSS sequence) — entries override matching handles via cascade position
+3. **Non-matching handles add new slots** — the metaobject is open-ended; per-project entries coexist with the substrate scale
+
+This is what spacing does today. New scale extensions should follow the same shape rather than inventing per-scale override mechanisms.
+
 ## Related
 
 - `metaobject-definitions.md` — type definitions for setup (audience: agent/human creating definitions on the store)

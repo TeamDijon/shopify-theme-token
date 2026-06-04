@@ -37,6 +37,46 @@ Per-instance CSS values (widths, spacings, colors from settings) live in CSS cus
 - **Convert px → rem for spacing** — use `| divided_by: 16.0 | round: 3`. Settings authored in px (range inputs), CSS values expressed in rem.
 - **Scope covers the subtree** — descendants inherit the custom properties, so a component can pass dynamic values into child snippets without re-scoping.
 
+## Skip-on-default + var-fallback cascade
+
+The two rules above (guard each declaration; always fallback in `var()`) compose into a multi-layer cascade resolved by the CSS engine, not by Liquid. Every per-instance customization surface in the theme uses this shape: a layer that has *no input* emits *no declaration*, and consumers chain `var(--upper, var(--lower, <floor>))` to flow through layers transparently.
+
+### Worked example — per-block top margin
+
+Four layers resolve through one consumer-side `var()` chain:
+
+| Layer | Source | Emission |
+|---|---|---|
+| 1 — Per-block override | `block.settings.mobile_margin_block_start` (px range) | `--mobile-margin-block-start: <rem>` only when `> 0` |
+| 2 — Section block-rhythm | `section.settings.block_rhythm` (spacing metaobject picker) | `--block-rhythm: var(--spacing-<picked-handle>)` per-section |
+| 3 — Substrate default | `assets/layer-base.css` | Seeds `--spacing-xs/sm/md/lg/xl` rem defaults |
+| 4 — Hardcoded floor | `assets/layer-theme.css`'s cascade rule | `var(--mobile-margin-block-start, var(--block-rhythm, 0rem))` |
+
+The consumer rule lives in `layer-theme.css`:
+
+```css
+[data-modifiers*='theme-root'] > .shopify-block:not(:first-child) {
+  margin-block-start: var(--mobile-margin-block-start, var(--block-rhythm, 0rem));
+}
+```
+
+Resolution scenarios:
+
+- **Block override + section rhythm**: layer 1 emits → first `var()` resolves → block override wins
+- **No block override + section rhythm**: layer 1 skipped → first `var()` unset → falls through to `--block-rhythm` → section rhythm wins
+- **No block override + no section rhythm**: both unset → falls through to `0rem` floor
+- **Block override is `0` or blank**: skipped (the `> 0` guard treats `0` same as blank) → falls through to section rhythm. To force-zero, the merchant picks an explicit `spacing: none` handle at the section level — which emits `--block-rhythm: 0px`.
+
+### The three commitments this names
+
+1. **Emit only on real input** — the utility guards `if value > 0` (or `if != blank`); a `0` or blank produces no declaration. Don't emit `--x: ;` or `--x: 0` from a blank input.
+2. **Layer below carries a `var()` fallback** — each consumer reads `var(--upper, <fallback-chain>)`. The fallback is the layer below, not a hardcoded value (unless this is the floor).
+3. **The hardcoded floor is the last fallback in the chain** — never silently substituted inside the utility. The consumer's `var()` chain is the canonical place the floor appears.
+
+### When to reach for it
+
+Every per-instance customization surface — gap, padding, margin, content-width, container variant, future per-block typography overrides. The pattern lets future utilities add new layers (a new substrate default; a new per-instance override) without restructuring existing consumers — the `var()` chain absorbs the new layer wherever it slots in.
+
 ## Per-iteration custom properties (loop-emitted variables)
 
 When a Liquid loop produces N elements and CSS needs a Liquid-derived value per element — but the value isn't expressible via `attr()` and the per-instance flow above doesn't fit because the loop runs outside any single block's render — emit a single inline `<style>` block that sets a CSS custom property per element keyed by id. Each element's CSS then reads it via `var(--name)`.
@@ -70,4 +110,5 @@ Then in the consumer page's stylesheet:
 
 - `snippets/utility--dynamic-style.liquid` — the renderer
 - `snippets/utility--base-selector.liquid` — the selector source for blocks
+- `snippets/utility--block-layout-vars.liquid` + `.context/specs/utility--block-layout-vars.md` — the skip-on-default + var-fallback cascade worked example (per-block top margin + content-width)
 - `snippets/validation--block-labels.liquid` — the loop-emitted-variables worked example
