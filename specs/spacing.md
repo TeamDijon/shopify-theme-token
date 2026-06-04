@@ -147,7 +147,7 @@ Per `validation-contract.md` Tier 1a (substrate / metaobject).
   - **Custom-slot coexistence**: a per-project handle (e.g., `hero-section`) — DevTools confirms `--spacing-hero-section` is emitted; substrate `--spacing-xs/sm/md/lg/xl` defaults remain visible (unless also overridden).
   - **Block-rhythm consumer**: a preset using a `block_rhythm`-picked entry → section emits `--block-rhythm: var(--spacing-<handle>)` in its dynamic-style block; child blocks' computed `margin-block-start` matches the picked entry's responsive value.
 - **Edge cases**:
-  - `mobile_value` blank → emits `--spacing-<handle>: rem;` (malformed declaration; falls through to substrate default for the slot if substrate-aligned, or to `var()` fallback chain otherwise). Schema validation should prevent this at authoring; runtime tolerates by falling through.
+  - `mobile_value` blank → Liquid arithmetic coerces blank to `0` through `divided_by: 16.0 | round: 3`, so the emission is `--spacing-<handle>: 0rem;` (valid declaration). For substrate-aligned handles, this overrides the substrate default to `0`; for custom handles, it adds a `0rem` slot. Schema validation should prevent this at authoring.
   - `desktop_value` blank → `@media` branch skips this entry; mobile value carries through at all viewports via CSS cascade.
   - `mobile_value == desktop_value` → both branches emit the same rem value (no skip-on-same-value logic at emit time; minor redundancy in output, no visual impact).
   - `mobile_value == 0` and `desktop_value == 0` (the `none` seed) → emits `--spacing-none: 0rem` in both branches; consuming as `var(--spacing-none)` resolves to `0px`.

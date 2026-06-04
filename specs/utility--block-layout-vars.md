@@ -117,8 +117,8 @@ Per `validation-contract.md` Tier 1b (substrate / utility-snippet).
   - **Desktop margin (> 0 + 0 + blank)**: same matrix
   - **All-blank case**: all three args blank/zero → utility emits nothing; the wrapping `{% capture dynamic_style %}` produces an empty string that `utility--dynamic-style` short-circuits (no `<style>` block written)
 - **Edge cases**:
-  - Negative margin value (range schema typically prevents) → emits negative rem; CSS treats negative margin-block-start as a vertical pull. Merchant footgun if it reaches runtime.
-  - Content_width metaobject with `width.value` blank → emits `--content-width: rem` (malformed); CSS drops the declaration. Schema validation should prevent.
+  - Negative margin value → skipped by the `> 0` guard; no declaration emitted; the block-rhythm cascade rule's `var(--block-rhythm, 0rem)` fallback applies. (Range schema typically prevents negative values from reaching runtime anyway.)
+  - Content_width metaobject with `width.value` blank → Liquid arithmetic coerces blank to `0` through `divided_by: 16.0 | round: 3`, so the emission is `--content-width: 0rem` (valid declaration; the block's content track collapses to 0). Schema validation should prevent the merchant from saving an entry without a width.
   - Very large margin (e.g., 200px max from range schema) → emits `12.5rem` (200/16). No issue.
   - Sub-1-px-step margin (range step is 2) → preserved at full precision through the divisor + round.
 - **Visual showcase**: per consumer's validation page — verify computed `--mobile-margin-block-start` / `--desktop-margin-block-start` / `--content-width` on the block element match the spec's expectations across the matrix.
