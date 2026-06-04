@@ -27,7 +27,7 @@
 
 ## Purpose
 
-A named spacing token catalog. Each entry holds a mobile + desktop px pair; entries auto-emit as `--spacing-<handle>` CSS variables in `:root` (mobile value) with a nested `@media (width >= 48rem)` branch (desktop value). The unified `--spacing-*` namespace serves the whole theme: substrate components read `var(--spacing-md)` for static defaults, per-instance dynamic style swaps to a picked handle, block-rhythm consumes the namespace as `var(--spacing-<handle>)` per section.
+A merchant-px-input, front-end-rem-emission catalog populating one unified `--spacing-<handle>` namespace shared by substrate defaults, block-rhythm, and component padding. Metaobject entries override substrate T-shirt slots (`xs`/`sm`/`md`/`lg`/`xl`) via cascade position, not auto-bind — matching handles win, non-matching handles add new slots. Each entry holds a mobile + desktop px pair (desktop optional); emission is `--spacing-<handle>` in `:root` and inside a nested `@media (width >= 48rem)` branch.
 
 The design earns its keep by collapsing what would otherwise be three parallel vocabularies — substrate spacing defaults, block-rhythm spacing, component-padding spacing — into one shared `--spacing-<handle>` namespace. A merchant tuning the `md` entry from 16px to 18px propagates the change through every consumer reading `var(--spacing-md)` without per-component re-wiring.
 

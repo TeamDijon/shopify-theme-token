@@ -20,7 +20,7 @@
 
 ## Purpose
 
-An instance-per-element class that wraps the three built-in observer types (`ResizeObserver`, `IntersectionObserver`, `MutationObserver`) with bookkeeping. The manager creates observers on demand, tracks them by element, and disconnects every observer on `clear()` — the lifecycle method that BaseComponent invokes on `disconnectedCallback`. The point is to remove the per-component "remember to disconnect the observer" discipline: components register through the manager and inherit cleanup for free.
+Per-element bookkeeping for the three DOM observer types (`ResizeObserver`, `IntersectionObserver`, `MutationObserver`); the per-type `switch` deliberately preserves each platform contract — options-on-construct for `IntersectionObserver`, options-on-observe for the others — so one observer per `add` honors per-element threshold differences. Components register through the manager and inherit cleanup via `clear()` on `disconnectedCallback`.
 
 The class is internal infrastructure. Components reach it through `BaseComponent.observers`; document-level callers use ad-hoc instances. No `@theme/observers-manager` consumer outside the BaseComponent lazy-getter chain today.
 

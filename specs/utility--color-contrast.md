@@ -18,7 +18,7 @@
 
 ## Purpose
 
-Two-choice contrast picker. Given a background `color` and two reference colors (defaulting to pure black and pure white), echoes whichever reference has the higher computed contrast against the background. Wraps Liquid's `color_contrast` filter to spare callers the ratio comparison; the wrapper's output is a bare color string suitable for interpolation into a CSS custom property declaration or inline `style`.
+A two-choice contrast picker that echoes the higher-contrast of two reference colors against a `background` — explicitly "better-of-two", not WCAG-compliant: the returned reference may still fail AA when neither is sufficient. Wraps Liquid's `color_contrast` filter to spare callers the ratio comparison; output is a bare color string suitable for interpolation into a CSS custom property declaration or inline `style`.
 
 Niche use. Most theme components consume `--color-role-foreground`, which flips with the surrounding color scheme. This snippet is for cases where the surrounding scheme can't be relied on — typically because the background is sourced from a `theme_color` palette entry (whose hex is scheme-independent) rather than a scheme-role token.
 

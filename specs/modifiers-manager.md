@@ -20,7 +20,7 @@
 
 ## Purpose
 
-A small, instance-per-element class that owns the `data-modifiers` attribute on a target HTML element. Reads its current state, adds/removes/toggles tokens, and serializes back to the attribute string. The manager is the only sanctioned writer of `data-modifiers` at runtime — direct `setAttribute` calls bypass key-uniqueness and parsing invariants the manager enforces.
+The only sanctioned writer of `data-modifiers` at runtime — enforces one-value-per-key with key-level (not value-level) `add` semantics; direct `setAttribute` calls bypass parsing invariants the manager holds. Reads current state, adds/removes/toggles tokens, and serializes back to the attribute string.
 
 The attribute itself is the cross-cutting modifier convention documented in `modifier-system.md`: comma-separated `key:value` (or bare `key`) tokens, consumed by CSS via attribute-contains selectors and by other JS code via this manager. Both surfaces (CSS, JS) treat `data-modifiers` as the canonical home for categorical state — visual variants, server-side flags, client-side component state that drives styling.
 

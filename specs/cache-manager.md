@@ -20,7 +20,7 @@
 
 ## Purpose
 
-An instance-per-element class for memoizing computed values by `(type, key)` pair. The common usage is the `dom` cache: a custom element caches `querySelector` / `closest` results so the DOM walk only happens once per element lifetime. Per-entry TTL is supported for cases where the cached value can stale (e.g., fetched data with a freshness window).
+Per-element memoization keyed by `(type, key)`: the `dom` cache is pre-initialized (the universal pattern), additional types auto-vivify on first use, and TTL is per-entry — `has()` is TTL-blind by design, `get()` is the freshness-aware path.
 
 The class is internal infrastructure. Components reach it through `BaseComponent.cache`. The `dom` cache type is pre-initialized in the constructor; arbitrary additional types (`api`, `computed`, etc.) auto-vivify on first use.
 

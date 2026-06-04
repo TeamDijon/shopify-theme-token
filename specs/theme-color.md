@@ -26,9 +26,7 @@
 
 ## Purpose
 
-A named color token in the design system's palette. Each entry pairs a stable handle with a hex value; the consumption surface is the `--color-<handle>` CSS variable emitted at `:root`. Brand colors (`accent`), neutrals (`white`, `black`, `muted`), and semantic state colors (`success`, `warning`, `error`, `info`) all live here.
-
-**Boundary with color-scheme roles.** Color-scheme settings (background, foreground, primary, border, shadow, button sub-roles, input sub-roles) populate the **`--color-role-<role>`** namespace, not `--color-<handle>`. The two are disjoint: `theme_color` is a flat palette catalog; scheme roles are per-section role assignments. A theme_color entry whose handle happens to be `background` emits `--color-background` and does not interact with `--color-role-background`.
+A flat palette catalog emitting one `--color-<handle>` per entry into `:root`. The namespace is deliberately disjoint from `--color-role-<role>` (the scheme-role tokens — background, foreground, primary, border, shadow, button sub-roles, input sub-roles): a handle named `background` emits `--color-background` and does not interact with `--color-role-background`. Brand colors (`accent`), neutrals (`white`, `black`, `muted`), and semantic state colors (`success`, `warning`, `error`, `info`) all live here.
 
 ## Schema (definition contract)
 

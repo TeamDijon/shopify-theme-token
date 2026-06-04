@@ -20,7 +20,7 @@
 
 ## Purpose
 
-A single object (`dom`) cataloging document-level structural elements by stable, unique ID. Each property maps one well-known element to a `document.getElementById('<id>')` lookup performed lazily on read; missing elements warn via `console.warn` and return `null`.
+A read-only catalog mapping one stable unique ID per well-known document-level element — entries land only when the section that owns the markup ships, speculative additions are deliberately refused. Each property maps one ID to a `document.getElementById('<id>')` lookup performed lazily on read; missing elements warn via `console.warn` and return `null`.
 
 The catalog carries only `pageContent` today — each future getter (header, footer, cart, search, etc.) lands when its section ships with a confirmed ID. Speculative additions create dev-time `console.warn` noise and risk encoding IDs that don't match the future markup.
 

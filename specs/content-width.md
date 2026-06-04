@@ -26,7 +26,7 @@
 
 ## Purpose
 
-A named max-inline-size catalog. Each entry holds a single `width` (px) that caps an element's inline content area. The named entries (`narrow`, `reading`, `medium`, `wide`) give merchants vocabulary for the common composition widths without dropping into raw px ranges; per-project entries extend the catalog per archetype need (`pull-quote-narrow`, `hero-banner-wide`).
+A single-value-per-entry inline-cap catalog — intentionally non-responsive at the token layer (a reading width is one width across viewports), and the only catalog whose emission isn't handle-keyed: the variable is always `--content-width`, so handle renames are purely cosmetic. The named entries (`narrow`, `reading`, `medium`, `wide`) give merchants vocabulary for common composition widths; per-project entries extend the catalog per archetype need (`pull-quote-narrow`, `hero-banner-wide`).
 
 Consumed by both **section-level** (the section's outer cap) and **block-level** overrides (a block narrower than its parent section). The substrate's `125rem` (2000px) fallback in `layer-theme.css` covers the unset case — wider than any common viewport, so unset effectively means "no constraint until ultra-wide displays."
 

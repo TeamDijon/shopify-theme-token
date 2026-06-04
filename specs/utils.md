@@ -22,7 +22,7 @@
 
 ## Purpose
 
-Three pure utility functions covering the common cross-cutting needs of theme JS: event-rate limiting via `throttle` and `debounce` (with `.cancel()` parity), and a `getRootFontSize()` helper for computed unit conversions. These are leaf-level building blocks consumed across the JS layer.
+Three pure leaf-level utility functions: rate limiters (`throttle` and `debounce`) ship with `.cancel()` parity so consumers can defuse pending callbacks after teardown, plus a `getRootFontSize()` helper for px/rem conversion. No DOM coupling — callable from any module.
 
 Each function ships with `.cancel()` symmetry where applicable — a throttled or debounced function exposes a method to cancel its pending invocation, preventing stale callbacks after a component disconnects or a route transitions away.
 
