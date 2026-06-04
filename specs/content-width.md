@@ -7,14 +7,14 @@
 **Status**: shipped
 
 **Implementation**:
-- `sections/section.liquid` v1.6.0 (`content_width` setting consumer — emits `--content-width: <value>px` per section via dynamic style)
-- `blocks/group.liquid`, `blocks/columns.liquid`, `blocks/media.liquid`, `blocks/richtext.liquid`, `blocks/title.liquid`, `blocks/button.liquid` — per-block `content_width` override setting; each emits `--content-width: <value>px` per-block via dynamic style
+- `sections/section.liquid` v1.7.0 (`content_width` setting consumer — emits `--content-width: <px/16>rem` per section via dynamic style)
+- `snippets/utility--block-layout-vars.liquid` v1.1.0 (per-block emitter — emits `--content-width: <px/16>rem` when a block's `content_width` setting is set; consumed by `group`, `columns`, `media`, `richtext`, `title`, `button`)
 - `assets/layer-theme.css` (bleed-grid cap rule — reads `var(--content-width, 125rem)`; the substrate fallback acts as a big-screen protection)
 - Metaobject definition itself — created per `metaobject-definitions.md` § `content_width`
 
-**Reconciled**: 2026-06-01
+**Reconciled**: 2026-06-04 (section.liquid v1.7.0 + utility--block-layout-vars.liquid v1.1.0 — harmonized content_width emission to rem, matching the codebase-wide merchant-px/front-end-rem convention)
 
-**Reviewed**: pending
+**Reviewed**: 2026-06-04
 
 **Depends on**: none — substrate-root token type. Consumed by the bleed-grid named-line cap.
 
@@ -37,7 +37,7 @@ This metaobject is intentionally **single-value** (one `width` per entry), unlik
 | Field | Type | Required | Notes |
 |---|---|---|---|
 | `name` | Single line text | yes | Display name in admin (e.g., `Narrow`, `Reading`, `Wide`). `system.handle` derives from it on creation. |
-| `width` | Number (decimal) | yes | Maximum content width in **px**. Emitted as `--content-width: <value>px` in the consuming section / block's dynamic style. |
+| `width` | Number (decimal) | yes | Maximum content width in **px** (merchant-facing unit). Emitted as `--content-width: <px/16>rem` in the consuming section / block's dynamic style. |
 
 Type-level metadata: project default (publishable + translatable, `storefront: PUBLIC_READ`). Full definition in `metaobject-definitions.md`.
 
@@ -47,7 +47,7 @@ Per-section emission (via `section.liquid`'s dynamic style):
 
 ```css
 #shopify-section-<id> {
-  --content-width: 680px;
+  --content-width: 42.5rem;  /* merchant entered 680px → emitted as 680/16 = 42.5rem */
 }
 ```
 
@@ -55,7 +55,7 @@ Per-block emission (via the block's dynamic style — overrides the section's va
 
 ```css
 #shopify-block-<id> {
-  --content-width: 1000px;
+  --content-width: 62.5rem;  /* 1000px → 62.5rem */
 }
 ```
 
@@ -80,15 +80,17 @@ N/A at the metaobject layer — emission happens at the consumer (section / bloc
 
 | Variable | Type | Source |
 |---|---|---|
-| `--content-width` | `<value>px` | one declaration per metaobject-picked entry, scoped to the consuming section's or block's element via dynamic style. Substrate fallback `125rem` (≈2000px) when no entry is picked. |
+| `--content-width` | `<value>rem` | one declaration per metaobject-picked entry (merchant px converted to rem at emit), scoped to the consuming section's or block's element via dynamic style. Substrate fallback `125rem` (≈2000px) when no entry is picked. |
 
 The variable has cascade semantics — set on a section, inherited by descendants until a nested block overrides it. So a section with `content_width: wide` (1400px) containing a richtext block with `content_width: reading` (680px) gives the richtext block a 680px cap while the rest of the section uses 1400px.
 
 ## Behavior
 
 - **Single px value per entry.** Not responsive (no mobile/desktop pair). Inline caps tend to be a single value across viewports; differential caps compose via separate entries + per-breakpoint pickers (out of scope today; revisit if usage shows real need).
+- **Merchant-px input, front-end-rem emission.** The schema accepts px integers (the merchant's mental unit); the emitter converts to rem at write time via `divided_by: 16.0 | round: 3`. Matches the codebase-wide convention (gutter, text-style sizes, spacing metaobject, per-block margin overrides). Spacing-aware accessibility scaling (root font-size adjustments propagate to the cap) applies here too.
 - **`width` validated by schema as decimal.** Currently no `min` / `max` validation enforced — merchants could enter `5` or `999999`. The bleed-grid `min(...)` clamp prevents the ultra-wide case from breaking layout (viewport-gutter math always wins); the ultra-narrow case is a merchant-responsibility footgun.
 - **`system.handle` is the load-bearing key.** Merchants pick entries by handle via the metaobject picker setting; the section / block then emits the entry's `width` value. Renaming an entry's handle in admin moves consumers' selections (the picker stores a GID reference, not the handle string), so the contract is GID-stable; handle changes affect URL-friendly names but not emission.
+- **Emission is not handle-keyed (rename is purely cosmetic).** The emitted variable name is the static `--content-width` regardless of which entry the picker resolves to. Renaming a handle in admin has zero effect on emission — distinct from `--color-<handle>` / `--spacing-<handle>` / `--gradient-<handle>` where the handle IS part of the variable name. Content-width is the unusual catalog where handle changes don't ripple to per-project CSS that references the variable.
 - **No global `:root` emission.** Unlike `--color-<handle>` or `--spacing-<handle>` which emit globally for any-CSS consumption, `--content-width` is *only* set per-section / per-block where the picker resolves. Globally referencing `var(--content-width)` from a stylesheet outside a sectioned context returns the fallback. The design choice: content_width is contextual (the cap applies to the picking section's scope), not catalog-wide.
 - **`125rem` fallback in `layer-theme.css` is the big-screen protection.** When a section has no `content_width` entry picked, the bleed-grid named-line cap reads `125rem` (≈2000px). Wider than 99% of viewports — effectively "no cap until ultra-wide displays" + a protection against grotesquely-wide content on 4K+ screens.
 - **`min(var(--content-width), 100% - 2 * var(--gutter))` is the clamp.** The bleed-grid named-line track uses `min()` so the content cap is whichever is smaller: the picked value or the viewport minus gutters. Narrow viewports get gutter-respecting widths; wide viewports get the picked cap.
@@ -120,22 +122,22 @@ N/A — design-system catalog, no user-facing strings beyond the `name` field fo
 Per `validation-contract.md` Tier 1a (substrate / metaobject).
 
 - **Tier**: substrate — metaobject sub-shape
-- **Page(s)**: `sections/validation--substrate--content-width.liquid` + `templates/index.validation--substrate--content-width.json` *(shipped — existed pre-rename pass; describes the per-entry width emission and the substrate fallback)*
+- **Page(s)**: `sections/validation--substrate--content-width.liquid` + `templates/index.validation--substrate--content-width.json` *(shipped — describes the per-entry width emission and the substrate fallback)*
 - **API surface** (matrix to exercise):
   - **Per-entry catalog**: each `content_width` metaobject entry rendered as a horizontal bar with `max-inline-size: var(--content-width); width: 100%;` inside a section that picks the entry — reader confirms the rendered width matches the entry's `width`.
   - **Section-level pick**: a section with `content_width: reading` (680px) constrains its content track to 680px on viewports wider than ~720px; falls back to `100% - 2 * --gutter` on narrower viewports (the `min(...)` clamp).
   - **Block-level override**: a section with `content_width: medium` (1000px) containing a `richtext` block with `content_width: reading` (680px) → richtext's content cap is 680px, surrounding blocks remain at 1000px. Verify by computed `max-inline-size` on each.
   - **Unset / blank**: a section with no `content_width` picked → bleed-grid named-line cap reads `125rem` substrate fallback (≈2000px); content track fills the viewport minus gutters on any common viewport.
 - **Edge cases**:
-  - `width: 0` → emits `--content-width: 0px`; `min(0px, 100% - 2 * --gutter)` resolves to `0`, hiding the content track. Merchant footgun; not guarded.
+  - `width: 0` → emits `--content-width: 0rem`; `min(0rem, 100% - 2 * --gutter)` resolves to `0`, hiding the content track. Merchant footgun; not guarded.
   - `width` very small (`< 200`) → content track narrower than the gutter math allows readable layouts; may force content overflow. Merchant responsibility.
   - `width` very large (`> 3000`) → `min()` clamps to viewport-gutter math at any reasonable viewport; no visual impact. The `3200px` background-stop guard elsewhere in `layer-theme.css` covers the outer rendering.
   - Block-level override with a narrower-than-section value → inner block displays narrower, with the surrounding section's wider context visible around it.
 - **Visual showcase**: a grid of section rows, each with a different `content_width` pick. Each row contains a colored bar capped at the picked width, with the section's bleed area visible around it. Reader confirms widths match across the catalog. A second row demonstrates the block-level-override cascade (section at wide; nested richtext at reading; visible width difference between the surrounding section content and the richtext column).
 - **Assertions** (prose; Playwright once installed):
-  - Computed `max-inline-size` on the section's content track equals the entry's `width` in px (or the viewport-gutter math when narrower).
-  - Per-block override: computed `max-inline-size` on the overriding block equals its own picked `width`; sibling blocks in the same section use the section's value.
-  - Unset section: bleed-grid named-line cap resolves to `2000px` (the `125rem` fallback at 16px root).
+  - Computed `max-inline-size` on the section's content track equals the entry's `width` converted from px to rem (or the viewport-gutter math when narrower).
+  - Per-block override: computed `max-inline-size` on the overriding block equals its own picked `width` in rem; sibling blocks in the same section use the section's value.
+  - Unset section: bleed-grid named-line cap resolves to `125rem` (≈2000px at 16px root).
 - **Unit scope**: none (metaobject layer; no JS).
 
 ## Out of scope
