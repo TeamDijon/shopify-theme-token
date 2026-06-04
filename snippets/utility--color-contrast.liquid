@@ -1,29 +1,35 @@
-{% # Color contrast v1.0.0 %}
+{% # Color contrast v2.0.0 %}
+
+{% comment %}
+  Changelog
+  - v2.0.0 — rename params for clarity: `color` → `background` (says what it is); `black` / `white` → `dark` / `light` (semantic intent, not hardcoded labels). Tie-breaking now favors the dark reference (`>=` instead of `>`) — matches the canonical reading-direction convention (dark-on-light) and the browser default text color. Consumers update the keyword in the render call (`color:` → `background:`); no other behavior change.
+  - v1.0.0 — initial
+{% endcomment %}
 
 {% doc %}
-  @description Returns whichever of two reference colors has the higher computed contrast against the input `color`. Echoes a hex string suitable for direct interpolation into a CSS value (e.g. inside a custom property declaration).
+  @description Returns whichever of two reference colors has the higher computed contrast against the input `background`. Echoes a hex string suitable for direct interpolation into a CSS value (e.g. inside a custom property declaration).
 
   Wraps Liquid's native `color_contrast` filter, which returns a 0–21 contrast ratio. Used by validation pages to pick a legible foreground per theme color.
 
-  @param {color} color - The background color the contrast is computed against. Defaults to `#ffffff`.
-  @param {color} [black] - First reference color compared against `color`. Defaults to `#000000`.
-  @param {color} [white] - Second reference color compared against `color`. Defaults to `#ffffff`.
+  @param {color} background - The background color the contrast is computed against. Defaults to `#ffffff`.
+  @param {color} [dark] - Darker reference color compared against `background`. Defaults to `#000000`.
+  @param {color} [light] - Lighter reference color compared against `background`. Defaults to `#ffffff`.
 
-  @example {% render 'utility--color-contrast', color: section.settings.background %}
-  @example {% capture fg %}{% render 'utility--color-contrast', color: '#cc0033' %}{% endcapture %}
+  @example {% render 'utility--color-contrast', background: section.settings.background %}
+  @example {% capture fg %}{% render 'utility--color-contrast', background: '#cc0033' %}{% endcapture %}
 {% enddoc %}
 
 {% liquid
-  assign color = color | default: '#ffffff'
-  assign black = black | default: '#000000'
-  assign white = white | default: '#ffffff'
+  assign background = background | default: '#ffffff'
+  assign dark = dark | default: '#000000'
+  assign light = light | default: '#ffffff'
 
-  assign black_contrast = color | color_contrast: black
-  assign white_contrast = color | color_contrast: white
+  assign dark_contrast = background | color_contrast: dark
+  assign light_contrast = background | color_contrast: light
 
-  if black_contrast > white_contrast
-    echo black
+  if dark_contrast >= light_contrast
+    echo dark
   else
-    echo white
+    echo light
   endif
 %}

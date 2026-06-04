@@ -44,7 +44,7 @@
         assign handle = theme_color.system.handle
         assign hex = theme_color.hex_code.value
         capture contrast
-          render 'utility--color-contrast', color: hex
+          render 'utility--color-contrast', background: hex
         endcapture
         assign contrast = contrast | strip
       %}
