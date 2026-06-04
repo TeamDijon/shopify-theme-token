@@ -21,7 +21,7 @@
 
 ## Purpose
 
-The theme's JS entry point. Three concerns rolled into one file:
+The theme's JS entry point. Three concerns:
 
 1. **Module orchestration.** Imports every `@theme/*` module so loading `core.js` brings in the whole library. The import-map utility (`snippets/utility--import-map.liquid`) wires the module specifiers to cache-busted asset URLs; `core.js`'s import statements are how the chain enters.
 2. **Re-exports.** Every imported symbol is re-exported, so `@theme/core` is an alternative entry for ES-module consumers wanting a single import path. Consumers using the per-module specifier (`@theme/base-component`) bypass this layer.
@@ -100,8 +100,6 @@ window.Token.init = () => {
 
 Fires a `theme:ready` custom event on `window`. Called automatically on `DOMContentLoaded` (or synchronously if the document is already past loading). Late-binding consumers can `addEventListener('theme:ready', handler)` to defer setup until after the theme library is initialized.
 
-Currently no production consumer exists for `theme:ready` — the event is a forward-looking hook reserved for future use (specialized sections that need to wait for theme initialization before binding).
-
 ## Output shape
 
 N/A — JS module, no DOM emission. The visible effect is the `window.Token` namespace and the `theme:ready` event firing.
@@ -118,11 +116,11 @@ N/A — JS module.
 
 - **Entry-point loaded via import-map.** `snippets/utility--import-map.liquid` wires `@theme/core` to `assets/core.js` (with cache-busting); the layout's `<script type="module" src="...core.js">` triggers the load. Loading `core` cascades the imports: every dependent module loads on first reference.
 - **Re-exports are aggregations, not modifications.** The exports are the same identifiers as the source modules — no proxies, no wrappers. Consumers using `import { x } from "@theme/core"` get the exact same reference as `import { x } from "@theme/<module>"`.
-- **`window.Token` is the global namespace.** Chosen for collision safety — generic `theme` risks clashing with merchant code, third-party widgets, or other themes' globals when the codebase is ported.
-- **Grouped namespace structure.** `utils` (pure functions + document singletons) / `dom` (DOM catalog) / `managers` (per-element classes) / `components` (custom-element classes). The grouping is convention; flat would also work but reading `window.Token.managers.EventsManager` makes the role clearer than `window.Token.EventsManager`.
+- **`window.Token` is the global namespace.** Scoped to a theme-specific identifier to avoid collision with merchant code, third-party widgets, or other themes when the codebase is ported.
+- **Grouped namespace structure.** `utils` (pure functions + document singletons) / `dom` (DOM catalog) / `managers` (per-element classes) / `components` (custom-element classes). Reading `window.Token.managers.EventsManager` names the role explicitly.
 - **`window.Token = window.Token || {}` initializer.** Idempotent under re-execution — doesn't clobber existing references. Sub-namespaces (`utils`, `managers`, `components`) follow the same `= window.Token.x || {}` pattern.
 - **`init` is auto-run.** The script checks `document.readyState` — if still loading, attaches a `DOMContentLoaded` listener; if past loading (script loaded async after the event), calls `init()` synchronously. Either way, `theme:ready` fires once per page load.
-- **`theme:ready` fires via platform `CustomEvent`, not the typed bus.** The event signals "the theme library is loaded" — by definition it precedes Bucket B's `theme-events.js` (the bus can't dispatch its own readiness). Window-level lifecycle events stay on the platform mechanism; the typed bus handles cross-component coordination. No production consumer today; reserved for late-binding consumers that need to defer setup until the theme library is ready.
+- **`theme:ready` fires via platform `CustomEvent`, not the typed bus.** The event signals "the theme library is loaded" — by definition it precedes Bucket B's `theme-events.js` (the bus can't dispatch its own readiness). Window-level lifecycle events stay on the platform mechanism; the typed bus handles cross-component coordination. Late-binding consumers can defer setup with `addEventListener('theme:ready', handler)`.
 - **No teardown.** The namespace lives for the page session. No `destroy()` or unload hook — page unload destroys the namespace naturally.
 - **Component registration as side effect.** Importing `@theme/base-component` triggers its `customElements.define('token-section', BaseComponent)` call at module load. Same for `@theme/token-layout` registering `<token-layout>`. So `core.js` loading also registers the shipped custom elements via the import chain.
 

@@ -233,7 +233,7 @@ Per `validation-contract.md` Tier 1a (substrate / metaobject) for the data-layer
 - **`font-feature-settings` and OpenType features.** Per-font OT feature toggles (ligatures, swashes, tabular nums) are out of scope. Consumers wanting feature controls handle them at the text-style level via custom CSS, or per-element via inline-styled feature-settings.
 - **Subsetting at build time.** No build-step font optimization. Merchants upload their already-subset font files; the metaobject system catalogs them.
 - **Server-side font detection / fallback.** `font-display: swap` is the only fallback strategy. JS-driven font-loading API (`document.fonts.ready`, FOUT/FOIT controls) is not modeled.
-- **Per-font `font-display` override.** Every rule emits `swap`; no `font.display` schema field. Icon-font use-cases that historically benefited from `block` (FOUC prevention on glyph-based icon systems) are largely obsolete given SVG-icon systems; per-project overrides happen by writing the `@font-face` manually outside this utility.
+- **Per-font `font-display` override.** Every rule emits `swap`; no `font.display` schema field. Per-project overrides happen by writing the `@font-face` manually outside this utility. Icon-font FOUC prevention via `block` is not supported on this surface (SVG-icon systems are the theme's icon path).
 
 ## Related
 

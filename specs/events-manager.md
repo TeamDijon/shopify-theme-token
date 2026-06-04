@@ -20,7 +20,7 @@
 
 ## Purpose
 
-An instance-per-element class that wraps `addEventListener` / `removeEventListener` with bookkeeping. The manager remembers every listener it attached (keyed by element) and tears them all down on `clear()` — the lifecycle method that BaseComponent invokes on `disconnectedCallback`. The point is to remove the per-component "remember to detach the listener" discipline: components register through the manager and inherit cleanup for free.
+Per-element bookkeeping for `addEventListener` / `removeEventListener` — every registered listener is tracked by element and removed in bulk on `clear()`. Components register through the manager and inherit cleanup via `clear()` on `disconnectedCallback`.
 
 The class is internal infrastructure. Components reach it through `BaseComponent.events`; document-level callers use ad-hoc instances. No `@theme/events-manager` consumer outside the BaseComponent lazy-getter chain today.
 

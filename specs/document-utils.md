@@ -24,15 +24,13 @@
 
 ## Purpose
 
-Three document-level singletons that don't fit the per-element manager pattern. They live as module-level eager exports because their bindings are global to the document — there's no "instance per element" relationship to model.
+Three document-level singletons; module-level eager exports because their bindings are global to the document — one `documentModifiers`, one `documentScroll`, one `documentScrollbar` per page. No per-element manager pattern applies.
 
 | Export | Role |
 |---|---|
 | `documentModifiers` | `ModifiersManager` instance bound to `document.documentElement` — manages html-level state (locked-scroll, theme switches, locale flags). |
 | `documentScroll` | Scroll-lock helper. Locks the page scroll while a modal/drawer is open by freezing `scrollY` into `inset-block-start` + adding the `locked-scroll` modifier. |
 | `documentScrollbar` | Scrollbar-width tracking + `--scrollbar-width` CSS variable emission. Lazy ResizeObserver on `document.documentElement`. |
-
-The module holds document-level singletons that don't fit the per-element manager pattern.
 
 ## API
 
@@ -124,7 +122,7 @@ N/A directly. The module mutates CSS-readable state (modifier attribute, CSS var
 - **Module-level eager exports.** All three singletons are constructed at module load — no lazy initialization. The cost is one `ModifiersManager` + one closure per page. No-op for pages that never read the exports.
 - **`documentModifiers` is a singleton, not a class.** Components reading html-level state share the same instance — mutations are globally visible. Contrast with per-element managers (BaseComponent.modifiers) where each component owns its instance.
 - **`documentScroll.isLocked` is the truth-source via `documentModifiers`.** The getter delegates to `documentModifiers.has("locked-scroll")` — no separate internal state. So an external mutation (e.g., devtools setting the modifier directly) is reflected.
-- **Scroll-lock mechanism is freeze-via-inset, not overflow-hidden.** Setting `overflow: hidden` on `html` would lose the scroll position on unlock (the document would scroll back to 0). The `inset-block-start` freeze preserves the visual position; on unlock, `window.scrollTo` restores from the stored value. The pattern handles modal/drawer flows where the user expects to return to where they were.
+- **Scroll-lock is freeze-via-inset.** Captures `scrollY`, sets `inset-block-start` to that value plus the `locked-scroll` modifier on `html`. The visual position holds; on unlock, the inset clears and `window.scrollTo` restores from the stored value. Handles modal/drawer flows where the user expects to return to where they were.
 - **`scroll-behavior: auto` during lock.** Disables smooth-scroll animation during the lock transition. Restored on unlock. Without this, a fast lock/unlock cycle could trigger smooth-scroll animation visible as a jolt.
 - **`documentScrollbar.width` clamps at 0.** On systems with overlay scrollbars (macOS default, mobile), `window.innerWidth - clientWidth` returns `0` (or theoretically negative under unusual conditions). `Math.max(scrollbarWidth, 0)` ensures non-negative output.
 - **Lazy ResizeObserver.** `observeWidth()` constructs the observer on first call; subsequent calls return the existing instance. No multiple-observer wasteful setup. `disconnectObserver()` clears so re-observing creates fresh.

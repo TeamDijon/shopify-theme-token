@@ -137,7 +137,7 @@ Per `validation-contract.md` Tier 1d (substrate / utility-js).
 ## Out of scope
 
 - **Multi-value per key**. Each key holds at most one value. Composite states (`state:loading + state:validating`) get modeled as two keys (`step:validating`, `phase:loading`) or a structured value (`state:loading-validating`), not duplicate-key tokens. Adding multi-value support would force value-aware `remove` semantics across the API.
-- **Overwrite-on-add semantic.** `add` on an existing key is a no-op — value isn't replaced. The Set/Map/classList "overwrite or set" convention isn't followed here; routing value swaps through `add` would lose call-site visibility on swap intent.
+- **`add` is presence-only on the key.** `add(key, value)` on an existing key is a no-op — value isn't replaced. Atomic value swap uses the two-step `remove(key)` + `add(key, value)` pair; mixing "add this key" with "replace this key's value" into one method would lose call-site visibility on swap intent.
 - **Atomic value swap** (`replace` / `setValue` / `upsert`). Not provided. The two-step `remove(key)` + `add(key:value)` pair is the sanctioned swap (see "Overwrite-on-add semantic" above for the rationale). If usage data shows a real need, `upsert(modifier)` is the additive fix.
 - **Class-attribute mirroring**. The manager does not sync to `element.classList`. CSS hooks live on `[data-modifiers*='...']` selectors only.
 - **Event emission**. No `modifierchange` event. Consumers needing reactivity attach their own `MutationObserver` or coordinate via the caller that triggered the mutation.

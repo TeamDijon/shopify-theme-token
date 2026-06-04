@@ -42,7 +42,7 @@ The "blank entry" mode (block setting unset) is the implicit fifth case — no C
 
 Type-level metadata: project default (publishable + translatable, `storefront: PUBLIC_READ`). Full definition in `metaobject-definitions.md`.
 
-**Two optional fields covering three modes; one handle-routed special.** The 3+1 design is a minor inconsistency — `ratio` / `relative` / `fixed` use `type`+`value`, while `fill` uses neither. The handle-routed special is documented and works; uniformizing (e.g., `type: "fill"` with blank value) would be cosmetic-only.
+**Two optional fields covering three modes via `type`+`value` (`ratio` / `relative` / `fixed`), plus one handle-routed mode (`fill`) that bypasses `type`/`value`.** Dispatch is handle-then-type: the `fill` handle wins ahead of `type` resolution.
 
 ## Output shape
 

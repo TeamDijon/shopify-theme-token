@@ -22,7 +22,7 @@
 
 A read-only catalog mapping one stable unique ID per well-known document-level element — entries land only when the section that owns the markup ships, speculative additions are deliberately refused. Each property maps one ID to a `document.getElementById('<id>')` lookup performed lazily on read; missing elements warn via `console.warn` and return `null`.
 
-The catalog carries only `pageContent` today — each future getter (header, footer, cart, search, etc.) lands when its section ships with a confirmed ID. Speculative additions create dev-time `console.warn` noise and risk encoding IDs that don't match the future markup.
+The catalog carries only `pageContent` today.
 
 Lookups are live, uncached. Consumers needing repeated access cache the reference themselves (e.g., via `CacheManager`'s `dom` cache type).
 
@@ -33,17 +33,6 @@ A single named export, `dom`, with lazy getter properties.
 | Property | Type | Source | Notes |
 |---|---|---|---|
 | `dom.pageContent` | `HTMLElement \| null` | `document.getElementById('page_content')` | The `<main id="page_content">` wrapper rendered by `layout/theme.liquid`. Returns `null` + warns via `console.warn` when the element is missing. |
-
-Future getters will be added as sections ship — each entry pairs an ID (confirmed against the section's actual emitted markup) with a getter property. Anticipated additions:
-
-| Future property | Source | Lands when |
-|---|---|---|
-| `dom.header` | `getElementById('<header-id>')` | Header section ships (Bucket B / specialized-section work) |
-| `dom.footer` | `getElementById('<footer-id>')` | Footer section ships |
-| `dom.cart` / `dom.miniCart` | `getElementById('<id>')` | Cart drawer / mini-cart specialized sections ship |
-| `dom.search` / `dom.miniSearch` | `getElementById('<id>')` | Search overlay / mini-search specialized sections ship |
-
-None of these exist on the shipped surface today. Each entry lands with the section that owns its rendered markup.
 
 ## Output shape
 

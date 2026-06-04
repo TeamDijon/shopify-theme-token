@@ -124,5 +124,5 @@ Per `validation-contract.md` Tier 1d (substrate / utility-js).
 - `events-manager.md` — sibling substrate utility-js spec; identical lifecycle pattern around `addEventListener` / `removeEventListener`
 - `cache-manager.md` — sibling substrate utility-js spec (calibration reference); the no-sugar design v3.0.0 mirrors
 - `modifiers-manager.md` — sibling substrate utility-js spec (calibration reference); same v2.0.0 evolution pattern (drop debug methods, private state, no error swallowing)
-- `hydrate.md` — planned substrate utility-js spec that wraps `IntersectionObserver` directly for the deferred-hydration use case (single-element, fire-once + auto-disconnect). The two coexist: `hydrate` is the convenience wrapper for one specific pattern; `ObserversManager` is the general bookkeeping wrapper for arbitrary observer patterns.
+- `hydrate.md` — planned substrate utility-js spec that wraps `IntersectionObserver` directly for the deferred-hydration use case (single-element, fire-once + auto-disconnect). `hydrate` is the convenience wrapper for one specific intersection pattern; `ObserversManager` is the general bookkeeping wrapper for all three observer types.
 - `.context/rules/js-asset-convention.md` — file structure (`@module @theme/observers-manager`, JSDoc, changelog) the implementation file follows
