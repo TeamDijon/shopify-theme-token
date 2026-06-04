@@ -12,7 +12,7 @@
 
 **Reconciled**: 2026-06-01
 
-**Reviewed**: pending
+**Reviewed**: 2026-06-04
 
 **Depends on**: none — substrate-root token type. Consumed via the modifier system per `modifier-system.md`.
 
@@ -23,9 +23,9 @@
 
 ## Purpose
 
-A named button variant catalog. Each entry's `system.handle` drives the `[data-modifiers*='button-style:<handle>']` CSS selector in `snippets/button.liquid`'s `{% stylesheet %}` block. The catalog is **schema-light** — the only field is `name` (admin-display) — because the visual configuration (background, border, padding, decoration, color tokens) lives in CSS, not metaobject fields. Merchants pick from a fixed handle vocabulary that the theme's CSS recognizes.
+A named button variant catalog. Each entry's `system.handle` drives the `[data-modifiers*='button-style:<handle>']` CSS selector in `snippets/button.liquid`'s `{% stylesheet %}` block. The catalog is **schema-light** — the only field is `name` (admin-display) — because the visual configuration (background, border, padding, decoration, color tokens) lives in CSS, not metaobject fields. Merchants pick from the seeded handle vocabulary that the theme's CSS recognizes; per-project additions extend the catalog with matching CSS rules.
 
-The handle set is the **3×3 family/variant matrix**:
+The **seeded** handle set is a 3×3 family/variant matrix covering the common button intents:
 
 |  | `-primary` (accent) | `-secondary` (black) | `-tertiary` (white) |
 |---|---|---|---|
@@ -33,7 +33,7 @@ The handle set is the **3×3 family/variant matrix**:
 | `outline-` | `outline-primary` | `outline-secondary` | `outline-tertiary` |
 | `link-` | `link-primary` | `link-secondary` | `link-tertiary` |
 
-Families set structural style (`bg` / `border` / `padding` / `text-decoration`); variants set the active color token (primary-button / secondary-button / link). Composing the matrix into 9 named handles gives merchants a vocabulary covering the common button intents without exploding the schema with per-property fields.
+Families set structural style (`bg` / `border` / `padding` / `text-decoration`); variants set the active color token (primary-button / secondary-button / link). The matrix gives merchants vocabulary for common button intents without exploding the schema with per-property fields. Per-project additions extend the catalog freely — handles can follow the family-variant shape (e.g., a fourth family `ghost-*`) or break it entirely (`promo-cta`, `social-share`, `subscribe-newsletter`). The only requirement: each new handle pairs with a matching CSS rule in the project stylesheet (or in `button.liquid`'s `{% stylesheet %}` if shipping in the theme).
 
 ## Schema (definition contract)
 
@@ -67,9 +67,24 @@ The `{% stylesheet %}` block in `button.liquid` provides per-handle rules:
 }
 ```
 
-(Exact CSS lives in the consumer's stylesheet; this is illustrative.)
+A per-project handle (e.g., a project adding a `promo-cta` variant) follows the same shape with project-side authorship:
 
-Off-list handles emitted by a merchant (e.g., custom-added `button_style` entry with handle `gradient-fancy`) get `data-modifiers="button-style:gradient-fancy"` on the rendered button, but no matching CSS rule fires — the button falls through to the default `solid-primary` appearance (per the snippet's CSS cascade). Per-project surfaces wanting custom variants add the CSS rule in their project stylesheet.
+```html
+<button class="shopify-block shopify-block--button"
+        data-modifiers="button-style:promo-cta">
+  Click me
+</button>
+```
+
+```css
+/* in the project's stylesheet — outside button.liquid's {% stylesheet %} */
+.shopify-block--button[data-modifiers*='button-style:promo-cta'] {
+  background: linear-gradient(...);
+  /* per-project styling */
+}
+```
+
+**The contract is symmetric.** Every metaobject entry expects a matching CSS rule — in `button.liquid`'s `{% stylesheet %}` block for seeded handles, in the project stylesheet for per-project additions. Seeding an entry without its CSS rule means the button renders with the base structural defaults but no variant-specific appearance.
 
 ## CSS
 
@@ -83,8 +98,8 @@ N/A — the metaobject doesn't emit CSS variables. The button snippet's styleshe
 
 - **`system.handle` is the load-bearing key.** The handle drives the modifier value (`button-style:<handle>`) and the CSS selector match. Renaming a handle in admin moves the modifier value rendered on the button; if the CSS doesn't have a rule for the new handle, the button falls through to the default appearance.
 - **`name` is decorative.** Display label for the admin picker. Not consumed at runtime. Renaming `name` doesn't change emission.
-- **Off-list handles fall through to default.** A merchant adding a `gradient-fancy` entry gets the `button-style:gradient-fancy` modifier on the rendered button, but no matching CSS rule. The CSS cascade picks the base button rule (or whatever default-styling applies to off-list `button-style:*` modifiers). Per-project additions of the matching CSS rule in project stylesheets activate the variant.
-- **Handles are kebab-case `family-variant`.** The two-word handle form (`solid-primary`, `outline-secondary`, etc.) matches the modifier-system convention — kebab-case for handles, the colon separator (`button-style:<handle>`) carries the namespace.
+- **No authored styles → fallback to base button rule.** A handle without a matching per-handle CSS rule (e.g., a merchant-added `gradient-fancy` entry never paired with a CSS authoring step) still emits `data-modifiers="button-style:gradient-fancy"` on the rendered button, but the per-handle selector never matches. The button falls through to the base `.shopify-block--button` rule (shared structural defaults — typography, padding, focus ring) without variant-specific appearance. Authoring the matching CSS rule (in `button.liquid`'s `{% stylesheet %}` for seeded handles, in the project stylesheet for per-project additions) activates the variant.
+- **Handles are kebab-case.** The modifier-system convention is kebab-case for handles; the colon separator (`button-style:<handle>`) carries the namespace. The seeded family-variant form (`solid-primary`, `outline-secondary`, etc.) is the recommended pattern for the matrix, but not enforced — per-project handles can use any kebab-case shape (`promo-cta-large`, `social-share`, `subscribe-newsletter`) as long as the matching CSS rule exists.
 - **CSS via `{% stylesheet %}`, not metaobject fields.** Visual configuration is centralized; metaobject is the picker vocabulary. Adding a new family or variant means editing the snippet's stylesheet + seeding a matching entry in admin — two-step, but keeps the schema flat.
 - **No CSS variable namespace.** Unlike `theme_color` → `--color-<handle>` or `spacing` → `--spacing-<handle>`, the button_style metaobject doesn't emit `--button-<handle>` variables. The styling composes from substrate tokens per handle inside the snippet's stylesheet.
 - **Modifier system convention.** The `button-style:<handle>` value lives in `data-modifiers` per `modifier-system.md` — categorical state goes in `data-modifiers`, not classes. CSS uses attribute-contains selectors (`[data-modifiers*='button-style:<handle>']`).
@@ -105,7 +120,7 @@ The full 3×3 matrix the snippet's stylesheet covers (per `metaobject-definition
 | `link-secondary` | Link secondary |
 | `link-tertiary` | Link tertiary |
 
-The `link-*` family is what the BACKLOG-noted "link L1 block isn't needed" resolution leans on — a button block with `button_style: link-primary` renders as a text-link, covering the merchant's text-link use case without a separate primitive. See `composition-strategy.md` for the resolution rationale.
+The `link-*` family covers the text-link use case — a button block with `button_style: link-primary` renders as a text-link, avoiding the need for a separate primitive. See `composition-strategy.md` for the rationale.
 
 Per-project additions extend the catalog per archetype (`solid-cta-large`, `outline-promo`, etc.). Each addition pairs a seeded handle + matching CSS rule in the project stylesheet.
 
@@ -139,7 +154,7 @@ Per `validation-contract.md` Tier 1a (substrate / metaobject).
 
 - **Per-variant schema fields** (per-entry `background`, `border-radius`, `padding` fields). Visual configuration lives in `snippets/button.liquid`'s `{% stylesheet %}` block; metaobject schema stays flat. Adding per-variant fields would split the source of truth between CSS and metaobject; the current design keeps CSS authoritative.
 - **CSS variable namespace for buttons** (`--button-<handle>-*`). The snippet composes from substrate tokens per handle; no per-entry CSS variables emit. Adding them would either duplicate the substrate tokens (palette) or require per-variant overrides (outside the named-variant pattern).
-- **Disabled state.** The `disabled` arg on the button snippet is queued in BACKLOG Bucket C (C9, surfaced from button spec retrofit 2026-05-29). Lives in `button.md`, not here — the metaobject just names variants; disabled is an orthogonal state.
+- **Disabled state.** Orthogonal to the button-style variant. Lives in `button.md` (the consumer spec), not here — the metaobject names visual variants; disabled is a component-level state that cross-cuts every variant (a button can be `solid-primary` AND `disabled`, or `link-tertiary` AND `disabled`). The button snippet handles it via the HTML `disabled` attribute + CSS `:disabled` / `[aria-disabled]` selectors that apply across all variants — not via a `solid-primary-disabled` metaobject handle (which would explode the catalog to 18 entries).
 - **Loading state.** Similar to disabled; orthogonal state surfacing on the button snippet, not the metaobject's concern.
 - **Icon-only buttons.** The button snippet handles icon presence via its own settings; not a metaobject variant. A merchant wanting "icon-only solid-primary" composes via the button's `icon` setting + `content: ""` (or future schema for icon-only mode), not via a new metaobject entry.
 - **Cross-platform / dark-mode-aware variants.** Color scheme handling lives in `theme_color` + scheme-role tokens; buttons inherit the active scheme's `*-button-*` colors. No per-scheme metaobject variants needed.
