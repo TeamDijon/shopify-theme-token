@@ -11,9 +11,9 @@
 - `font` metaobject definition — created per `metaobject-definitions.md` § `font`
 - `typeface` metaobject definition — created per `metaobject-definitions.md` § `typeface`
 
-**Reconciled**: 2026-05-31
+**Reconciled**: 2026-06-04 (pin bump v1.11.0 → v1.14.0 on the `utility--css-variables.liquid` consumer reference — gradient per-stop opacity, spacing emission, and px→rem harmonization don't touch `text_style.font_family` emission)
 
-**Reviewed**: pending
+**Reviewed**: 2026-06-04
 
 **Depends on**:
 - Shopify file-reference type (built-in) — `font.asset_list` accepts Shopify-uploaded font files
@@ -22,7 +22,7 @@
 
 **Consumers**:
 - `snippets/utility--font-face.liquid` — the in-spec emitter (self-consuming the metaobject layer)
-- `snippets/utility--css-variables.liquid` v1.11.0 — reads `text_style.font_family.value.name.value` indirectly (the typeface's `name` flows into emitted `--<style>-font-family` chains)
+- `snippets/utility--css-variables.liquid` v1.14.0 — reads `text_style.font_family.value.name.value` indirectly (the typeface's `name` flows into emitted `--<style>-font-family` chains)
 - `snippets/utility--font-preload.liquid` — reads typeface + font entries to emit `<link rel="preload">` head tags for above-the-fold font files
 - `text_style` metaobject entries — reference typefaces via `font_family` field; the typeface's `name` becomes the primary font in the emitted `font-family` chain
 
@@ -124,7 +124,7 @@ metaobjects.typeface.values
 
 - **Typeface with blank `name`** → skipped entirely. The font-family can't be addressed in CSS without a name.
 - **Typeface with empty `font_list`** → skipped. No fonts to emit; the typeface declares nothing.
-- **Font with empty `asset_list`** → skipped (v1.2.2 fix). Without files, `src: ;` would emit invalid CSS.
+- **Font with empty `asset_list`** → skipped. Without files, `src: ;` would emit invalid CSS.
 - **Variable-font with invalid range** → skipped. When `weight` is blank, both `weight_range_start` and `weight_range_end` must be ≥ 100, and start < end. Any failure → continue to next font (no rule emitted for this entry).
 
 ### Variable-font detection
@@ -157,7 +157,7 @@ The `format()` descriptor lets the browser pick the best-supported file when mul
 
 ### Style default
 
-`font.style.value` blank → `'normal'` (v1.2.3 fix prevents `font-style: ;` invalid CSS).
+`font.style.value` blank → `'normal'` (prevents `font-style: ;` invalid CSS).
 
 ### `font-display: swap` is fixed
 
@@ -221,7 +221,6 @@ Per `validation-contract.md` Tier 1a (substrate / metaobject) for the data-layer
 
 ## Implementation-time decisions
 
-- **`font-display` per-typeface override.** Currently all fonts emit `swap`. If a project ships icon fonts (which sometimes benefit from `block` to prevent FOUC of icons), the override path is to write the `@font-face` manually outside this utility. Adding a `font.display` field would expand the schema; defer until a real consumer needs it.
 - **Subsetting / unicode-range.** Modern font subsetting + `unicode-range` descriptors are not modeled. A project shipping a Latin-only subset alongside a CJK-extended subset would need per-font `unicode-range` to control which file loads per character. Adding a `font.unicode_range` field is the schema extension path; defer.
 - **Font preload coordination.** `utility--font-preload` is a sibling utility that reads the same typefaces to emit `<link rel="preload">` head tags. The two utilities run independently; per-typeface preload opt-in would require coordination (which typefaces preload, which lazy-load). Currently every typeface in the catalog gets preload hints; tighten if first-paint timing demands.
 - **Variable-font axis controls beyond weight.** Real variable fonts often expose multiple axes (weight, slant, width, optical size). The current schema models weight-axis only via `weight_range_*`. Other axes (slnt, opsz, wdth) would need additional fields. Defer; standard merchant typography needs the weight axis 95% of the time.
@@ -234,6 +233,7 @@ Per `validation-contract.md` Tier 1a (substrate / metaobject) for the data-layer
 - **`font-feature-settings` and OpenType features.** Per-font OT feature toggles (ligatures, swashes, tabular nums) are out of scope. Consumers wanting feature controls handle them at the text-style level via custom CSS, or per-element via inline-styled feature-settings.
 - **Subsetting at build time.** No build-step font optimization. Merchants upload their already-subset font files; the metaobject system catalogs them.
 - **Server-side font detection / fallback.** `font-display: swap` is the only fallback strategy. JS-driven font-loading API (`document.fonts.ready`, FOUT/FOIT controls) is not modeled.
+- **Per-font `font-display` override.** Every rule emits `swap`; no `font.display` schema field. Icon-font use-cases that historically benefited from `block` (FOUC prevention on glyph-based icon systems) are largely obsolete given SVG-icon systems; per-project overrides happen by writing the `@font-face` manually outside this utility.
 
 ## Related
 
