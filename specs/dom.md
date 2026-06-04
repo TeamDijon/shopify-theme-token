@@ -15,7 +15,7 @@
 **Depends on**: none — leaf module, no `@theme/*` imports. Uses Web Platform built-ins: `document.getElementById`.
 
 **Consumers**:
-- `assets/core.js` v1.0.0 — re-exports as `window.Token.dom` for inline-script + Liquid-template consumers
+- `assets/core.js` v1.3.0 — re-exports as `window.Token.dom` for inline-script + Liquid-template consumers
 - Future specialized sections that need to reference document-level structural elements (e.g., header navigating to page content via `dom.pageContent`)
 
 ## Purpose

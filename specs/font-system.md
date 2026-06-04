@@ -21,9 +21,9 @@
 - Caller capture pattern: `utility--core-assets.liquid` captures the snippet's output alongside `utility--css-variables` and routes through `utility--asset-loader` as inline CSS
 
 **Consumers**:
-- `snippets/utility--font-face.liquid` — the in-spec emitter (self-consuming the metaobject layer)
+- `snippets/utility--font-face.liquid` v1.2.3 — the in-spec emitter (self-consuming the metaobject layer)
 - `snippets/utility--css-variables.liquid` v1.14.0 — reads `text_style.font_family.value.name.value` indirectly (the typeface's `name` flows into emitted `--<style>-font-family` chains)
-- `snippets/utility--font-preload.liquid` — reads typeface + font entries to emit `<link rel="preload">` head tags for above-the-fold font files
+- `snippets/utility--font-preload.liquid` v1.0.1 — reads typeface + font entries to emit `<link rel="preload">` head tags for above-the-fold font files
 - `text_style` metaobject entries — reference typefaces via `font_family` field; the typeface's `name` becomes the primary font in the emitted `font-family` chain
 
 ## Purpose

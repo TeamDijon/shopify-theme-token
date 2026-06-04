@@ -20,7 +20,7 @@
 - Any module needing to set html-level modifier state — `documentModifiers.add("dark-mode")`, etc.
 - Modal / drawer flows requiring scroll-lock — read / set `documentScroll.isLocked`
 - Code needing the current browser scrollbar gutter width — read `documentScrollbar.width` or consume the `--scrollbar-width` CSS variable (set by `documentScrollbar.updateWidth()` / observed via `observeWidth()`)
-- Re-exported via `core.js` into `window.Token.utils.*` for inline-script consumers
+- `assets/core.js` v1.3.0 — re-exports into `window.Token.utils.*` for inline-script consumers
 
 ## Purpose
 

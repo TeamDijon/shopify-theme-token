@@ -15,7 +15,7 @@
 **Depends on**: none — leaf module, no `@theme/*` imports
 
 **Consumers**:
-- `assets/base-component.js` v1.1.0 — every `<token-*>` custom element exposes a lazy `.modifiers` getter that instantiates one manager per element; `disconnectedCallback` calls `.clear()`. Full contract in `base-component.md`.
+- `assets/base-component.js` v1.2.0 — every `<token-*>` custom element exposes a lazy `.modifiers` getter that instantiates one manager per element; `disconnectedCallback` calls `.clear()`. Full contract in `base-component.md`.
 - `assets/document-utils.js` v1.0.0 — exports `documentModifiers`, a module-level singleton bound to `document.documentElement` for html-level state (locked-scroll, theme switches, locale flags)
 
 ## Purpose

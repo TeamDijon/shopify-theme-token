@@ -18,9 +18,9 @@
 **Depends on**: none — substrate-root token type
 
 **Consumers**:
-- `snippets/utility--css-variables.liquid` — iterates `metaobjects.theme_color.values`, emits `--color-<handle>` in `:root`
-- `snippets/utility--meta-theme-color.liquid` — re-extracts `hex_code.value` for the `<meta name="theme-color">` head tag
-- `snippets/utility--color-contrast.liquid` — accepts a hex via its `color:` param (callers pass `hex_code.value` when feeding a theme_color)
+- `snippets/utility--css-variables.liquid` v1.14.0 — iterates `metaobjects.theme_color.values`, emits `--color-<handle>` in `:root`
+- `snippets/utility--meta-theme-color.liquid` v1.1.0 — re-extracts `hex_code.value` for the `<meta name="theme-color">` head tag
+- `snippets/utility--color-contrast.liquid` v2.0.0 — accepts a hex via its `background:` param (callers pass `hex_code.value` when feeding a theme_color)
 - Block settings (role-named ids): `spacer.background_color`, `title.text_color`, `richtext.text_color`, `separator.line_color`, `media.overlay_color`
 - Theme settings: `meta_theme_color` (singular metaobject picker in `config/settings_schema.json`)
 

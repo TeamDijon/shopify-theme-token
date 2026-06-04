@@ -19,7 +19,7 @@
 **Depends on**: none — substrate-root token type. Consumed by the bleed-grid named-line cap.
 
 **Consumers**:
-- `sections/section.liquid` — `content_width` setting (metaobject picker) drives the section's center grid track cap
+- `sections/section.liquid` v1.7.0 — `content_width` setting (metaobject picker) drives the section's center grid track cap
 - 6 block-half settings (`group`, `columns`, `media`, `richtext`, `title`, `button`) — per-block override of the section's content_width when a block wants to constrain itself narrower (e.g., a title narrower than the section, a button row centered in reading width)
 - `assets/layer-theme.css` — bleed-grid named-line columns `[content-start]` and `[content-end]` are computed against `var(--content-width)` with a `125rem` fallback
 - Per-project blocks that ship their own content_width override (e.g., a future `pull-quote` L1 narrower than the section)

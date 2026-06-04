@@ -15,7 +15,7 @@
 **Depends on**: none — leaf module, no `@theme/*` imports. Uses Web Platform built-ins: `requestAnimationFrame` / `cancelAnimationFrame` (throttle), `setTimeout` / `clearTimeout` (debounce), `getComputedStyle` + `document.documentElement` (root-font-size).
 
 **Consumers**:
-- `assets/core.js` v1.0.0 — re-exports under `window.Token.utils.*` (or similar) for backward-compat Liquid inline scripts; the `@theme/utils` module specifier is the modern path
+- `assets/core.js` v1.3.0 — re-exports under `window.Token.utils.*` for Liquid inline-script consumers; ES-module consumers import via the `@theme/utils` specifier
 - Any module wanting throttled scroll / resize handlers — wraps the handler via `throttle(handler)` before passing to event listeners
 - Any module wanting debounced input / search handlers — wraps via `debounce(handler, delay)`
 - Any module needing the document's root font-size in px (e.g., for `rem` ↔ `px` conversion) — calls `getRootFontSize()`

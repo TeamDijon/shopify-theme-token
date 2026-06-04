@@ -19,10 +19,10 @@
 **Depends on**: none — substrate-root token type. Consumed by media-bearing primitives.
 
 **Consumers**:
-- `snippets/media.liquid` v1.3.0+ — primary consumer; reads the picked `media_size` entry from the media block, dispatches on `type` (or routes to the special `fill` handle) to emit the appropriate CSS via dynamic style
-- `snippets/embed.liquid` — same dispatch logic for embedded video (YouTube / Vimeo iframes)
-- `snippets/utility--media-sizing.liquid` — the shared resolver that both `media` and `embed` reach through
-- `blocks/media.liquid`, `blocks/embed.liquid` — block schemas expose the `media_size` setting (metaobject picker)
+- `snippets/media.liquid` v1.4.0 — primary consumer; reads the picked `media_size` entry from the media block, dispatches on `type` (or routes to the special `fill` handle) to emit the appropriate CSS via dynamic style
+- `snippets/embed.liquid` v1.2.0 — same dispatch logic for embedded video (YouTube / Vimeo iframes)
+- `snippets/utility--media-sizing.liquid` v1.1.0 — the shared resolver that both `media` and `embed` reach through
+- `blocks/media.liquid` v1.4.0, `blocks/embed.liquid` v1.0.0 — block schemas expose the `media_size` setting (metaobject picker)
 
 ## Purpose
 
