@@ -12,7 +12,7 @@
 
 **Reconciled**: 2026-06-05
 
-**Reviewed**: pending
+**Reviewed**: 2026-06-05
 
 **Depends on**:
 - `utility--document-modifiers` consumes Liquid globals `template`, `request.page_type`, `request.design_mode`
@@ -113,7 +113,7 @@ N/A — the utility emits an attribute, not custom properties.
 ### `utility--document-modifiers`
 
 - **`template` global is the source-of-truth for the `template:<value>` token.** Shopify's built-in `template` object resolves to the current template's name (e.g. `index`, `product`, `404`).
-- **Policy-page collapse.** Shopify exposes four policy templates (`refund_policy`, `privacy_policy`, `terms_of_service`, `shipping_policy`), each with its own `template` value. The utility collapses all four into the single `template:policy` token — substrate / page-level CSS keyed off policy pages does not need to enumerate the four legal-document variants. Detection: `request.page_type == 'policy'` is the documented Shopify discriminator.
+- **Policy-page collapse.** Shopify exposes four policy templates (`refund_policy`, `privacy_policy`, `terms_of_service`, `shipping_policy`), each with its own `template` value — but no unified `template == "policy"` abstraction. The utility synthesizes the missing hook by collapsing all four into a single `template:policy` token, giving CSS / JS a stable selector for "any policy page" the platform doesn't provide. Detection: `request.page_type == 'policy'` is the documented Shopify discriminator.
 - **`shopify-design-mode` is design-mode only.** The `request.design_mode` flag is truthy inside the theme editor and false on the storefront. The token's purpose is editor-frame detection — substrate JS / CSS that should only run inside the editor preview keys off `[data-modifiers*='shopify-design-mode']` at the document level.
 - **Composition is positional.** `template:<value>` comes first, `shopify-design-mode` appended after when present. `JS code keying off the document attribute should match on token presence (`includes('shopify-design-mode')`), not on positional index.
 - **Delegation to `utility--modifiers`.** The composer does not emit the attribute itself — it builds the list, then renders `utility--modifiers` with that list. Centralizing the escape + blank-list rules.

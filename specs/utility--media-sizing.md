@@ -10,7 +10,7 @@
 
 **Reconciled**: 2026-06-05
 
-**Reviewed**: pending
+**Reviewed**: 2026-06-05
 
 **Depends on**: `media_size` metaobject schema (consumes `.system.handle`, `.type.value`, `.value.value`)
 
@@ -63,7 +63,10 @@ The `fill` handle skip in `vars` mode is structural: the CSS rule keyed off `siz
 {% capture sizing_modifier %}
   {% render 'utility--media-sizing', media_size: media_size, output: 'modifier' %}
 {% endcapture %}
-{% assign modifier_list = modifier_list | append: ',' | append: sizing_modifier | strip %}
+{% assign sizing_modifier = sizing_modifier | strip %}
+{% if sizing_modifier != blank %}
+  {% assign modifier_list = modifier_list | append: ',' | append: sizing_modifier %}
+{% endif %}
 
 {% capture dynamic_style %}
   {% render 'utility--media-sizing',
@@ -73,6 +76,8 @@ The `fill` handle skip in `vars` mode is structural: the CSS rule keyed off `siz
   %}
 {% endcapture %}
 ```
+
+Strip on the captured `sizing_modifier` first, then concatenate — `{% capture %}` wraps the render output in source-line whitespace, so stripping after the comma-concat would leave the inner whitespace embedded inside the list. The intermediate `assign … | strip` (then `if != blank` guard) is the pattern shipped by `snippets/media.liquid`.
 
 `modifier` mode produces e.g. `sizing:ratio` — bare token. `vars` mode produces e.g. `--media-ratio: 16/9; --mobile-media-ratio: 4/3;` — declarations on the same line, terminated.
 
@@ -143,7 +148,7 @@ Shipped — no open decisions.
 ## Out of scope
 
 - **Third sizing classification.** The three classes (`fill` / `ratio` / `height`) cover the current `media_size` types. Adding a fourth (e.g. `intrinsic`, `aspect-fill`) requires both schema work on the `media_size` metaobject and matching consumer-side CSS rules — out of this utility's responsibility.
-- **Per-breakpoint fill.** Mobile-side `fill` (e.g. desktop ratio, mobile full-viewport) currently no-ops; the consumer-side CSS does not support a per-breakpoint fill toggle. A future spec lands the `--mobile-sizing` modifier surface when the design need surfaces.
+- **Per-breakpoint fill.** Mobile-side `fill` (e.g. desktop ratio, mobile full-viewport) currently no-ops; the consumer-side CSS does not support a per-breakpoint fill toggle. Per-project extension is the path when the design need arises — consumers add their own `--mobile-sizing` modifier surface alongside their CSS rules.
 - **Unit validation.** The utility interpolates `value.value` verbatim. Type-level constraints (`ratio` must be a unitless fraction, `relative` must be a vh/vw/% value, `fixed` must be px) live in the `media_size` metaobject's Shopify-side field validation, not at this utility.
 - **Value transformation.** No px → rem conversion, no unit normalization. The `media_size` metaobject's `value` field stores CSS-ready values per type; the utility passes them through. Consumers extending the utility's emission with their own transforms can do so in their `{% stylesheet %}` rules (via `calc()`).
 
