@@ -11,7 +11,7 @@
 - `blocks/columns.liquid` v1.5.0 (block schema + render call)
 - `assets/token-layout.js` v1.1.0 (inner-wrapper custom element)
 
-**Reconciled**: 2026-05-31 (theme-* → token-* rename pass — inner-wrapper tag `<theme-layout>` → `<token-layout>`; contract surface unchanged)
+**Reconciled**: 2026-06-05
 
 **Reviewed**: pending
 
@@ -166,8 +166,8 @@ Sticky-track tuning:
 - **Sticky-track pins one column.** `sticky-track:first` pins the first grid item via `position: sticky; top: var(--sticky-offset, 1rem); align-self: start`. `sticky-track:second` pins the last. Only 2-track layouts make geometric sense for sticky (the non-sticky track provides the scroll runway); the schema's `visible_if` constrains the setting to 2-track values. `align-self: start` keeps the pinned child at its natural height so the parent grid can grow taller; the non-sticky child remains free to size itself.
 - **Sticky disables under stack-below.** When stack-below has collapsed the grid to single-column, sticky has no second track to scroll against; the `position: static` override at the `[data-modifiers*='stack-below']` selector disables pin. The `@container` queries that re-enable the grid also re-enable sticky (the per-breakpoint sticky rules).
 - **vertical_alignment hidden when sticky is active.** Schema `visible_if` ensures the editor doesn't expose the conflict; sticky forces `align-self: start` on the pinned track, so per-track alignment would be ignored anyway. The setting is preserved in the schema for the non-sticky case.
-- **bleed shares math + footgun with `group`/`media`.** `margin-inline: calc(50% - 50dvw)` escapes the section gutter to the full visible viewport, anchored on the parent's centerline. Off-center ancestor chains (a columns inside the narrower track of a `1-3` parent columns) cause visual drift. Use bleed at the section level or inside a centered group; avoid nesting bleeds.
-- **content_width ignored when bleed is true.** Same as `media`/`group`: bleed sizing (`inline-size: 100dvw; max-inline-size: none`) overrides the `max-inline-size: var(--content-width)` declaration.
+- **Bleed via modifier emission, section grid resolves.** The snippet emits `bleed-desktop:<value>` and `bleed-mobile:<value>` modifiers; bleed positioning is handled by the section's named-line bleed grid via `grid-column` rules on direct children of `<token-section>`. Strict container-only bleed model — when this columns block is nested inside another container, the section's `>` direct-child selector doesn't match, so the nested columns positions in its container's layout and doesn't bleed. See `subgrid-migration.md`.
+- **`content_width` composes with bleed.** Bleed caps at `--content-width` (= section's content cap = bleed boundary, per `container-patterns.md` Option A). A merchant setting both `content_width: 60rem` and `bleed_desktop: both` gets a 60rem-wide bleed band — the bleed honors the cap rather than overriding it.
 - **Empty columns renders the wrappers.** Container blocks emit their structural wrappers by design. An empty columns participates in section block-rhythm — it's a `.shopify-block` matched by the rhythm cascade selector. An empty columns with `container_style` set renders a styled empty card / outline / panel — useful as a placeholder pattern during composition.
 - **Recursive nesting.** Columns inside columns is supported. Each level has its own `@container columns` queries — the rule walks up to the nearest named ancestor, which is the immediate parent columns. Stack-below works per-level independently. The shared `container-name` means a columns inside another columns has its `stack-below` triggered by the parent's width, not the section's.
 - **`{{ block.shopify_attributes }}` emission.** On the outer wrapper.
@@ -205,8 +205,8 @@ Per `validation-contract.md` Tier 2 (theme-primitive).
   - **Sticky-track**: `first` and `second` on each 2-track ratio — verify sticky pins the named track; scroll the parent and confirm visual behavior; stack-below collapsed → sticky disabled
   - **vertical_alignment**: `start`, `center`, `end`, `stretch` on a non-sticky 2-track layout
   - **Gap**: 0, 16, 48 — verify zero-emission discipline
-  - **Bleed**: with and without — verify section-bleed sizing applies when set; bleed inside a column track (off-center case) — visual drift (documented footgun)
-  - **content_width × bleed**: capped width without bleed; capped width with bleed → bleed wins (max-inline-size: none); confirm
+  - **Bleed**: each `bleed_desktop` / `bleed_mobile` value as a direct child of `<token-section>` — verify the section's grid-column rule positions the columns block at the expected named-line. Nested inside a container — verify no bleed fires (section's `>` selector doesn't match).
+  - **content_width × bleed**: `content_width: 60rem` + `bleed_desktop: both` direct child of section → bleed band caps at 60rem (the section's content cap), not at 125rem default.
   - **container_style**: card, outlined, elevated — verify centralized rules apply from `layer-theme.css`
   - **color_scheme override**: columns with scheme-2 inside scheme-1 section — children inherit scheme-2 tokens
   - **Recursion**: columns inside columns (e.g. outer `2` with each track containing another `1-2`) — verify each level's stack-below works against immediate parent
@@ -214,13 +214,13 @@ Per `validation-contract.md` Tier 2 (theme-primitive).
   - Empty columns (no children declared) → outer + inner wrappers render, no inner content
   - `sticky_track` set on a 3- or 4-track ratio (unreachable from editor; possible via direct render) → modifier still emits; CSS only pins first or last child, which may not be visually expected for >2 tracks
   - `vertical_alignment: stretch` + sticky active → sticky forces `align-self: start`; stretch ignored
-  - `bleed` on a columns inside a `1-3` parent's first (narrower) track → visual drift (off-center chain)
+  - Bleed modifier emitted on a columns block nested inside another container → section's bleed grid-column rule doesn't match (`>` direct-child selector); nested columns positions in its container's layout, no bleed
   - Container query support absent (legacy engines) → grid renders without stack-below switching; degrades to default `--grid-template-columns` always-on
 - **Visual showcase**: matrix sections per concern. Reader confirms ratio renders correctly at desktop/mobile, stack-below switches at the named breakpoint, sticky pins the correct track, bleed escapes the gutter.
 - **Assertions** (prose; Playwright once installed):
   - Computed `grid-template-columns` on `token-layout` matches the configured `columns` value (above the stack-below breakpoint) or `1fr` (below)
   - `[data-modifiers*='sticky-track:first']` instances have `position: sticky` on the first grid child above the stack-below breakpoint
-  - `[data-modifiers*='bleed']` instances have `inline-size: 100dvw` and `margin-inline: calc(50% - 50dvw)`
+  - `[data-modifiers*='bleed-desktop']` and `[data-modifiers*='bleed-mobile']` instances (as direct children of `<token-section>`) have computed `grid-column` matching the section's named-line bleed grid rule for that modifier
   - `[data-modifiers*='container-style:card']` instances pull their variant rule from `layer-theme.css`
 - **Unit scope**: none (Liquid + CSS only)
 
@@ -229,7 +229,7 @@ Per `validation-contract.md` Tier 2 (theme-primitive).
 - **Arbitrary `<n>fr` ratios** — only the seven preset shapes ship. Adding new ratios is a schema + snippet update; the agreed surface is preset-based, not free-form.
 - **Per-track styling** — columns are uniform; per-track customization (different background per track, different padding per track) requires nesting a `group` inside each track with its own settings. The columns block doesn't expose per-track settings.
 - **Asymmetric stack-below per breakpoint** — single threshold per columns block. "Stack at 40rem on first columns, 80rem on second columns" requires composing two columns blocks with different settings, not a per-track threshold.
-- **Bleed beyond the section's content cap** — same constraint as `group`/`media`. Under Option A, bleed caps at `--content-width`. The subgrid migration tightens this.
+- **Bleed beyond the section's content cap** — same constraint as `group`/`media`. Bleed caps at `--content-width` (= section's content cap = bleed boundary, per `container-patterns.md` Option A).
 - **Auto-flow modes** (`grid-auto-flow: dense`, `repeat(auto-fit, minmax(…))`) — the grid is explicitly templated, not auto-flow. Adaptive cards belong in a future `auto-grid` block.
 - **`grid-template-rows` configuration** — columns block doesn't expose row sizing. Children flow into a single row by default; multi-row layouts require nesting columns inside columns or composing with `group`.
 - **Reverse-order on stack-below** — when collapsing to single column, source order applies. "Visual reorder on stack" would require a `flex-direction: column-reverse` override; not in the API surface.
@@ -240,5 +240,5 @@ Per `validation-contract.md` Tier 2 (theme-primitive).
 - Group spec (sibling flex container; share outer/inner architecture, container_style, color_scheme, bleed conventions): `.context/specs/group.md`
 - Media spec (sibling container block specialized for media surfaces): `.context/specs/media.md`
 - Container-style spec (centralized variant CSS in `layer-theme.css`): `.context/specs/container-style.md`
-- Subgrid migration (planned future state — strict container-only bleed, named-line grid): `.context/docs/subgrid-migration.md`
+- Subgrid migration (strict container-only bleed, named-line grid): `.context/docs/subgrid-migration.md`
 - Schema conventions (top-spacing pair, color-scheme override pattern, container-style pattern): `.context/docs/schema-conventions.md`

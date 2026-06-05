@@ -10,7 +10,7 @@
 - `snippets/media.liquid` v1.4.0 (render surface)
 - `blocks/media.liquid` v1.4.0 (block schema + render call)
 
-**Reconciled**: 2026-05-31 (subgrid migration Stage 2 — bleed boolean replaced by responsive enum API; bleed CSS moved to section; centered-ancestor footgun resolved)
+**Reconciled**: 2026-06-05
 
 **Reviewed**: pending
 
@@ -78,7 +78,7 @@ Narrower than `group`/`columns` by design — overlay-content composition patter
 <div class="shopify-block shopify-block--media"
      id="<base-selector>"
      {{ block.shopify_attributes }}
-     data-modifiers="media-type:image,has-children,art-direction,bleed,image-fit:contain,container-style:card,color-scheme:scheme-2,sizing:ratio">
+     data-modifiers="media-type:image,has-children,art-direction,bleed-desktop:both,bleed-mobile:both,image-fit:contain,container-style:card,color-scheme:scheme-2,sizing:ratio">
   <picture>…image markup with art direction…</picture>
   <!-- OR -->
   <media-video>…video markup…</media-video>
@@ -93,7 +93,7 @@ Narrower than `group`/`columns` by design — overlay-content composition patter
 </div>
 ```
 
-`data-modifiers` accumulates tokens per emit-when-set: `media-type:<type>` always; `has-children` when `contents` is non-blank; `art-direction` when mobile + desktop media are both set; `bleed` when set; `image-fit:contain` when image and non-default; `container-style:<handle>` when set; `color-scheme:<id>` when set; `sizing:<mode>` per `utility--media-sizing`'s classification.
+`data-modifiers` accumulates tokens per emit-when-set: `media-type:<type>` always; `has-children` when `contents` is non-blank; `art-direction` when mobile + desktop media are both set; `bleed-desktop:<value>` / `bleed-mobile:<value>` when ≠ `none`; `image-fit:contain` when image and non-default; `container-style:<handle>` when set; `color-scheme:<id>` when set; `sizing:<mode>` per `utility--media-sizing`'s classification.
 
 Per-instance custom properties emit via `utility--block-layout-vars` + `utility--media-sizing` (vars mode) + `utility--dynamic-style` into a scoped `<style>` block keyed to `#<base-selector>`.
 
@@ -137,12 +137,9 @@ Component-rooted on `.shopify-block--media`. Layered in `@layer components`.
     block-size: 100svh;
   }
 
-  /* Bleed — escape section gutter, span full visible viewport */
-  &[data-modifiers*='bleed'] {
-    inline-size: 100dvw;
-    max-inline-size: none;
-    margin-inline: calc(50% - 50dvw);
-  }
+  /* Bleed is owned by the section's named-line grid (see `assets/layer-theme.css` + `subgrid-migration.md`).
+     This snippet emits `bleed-desktop:<value>` / `bleed-mobile:<value>` modifiers; the section's
+     grid-column rules match them on direct children of <token-section>. No bleed CSS lives here. */
 
   /* Overlay tint */
   & media-overlay {
@@ -203,11 +200,11 @@ Zero-emission discipline throughout.
 - **Branch on `media_type`.** `image` → `{% render 'image' %}` with primary + mobile_image. `video` → `{% render 'video' %}` with primary + mobile_video + mode/controls/autoplay/loop. Either renders the placeholder SVG when its primary asset is blank, so the block always emits some media surface.
 - **Art direction triggers a modifier, not a separate output path.** When both desktop and mobile media are set, the snippet emits `art-direction` modifier on the root; the `image`/`video` snippets handle the dual-source `<picture>`/`<source>` markup. The modifier is informational (debug/inspection) and doesn't itself drive CSS today.
 - **Sizing routed through `utility--media-sizing`.** Centralizes the `fill` / `ratio` / `relative` / `fixed` classification so `media` and `embed` can't drift on sizing semantics. The utility emits the modifier in "modifier mode" and the vars in "vars mode"; the snippet invokes both. The `fill` handle is special (no `type`/`value`; means viewport-height); `ratio` and `relative` emit `aspect-ratio`; `fixed` emits explicit `block-size`.
-- **Bleed assumes centered ancestor chain.** The `margin-inline: calc(50% - 50dvw)` math anchors against the parent's centerline. Inside an off-center column track (the narrower track of `1-3` columns), the bleed visually drifts because the centerline is offset from the section's. Snippet doc block documents this limitation; merchants composing bleed-inside-columns should use the section's bleed model instead.
+- **Bleed via modifier emission, section grid resolves.** The snippet emits `bleed-desktop:<value>` and `bleed-mobile:<value>` modifiers; bleed positioning is handled by the section's named-line bleed grid via `grid-column` rules on direct children of `<token-section>`. Strict container-only bleed model — when media is nested inside another container, the section's `>` direct-child selector doesn't match, so the nested media positions in its container's layout and doesn't bleed. See `subgrid-migration.md`.
 - **Image-fit modifier emission is conditional.** `image-fit:contain` emits only when `media_type: image` AND `image_fit != cover`. Video doesn't expose image_fit — `<video>` element's intrinsic sizing differs from `<img>`. The `cover` default keeps the modifier off the data-modifiers attribute in the common case.
 - **Overlay tint via a sibling element.** `<media-overlay></media-overlay>` is an empty position-absolute element painted between the media (z-natural-order: 1) and `<media-contents>` (z-natural-order: 2). Stacking is natural-order — no explicit `z-index`. `pointer-events: none` keeps the overlay click-through. Element emits only when `overlay_color` is non-blank and non-transparent.
 - **Overlay content (`<media-contents>`) flex layout.** Flex column with `justify-content` (vertical alignment), `align-items` (horizontal), `gap` (per-instance var), and `padding: var(--gutter)` so content respects the section's gutter inside the overlay. The `&:focus-visible` rule with `outline-offset: -0.25rem` ensures focus rings on focusable children (typically buttons) don't get clipped by the media's `overflow: hidden`.
-- **content_width ignored when bleed is true.** Bleed sets `inline-size: 100dvw; max-inline-size: none` — both overriding the `max-inline-size: var(--content-width)` declaration. Documented in the API table; merchants composing bleed + content_width get bleed sizing only.
+- **`content_width` composes with bleed.** Bleed caps at `--content-width` (= section's content cap = bleed boundary, per `container-patterns.md` Option A). A merchant setting both `content_width: 60rem` and `bleed_desktop: both` gets a 60rem-wide bleed band — the bleed honors the cap rather than overriding it.
 - **`{{ block.shopify_attributes }}` emission.** On the outer wrapper.
 - **Color-scheme override propagates to overlay content.** Setting `color_scheme` re-emits `--color-role-*` tokens scoped to the block; descendant blocks (overlay title/richtext/button) inherit the new scheme via the cascade.
 
@@ -253,7 +250,7 @@ Per `validation-contract.md` Tier 2 (theme-primitive).
   - **Art direction**: both desktop + mobile assets set → modifier emitted; resize viewport shows mobile asset below 48rem
   - **media_size matrix**: each shipped entry (`fill`, ratios like `16/9` / `4/3` / `1/1`, relative like `60svh`, fixed like `400px`) — verify sizing modifier and var emission
   - **mobile_media_size override**: mobile entry differs from desktop → mobile applies below 48rem; desktop above
-  - **Bleed**: with and without — verify `inline-size: 100dvw` applies when set; bleed inside a section vs inside a column track (off-center case) — second case visually drifts (documented footgun)
+  - **Bleed**: each `bleed_desktop` / `bleed_mobile` value as a direct child of `<token-section>` — verify the section's grid-column rule positions the media block at the expected named-line. Nested inside another container — verify no bleed fires (section's `>` selector doesn't match).
   - **image_fit**: `cover` (no modifier) vs `contain` (modifier + CSS override); video instances skip the setting
   - **horizontal_alignment / vertical_alignment × gap**: overlay content positioning matrix
   - **Overlay color**: blank (no overlay element) vs translucent black vs opaque accent (visible tint over media)
@@ -265,14 +262,14 @@ Per `validation-contract.md` Tier 2 (theme-primitive).
   - `media_type: image` + `image` blank + no children → placeholder SVG only
   - `media_type: video` + `video` blank → placeholder SVG; video-only settings (autoplay, controls) are no-ops
   - `image_fit: contain` set + `media_type: video` switched → image-fit modifier doesn't apply (CSS rule conditioned on `image-fit:contain` which only emits in image mode)
-  - Bleed inside a `1-3` columns track (narrower track) → visual drift (documented)
+  - Bleed modifier emitted on a media block nested inside another container → section's bleed grid-column rule doesn't match (`>` direct-child selector); nested media positions in its container's layout, no bleed
   - Overlay color set to `rgba(0,0,0,0)` → snippet skips emitting `<media-overlay>` (the explicit no-emit branch)
   - Empty `contents` → no `<media-contents>` element; modifier `has-children` absent
 - **Visual showcase**: matrix sections per concern (sizing, bleed, overlay, alignment, scheme-override). Reader confirms each cell renders as configured.
 - **Assertions** (prose; Playwright once installed):
   - Sizing instances have computed `aspect-ratio` or `block-size` matching the configured `media_size`
   - `sizing:fill` instances have `block-size: 100svh`
-  - Bleed instances have `inline-size: 100dvw` and `margin-inline: calc(50% - 50dvw)`
+  - `[data-modifiers*='bleed-desktop']` / `[data-modifiers*='bleed-mobile']` instances (as direct children of `<token-section>`) have computed `grid-column` matching the section's named-line bleed grid rule for that modifier
   - `image-fit:contain` instances' inner `<img>` has `object-fit: contain`
   - `<media-overlay>` is present when `overlay_color` is non-blank non-transparent, absent otherwise
   - `<media-contents>`'s computed `justify-content` / `align-items` match the alignment settings
@@ -281,8 +278,8 @@ Per `validation-contract.md` Tier 2 (theme-primitive).
 ## Out of scope
 
 - **Multiple media per block** — single image OR single video. Galleries or carousels are a separate primitive (`marquee` / future `gallery` block).
-- **Bleed beyond the section's content cap** — same constraint as `group`/`columns`. Under Option A, bleed caps at `--content-width`. The current `100dvw` math escapes to the viewport edge; the planned subgrid migration (`subgrid-migration.md`) tightens this to the named-line grid model.
-- **Bleed inside off-center column tracks** — known limitation (centered-ancestor assumption). The fix lives in the subgrid migration when section becomes a named-line grid.
+- **Bleed beyond the section's content cap** — same constraint as `group`/`columns`. Bleed caps at `--content-width` (= section's content cap = bleed boundary, per `container-patterns.md` Option A).
+- **Bleed inside nested containers** — strict container-only bleed model: section's `>` direct-child selector requires the bleeding block to be a direct child of `<token-section>`. Nested-inside-a-container blocks emit the modifier but don't bleed (section's grid-column rule doesn't match).
 - **Image lazy-loading / fetchpriority / decoding configuration** — owned by `snippets/image.liquid`; the media block doesn't expose these as block settings. Per-project tuning lives at the snippet level.
 - **Video custom controls UI** — `video_controls: full` exposes browser-native controls. Custom-styled controls (skip, scrub, mute toggle) belong in a separate primitive or in per-project extensions to `video.liquid`.
 - **Click-to-play / poster-as-cover privacy gate** — videos always render directly today. A privacy-gated variant would expose a `poster_only_until_click` setting (separate work).
@@ -293,7 +290,7 @@ Per `validation-contract.md` Tier 2 (theme-primitive).
 - Container patterns (sizing, bleed model, content cap, asymmetric responsive shapes): `.context/docs/container-patterns.md`
 - Group spec (sibling flex container; share container_style + color_scheme + bleed conventions): `.context/specs/group.md`
 - Container-style spec (centralized variant CSS in `layer-theme.css`): `.context/specs/container-style.md`
-- Subgrid migration (planned future state — strict container-only bleed, named-line grid replaces today's negative-margin bleed): `.context/docs/subgrid-migration.md`
+- Subgrid migration (strict container-only bleed, named-line grid): `.context/docs/subgrid-migration.md`
 - Image spec (renderer for `media_type: image`): `.context/specs/image.md`
 - Video spec (renderer for `media_type: video`): `.context/specs/video.md`
 - Schema conventions (top-spacing pair, color-scheme override pattern, container-style pattern): `.context/docs/schema-conventions.md`

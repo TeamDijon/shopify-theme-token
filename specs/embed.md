@@ -10,7 +10,7 @@
 - `snippets/embed.liquid` v1.2.0 (render surface)
 - `blocks/embed.liquid` v1.0.0 (block schema + render call)
 
-**Reconciled**: 2026-05-31
+**Reconciled**: 2026-06-05
 
 **Reviewed**: pending
 
