@@ -55,6 +55,7 @@ Originally sourced from the EXPLORATION-2 inventory pass (May 2026); retrofits a
 
 ## Layer 0 — Snippets
 
+- [skip-to-content](./skip-to-content.md) — accessibility chrome helper rendered first inside `<body>` by both layouts; single `<a class="skip-to-content" href="#page_content">` with localized text from `actions.skip_to_content`; native `<a>` semantics only (no ARIA); visually hidden until `:focus-within` reveals via `layer-utilities.css` *(shipped — retrofit)*
 - [image](./image.md) — responsive Shopify image renderer with optional mobile art direction (`<picture>` wrapping with mobile `<source>`); exposes loading / fetchpriority / preload knobs; two width ladders *(shipped — retrofit)*
 - [video](./video.md) — Shopify-hosted video renderer wrapping `<video>` in `<media-video>`; atmosphere vs content playback profiles; mp4 source extraction from `video.sources`; mobile art-direction via second `<source>` *(shipped — retrofit)*
 - [icon](./icon.md) — inline SVG icon loader from `assets/icon-*.svg` with dual-API (metaobject ref OR file_name string); injects `aria-hidden="true"` + optional `data-preset` (escaped); empty-on-missing via `utility--inline-asset` *(shipped — retrofit)*
