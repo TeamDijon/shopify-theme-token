@@ -10,7 +10,7 @@
 
 **Reconciled**: 2026-06-05
 
-**Reviewed**: pending
+**Reviewed**: 2026-06-05
 
 **Depends on**: none — leaf utility
 
@@ -22,7 +22,7 @@
 
 The minifier for Liquid-captured CSS. Three passes over the input: whitespace collapse, `/* … */` comment strip, and selector / declaration token collapse. Wraps the result in a `<style>` tag. Returns nothing when input is blank.
 
-The minifier targets Liquid-captured CSS specifically — content composed at render time by snippets emitting `assign` / `echo` declarations with source-line whitespace. CSS files in `assets/` are pre-minified by Shopify's asset pipeline; running this minifier on top adds ~6% savings at the risk of correctness regressions on edge-case selector syntax. The asset-loader applies the minifier only to the captured-string path, not the inline-from-file path.
+The minifier targets Liquid-captured CSS specifically — content composed at render time by snippets emitting `assign` / `echo` declarations with source-line whitespace. CSS files in `assets/` are pre-minified by Shopify's asset pipeline; the asset-loader applies the minifier only to the captured-string path, not the inline-from-file path.
 
 ## API
 
@@ -157,6 +157,7 @@ Shipped — no open decisions.
 - **Vendor-prefix handling.** Authors emit canonical CSS; vendor prefixes are out of scope.
 - **Source maps.** Inline minified CSS has no source mapping; debugging happens in the Liquid source.
 - **CSS Custom Properties whitespace.** Custom property values can legitimately contain commas, spaces, parens. The token-collapse pass is intentionally conservative — it does not touch space inside property values, only space around structural tokens (`{`, `}`, `;`, `:`).
+- **Asset-pipeline file minification.** `inline_asset_content` output is not run through this minifier — Shopify pre-minifies asset files, and re-running the token-collapse pass over already-minified CSS courts edge-case regressions for negligible byte savings.
 
 ## Related
 

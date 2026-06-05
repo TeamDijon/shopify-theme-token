@@ -10,7 +10,7 @@
 
 **Reconciled**: 2026-06-05
 
-**Reviewed**: pending
+**Reviewed**: 2026-06-05
 
 **Depends on**: Shopify's `| asset_url` filter (resolves to the cache-busted `assets/<name>.js` URL)
 

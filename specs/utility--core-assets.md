@@ -10,7 +10,7 @@
 
 **Reconciled**: 2026-06-05
 
-**Reviewed**: pending
+**Reviewed**: 2026-06-05
 
 **Depends on**:
 - `snippets/utility--inline-asset.liquid` — captures each of the four `layer-*.css` files
@@ -57,7 +57,7 @@ The first `<style>` block is the substrate's render-blocking CSS — no FOUC. Th
 
 ## Behavior
 
-- **Per-layer inline because of Shopify's 15360-byte cap.** Liquid's `inline_asset_content` filter caps a single file at 15360 bytes. The original `core.css` exceeded this, prompting the split into four `layer-*.css` files captured independently and concatenated. The concatenated string then routes through `utility--asset-loader (css: 'inline', css_content: <concat>)`, which runs `utility--css-minifier` once over the full concatenation.
+- **Per-layer inline because of Shopify's 15360-byte cap.** Liquid's `inline_asset_content` filter caps a single file at 15360 bytes. The four `layer-*.css` files are captured independently and concatenated to clear the cap; the concatenated string routes through `utility--asset-loader (css: 'inline', css_content: <concat>)`, which runs `utility--css-minifier` once over the full concatenation.
 - **Inline-then-preload pattern for the JS entry.** `core.js` ships as a normal ES module file (not inline) — its size and the importmap dependency make inlining a poor fit. The `preload` strategy emits both `<link rel="modulepreload">` and `<script type="module">`; the preload starts the fetch with `fetchpriority="high"` ahead of the module tag's execution.
 - **Stage 1 emits one `<style>` block.** The four `layer-*.css` files concatenate before passing to the loader. Capturing each individually then concatenating prevents the per-file 15360-byte cap from blocking the load; the resulting inline string is whatever size the four layers add up to.
 - **Stage 2 is the Liquid-generated CSS.** `utility--font-face` emits the `@font-face` declarations sourced from the font/typeface metaobjects; `utility--css-variables` emits `:root` and per-scheme rules from settings + design-system metaobjects. The two captures merge into one inline block.

@@ -10,7 +10,7 @@
 
 **Reconciled**: 2026-06-05
 
-**Reviewed**: pending
+**Reviewed**: 2026-06-05
 
 **Depends on**:
 - `snippets/utility--css-minifier.liquid` (downstream — minifies `css_content` strings inlined via `css: 'inline'`)
