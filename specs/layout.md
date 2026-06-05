@@ -12,7 +12,7 @@
 
 **Reconciled**: 2026-06-05
 
-**Reviewed**: pending
+**Reviewed**: 2026-06-05
 
 **Depends on**:
 - Head emitter utilities: `utility--meta-theme-color`, `utility--font-preload`, `utility--core-assets`, `utility--hreflang`, `utility--structured-data`, `utility--open-graph`, `utility--speculation-rules`
@@ -187,7 +187,7 @@ Substantial — every page's a11y chrome lives in the layout:
 - **`<meta name="viewport">`** — emitted unconditionally; required for mobile-zoom accessibility.
 - **Section-group ordering** (theme.liquid) — header before main, footer after main; overlay-group after footer (overlay-group hosts modal / drawer sections that render outside the document flow).
 
-The layout itself has no ARIA roles to declare — `<header>` / `<main>` / `<footer>` semantics are emitted by the section groups' constituent sections (when they ship), not by the layout wrapper. Currently the layout emits no `<header>` / `<footer>` elements; those land when header / footer specialized sections register with their respective groups.
+The layout itself has no ARIA roles to declare — `<header>` / `<main>` / `<footer>` semantics are emitted by the section groups' constituent sections, not by the layout wrapper.
 
 ## Locale keys
 
@@ -231,7 +231,6 @@ Both files are shipped — this is a retrofit spec. No open decisions.
 - **Conditional head stages by page type.** Every page emits the same 12-stage head spine. Per-page-type variations (e.g. richer Open Graph on `templates/product`, conditional structured-data shape) live inside the head-emitter utilities, not at the layout layer. Layouts pass straight through to the utilities; the utilities branch.
 - **A third layout shape.** Two layouts cover the current need: full chrome (`theme`) + bare main (`landing`). A third layout would earn its keep only if a new page archetype's chrome diverges meaningfully from both shapes; current direction is to handle archetype-specific chrome through specialized sections inside the section groups, not new layout files.
 - **`landing.liquid` consumer registration.** No current template selects `landing`. The file ships as the parked option for future promo / external-campaign / minimal-chrome pages. Adding a template that selects it (e.g. `templates/promo.liquid` with `{% layout 'landing' %}`) is a separate authoring step.
-- **`<head>` cleanup of dead-end stages.** The current 12-stage pipeline assumes every utility ships. Utilities not yet shipped (`utility--meta-theme-color`, `utility--font-preload`, `utility--hreflang`, `utility--structured-data`, `utility--open-graph`, `utility--speculation-rules`) render as no-ops via Liquid's missing-snippet handling; the layout calls remain stable. Cleanup discipline lives in each utility's spec, not here.
 
 ## Related
 
