@@ -10,7 +10,7 @@
 - `snippets/spacer.liquid` v1.1.2 (render surface)
 - `blocks/spacer.liquid` v1.0.0 (block schema + theme-editor wrapper)
 
-**Reconciled**: 2026-05-29
+**Reconciled**: 2026-06-05
 
 **Reviewed**: pending
 
@@ -25,6 +25,9 @@ Vertical-space block with configurable block-size (height). Two modes — one fi
 Primary scope: vertical-rhythm at the section level. Between section-level blocks, spacer adds rhythm independent of the section's `block_rhythm` cascade.
 
 Inside a column-direction rail (columns track, group child), spacer is the legitimate tool for **edge whitespace** — pre-first-child or post-last-child gaps. Rhythm utilities (`block-rhythm` cascade and per-block top-margin) address only between-sibling spacing, not rail edges, so a spacer at the edge is the only mechanism. Between-sibling spacing inside a rail uses the parent's `gap` setting or the next sibling's top-margin, not a spacer. Symmetric breathing room around content of varying height uses the columns / group `vertical_alignment: center` setting, not edge spacers. See `container-patterns.md` § Spacer at rail edges.
+
+<!-- REVIEW: Spec - Per template:design-principle-upfront-purpose, would the Purpose lead better with the rail-edge / between-sibling boundary as the distinctive principle? Spacer's design point is "edge whitespace tool — between-sibling spacing uses gap / top-margin instead." Currently this lands in ¶3. Draft: "The edge-whitespace tool for column-direction rails — pre-first-child or post-last-child gaps where rhythm utilities don't reach (block-rhythm cascade + per-block top-margin both address between-sibling spacing only). Renders a vertical-space block with configurable block-size, two modes (one fixed size, or a mobile/desktop pair switching at a selected breakpoint), and an optional theme_color background that turns the spacer into a colored band. Between-sibling spacing uses parent gap or next-sibling top-margin, not a spacer." Question: keep current 3-¶ framing, swap to the single-¶ lead, or split the difference? -->
+
 
 Inside a row-direction `group`, the spacer's `inline-size: 100%` claims the full row and squishes siblings. Anti-pattern; not actively prevented.
 
@@ -78,7 +81,7 @@ Inside a row-direction `group`, the spacer's `inline-size: 100%` claims the full
 }
 ```
 
-`margin-block-start` chain (per-instance override → section rhythm → 0) is applied via the theme-root rhythm cascade in `layer-theme.css` (see `theme-root.md` § Rhythm scope).
+`margin-block-start` is not declared on the block — the theme-root rhythm cascade in `layer-theme.css` applies the section's `--block-rhythm` value via the `> .shopify-block:not(:first-child)` selector. Spacer has no per-instance top-margin setting (unlike most L1 blocks); rhythm flows entirely from the section. See `theme-root.md` § Rhythm scope.
 
 ## CSS custom properties (exposed)
 

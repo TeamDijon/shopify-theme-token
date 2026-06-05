@@ -10,7 +10,7 @@
 - `snippets/title.liquid` v1.1.3 (render surface)
 - `blocks/title.liquid` v1.1.0 (block schema + render call)
 
-**Reconciled**: 2026-05-31
+**Reconciled**: 2026-06-05
 
 **Reviewed**: pending
 

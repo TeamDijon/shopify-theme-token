@@ -22,6 +22,9 @@
 
 A horizontal-rule primitive. Renders `<hr>` inside a `.shopify-block--separator` wrapper, with optional inline-size cap (from `content_width`) and optional line color (from a `theme_color` handle). The visual identity is one hairline border on the inner `<hr>`, no shadow / radius / decoration — separator is the minimal divider. Color falls back to `--color-role-border` when no `line_color` is set, so the divider sits at the scheme's structural-border weight by default.
 
+<!-- REVIEW: Spec - Per template:design-principle-upfront-purpose, would the lead read better starting with the "minimal divider, no decoration knobs" principle? Draft: "The minimal divider — one hairline border on an `<hr>`, no shadow / radius / decoration / weight knob. Renders inside a `.shopify-block--separator` wrapper with optional content_width cap and optional line color from a `theme_color` handle; color falls back to `--color-role-border` so the divider sits at the scheme's structural-border weight by default. Richer dividers compose through `group` + `container_style` or `media`, not by extending separator." Question: keep current framing, swap to draft, or leave as-is given separator's principle is already named in sentence 3? -->
+
+
 ## API
 
 Snippet args (`{% render %}`) and block schema settings cover the same surface; the snippet adds `section` / `block` / `block_id` for render context. Args fall back to `block.settings.<id>` via `| default:` chains.
