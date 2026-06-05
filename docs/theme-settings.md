@@ -38,12 +38,10 @@ Bump `theme_version` when cutting a public release; the merchant-facing version 
 
 | ID | Type | Default | Consumed by |
 |---|---|---|---|
-| `mobile_gutter` | range (0–100, step 2, unit px) | 16 | `snippets/utility--css-variables.liquid` — emitted as `--gutter` (mobile branch) via `value | divided_by: 16.0 | round: 3` |
+| `mobile_gutter` | range (0–100, step 2, unit px) | 16 | `snippets/utility--css-variables.liquid` — emitted as `--gutter` (mobile branch) |
 | `desktop_gutter` | range (0–100, step 2, unit px) | 24 | `snippets/utility--css-variables.liquid` — emitted as `--gutter` (desktop branch, inside `@media`) |
 
-Subsection header before the two ranges: `t:spacing.gutter.content`. The two range inputs feed the bleed-grid's gutter named columns (see `.context/docs/container-patterns.md` § Bleed grid).
-
-Px input, rem emission — per `.context/docs/px-rem-emission.md`.
+Subsection header before the two ranges: `t:spacing.gutter.content`. The two range inputs feed the bleed-grid's gutter named columns (see `.context/docs/container-patterns.md` § Bleed grid). Px input, rem emission — per `.context/docs/px-rem-emission.md`.
 
 ### Colors group (`t:colors.name`)
 
