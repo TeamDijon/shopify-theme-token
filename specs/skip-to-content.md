@@ -10,7 +10,7 @@
 
 **Reconciled**: 2026-06-05
 
-**Reviewed**: pending
+**Reviewed**: 2026-06-05
 
 **Depends on**:
 - `actions.skip_to_content` locale key (runtime locale file)

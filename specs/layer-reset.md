@@ -11,7 +11,7 @@
 
 **Reconciled**: 2026-06-05
 
-**Reviewed**: pending
+**Reviewed**: 2026-06-05
 
 **Depends on**:
 - `var(--focus-ring-width)`, `var(--focus-ring-offset)`, `var(--color-role-focus-ring)` (CSS custom properties from `design-constants.md` + `color-scheme.md`) — consumed by the `:focus-visible` rule

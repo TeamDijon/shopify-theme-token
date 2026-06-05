@@ -10,7 +10,7 @@
 
 **Reconciled**: 2026-06-05
 
-**Reviewed**: pending
+**Reviewed**: 2026-06-05
 
 **Depends on**: `settings.meta_theme_color` (a `theme_color` metaobject reference; see `theme_color` metaobject schema)
 

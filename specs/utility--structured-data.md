@@ -10,7 +10,7 @@
 
 **Reconciled**: 2026-06-05
 
-**Reviewed**: pending
+**Reviewed**: 2026-06-05
 
 **Depends on**:
 - `snippets/utility--json-ld.liquid` — wraps each captured schema in a JSON-LD script tag

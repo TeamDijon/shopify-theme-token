@@ -10,7 +10,7 @@
 
 **Reconciled**: 2026-06-05
 
-**Reviewed**: pending
+**Reviewed**: 2026-06-05
 
 **Depends on**: none — leaf utility
 
@@ -22,7 +22,7 @@
 
 Wraps a captured JSON-LD body in a `<script type="application/ld+json">` tag with content-safe minification. Strips newlines without collapsing whitespace inside string values — merchant-typed strings (titles, descriptions) retain their internal spaces while the surrounding indentation is removed. Returns nothing when the input is blank.
 
-The content-safe minify is the design point — the prior `split: ' ' | join: ' '` whitespace collapse used by `utility--css-minifier` would corrupt JSON string values containing intentional multi-space sequences. JSON-LD payloads carry merchant copy verbatim; CSS doesn't.
+The content-safe minify is the design point. JSON-LD payloads carry merchant copy verbatim (titles, descriptions, slogans); collapsing whitespace inside string values would corrupt intentional multi-space sequences. This utility's contract — strip newlines + outer whitespace only — diverges from `utility--css-minifier`'s aggressive token collapse for exactly this reason.
 
 ## API
 
@@ -64,7 +64,6 @@ N/A.
 
 - **Blank `schema` → no output.** Early `break` defends against empty captures (no empty `<script>` tag emission).
 - **`strip_newlines` + `strip`.** `strip_newlines` removes line breaks within the captured body; `strip` removes leading / trailing whitespace. The combination produces a single-line payload without touching interior multi-space sequences.
-- **No comment stripping, no token collapse.** JSON-LD is valid JSON — no comments to strip. Token collapse (whitespace around `{`, `}`, `:`, `,`) would corrupt embedded string values. Output is moderately verbose by design.
 - **MIME type fixed.** Always `application/ld+json`. Crawlers and validators rely on the exact MIME type for JSON-LD recognition.
 - **No JSON validation.** The utility trusts the caller — malformed JSON passes through and crawlers reject it. Construction-time validation lives at the caller (the schema-shape utility composing the capture).
 
@@ -99,6 +98,7 @@ Shipped — no open decisions.
 
 ## Out of scope
 
+- **Comment stripping + token collapse.** JSON-LD is valid JSON — no comments to strip. Token collapse (whitespace around `{`, `}`, `:`, `,`) would corrupt embedded string values. Output is moderately verbose by design.
 - **Multi-schema bundling.** One schema per render. Composing a single `<script type="application/ld+json">` containing a JSON array of schemas (`@graph` shape) is the caller's responsibility — `utility--structured-data` emits one tag per schema instead.
 - **Pretty-print.** Output is single-line. Pretty-printed JSON-LD (for human inspection) lives in the schema source, not the rendered output.
 - **Schema validation.** The utility is a wrapper, not a validator. Crawlers + Google's Rich Results Test are the validation surface.

@@ -10,7 +10,7 @@
 
 **Reconciled**: 2026-06-05
 
-**Reviewed**: pending
+**Reviewed**: 2026-06-05
 
 **Depends on**: Liquid globals `page_title`, `page_description`, `page_image`, `canonical_url`, `request.origin`, `request.page_type`, `request.locale.iso_code`, `localization.available_languages`, `shop.*`, `product.*` (product pages), `article.*` (article pages), `cart.currency.iso_code`
 

@@ -11,7 +11,7 @@
 
 **Reconciled**: 2026-06-05
 
-**Reviewed**: pending
+**Reviewed**: 2026-06-05
 
 **Depends on**:
 - `var(--layer-temporary)` (z-index scale entry from `design-constants.md`) — consumed by the `.skip-to-content:focus-within` rule
@@ -175,7 +175,6 @@ Gated on `prefers-reduced-motion: no-preference` and `@supports (interpolate-siz
 
 - **`.sr-only`** is the SR-only utility per `a11y-conventions.md` § SR-only text
 - **`.skip-to-content`** carries the skip-to-content interaction pattern (visible on focus only, revealed for keyboard users)
-- **Icon-system `[data-modifiers*="round"]`** is a stroke-rounding presentation preset, not a11y; alt text + `aria-hidden` on icons lives in `snippets/icon.liquid` (see `icon.md`)
 - **`<details>` animation respects `prefers-reduced-motion`** — the entire animation block is wrapped in `@media (prefers-reduced-motion: no-preference)`
 
 ## Validation

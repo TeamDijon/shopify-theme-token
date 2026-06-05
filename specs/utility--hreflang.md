@@ -10,7 +10,7 @@
 
 **Reconciled**: 2026-06-05
 
-**Reviewed**: pending
+**Reviewed**: 2026-06-05
 
 **Depends on**: Liquid globals `localization.available_languages`, `localization.language.root_url`, `request.path`, `request.origin`
 
