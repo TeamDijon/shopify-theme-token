@@ -8,7 +8,7 @@
 
 **Implementation**: `snippets/icon.liquid` v1.4.1 (render surface)
 
-**Reconciled**: 2026-05-31
+**Reconciled**: 2026-06-05
 
 **Reviewed**: pending
 
@@ -56,9 +56,9 @@ Missing asset case — when `assets/icon-<name>.svg` doesn't exist, `utility--in
   - `preset` (= `icon_preset`) = explicit arg → falls through to `icon.preset.value` → empty (no data-preset emitted)
 - **Filename composes to `assets/icon-<name>.svg`.** The snippet prepends `icon-` and appends `.svg` before passing to `utility--inline-asset`. Callers pass the stem only (`chevron`, not `icon-chevron.svg`).
 - **`aria-hidden="true"` always emits.** Icons are decorative-by-default — semantic meaning comes from the consumer's accessible name (button label, link text). Suppression of redundant SR announcement is universal; consumers wanting icon-as-label express that via `aria-label` on the parent (button, link), and the SVG stays hidden in that case too.
-- **`data-preset` provides a CSS hook for icon variants.** Used by future `star-rating` to cycle the same SVG file (`icon-star.svg`) through `full` / `half` / `empty` presets via per-path scaling rules in `layer-theme.css`. Escaped with `| escape` (v1.4.1) so callers passing untrusted strings can't break out of the attribute.
-- **Missing asset = empty render.** v1.2.0 routed inlining through `utility--inline-asset` which guards against the raw "Asset not found" comment. A broken icon ref produces an empty span in the consumer's markup, not a visible broken-image affordance.
-- **Early-exit when no filename resolves.** Both `file_name` arg and `icon.file_name.value` blank → snippet `break`s. v1.1.0 added this guard.
+- **`data-preset` provides a CSS hook for icon variants.** Used by future `star-rating` to cycle the same SVG file (`icon-star.svg`) through `full` / `half` / `empty` presets via per-path scaling rules in `layer-theme.css`. The `preset` value passes through `| escape` so callers passing untrusted strings can't break out of the attribute.
+- **Missing asset = empty render.** Inlining routes through `utility--inline-asset`, which guards against the raw "Asset not found" comment. A broken icon ref produces an empty span in the consumer's markup, not a visible broken-image affordance.
+- **Early-exit when no filename resolves.** Both `file_name` arg and `icon.file_name.value` blank → snippet `break`s.
 - **`replace_first` injection is load-bearing.** The opening `<svg>` tag's `>` is replaced once with ` aria-hidden="true" data-preset="..."` + `>`. Only the first occurrence — the SVG body's path data may include other `>` characters that shouldn't be touched.
 - **SVG file conventions.** Per `.context/rules/icon-convention.md`: paths use `currentColor`, `stroke-width: 0.25rem`, optional `data-edge=""` for paths touching the viewBox edge (prevents stroke bleed), and optional `data-<part>` attributes for sub-element CSS hooks (e.g. `data-half-star` on the first path of `icon-star.svg` for half-star rendering).
 
@@ -74,7 +74,9 @@ None — the snippet emits no text. Accessible labels live on the parent element
 
 ## Validation
 
-Per `validation-contract.md` Tier 1c (utility-CSS) for the icon-rendering pipeline; Tier 2 (theme-primitive — snippet-half group) for the dual-API + preset emission.
+Per `validation-contract.md` Tier 1b (utility-snippet).
+
+<!-- REVIEW: Spec - Tier nomenclature was inconsistent (called both "Tier 1c (utility-CSS)" and "Tier 1b (utility-snippet)" in adjacent sentences). icon is a utility-snippet — emits Liquid-rendered SVG markup, no CSS rules of its own. Cleaned to Tier 1b only. Verify against validation-contract.md if anything depends on the Tier 1c framing for icon-rendering-pipeline coverage. -->
 
 - **Tier**: utility-snippet (Tier 1b) — input → output conformity check
 - **Page**: covered indirectly today through L1 block validation (`validation--primitive--button.liquid`, `validation--primitive--title.liquid`); a dedicated `validation--primitive--icon.liquid` snippet-half page slots here when L0 validation is staffed

@@ -8,7 +8,7 @@
 
 **Implementation**: `snippets/image.liquid` v1.0.0 (render surface)
 
-**Reconciled**: 2026-05-31
+**Reconciled**: 2026-06-05
 
 **Reviewed**: pending
 
@@ -35,13 +35,13 @@ A sub-component primitive (no block; never the root of an L1 theme block). Consu
 
 ## Width ladders
 
-Two hardcoded ladders sized to the typical use:
+Three hardcoded ladders sized to the typical use:
 
 | Profile | Widths (px) | When |
 |---|---|---|
-| Desktop-only | `768, 1000, 1024, 1280, 1440, 1600, 1800, 2000, 2560` | `mobile_image` is blank — single `image_tag` covers all viewports |
-| Mobile (when art-directed) | `360, 480, 640, 750, 900, 1080, 1200, 1350, 1440` | `mobile_image` is set — feeds the mobile `<source>` |
-| Full-width fallback | `360, 480, 640, 750, 900, 1080, 1200, 1350, 1440, 1600, 1800, 2000, 2560` | (Unused today — defined as `full_widths` but reachable only via direct args; the branch always picks one of the two above) |
+| Full ladder | `360, 480, 640, 750, 900, 1080, 1200, 1350, 1440, 1600, 1800, 2000, 2560` | `mobile_image` is blank — single `image_tag` carries the full 14-width ladder covering mobile through retina-desktop |
+| Desktop (when art-directed) | `768, 1000, 1024, 1280, 1440, 1600, 1800, 2000, 2560` | `mobile_image` is set — feeds the desktop `<img>` inside the `<picture>` (mobile widths drop off since the mobile `<source>` covers them) |
+| Mobile (when art-directed) | `360, 480, 640, 750, 900, 1080, 1200, 1350, 1440` | `mobile_image` is set — feeds the mobile `<source media="(max-width: 47.99rem)">` |
 
 Ladders are pixel-density-aware via the browser's selection algorithm — a 1024-CSS-px request on a 2× display picks the 2048-or-larger candidate when the browser supports DPR-aware `srcset`.
 
@@ -137,10 +137,6 @@ Per `validation-contract.md` Tier 1b / Tier 2 boundary (utility-shape snippet co
 - **LQIP / blur-up placeholders** — Shopify ships server-side perceptual placeholders via the `image_tag` filter; custom blur-up flows (Mux-style, NextJS-style) are out of scope.
 - **Lazy-load polyfill** — the snippet uses native `loading="lazy"`. Older-engine compatibility is the consumer's call.
 - **Image transformation params** (`crop: 'center'`, `format: 'webp'`, `padding_color: ...`) — Shopify's `image_url` supports these; the snippet doesn't expose them as args. Per-project consumers wrap the snippet or call `image_url` directly when transformation is needed.
-
-## Implementation-time decisions
-
-- The unused `full_widths` constant (defined but unreached in the current branch logic) was intended for a future "fallback ladder for direct calls without mobile_image but with custom sizing." Remove or rationalize on next touch.
 
 ## Related
 

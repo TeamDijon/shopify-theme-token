@@ -8,7 +8,7 @@
 
 **Implementation**: `snippets/video.liquid` v1.0.0 (render surface)
 
-**Reconciled**: 2026-05-31
+**Reconciled**: 2026-06-05
 
 **Reviewed**: pending
 
@@ -47,10 +47,10 @@ A sub-component primitive (no block). Block-backed consumers (`media.liquid`) pa
     {muted if atmosphere or content+autoplay}
     {controls if content+full}
     {loop if video_loop}
-    preload="none"
-    loading="lazy"
+    preload="<video_preload>"
+    loading="<loading>"
     poster="<video.preview_image | image_url: width: 1920>">
-    {<source media="(max-width: 47.99rem)" src="<mobile_video mp4 url>" type="video/mp4"> if mobile_video set}
+    {<source src="<mobile_video mp4 url>" media="(max-width: 47.99rem)" type="video/mp4"> if mobile_video set}
     <source src="<video mp4 url>" type="video/mp4">
   </video>
 </media-video>
