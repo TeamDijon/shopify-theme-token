@@ -10,7 +10,7 @@
 - `snippets/richtext.liquid` v1.2.1 (render surface)
 - `blocks/richtext.liquid` v1.2.0 (block schema + render call)
 
-**Reconciled**: 2026-05-31
+**Reconciled**: 2026-06-05
 
 **Reviewed**: pending
 
@@ -22,7 +22,10 @@
 
 Long-form rich-text primitive. Renders a `<div>` wrapping a Shopify `richtext` setting's output (multiple paragraphs, lists, links, em/strong inline styling). Distinguishes from `title` by intent: richtext is the body-text companion that always carries the `prose` utility-modifier — `@layer utilities` rules apply paragraph spacing, list bullets, link underlines, and other typographic affordances appropriate for multi-paragraph bodies.
 
-Narrow-column readability (the ~65ch line-length sweet spot) is expressed via the `content_width` metaobject — a project seeds a `text-narrow` entry sized for prose readability and merchants pick it per-block. The `narrow` checkbox shipped in v1.0 was dropped in v1.2.0 since it overlapped with `content_width`; one setting expresses the same intent.
+<!-- REVIEW: Spec - Per template:design-principle-upfront-purpose, would the Purpose lead better with the "opts into the global prose substrate" principle? Currently this lands in sentence 3 of ¶1. Draft: "The body-text companion to `title` — always opts into the substrate's `prose` utility modifier so paragraph spacing, list bullets, link underlines, and other multi-paragraph typographic affordances are applied globally from `@layer utilities` rather than re-declared per block. Renders a `<div>` wrapping a Shopify `richtext` setting's output (paragraphs, lists, links, em/strong inline styling)." Question: keep current framing, swap to draft, or split the difference? -->
+
+
+Narrow-column readability (the ~65ch line-length sweet spot) is expressed via the `content_width` metaobject — a project seeds a `text-narrow` entry sized for prose readability and merchants pick it per-block. One setting expresses the intent; there is no separate `narrow` toggle.
 
 ## API
 
@@ -142,7 +145,7 @@ Per `validation-contract.md` Tier 2 (theme-primitive).
 
 ## Out of scope
 
-- **Per-block prose variations** (`prose:narrow`, `prose:compact`) — the v1.2.0 cleanup removed the `narrow` checkbox; subsequent variations belong in `content_width` (for width) or in per-project utility modifiers (for spacing density). Adding `prose:<variant>` modifiers re-creates the overlap richtext just simplified.
+- **Per-block prose variations** (`prose:narrow`, `prose:compact`) — width concerns belong in `content_width`; spacing-density concerns belong in per-project utility modifiers. Adding `prose:<variant>` modifiers on this block would re-create the overlap `content_width` already covers.
 - **`text_style` setting** — body typography flows from the bare-tag binding for `<p>` (and nested headings). Overriding body typography per-block isn't supported; the consistency across pages is intentional. A per-project richtext-with-style block would extend this snippet.
 - **Markdown input** — the schema is `richtext` (Shopify HTML), not markdown. A markdown-input variant would be a separate primitive.
 - **Code-block / pre-formatted treatment** — Shopify's `richtext` input doesn't expose `<pre>`/`<code>`; the prose utility doesn't style them. Documentation-heavy themes would extend with a markdown primitive or a code-block block.

@@ -10,7 +10,7 @@
 - `snippets/button.liquid` v1.4.0 (render surface)
 - `blocks/button.liquid` v1.2.0 (block schema + render call)
 
-**Reconciled**: 2026-05-31 (paired with `utility--css-variables` v1.11.0 — dropped internal `--button-color-rgb` intermediate; outline-hover translucency migrates to `rgb(from var(--button-color) r g b / α)`. Contract-neutral — `--button-color-rgb` was never exposed.)
+**Reconciled**: 2026-06-05
 
 **Reviewed**: pending
 
@@ -91,7 +91,6 @@ Component-rooted on `.shopify-block--button`. Layered in `@layer components`. Va
 .shopify-block--button {
   /* Defaults: solid + primary appearance, no modifier required */
   --button-color: var(--color-role-primary);
-  --button-color-rgb: var(--color-role-primary-rgb);
   --button-on-color: var(--color-role-primary-button-text);
 
   --button-background: var(--button-color);
@@ -144,7 +143,6 @@ Button-specific vars defined in the snippet's stylesheet (overridable by per-pro
 | Variable | Purpose | Default |
 |---|---|---|
 | `--button-color` | Variant color token (drives bg + border for solid; fg for outline/link) | `var(--color-role-primary)` |
-| `--button-color-rgb` | Same token, rgb triplet form for `rgba()` hover/focus surfaces | `var(--color-role-primary-rgb)` |
 | `--button-on-color` | Foreground when sitting *on* the button color (solid family) | `var(--color-role-primary-button-text)` |
 | `--button-background` | Resolved background (family-controlled) | `var(--button-color)` |
 | `--button-foreground` | Resolved text/icon color (family-controlled) | `var(--button-on-color)` |
@@ -161,7 +159,7 @@ Button-specific vars defined in the snippet's stylesheet (overridable by per-pro
 - **Modifier composition.** `data-modifiers` carries up to two tokens — `button-style:<handle>` (when `button_style` is set) and `icon-position:end` (when icon is set AND position is `end`). The default `start` icon position emits no modifier; the absence is the default. Both tokens accumulate via the `modifier_list` builder, then route through `utility--modifiers` for emission. Blank list → no attribute (not `data-modifiers=""`).
 - **Per-project handle extension.** Token's base ship includes the 3×3 family/variant CSS in this snippet's stylesheet. Per-project, new handles are added in pairs: a `button_style` metaobject entry (gets the merchant a picker option) AND a matching `[data-modifiers*='button-style:<new-handle>']` rule (gets the merchant the styling). A handle present in the metaobject but missing CSS still emits the modifier on `data-modifiers`; with no variant override matching, the cascade leaves defaults in place and the button visually equals solid-primary — a development-time diagnostic signalling "CSS not yet added for this handle." In a properly-paired extension this state is transient (between adding the entry and authoring the rule); in production it indicates an incomplete extension.
 - **Touch target preservation in `link-*`.** The link family zeroes padding, border, and background — but keeps `--button-min-size: 2.75rem`. The visible footprint is text-link, but the *hit target* stays at 44×44, satisfying WCAG 2.5.5 (Target Size). Documented because a casual CSS reader sees padding zeroed and might assume the target shrinks too.
-- **Hover treatments per family.** `solid-*` darkens the bg via `color-mix(in oklab, var(--button-background), black 12%)`. `outline-*` adds a translucent tint of `--button-color` (uses the `-rgb` companion + `--opacity-subtle` fallback `0.05`). `link-*` reduces opacity to `0.75`, no background. All three differ deliberately — same intent (signal hover), shape-appropriate execution. Minimal by design — per-project button styles typically override the base ruleset wholesale; a future hover-state custom-property layer (`--button-background-hover`, `--button-foreground-hover`) is the additive path if "override hover only, keep base" becomes a real pattern.
+- **Hover treatments per family.** `solid-*` darkens the bg via `color-mix(in oklab, var(--button-background), black 12%)`. `outline-*` adds a translucent tint of `--button-color` via `rgb(from var(--button-color) r g b / var(--opacity-subtle, 0.05))` relative-color syntax — operates directly on `--button-color` without an intermediate `-rgb` triplet companion. `link-*` reduces opacity to `0.75`, no background. All three differ deliberately — same intent (signal hover), shape-appropriate execution. Minimal by design — per-project button styles typically override the base ruleset wholesale; a hover-state custom-property layer (`--button-background-hover`, `--button-foreground-hover`) is the additive path if "override hover only, keep base" becomes a real pattern.
 - **Reduced motion.** `transition: var(--duration-fast) var(--ease-out)` (substrate motion vars defined in `layer-theme.css`) zeroes to `0s` under `@media (prefers-reduced-motion)`. The hover treatment still fires; only the animation is suppressed.
 - **Focus ring.** `:focus-visible` outlines via `var(--color-role-focus-ring)` with `0.125rem` outline + `0.25rem` offset. Inherited from the scheme; no per-instance override.
 - **Block-rhythm integration.** The block's `margin-block-start` chain falls through per-instance settings → section's `--block-rhythm` → 0, courtesy of `utility--block-layout-vars`. A button placed without explicit top spacing inherits the section's rhythm; an authored value overrides it.
