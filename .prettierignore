@@ -12,3 +12,12 @@ package-lock.json
 
 # Working scaffolding
 BACKLOG.md
+
+# Editor-managed JSON — the Shopify theme editor / admin language editor rewrites
+# these on customization, so formatting them just fights the editor.
+templates/
+sections/*.json
+config/settings_data.json
+config/markets.json
+locales/
+!locales/en.default.json

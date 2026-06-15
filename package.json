@@ -9,6 +9,8 @@
   },
   "devDependencies": {
     "@shopify/cli": "^3.92.1",
-    "prettier": "^3.3.3"
+    "@shopify/prettier-plugin-liquid": "^1.10.3",
+    "prettier": "^3.3.3",
+    "prettier-plugin-multiline-arrays": "^4.1.9"
   }
 }
