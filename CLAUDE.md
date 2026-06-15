@@ -32,9 +32,9 @@ When using Playwright MCP tools, pass screenshot filenames with the path prefix 
 
 Stay under ~400 lines per Liquid edit (auto-loaded `**/*.liquid` rules + the matching convention for `snippets/`/`blocks/`/`sections/`). Trim or reorganize an existing rule before adding above the cap.
 
-### Current measurement (manually maintained — re-tally on any rule edit)
+### Current measurement (manually maintained — re-tally on any rule edit; `npm run check` verifies via `scripts/context-lint.mjs`)
 
-Tally as of 2026-05-27. Update the table when adding/removing/resizing rules in `.context/rules/`.
+Tally as of 2026-06-15. Update the table when adding/removing/resizing rules in `.context/rules/`.
 
 **Always-on for any Liquid edit** (`**/*.liquid` globs):
 
@@ -42,19 +42,17 @@ Tally as of 2026-05-27. Update the table when adding/removing/resizing rules in 
 |---|---|
 | `a11y-conventions.md` | 42 |
 | `liquid-array-building.md` | 37 |
-| `liquid-date-arithmetic.md` | 70 |
-| `liquid-date-translation.md` | 75 |
-| `liquid-filter-gotchas.md` | 20 |
+| `liquid-filter-gotchas.md` | 24 |
 | `liquid-object-construction.md` | 32 |
-| **Subtotal** | **276** |
+| **Subtotal** | **135** |
 
 **Plus the matching domain rule:**
 
 | Editing | Adds | Total |
 |---|---|---|
-| `snippets/*.liquid` | `snippet-convention.md` (84) | **360** |
-| `blocks/*.liquid` | `block-convention.md` (100) | **376** |
-| `sections/*.liquid` | `section-convention.md` (131) | **407** |
+| `snippets/*.liquid` | `snippet-convention.md` (84) | **219** |
+| `blocks/*.liquid` | `block-convention.md` (100) | **235** |
+| `sections/*.liquid` | `section-convention.md` (132) | **267** |
 
 **Non-Liquid edits** (no `**/*.liquid` group loads):
 
@@ -62,7 +60,7 @@ Tally as of 2026-05-27. Update the table when adding/removing/resizing rules in 
 |---|---|---|
 | `assets/*.js` | `js-asset-convention.md` | 53 |
 | `assets/icon-*.svg` | `icon-convention.md` | 71 |
-| `.context/docs/**`, `.context/rules/**` (`.md`) | `reference-voice.md` | 21 |
-| `.context/specs/**` (`.md`) | `reference-voice.md` (21) + `spec-convention.md` (119) | 140 |
+| `.context/docs/**`, `.context/rules/**`, `.context/specs/**` (`.md`) | `reference-voice.md` | 23 |
+| `.context/specs/**` (`.md`) | `reference-voice.md` (23) + `spec-convention.md` (169) | 192 |
 
-Section edits now sit slightly over the cap (407/~400). The recent +12 lines on section-convention.md include the container-patterns cross-reference plus linter reflow. Worth a trim pass when convenient — drop redundant intro lines or move the Example block to a separate doc.
+Date patterns (arithmetic + locale translation) moved out of the always-on set to `.context/docs/liquid-dates.md` — pulled on demand, not loaded on every Liquid edit. This dropped the section-edit total from 407 to 267, leaving headroom for the L2 / specialized-section rules to come.

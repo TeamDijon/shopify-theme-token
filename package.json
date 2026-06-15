@@ -4,7 +4,8 @@
   "scripts": {
     "dev": "npx shopify theme dev --environment development",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "check": "node scripts/context-lint.mjs && npx shopify theme check --fail-level error"
   },
   "devDependencies": {
     "@shopify/cli": "^3.92.1",
