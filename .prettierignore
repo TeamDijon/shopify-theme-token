@@ -1,7 +1,14 @@
 node_modules
 package-lock.json
 
+# Non-theme folders
 .context
 .shopify
 .github
 .vscode
+.claude
+.scripts
+.playwright-mcp
+
+# Working scaffolding
+BACKLOG.md

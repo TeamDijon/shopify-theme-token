@@ -1,12 +1,20 @@
+# Non-theme folders (tooling, knowledge layer, local state)
 .github
 .shopify
 .vscode
+.claude
+.context
+.scripts
+.playwright-mcp
 
 node_modules
 
+# Project config / scaffolding that isn't theme content
 package.json
+BACKLOG.md
+.env
+.mcp.json
 
 # Editor / atomic-write temp files (sed -i, write-file-atomic, etc.)
 **/sed*
 *.tmp.*
-

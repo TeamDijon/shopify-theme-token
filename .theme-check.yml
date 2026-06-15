@@ -1,6 +1,6 @@
 root: .
 
-ignore: [".github/", ".shopify/", ".vscode/", "node_modules/"]
+ignore: [".github/", ".shopify/", ".vscode/", ".claude/", ".context/", ".scripts/", ".playwright-mcp/", "node_modules/"]
 
 ParserBlockingScript:
   ignore: ["snippets/utility--asset-loader.liquid"]

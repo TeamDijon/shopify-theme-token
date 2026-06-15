@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * context-lint — mechanical drift checks for the `.context/` knowledge layer.
- * Zero dependencies. Run from the repo root: `node scripts/context-lint.mjs`.
+ * Zero dependencies. Run from the repo root: `node .scripts/context-lint.mjs`.
  *
  * Checks:
  *   1. pin    — spec `path vX.Y.Z` pins vs the referenced file's version header.

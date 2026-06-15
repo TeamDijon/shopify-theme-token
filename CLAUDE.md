@@ -32,7 +32,7 @@ When using Playwright MCP tools, pass screenshot filenames with the path prefix 
 
 Stay under ~400 lines per Liquid edit (auto-loaded `**/*.liquid` rules + the matching convention for `snippets/`/`blocks/`/`sections/`). Trim or reorganize an existing rule before adding above the cap.
 
-### Current measurement (manually maintained — re-tally on any rule edit; `npm run check` verifies via `scripts/context-lint.mjs`)
+### Current measurement (manually maintained — re-tally on any rule edit; `npm run check` verifies via `.scripts/context-lint.mjs`)
 
 Tally as of 2026-06-15. Update the table when adding/removing/resizing rules in `.context/rules/`.
 
