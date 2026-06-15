@@ -40,6 +40,14 @@ L0 — Theme-primitive (snippet)
 
 The general theme ships L0–L2, plus specialized sections that earn their place there (see below).
 
+## L2 — presets
+
+A preset is a saved composition of theme blocks, expressed as a preset entry in `sections/section.liquid` — no new Liquid code.
+
+**Discoverability.** Each preset carries a distinct name and a `category` key for picker grouping, drawn from the enum `banners` / `content` / `feature` / `layout` (attention surfaces / editorial bodies / repeating showcases / structural block presets). A generic section with no preset reads as an unlabeled "Section" in the editor, so the preset name and category carry the section's merchant-facing identity.
+
+**Portability.** Presets travel across stores, so preset JSON carries no store-scoped reference. A metaobject-picker setting (stored as a store-scoped GID) ships unset and falls through to the substrate default. A handle- or select-valued setting (`button-style:<handle>`, color-scheme handle) may be baked only to a seed-catalog entry — a handle Token seeds on every store — so the reference resolves anywhere.
+
 ## Beyond L2 — specialized section
 
 When a section's needs exceed what L2 can express cleanly, the implementation route is a specialized section — a bespoke section file with its own schema, dynamic-data ingestion, or business logic. Free of theme-block constraints; can host `paginate`, dynamic data sources, and logic that spans the section. No merchant composability inside the section itself.
@@ -83,7 +91,7 @@ Theme-section is a parametrizable implicit container — its `layout` setting pi
 - **Leaf-only** — section picks the layout preset; merchant adds blocks directly under the section. The implicit container provides the composition. Saves one nesting level. Fits the section's primary composition matching one of the layout presets.
 - **Wrapped** — merchant adds a `group` / `columns` block as the first (or only) child of an `column`-layout section, and that wrapper takes over composition. Fits nested composition (a row of columns where each column has its own children), per-wrapper customization (specific gap, color-scheme override on a subset), or container-style variants on a sub-region.
 
-Both compositions are first-class. The two are equivalent in vertical rhythm for matching layout choices; choose by what's needed beyond the rhythm. See `.context/docs/theme-root.md` § Leaf-vs-wrapped composition equivalence.
+Both compositions are first-class. Merchant-visible composition targets depth ≤3 (section → container → leaf); presets ship no deeper, and a need that requires deeper nesting routes to a specialized section. The two are equivalent in vertical rhythm for matching layout choices; choose by what's needed beyond the rhythm. See `.context/docs/theme-root.md` § Leaf-vs-wrapped composition equivalence.
 
 ## Render vs inline
 
@@ -107,15 +115,16 @@ Bottom-up order:
 
 Multiple "yes" at once means two layers — author one spec per layer added, on the same ticket, with the dependency order honored (L0 before its L1 wrapper, etc.).
 
-## L0 without L1 — snippet-only primitives
+## L0 without L1 — dynamic-data leaves
 
-A theme-primitive can ship as L0 alone, without a paired L1 block. The L1 block exists to expose configurable static content to merchants — but some primitives only make sense paired with dynamic data, where a standalone configurable block would be meaningless. These ship as L0 snippets consumed directly by specialized sections (Beyond L2). Earmarked primitives in this category:
+A theme-primitive can ship as L0 alone, without a paired L1 block, when it is a leaf whose content resolves only against dynamic data — a standalone configurable block would have nothing to configure, since the content comes from a variant, a `paginate` object, an article, or shop state. These ship as L0 snippets consumed directly by specialized sections (Beyond L2). Primitives in this category:
 
-- `disclosure` — `<details>/<summary>` markup. Consumed by a static FAQ section and a metaobject-driven FAQ section.
-- `hotspot` — positioned overlay marker. Consumed by a shoppable lookbook section that needs product GIDs per hotspot.
-- `marquee` — infinite horizontal scroll container. Consumed by sections fed by logo metaobjects, product feeds, or curated lists.
+- `price-with-compare` — current + compare-at price; reads variant fields.
+- `inventory-status` — stock-state pill; reads variant inventory.
+- `pagination` — page navigation; reads a `paginate` object.
+- `article-card` — blog tile; reads an article.
 
-None of the three ship today; they will land alongside their first consumer.
+A *container* primitive never qualifies here — it always has a curated static form (a merchant fills it with chosen children), so it earns an L1 container block whatever its dynamic incarnation. `hotspot` and `marquee` are L0 today with no consumer yet: their L1 container form lands with the first curated use, their data-fed form with the first dynamic section.
 
 ## Existing layer mapping
 
@@ -123,9 +132,9 @@ None of the three ship today; they will land alongside their first consumer.
 |---|---|
 | Substrate | metaobjects (11 types — `theme_color`, `gradient`, `typeface`, `font`, `text_style`, `content_width`, `icon`, `button_style`, `container_style`, `media_size`, `spacing`), color schemes, `utility--*` snippets, `layer-*.css` (per-layer substrate CSS files), JS modules (`base-component`, 4 managers, `utils`, `dom`, `core`) |
 | L0 — Theme-primitive | shipped: `image`, `icon`, `video`, `skip-to-content`, `validation--*`; render side of every L1 block. earmarked specs: `star-rating`, `badge`, `price-with-compare`, `form-field`, `article-card`, `inventory-status`, `pagination`, `payment-icons-strip`, `tooltip` |
-| L1 — Theme block | `title`, `richtext`, `button`, `media`, `group`, `columns`, `separator`, `spacer`, `embed` |
+| L1 — Theme block | shipped: `title`, `richtext`, `button`, `media`, `group`, `columns`, `separator`, `spacer`, `embed`. earmarked: `disclosure` (merchant-authored collapsibles; a FAQ section that repeats or metaobject-feeds them is Beyond-L2) |
 | L2 — Preset on `section.liquid` | `Section` (default empty composition) |
-| Beyond L2 | *None shipped yet; FAQ, collection grid, featured product earmarked for general theme* |
+| Beyond L2 | None shipped yet. Earmarked for the general theme: header, footer, announcement bar, main-product, main-collection (grid + pagination), cart, search, blog/article, 404, customer templates, FAQ, featured product. Specialized sections are the larger half of a production theme by section count; composition (L0–L2) owns the editorial/marketing surface. |
 
 ## Related
 
