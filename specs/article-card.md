@@ -14,7 +14,7 @@
 - Shopify `article` object (built-in)
 - `snippets/image.liquid` (responsive image renderer; shipped — see `image.md`)
 - Locale keys under `blog.article_card.*`
-- Localized-date pattern per `.context/rules/liquid-date-translation.md`
+- Localized-date pattern per `.context/docs/liquid-dates.md`
 - Scheme-role tokens + design constants (`--color-role-foreground-muted`, `--color-role-primary`, `--radius-default`, `--duration-slow`, `--ease-out`)
 
 **Consumers**:
@@ -172,7 +172,7 @@ Component-rooted per `css-standards.md` — no BEM, descendants via `& .name`:
 ## Behavior
 
 - **Excerpt resolution.** When `article.excerpt` is set (the merchant filled in a custom excerpt in Shopify admin), use it verbatim. Otherwise, fall back to `article.content | strip_html | truncatewords: excerpt_word_limit`. Strip-html removes inline formatting; truncatewords cuts at word boundaries (Shopify's filter adds `…` per its `:append` parameter, default ellipsis). When even `article.content` is blank, the excerpt is empty — the `<p>` element is omitted entirely.
-- **Date localization.** Per `liquid-date-translation.md`: format with English `date: '%e %B %Y'` (or locale-suitable equivalent), then replace English month names with locale equivalents via the `dates.months.*` keys. The `datetime` attribute carries machine-readable ISO `%Y-%m-%d` for crawlers + assistive tech.
+- **Date localization.** Per `liquid-dates.md` § Translation: format with English `date: '%e %B %Y'` (or locale-suitable equivalent), then replace English month names with locale equivalents via the `dates.months.*` keys. The `datetime` attribute carries machine-readable ISO `%Y-%m-%d` for crawlers + assistive tech.
 - **Heading level interpolation.** The `heading_level` arg renders inline as both the opening and closing tag. Caller's responsibility to pass a valid heading (`h2`–`h6`); off-list values would render invalid HTML. The snippet doesn't validate (Liquid can't gate dynamic tag names cleanly); validation lives at the consumer level.
 - **Pseudo-overlay link.** Single anchor on the title; `::after` makes the whole card clickable without nesting interactive content. Screen readers announce one link (the title); pointer users click anywhere on the card. The pseudo is `content: ''` (empty string) — semantically inert, doesn't disrupt the page text content.
 - **Image opt-out and absence handling.** Two independent conditions hide the media region: (1) `show_image: false` (consumer opts out), (2) `article.image` is blank (article has no image). When either is true, the entire `.card-media` element is omitted. No placeholder fallback — an article without an image is rendered as a text-only card.
@@ -253,7 +253,7 @@ Per `validation-contract.md` Tier 2 (theme-primitive — snippet-half).
 
 - `image.md` — responsive image primitive consumed for the media region
 - `badge.md` — sibling primitive consumers compose for category / tag pills on the card
-- `.context/rules/liquid-date-translation.md` — localized-date pattern used for the visible date text
+- `.context/docs/liquid-dates.md` — localized-date pattern used for the visible date text
 - `.context/docs/locale-conventions.md` — locale file structure
 - `.context/rules/a11y-conventions.md` — `<article>` landmark, hover gating to pointer devices, image alt-text conventions
 - `design-constants.md` — `--radius-default`, `--duration-slow`, `--ease-out` consumed for the card visuals

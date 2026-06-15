@@ -90,6 +90,7 @@ Two flavors:
 - `subgrid-migration.md` — historical record of the structural overhaul
 - `container-patterns.md` — gutter / gap / inner padding model
 - `locale-conventions.md` — locale file structure
+- `liquid-dates.md` — Liquid date arithmetic + locale-aware date translation
 - `schema-conventions.md` — Shopify schema patterns
 - `specialized-section-pattern.md` — Bucket B section authoring
 - `versioning-and-changelog.md` — version/changelog discipline
@@ -107,7 +108,7 @@ Per-file-type authoring conventions:
 - `reference-voice.md` — doc / spec / rule voice (declarative, no journey residue)
 - `a11y-conventions.md` — accessibility patterns
 - `icon-convention.md` — SVG icon authoring
-- `liquid-*.md` — Liquid idiom rules (array building, date arithmetic, etc.)
+- `liquid-*.md` — Liquid idiom rules (array building, object construction, filter gotchas)
 
 Rules are loaded by globs (per the rule's frontmatter); editing a matching file pulls the rule into agent context automatically.
 

@@ -18,3 +18,7 @@ Prior regression: `utility--css-minifier` v1.1.0 migrated its whitespace pass to
 ## Verifying filter behavior
 
 Before relying on a filter, run a 30-second sanity check: `{{ '  a   b  ' | <filter> | prepend: '[' | append: ']' }}`.
+
+## Dates
+
+Liquid has no date arithmetic, and `date` emits English month and day names regardless of locale. See `.context/docs/liquid-dates.md` for the timestamp-math and translation-replacement patterns.
