@@ -2,6 +2,7 @@
 paths:
   - ".context/docs/**/*.md"
   - ".context/rules/**/*.md"
+  - ".context/specs/**/*.md"
 ---
 
 # Reference voice
