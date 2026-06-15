@@ -29,6 +29,8 @@ Implementation reads better starting from a reviewed spec — the spec-review ph
 
 This is an informational gate, not a formal precondition. The developer's confirmation routes the flow.
 
+**Standing pre-authorization — retrofits.** When the spec retrofits already-shipped code (`Status: shipped`, `Reviewed: pending`), option (b) is pre-authorized: proceed without surfacing the gate. The shipped file already anchors the contract, so an unreviewed retrofit spec carries low risk — implementation only reconciles file to spec. The gate fires only for first-builds (`Status: spec`, no shipped implementation), where the spec is the sole contract anchor and a review pass meaningfully de-risks the build.
+
 ## Checklist
 
 1. **Read the spec end-to-end.** Note every section that informs the implementation: API, Output shape, CSS, CSS custom properties, Behavior, Locale keys, Validation matrix (informs the API surface to exercise).
