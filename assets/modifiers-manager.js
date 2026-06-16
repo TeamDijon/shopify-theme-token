@@ -8,7 +8,7 @@
  * - v1.0.0 — initial
  */
 
-const ATTRIBUTE_NAME = "data-modifiers";
+const ATTRIBUTE_NAME = 'data-modifiers';
 
 /**
  * Reads and mutates the `data-modifiers` attribute on an element.
@@ -30,11 +30,11 @@ export class ModifiersManager {
 
     return this.element
       .getAttribute(ATTRIBUTE_NAME)
-      .split(",")
+      .split(',')
       .map((modifier) => modifier.trim())
       .filter(Boolean)
       .map((raw) => {
-        const colonIndex = raw.indexOf(":");
+        const colonIndex = raw.indexOf(':');
         if (colonIndex === -1) return { key: raw, value: null, raw };
         return {
           key: raw.substring(0, colonIndex),
@@ -49,7 +49,7 @@ export class ModifiersManager {
    * @param {Array} parsed
    * @returns {string}
    */
-  #serialize = (parsed) => parsed.map((m) => m.raw).join(", ");
+  #serialize = (parsed) => parsed.map((m) => m.raw).join(', ');
 
   /**
    * Checks if the element has a specific modifier key.
@@ -69,7 +69,7 @@ export class ModifiersManager {
 
     const toAdd = modifiers
       .map((raw) => {
-        const colonIndex = raw.indexOf(":");
+        const colonIndex = raw.indexOf(':');
         if (colonIndex === -1) return { key: raw, value: null, raw };
         return {
           key: raw.substring(0, colonIndex),
@@ -108,7 +108,7 @@ export class ModifiersManager {
    * @returns {this}
    */
   set = (modifier, condition) => {
-    const key = modifier.split(":")[0];
+    const key = modifier.split(':')[0];
     return condition ? this.add(modifier) : this.remove(key);
   };
 
@@ -118,7 +118,7 @@ export class ModifiersManager {
    * @returns {this}
    */
   toggle = (modifier) => {
-    const key = modifier.split(":")[0];
+    const key = modifier.split(':')[0];
     return this.set(modifier, !this.has(key));
   };
 

@@ -27,15 +27,15 @@ export class ObserversManager {
     let observer;
 
     switch (type) {
-      case "resize":
+      case 'resize':
         observer = new ResizeObserver(handler);
         observer.observe(element, options);
         break;
-      case "intersection":
+      case 'intersection':
         observer = new IntersectionObserver(handler, options);
         observer.observe(element);
         break;
-      case "mutation":
+      case 'mutation':
         observer = new MutationObserver(handler);
         observer.observe(element, options);
         break;

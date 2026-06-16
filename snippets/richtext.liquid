@@ -51,7 +51,12 @@
   endcapture
 %}
 
-<div class="shopify-block shopify-block--richtext" id="{{ base_selector }}" {{ block.shopify_attributes }} {{ modifiers }}>
+<div
+  class="shopify-block shopify-block--richtext"
+  id="{{ base_selector }}"
+  {{ block.shopify_attributes }}
+  {{ modifiers }}
+>
   {{ content }}
 
   {% capture dynamic_style %}

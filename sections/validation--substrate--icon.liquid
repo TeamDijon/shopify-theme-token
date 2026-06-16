@@ -34,12 +34,10 @@
   <header class="validation__intro">
     <h1>Icon</h1>
     <p>
-      Source: <code>metaobjects.icon.values</code>. Rendered via the
-      <code>icon</code> snippet, which inlines
-      <code>assets/icon-&lt;file_name&gt;.svg</code>. Each row tests one
-      entry at four sizes and four colors. An empty cell signals a missing
-      asset; a uniformly-coloured colour row signals a hardcoded fill in
-      the SVG source rather than <code>currentColor</code>.
+      Source: <code>metaobjects.icon.values</code>. Rendered via the <code>icon</code> snippet, which inlines
+      <code>assets/icon-&lt;file_name&gt;.svg</code>. Each row tests one entry at four sizes and four colors. An empty
+      cell signals a missing asset; a uniformly-coloured colour row signals a hardcoded fill in the SVG source rather
+      than <code>currentColor</code>.
     </p>
   </header>
 
@@ -105,9 +103,7 @@
         </div>
       </li>
     {% else %}
-      <li class="icon-suite__empty">
-        No <code>icon</code> metaobject entries defined.
-      </li>
+      <li class="icon-suite__empty">No <code>icon</code> metaobject entries defined.</li>
     {% endfor %}
   </ol>
 </token-section>
@@ -283,19 +279,35 @@
       }
 
       [data-axis='size'] .icon-cell {
-        &[data-size='sm'] { --icon-size: 1rem; }
-        &[data-size='md'] { --icon-size: 1.5rem; }
-        &[data-size='lg'] { --icon-size: 3rem; }
-        &[data-size='xl'] { --icon-size: 5rem; }
+        &[data-size='sm'] {
+          --icon-size: 1rem;
+        }
+        &[data-size='md'] {
+          --icon-size: 1.5rem;
+        }
+        &[data-size='lg'] {
+          --icon-size: 3rem;
+        }
+        &[data-size='xl'] {
+          --icon-size: 5rem;
+        }
       }
 
       [data-axis='color'] .icon-cell {
         --icon-size: 2.5rem;
 
-        &[data-color='foreground'] { color: var(--color-role-foreground); }
-        &[data-color='primary'] { color: var(--color-role-primary); }
-        &[data-color='muted'] { color: var(--color-role-foreground-muted); }
-        &[data-color='literal'] { color: #cc0033; }
+        &[data-color='foreground'] {
+          color: var(--color-role-foreground);
+        }
+        &[data-color='primary'] {
+          color: var(--color-role-primary);
+        }
+        &[data-color='muted'] {
+          color: var(--color-role-foreground-muted);
+        }
+        &[data-color='literal'] {
+          color: #cc0033;
+        }
       }
     }
   }

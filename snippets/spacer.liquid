@@ -9,7 +9,8 @@
 {% endcomment %}
 
 {% doc %}
-  @description Renders a spacer div with responsive block-size and optional background color. Either one fixed size (no breakpoint) or a mobile/desktop pair that switches at the selected breakpoint.
+  @description
+  Renders a spacer div with responsive block-size and optional background color. Either one fixed size (no breakpoint) or a mobile/desktop pair that switches at the selected breakpoint.
 
   **Intended scope:** vertical-rhythm block at the section level. Don't place inside a row-direction `group` — the spacer's `inline-size: 100%` will claim the full row and squish siblings. (Inside column-direction containers it works fine.)
 
@@ -46,7 +47,12 @@
   endcapture
 %}
 
-<div class="shopify-block shopify-block--spacer" id="{{ base_selector }}" {{ block.shopify_attributes }} {{ modifiers }}>
+<div
+  class="shopify-block shopify-block--spacer"
+  id="{{ base_selector }}"
+  {{ block.shopify_attributes }}
+  {{ modifiers }}
+>
   {% capture dynamic_style %}
     {% if spacer_block_size and spacer_block_size > 0 and breakpoint == 'none' %}
       --spacer-block-size: {{ spacer_block_size | divided_by: 16.0 | round: 3 }}rem;

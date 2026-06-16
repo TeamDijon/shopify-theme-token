@@ -39,12 +39,10 @@
   <header class="validation__intro">
     <h1>Media size</h1>
     <p>
-      Source: <code>metaobjects.media_size.values</code>. Consumed by
-      the <code>media</code> snippet, which emits a
-      <code>sizing:&lt;mode&gt;</code> modifier for the wrapper's CSS
-      to match. Each row renders one metaobject entry through the real
-      media snippet (no image — the snippet's built-in placeholder fills
-      in) so the resolved sizing rule is what you see.
+      Source: <code>metaobjects.media_size.values</code>. Consumed by the <code>media</code> snippet, which emits a
+      <code>sizing:&lt;mode&gt;</code> modifier for the wrapper's CSS to match. Each row renders one metaobject entry
+      through the real media snippet (no image — the snippet's built-in placeholder fills in) so the resolved sizing
+      rule is what you see.
     </p>
   </header>
 
@@ -79,17 +77,11 @@
         </header>
 
         <div class="media-size-row__sample">
-          {% render 'media',
-            section: section,
-            block_id: handle,
-            media_size: media_size
-          %}
+          {% render 'media', section: section, block_id: handle, media_size: media_size %}
         </div>
       </li>
     {% else %}
-      <li class="media-size-suite__empty">
-        No <code>media_size</code> metaobject entries defined.
-      </li>
+      <li class="media-size-suite__empty">No <code>media_size</code> metaobject entries defined.</li>
     {% endfor %}
   </ol>
 </token-section>

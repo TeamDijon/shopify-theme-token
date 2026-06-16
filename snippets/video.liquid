@@ -1,7 +1,8 @@
 {% # Video v1.0.0 %}
 
 {% doc %}
-  @description Renders a `<video>` element wrapped in `<media-video>`, with optional mobile art direction and configurable playback flags. Reads the mp4 source URL directly from `video.sources` (not via regex extraction from `video_tag` output) — Shopify's `video.sources` array exposes per-format URLs cleanly.
+  @description
+  Renders a `<video>` element wrapped in `<media-video>`, with optional mobile art direction and configurable playback flags. Reads the mp4 source URL directly from `video.sources` (not via regex extraction from `video_tag` output) — Shopify's `video.sources` array exposes per-format URLs cleanly.
 
   Two playback profiles via `video_mode`:
   - `atmosphere` — autoplay + muted + no controls + loop. Decorative background.
@@ -69,10 +70,18 @@
 <media-video>
   <video
     playsinline
-    {% if autoplay %}autoplay{% endif %}
-    {% if muted %}muted{% endif %}
-    {% if controls %}controls{% endif %}
-    {% if video_loop %}loop{% endif %}
+    {% if autoplay %}
+      autoplay
+    {% endif %}
+    {% if muted %}
+      muted
+    {% endif %}
+    {% if controls %}
+      controls
+    {% endif %}
+    {% if video_loop %}
+      loop
+    {% endif %}
     preload="{{ video_preload }}"
     loading="{{ loading }}"
     poster="{{ video_poster | escape }}"

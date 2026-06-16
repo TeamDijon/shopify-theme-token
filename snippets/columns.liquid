@@ -83,7 +83,12 @@
   endcapture
 %}
 
-<div class="shopify-block shopify-block--columns" id="{{ base_selector }}" {{ block.shopify_attributes }} {{ modifiers }}>
+<div
+  class="shopify-block shopify-block--columns"
+  id="{{ base_selector }}"
+  {{ block.shopify_attributes }}
+  {{ modifiers }}
+>
   <token-layout>
     {{ contents }}
   </token-layout>
@@ -175,22 +180,34 @@
 
     /* Re-enable sticky inside the same @container queries that re-enable the grid. */
     @container columns (inline-size >= 40rem) {
-      .shopify-block--columns[data-modifiers*='stack-below:40'][data-modifiers*='sticky-track:first'] > token-layout > :first-child,
-      .shopify-block--columns[data-modifiers*='stack-below:40'][data-modifiers*='sticky-track:second'] > token-layout > :last-child {
+      .shopify-block--columns[data-modifiers*='stack-below:40'][data-modifiers*='sticky-track:first']
+        > token-layout
+        > :first-child,
+      .shopify-block--columns[data-modifiers*='stack-below:40'][data-modifiers*='sticky-track:second']
+        > token-layout
+        > :last-child {
         position: sticky;
       }
     }
 
     @container columns (inline-size >= 60rem) {
-      .shopify-block--columns[data-modifiers*='stack-below:60'][data-modifiers*='sticky-track:first'] > token-layout > :first-child,
-      .shopify-block--columns[data-modifiers*='stack-below:60'][data-modifiers*='sticky-track:second'] > token-layout > :last-child {
+      .shopify-block--columns[data-modifiers*='stack-below:60'][data-modifiers*='sticky-track:first']
+        > token-layout
+        > :first-child,
+      .shopify-block--columns[data-modifiers*='stack-below:60'][data-modifiers*='sticky-track:second']
+        > token-layout
+        > :last-child {
         position: sticky;
       }
     }
 
     @container columns (inline-size >= 80rem) {
-      .shopify-block--columns[data-modifiers*='stack-below:80'][data-modifiers*='sticky-track:first'] > token-layout > :first-child,
-      .shopify-block--columns[data-modifiers*='stack-below:80'][data-modifiers*='sticky-track:second'] > token-layout > :last-child {
+      .shopify-block--columns[data-modifiers*='stack-below:80'][data-modifiers*='sticky-track:first']
+        > token-layout
+        > :first-child,
+      .shopify-block--columns[data-modifiers*='stack-below:80'][data-modifiers*='sticky-track:second']
+        > token-layout
+        > :last-child {
         position: sticky;
       }
     }

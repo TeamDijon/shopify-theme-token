@@ -13,7 +13,8 @@
 {% endcomment %}
 
 {% doc %}
-  @description Renders a media container (image or video) with optional art direction, sizing modes, responsive bleed, color-scheme override, overlay tint, and overlaid child blocks. Sizing is driven by the `media_size` metaobject (`fill` / `ratio` / `relative` / `fixed`) and emitted as a `sizing:*` modifier consumed by the stylesheet. Child content is captured by the block file via `{% content_for 'blocks' %}` and passed in as `contents`.
+  @description
+  Renders a media container (image or video) with optional art direction, sizing modes, responsive bleed, color-scheme override, overlay tint, and overlaid child blocks. Sizing is driven by the `media_size` metaobject (`fill` / `ratio` / `relative` / `fixed`) and emitted as a `sizing:*` modifier consumed by the stylesheet. Child content is captured by the block file via `{% content_for 'blocks' %}` and passed in as `contents`.
 
   Bleed is declared via `bleed_desktop` / `bleed_mobile` enums and resolved by the section's named-line bleed grid (per the subgrid migration). Bleed only fires when the media block is a direct child of `<token-section>` — nested-inside-container media positions in its container's layout instead.
 
@@ -150,10 +151,7 @@
       video_loop: video_loop
     %}
   {% elsif media_type == 'image' %}
-    {% render 'image',
-      image: image,
-      mobile_image: mobile_image
-    %}
+    {% render 'image', image: image, mobile_image: mobile_image %}
   {% endif %}
 
   {% if has_overlay %}

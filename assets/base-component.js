@@ -9,10 +9,10 @@
  * - v1.0.0 — initial
  */
 
-import { EventsManager } from "@theme/events-manager";
-import { ObserversManager } from "@theme/observers-manager";
-import { CacheManager } from "@theme/cache-manager";
-import { ModifiersManager } from "@theme/modifiers-manager";
+import { EventsManager } from '@theme/events-manager';
+import { ObserversManager } from '@theme/observers-manager';
+import { CacheManager } from '@theme/cache-manager';
+import { ModifiersManager } from '@theme/modifiers-manager';
 
 /**
  * Base class for custom elements in the theme library.
@@ -80,14 +80,14 @@ export class BaseComponent extends HTMLElement {
    * @returns {HTMLElement|null} The closest parent section element or null if not found.
    */
   get section() {
-    return this.cache.get("dom", "section", () => {
-      const section = this.closest(".shopify-section");
+    return this.cache.get('dom', 'section', () => {
+      const section = this.closest('.shopify-section');
       if (!section) {
-        console.warn("No parent section found for component:", this);
+        console.warn('No parent section found for component:', this);
       }
       return section;
     });
   }
 }
 
-window.customElements.define("token-section", BaseComponent);
+window.customElements.define('token-section', BaseComponent);

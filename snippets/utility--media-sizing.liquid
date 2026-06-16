@@ -7,7 +7,8 @@
 {% endcomment %}
 
 {% doc %}
-  @description Centralizes `media_size` / `mobile_media_size` metaobject interpretation for media-like blocks (media, embed, cards). Classifies the size into `fill` / `ratio` / `height` and emits either the `sizing:*` modifier token or the matching CSS custom properties, selected by `output`. Keeps the fill special-case + mobile override in one place so consumers don't drift.
+  @description
+  Centralizes `media_size` / `mobile_media_size` metaobject interpretation for media-like blocks (media, embed, cards). Classifies the size into `fill` / `ratio` / `height` and emits either the `sizing:*` modifier token or the matching CSS custom properties, selected by `output`. Keeps the fill special-case + mobile override in one place so consumers don't drift.
 
   Emits a bare token (no leading comma) in `modifier` mode — the caller seeds it into its `modifier_list`. Returns nothing when `media_size` is blank or its type is unrecognized.
 

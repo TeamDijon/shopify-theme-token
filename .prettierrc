@@ -7,5 +7,8 @@
   "semi": true,
   "endOfLine": "lf",
   "plugins": ["@shopify/prettier-plugin-liquid", "prettier-plugin-multiline-arrays"],
-  "overrides": [{ "files": "**/*.json", "options": { "multilineArraysWrapThreshold": 0 } }]
+  "overrides": [
+    { "files": "**/*.json", "options": { "multilineArraysWrapThreshold": 0 } },
+    { "files": "**/*.liquid", "options": { "singleQuote": false } }
+  ]
 }

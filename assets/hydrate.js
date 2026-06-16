@@ -16,7 +16,7 @@
  * @returns {void}
  */
 export const hydrateOnVisible = (element, callback, options = {}) => {
-  const { rootMargin = "200px", root = null, threshold = 0 } = options;
+  const { rootMargin = '200px', root = null, threshold = 0 } = options;
 
   const observer = new IntersectionObserver(
     (entries) => {

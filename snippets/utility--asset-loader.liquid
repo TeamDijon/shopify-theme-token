@@ -8,7 +8,8 @@
 {% endcomment %}
 
 {% doc %}
-  @description Loads assets for a component with per-channel strategies. See `.context/docs/asset-loading.md` for strategy details.
+  @description
+  Loads assets for a component with per-channel strategies. See `.context/docs/asset-loading.md` for strategy details.
 
   Note: `css` and `js` accept `false` to skip that channel; the snippet's defaults chain uses `allow_false: true`. IDE LSP flags this as a type mismatch (theme-check's `ValidDocParamTypes` rejects union types like `string|boolean`), but the runtime behavior is documented and correct.
 

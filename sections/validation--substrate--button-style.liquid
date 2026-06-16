@@ -38,14 +38,11 @@
   <header class="validation__intro">
     <h1>Button style</h1>
     <p>
-      Source: <code>metaobjects.button_style.values</code>. Consumed by
-      the <code>button</code> snippet, which emits
-      <code>data-modifiers="button-style:&lt;handle&gt;"</code> for the
-      variant CSS to match. Each row exercises four snippet branches
-      (plain link, with icon, no link, new-tab link). Off-list handles
-      fall through to the default solid-primary appearance — the visual
-      itself tells you which rule matched. Hover or tab into a button to
-      validate states.
+      Source: <code>metaobjects.button_style.values</code>. Consumed by the <code>button</code> snippet, which emits
+      <code>data-modifiers="button-style:&lt;handle&gt;"</code> for the variant CSS to match. Each row exercises four
+      snippet branches (plain link, with icon, no link, new-tab link). Off-list handles fall through to the default
+      solid-primary appearance — the visual itself tells you which rule matched. Hover or tab into a button to validate
+      states.
     </p>
   </header>
 
@@ -64,7 +61,8 @@
         <div class="button-style-row__samples">
           <div class="button-style-cell">
             <div class="button-style-cell__sample">
-              {% render 'button',
+              {%
+                render 'button',
                 section: section,
                 block_id: handle | append: '-link',
                 content: 'Sample button',
@@ -77,7 +75,8 @@
 
           <div class="button-style-cell">
             <div class="button-style-cell__sample">
-              {% render 'button',
+              {%
+                render 'button',
                 section: section,
                 block_id: handle | append: '-icon',
                 content: 'With icon',
@@ -91,7 +90,8 @@
 
           <div class="button-style-cell">
             <div class="button-style-cell__sample">
-              {% render 'button',
+              {%
+                render 'button',
                 section: section,
                 block_id: handle | append: '-button',
                 content: 'No link',
@@ -103,7 +103,8 @@
 
           <div class="button-style-cell">
             <div class="button-style-cell__sample">
-              {% render 'button',
+              {%
+                render 'button',
                 section: section,
                 block_id: handle | append: '-newtab',
                 content: 'External',
@@ -117,9 +118,7 @@
         </div>
       </li>
     {% else %}
-      <li class="button-style-suite__empty">
-        No <code>button_style</code> metaobject entries defined.
-      </li>
+      <li class="button-style-suite__empty">No <code>button_style</code> metaobject entries defined.</li>
     {% endfor %}
   </ol>
 </token-section>

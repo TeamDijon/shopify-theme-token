@@ -39,11 +39,9 @@
     <h1>Text style</h1>
     <p>
       Source: <code>metaobjects.text_style.values</code>. Consumed via
-      <code>[data-modifiers*="text-style:&lt;handle&gt;"]</code> (and on bare
-      <code>h1</code>–<code>h6</code> when the handle matches). Each row
-      lists the raw metaobject fields and renders a pangram specimen so
-      a mismatch between metadata and rendered output flags a broken
-      pipeline.
+      <code>[data-modifiers*="text-style:&lt;handle&gt;"]</code> (and on bare <code>h1</code>–<code>h6</code> when the
+      handle matches). Each row lists the raw metaobject fields and renders a pangram specimen so a mismatch between
+      metadata and rendered output flags a broken pipeline.
     </p>
   </header>
 
@@ -98,9 +96,7 @@
         </p>
       </li>
     {% else %}
-      <li class="text-style-suite__empty">
-        No <code>text_style</code> metaobject entries defined.
-      </li>
+      <li class="text-style-suite__empty">No <code>text_style</code> metaobject entries defined.</li>
     {% endfor %}
   </ol>
 </token-section>

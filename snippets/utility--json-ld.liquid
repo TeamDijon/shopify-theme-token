@@ -6,7 +6,7 @@
   @param {string} schema - The JSON-LD object/graph as a string, typically from a `{% capture %}`.
 
   @example
-    {% capture faq %}{ "@context": "https://schema.org", "@type": "FAQPage" }{% endcapture %}
+  {% capture faq %}{ "@context": "https://schema.org", "@type": "FAQPage" }{% endcapture %}
     {% render 'utility--json-ld', schema: faq %}
 {% enddoc %}
 
@@ -16,4 +16,6 @@
   endif
   assign output = schema | strip_newlines | strip
 %}
-<script type="application/ld+json">{{ output }}</script>
+<script type="application/ld+json">
+  {{ output }}
+</script>

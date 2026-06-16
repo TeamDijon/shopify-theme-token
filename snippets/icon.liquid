@@ -11,7 +11,8 @@
 {% endcomment %}
 
 {% doc %}
-  @description Renders an icon SVG inline from `assets/icon-<name>.svg`. Two input typologies, picked by what the caller has on hand — neither is preferred over the other:
+  @description
+  Renders an icon SVG inline from `assets/icon-<name>.svg`. Two input typologies, picked by what the caller has on hand — neither is preferred over the other:
 
   - Caller has an `icon` metaobject reference (e.g. from a `"type": "metaobject"` schema setting, or `metaobjects.icon.<handle>`) → pass it as `icon`. The snippet reads `file_name` and `preset` from the metaobject's fields.
   - Caller has the filename string directly (typical for hardcoded icons in section/snippet markup) → pass it as `file_name`, optionally with `preset`.

@@ -58,7 +58,12 @@
   endcapture
 %}
 
-<{{ tag }} class="shopify-block shopify-block--title" id="{{ base_selector }}" {{ block.shopify_attributes }} {{ modifiers }}>
+<{{ tag }}
+  class="shopify-block shopify-block--title"
+  id="{{ base_selector }}"
+  {{ block.shopify_attributes }}
+  {{ modifiers }}
+>
   {% if icon and icon != blank %}
     {% render 'icon', icon: icon %}
   {% endif %}

@@ -38,29 +38,29 @@ Tally as of 2026-06-15. Update the table when adding/removing/resizing rules in 
 
 **Always-on for any Liquid edit** (`**/*.liquid` globs):
 
-| Rule | Lines |
-|---|---|
-| `a11y-conventions.md` | 42 |
-| `liquid-array-building.md` | 37 |
-| `liquid-filter-gotchas.md` | 24 |
-| `liquid-object-construction.md` | 32 |
-| **Subtotal** | **135** |
+| Rule                            | Lines   |
+| ------------------------------- | ------- |
+| `a11y-conventions.md`           | 42      |
+| `liquid-array-building.md`      | 37      |
+| `liquid-filter-gotchas.md`      | 24      |
+| `liquid-object-construction.md` | 32      |
+| **Subtotal**                    | **135** |
 
 **Plus the matching domain rule:**
 
-| Editing | Adds | Total |
-|---|---|---|
-| `snippets/*.liquid` | `snippet-convention.md` (84) | **219** |
-| `blocks/*.liquid` | `block-convention.md` (100) | **235** |
+| Editing             | Adds                          | Total   |
+| ------------------- | ----------------------------- | ------- |
+| `snippets/*.liquid` | `snippet-convention.md` (84)  | **219** |
+| `blocks/*.liquid`   | `block-convention.md` (100)   | **235** |
 | `sections/*.liquid` | `section-convention.md` (132) | **267** |
 
 **Non-Liquid edits** (no `**/*.liquid` group loads):
 
-| Editing | Rule | Lines |
-|---|---|---|
-| `assets/*.js` | `js-asset-convention.md` | 53 |
-| `assets/icon-*.svg` | `icon-convention.md` | 71 |
-| `.context/docs/**`, `.context/rules/**`, `.context/specs/**` (`.md`) | `reference-voice.md` | 23 |
-| `.context/specs/**` (`.md`) | `reference-voice.md` (23) + `spec-convention.md` (169) | 192 |
+| Editing                                                              | Rule                                                   | Lines |
+| -------------------------------------------------------------------- | ------------------------------------------------------ | ----- |
+| `assets/*.js`                                                        | `js-asset-convention.md`                               | 53    |
+| `assets/icon-*.svg`                                                  | `icon-convention.md`                                   | 71    |
+| `.context/docs/**`, `.context/rules/**`, `.context/specs/**` (`.md`) | `reference-voice.md`                                   | 23    |
+| `.context/specs/**` (`.md`)                                          | `reference-voice.md` (23) + `spec-convention.md` (169) | 192   |
 
 Date patterns (arithmetic + locale translation) moved out of the always-on set to `.context/docs/liquid-dates.md` — pulled on demand, not loaded on every Liquid edit. This dropped the section-edit total from 407 to 267, leaving headroom for the L2 / specialized-section rules to come.

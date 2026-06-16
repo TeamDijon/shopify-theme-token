@@ -1,7 +1,8 @@
 {% # Inline Asset v1.0.0 -%}
 
 {%- doc %}
-  @description Safe wrapper around `| inline_asset_content`. Returns nothing when input is blank or when the filter signals an error (missing asset / unsupported extension). Always prefer this over raw `inline_asset_content` — the raw filter crashes on blank input and emits a literal `<!-- inline_asset_content: ... -->` comment on error which is harmless in <style>, breaks ES modules in <script>, and renders empty in <svg>.
+  @description
+  Safe wrapper around `| inline_asset_content`. Returns nothing when input is blank or when the filter signals an error (missing asset / unsupported extension). Always prefer this over raw `inline_asset_content` — the raw filter crashes on blank input and emits a literal `<!-- inline_asset_content: ... -->` comment on error which is harmless in <style>, breaks ES modules in <script>, and renders empty in <svg>.
 
   Whitespace trim markers (`{%-` / `-%}`) are required on the structural tags so the snippet emits exactly the asset content (or nothing) — without them, captured output gains 5 newlines from the source layout, which leak into <style>/<svg> contexts.
 
@@ -9,7 +10,7 @@
 
   @example {% capture css %}{% render 'utility--inline-asset', asset_name: 'core.css' %}{% endcapture %}
   @example {% capture icon_markup %}{% render 'utility--inline-asset', asset_name: 'icon-chevron.svg' %}{% endcapture %}
-{% enddoc %}
+{%- enddoc %}
 
 {%- liquid
   if asset_name == blank

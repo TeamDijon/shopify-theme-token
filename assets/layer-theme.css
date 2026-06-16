@@ -26,7 +26,9 @@
     text-decoration: var(--base-text-decoration);
     text-wrap: pretty;
 
-    transition: background-color var(--duration-base) var(--ease-standard), color var(--duration-base) var(--ease-standard);
+    transition:
+      background-color var(--duration-base) var(--ease-standard),
+      color var(--duration-base) var(--ease-standard);
 
     @media (prefers-reduced-motion) {
       transition-duration: 0s;
@@ -119,20 +121,32 @@
   }
 
   /* Container style variants — applied to any container block (group, columns, media) carrying data-modifiers="container-style:<handle>". Centralized here so the three consumers share the same visual treatment; per-project CSS can extend or override. */
-  :where(.shopify-block--group, .shopify-block--columns, .shopify-block--media)[data-modifiers*='container-style:card'] {
+  :where(
+    .shopify-block--group,
+    .shopify-block--columns,
+    .shopify-block--media
+  )[data-modifiers*='container-style:card'] {
     padding: 1.5rem;
     border-radius: var(--radius-default);
     background-color: var(--color-role-background);
     box-shadow: 0 0.0625rem 0.1875rem rgba(0, 0, 0, 0.08);
   }
 
-  :where(.shopify-block--group, .shopify-block--columns, .shopify-block--media)[data-modifiers*='container-style:outlined'] {
+  :where(
+    .shopify-block--group,
+    .shopify-block--columns,
+    .shopify-block--media
+  )[data-modifiers*='container-style:outlined'] {
     padding: 1.5rem;
     border-radius: var(--radius-default);
     border: 0.0625rem solid var(--color-role-foreground);
   }
 
-  :where(.shopify-block--group, .shopify-block--columns, .shopify-block--media)[data-modifiers*='container-style:elevated'] {
+  :where(
+    .shopify-block--group,
+    .shopify-block--columns,
+    .shopify-block--media
+  )[data-modifiers*='container-style:elevated'] {
     padding: 1.5rem;
     border-radius: var(--radius-default);
     background-color: var(--color-role-background);

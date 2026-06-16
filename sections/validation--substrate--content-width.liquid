@@ -32,12 +32,10 @@
   <header class="validation__intro">
     <h1>Content width</h1>
     <p>
-      Source: <code>metaobjects.content_width.values</code>. Read by
-      consumers as <code>.width.value</code> (merchant-facing px),
-      converted to rem at emit time and written as the
-      <code>--content-width</code> CSS variable, which constrains the
-      element's <code>max-inline-size</code>. Each row renders a real
-      <code>title</code> snippet with the entry's <code>content_width</code>
+      Source: <code>metaobjects.content_width.values</code>. Read by consumers as
+      <code>.width.value</code> (merchant-facing px), converted to rem at emit time and written as the
+      <code>--content-width</code> CSS variable, which constrains the element's <code>max-inline-size</code>. Each row
+      renders a real <code>title</code> snippet with the entry's <code>content_width</code>
       and a long sample line; the wrap point is the visible signal.
     </p>
   </header>
@@ -66,9 +64,7 @@
         </div>
       </li>
     {% else %}
-      <li class="content-width-suite__empty">
-        No <code>content_width</code> metaobject entries defined.
-      </li>
+      <li class="content-width-suite__empty">No <code>content_width</code> metaobject entries defined.</li>
     {% endfor %}
   </ol>
 </token-section>

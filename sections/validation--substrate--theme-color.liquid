@@ -30,11 +30,9 @@
   <header class="validation__intro">
     <h1>Theme color</h1>
     <p>
-      Source: <code>metaobjects.theme_color.values</code>. Consumed via
-      <code>var(--color-&lt;handle&gt;)</code>. Each row renders one entry three
-      ways &mdash; as a background against itself, as a foreground on white, and
-      as a foreground on black. A failing entry is one where any swatch is
-      illegible.
+      Source: <code>metaobjects.theme_color.values</code>. Consumed via <code>var(--color-&lt;handle&gt;)</code>. Each
+      row renders one entry three ways &mdash; as a background against itself, as a foreground on white, and as a
+      foreground on black. A failing entry is one where any swatch is illegible.
     </p>
   </header>
 
@@ -74,9 +72,7 @@
         </div>
       </li>
     {% else %}
-      <li class="theme-color-suite__empty">
-        No <code>theme_color</code> metaobject entries defined.
-      </li>
+      <li class="theme-color-suite__empty">No <code>theme_color</code> metaobject entries defined.</li>
     {% endfor %}
   </ol>
 </token-section>

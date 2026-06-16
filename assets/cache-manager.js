@@ -12,7 +12,7 @@
  * Memoizes computed values by `(type, key)` pair. Common usage: cache `querySelector` results in a "dom" cache so each lookup only hits the DOM once per element lifetime.
  */
 export class CacheManager {
-  #caches = new Map([["dom", new Map()]]);
+  #caches = new Map([['dom', new Map()]]);
 
   /**
    * Returns the cached value for `(type, key)`, computing it via `computeFunction` on miss.

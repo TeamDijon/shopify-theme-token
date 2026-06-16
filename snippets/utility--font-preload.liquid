@@ -6,7 +6,8 @@
 {% endcomment %}
 
 {% doc %}
-  @description Preloads the base typeface's first woff2 so the browser starts the font fetch before the inlined @font-face block parses, cutting the FOUT swap delay. Emits nothing when no base typeface / woff2 is configured. `crossorigin` matches the @font-face fetch (Shopify's font CDN serves with CORS) so there's no double download, and the URL is the same `asset.url` that `utility--font-face` emits.
+  @description
+  Preloads the base typeface's first woff2 so the browser starts the font fetch before the inlined @font-face block parses, cutting the FOUT swap delay. Emits nothing when no base typeface / woff2 is configured. `crossorigin` matches the @font-face fetch (Shopify's font CDN serves with CORS) so there's no double download, and the URL is the same `asset.url` that `utility--font-face` emits.
 
   Depends on: `settings.base_text_style` → `typeface` → `font` → `asset_list` (see `utility--font-face`).
 

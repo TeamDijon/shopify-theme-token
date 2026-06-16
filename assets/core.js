@@ -14,35 +14,35 @@
  */
 
 // Utilities
-export { getRootFontSize, throttle, debounce } from "@theme/utils";
+export { getRootFontSize, throttle, debounce } from '@theme/utils';
 
 // DOM
-export { dom } from "@theme/dom";
+export { dom } from '@theme/dom';
 
 // Document-level singletons
-export { documentModifiers, documentScroll, documentScrollbar } from "@theme/document-utils";
+export { documentModifiers, documentScroll, documentScrollbar } from '@theme/document-utils';
 
 // Managers
-export { EventsManager } from "@theme/events-manager";
-export { ObserversManager } from "@theme/observers-manager";
-export { CacheManager } from "@theme/cache-manager";
-export { ModifiersManager } from "@theme/modifiers-manager";
+export { EventsManager } from '@theme/events-manager';
+export { ObserversManager } from '@theme/observers-manager';
+export { CacheManager } from '@theme/cache-manager';
+export { ModifiersManager } from '@theme/modifiers-manager';
 
 // Components
-export { BaseComponent } from "@theme/base-component";
-export { TokenLayout } from "@theme/token-layout";
+export { BaseComponent } from '@theme/base-component';
+export { TokenLayout } from '@theme/token-layout';
 
 // ---- window.Token namespace (theme-scoped globals for inline scripts + Liquid) ----
 
-import { getRootFontSize, throttle, debounce } from "@theme/utils";
-import { dom } from "@theme/dom";
-import { documentModifiers, documentScroll, documentScrollbar } from "@theme/document-utils";
-import { EventsManager } from "@theme/events-manager";
-import { ObserversManager } from "@theme/observers-manager";
-import { CacheManager } from "@theme/cache-manager";
-import { ModifiersManager } from "@theme/modifiers-manager";
-import { BaseComponent } from "@theme/base-component";
-import { TokenLayout } from "@theme/token-layout";
+import { getRootFontSize, throttle, debounce } from '@theme/utils';
+import { dom } from '@theme/dom';
+import { documentModifiers, documentScroll, documentScrollbar } from '@theme/document-utils';
+import { EventsManager } from '@theme/events-manager';
+import { ObserversManager } from '@theme/observers-manager';
+import { CacheManager } from '@theme/cache-manager';
+import { ModifiersManager } from '@theme/modifiers-manager';
+import { BaseComponent } from '@theme/base-component';
+import { TokenLayout } from '@theme/token-layout';
 
 window.Token = window.Token || {};
 
@@ -74,11 +74,11 @@ window.Token.components.TokenLayout = TokenLayout;
  * @fires theme:ready - Custom event dispatched when the library is initialized.
  */
 window.Token.init = () => {
-  window.dispatchEvent(new CustomEvent("theme:ready"));
+  window.dispatchEvent(new CustomEvent('theme:ready'));
 };
 
-if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", window.Token.init);
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', window.Token.init);
 } else {
   window.Token.init();
 }

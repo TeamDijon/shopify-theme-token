@@ -10,7 +10,7 @@
 
 export const dom = {
   get pageContent() {
-    const element = document.getElementById("page_content");
+    const element = document.getElementById('page_content');
     if (!element) {
       console.warn("Element with ID 'page_content' not found.");
     }

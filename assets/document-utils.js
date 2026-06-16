@@ -4,7 +4,7 @@
  * @version 1.0.0
  */
 
-import { ModifiersManager } from "@theme/modifiers-manager";
+import { ModifiersManager } from '@theme/modifiers-manager';
 
 /**
  * Singleton ModifiersManager bound to document.documentElement. Components manipulating html-level state (locked-scroll, theme switches, locale flags) read and mutate through this.
@@ -18,22 +18,19 @@ export const documentModifiers = new ModifiersManager(document.documentElement);
  */
 export const documentScroll = {
   get isLocked() {
-    return documentModifiers.has("locked-scroll");
+    return documentModifiers.has('locked-scroll');
   },
 
   set isLocked(value) {
     if (value) {
-      document.documentElement.style.scrollBehavior = "auto";
+      document.documentElement.style.scrollBehavior = 'auto';
       document.documentElement.style.insetBlockStart = `-${window.scrollY}px`;
 
-      documentModifiers.add("locked-scroll");
+      documentModifiers.add('locked-scroll');
     } else {
-      documentModifiers.remove("locked-scroll");
+      documentModifiers.remove('locked-scroll');
 
-      window.scrollTo(
-        0,
-        -1 * parseInt(document.documentElement.style.insetBlockStart),
-      );
+      window.scrollTo(0, -1 * parseInt(document.documentElement.style.insetBlockStart));
       document.documentElement.style.insetBlockStart = null;
       document.documentElement.style.scrollBehavior = null;
     }
@@ -48,16 +45,12 @@ export const documentScrollbar = (() => {
 
   return {
     get width() {
-      const scrollbarWidth =
-        window.innerWidth - document.documentElement.clientWidth;
+      const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
       return Math.max(scrollbarWidth, 0);
     },
 
     updateWidth() {
-      document.documentElement.style.setProperty(
-        "--scrollbar-width",
-        `${this.width}px`,
-      );
+      document.documentElement.style.setProperty('--scrollbar-width', `${this.width}px`);
     },
 
     observeWidth() {

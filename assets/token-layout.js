@@ -19,4 +19,4 @@
  */
 export class TokenLayout extends HTMLElement {}
 
-window.customElements.define("token-layout", TokenLayout);
+window.customElements.define('token-layout', TokenLayout);
