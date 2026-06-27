@@ -74,6 +74,7 @@ Two flavors:
 - `architecture.md` — codebase layout
 - `knowledge-architecture.md` — this doc (knowledge layout)
 - `composition-strategy.md` — layer model + per-section decision flow
+- `dev-environment.md` — serve / deploy / metaobject-provisioning runbook
 
 **Pattern docs** — patterns referenced from 2+ specs or rules:
 - `css-standards.md` — cascade layers, specificity discipline, focus / motion, unit choice
