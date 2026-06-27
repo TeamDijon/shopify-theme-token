@@ -6,7 +6,7 @@
 
 **Status**: shipped
 
-**Implementation**: `sections/section.liquid` v1.9.0 (render surface + schema)
+**Implementation**: `sections/section.liquid` v1.9.1 (render surface + schema)
 
 **Reconciled**: 2026-06-27 (v1.9.0 — color scheme gated by the new `custom_color_scheme` checkbox: `color-scheme:<id>` emitted only when on, else the section rides the global scheme; v1.8.x added the four presets + baked seed handles)
 

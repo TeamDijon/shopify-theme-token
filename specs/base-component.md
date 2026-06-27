@@ -20,7 +20,7 @@
 - `HTMLElement` (Web Components platform built-in)
 
 **Consumers**:
-- `sections/section.liquid` v1.9.0 — emits `<token-section>` as the inner element of every standard section, carrying `theme-root,color-scheme:<id>` modifiers
+- `sections/section.liquid` v1.9.1 — emits `<token-section>` as the inner element of every standard section, carrying `theme-root,color-scheme:<id>` modifiers
 - Future specialized sections (`<token-cart>`, `<token-header>`, `<token-footer>` per `composition-strategy.md` Beyond-L2) — extend `BaseComponent` rather than register `<token-section>` directly
 - `assets/core.js` v1.3.0 — re-exports `BaseComponent` as an ES module export and as `window.Token.components.BaseComponent` for inline scripts and Liquid templates
 

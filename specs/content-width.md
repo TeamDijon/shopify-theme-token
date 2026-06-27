@@ -7,7 +7,7 @@
 **Status**: shipped
 
 **Implementation**:
-- `sections/section.liquid` v1.9.0 (`content_width` setting consumer — emits `--content-width: <px/16>rem` per section via dynamic style)
+- `sections/section.liquid` v1.9.1 (`content_width` setting consumer — emits `--content-width: <px/16>rem` per section via dynamic style)
 - `snippets/utility--block-layout-vars.liquid` v1.1.0 (per-block emitter — emits `--content-width: <px/16>rem` when a block's `content_width` setting is set; consumed by `group`, `columns`, `media`, `richtext`, `title`, `button`)
 - `assets/layer-theme.css` (bleed-grid cap rule — reads `var(--content-width, 125rem)`; the substrate fallback acts as a big-screen protection)
 - Metaobject definition itself — created per `metaobject-definitions.md` § `content_width`
@@ -19,7 +19,7 @@
 **Depends on**: none — substrate-root token type. Consumed by the bleed-grid named-line cap.
 
 **Consumers**:
-- `sections/section.liquid` v1.9.0 — `content_width` setting (metaobject picker) drives the section's center grid track cap
+- `sections/section.liquid` v1.9.1 — `content_width` setting (metaobject picker) drives the section's center grid track cap
 - 6 block-half settings (`group`, `columns`, `media`, `richtext`, `title`, `button`) — per-block override of the section's content_width when a block wants to constrain itself narrower (e.g., a title narrower than the section, a button row centered in reading width)
 - `assets/layer-theme.css` — bleed-grid named-line columns `[content-start]` and `[content-end]` are computed against `var(--content-width)` with a `125rem` fallback
 - Per-project blocks that ship their own content_width override (e.g., a future `pull-quote` L1 narrower than the section)
