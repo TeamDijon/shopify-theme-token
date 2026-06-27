@@ -7,10 +7,10 @@
 **Status**: shipped
 
 **Implementation**:
-- `snippets/button.liquid` v1.4.0 (render surface)
+- `snippets/button.liquid` v1.4.1 (render surface)
 - `blocks/button.liquid` v1.2.0 (block schema + render call)
 
-**Reconciled**: 2026-06-05
+**Reconciled**: 2026-06-16 (button.liquid v1.4.0 → v1.4.1 — escape the `content` label per `snippet-convention.md` § Output escaping; `href` already escaped; contract surface unchanged)
 
 **Reviewed**: pending
 

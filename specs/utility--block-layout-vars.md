@@ -17,7 +17,7 @@
 - No JS, no other snippet dependencies
 
 **Consumers** (every L1 block):
-- 9 shipped L1 blocks each render this utility inside their `{% capture dynamic_style %}` block to emit per-instance vars: `snippets/button.liquid` v1.4.0, `snippets/columns.liquid` v1.7.0, `snippets/embed.liquid` v1.2.0, `snippets/group.liquid` v1.6.0, `snippets/media.liquid` v1.4.0, `snippets/richtext.liquid` v1.2.1, `snippets/separator.liquid` v1.0.5, `snippets/spacer.liquid` v1.1.2, `snippets/title.liquid` v1.1.3
+- 9 shipped L1 blocks each render this utility inside their `{% capture dynamic_style %}` block to emit per-instance vars: `snippets/button.liquid` v1.4.1, `snippets/columns.liquid` v1.7.0, `snippets/embed.liquid` v1.2.0, `snippets/group.liquid` v1.6.0, `snippets/media.liquid` v1.4.0, `snippets/richtext.liquid` v1.2.1, `snippets/separator.liquid` v1.0.5, `snippets/spacer.liquid` v1.1.2, `snippets/title.liquid` v1.1.3
 - Future L1 blocks (rating, etc.) — same pattern at the block layer
 - `sections/section.liquid` — does *not* consume this utility directly; section emits `--content-width` (from its own content_width setting) and `--block-rhythm` (referencing the spacing metaobject) inline. Section's block-rhythm flows through this utility's emitted `--mobile-margin-block-start` / `--desktop-margin-block-start` as the per-block override path.
 
