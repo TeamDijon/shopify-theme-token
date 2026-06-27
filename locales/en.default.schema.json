@@ -66,7 +66,11 @@
         "color_scheme": { "label": "Color scheme" }
       },
       "presets": {
-        "section": { "name": "Section" }
+        "section": { "name": "Section" },
+        "hero": { "name": "Hero", "category": "Banners" },
+        "features": { "name": "Feature columns", "category": "Features" },
+        "content": { "name": "Content", "category": "Content" },
+        "cta": { "name": "Call to action", "category": "Banners" }
       }
     }
   },

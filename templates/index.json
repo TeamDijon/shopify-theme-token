@@ -1,19 +1,190 @@
 /*
- * ------------------------------------------------------------
- * IMPORTANT: The contents of this file are auto-generated.
- *
- * This file may be updated by the Shopify admin theme editor
- * or related systems. Please exercise caution as any changes
- * made to this file may be overwritten.
- * ------------------------------------------------------------
+ * Token — milestone-1 homepage.
+ * Hand-authored demo composition (hero → features → content → CTA) selling the
+ * theme itself. Metaobject-typed settings reference entries by handle
+ * (content_width, media_size, button_style, spacing) — portable across any
+ * seeded store. The reusable compositions live as presets in sections/section.liquid.
  */
 {
   "sections": {
-    "main": {
-      "type": "section"
+    "hero": {
+      "type": "section",
+      "settings": {
+        "color_scheme": "scheme-1"
+      },
+      "blocks": {
+        "media": {
+          "type": "media",
+          "settings": {
+            "media_size": "half-screen",
+            "bleed_desktop": "both",
+            "bleed_mobile": "both",
+            "overlay_color": "rgba(0,0,0,0.45)",
+            "color_scheme": "scheme-3",
+            "horizontal_alignment": "center",
+            "vertical_alignment": "center"
+          },
+          "blocks": {
+            "title": {
+              "type": "title",
+              "settings": {
+                "content": "Design is data. Layout is yours.",
+                "tag": "h1",
+                "text_align": "center"
+              }
+            },
+            "text": {
+              "type": "richtext",
+              "settings": {
+                "content": "<p>Token keeps every color, type style, and rhythm in metaobjects — so your storefront is a system you compose, not a template you fight.</p>",
+                "text_align": "center"
+              }
+            },
+            "button": {
+              "type": "button",
+              "settings": {
+                "content": "Explore the system",
+                "link": "/",
+                "button_style": "solid-primary"
+              }
+            }
+          },
+          "block_order": ["title", "text", "button"]
+        }
+      },
+      "block_order": ["media"]
+    },
+    "features": {
+      "type": "section",
+      "settings": {
+        "content_width": "medium",
+        "block_rhythm": "md",
+        "color_scheme": "scheme-1"
+      },
+      "blocks": {
+        "heading": {
+          "type": "title",
+          "settings": {
+            "content": "Why Token",
+            "tag": "h2",
+            "text_align": "center"
+          }
+        },
+        "columns": {
+          "type": "columns",
+          "settings": {
+            "columns": "3",
+            "gap": 24,
+            "stack_below": "60",
+            "vertical_alignment": "start"
+          },
+          "blocks": {
+            "card_1": {
+              "type": "richtext",
+              "settings": {
+                "content": "<h3>Design as data</h3><p>Colors, type, spacing, and widths live in metaobjects. Tune the system once and every block follows.</p>"
+              }
+            },
+            "card_2": {
+              "type": "richtext",
+              "settings": {
+                "content": "<h3>Compose, don't configure</h3><p>Nine primitives — title, media, columns, groups and more — assemble into any section without bespoke code.</p>"
+              }
+            },
+            "card_3": {
+              "type": "richtext",
+              "settings": {
+                "content": "<h3>Portable by design</h3><p>Presets ship free of store-specific references, so a layout drops cleanly into any store.</p>"
+              }
+            }
+          },
+          "block_order": ["card_1", "card_2", "card_3"]
+        }
+      },
+      "block_order": ["heading", "columns"]
+    },
+    "content": {
+      "type": "section",
+      "settings": {
+        "content_width": "reading",
+        "block_rhythm": "md",
+        "color_scheme": "scheme-2"
+      },
+      "blocks": {
+        "heading": {
+          "type": "title",
+          "settings": {
+            "content": "A substrate, not a stack of sections",
+            "tag": "h2",
+            "text_align": "center"
+          }
+        },
+        "body": {
+          "type": "richtext",
+          "settings": {
+            "content": "<p>Most themes grow one section at a time. Token starts from a design substrate — metaobjects, color schemes, a bleed grid, and vertical rhythm — and lets a handful of blocks express the rest. Less code to maintain, more layouts to reach.</p>",
+            "text_align": "center"
+          }
+        },
+        "button": {
+          "type": "button",
+          "settings": {
+            "content": "Read the architecture",
+            "link": "/",
+            "button_style": "outline-primary"
+          }
+        }
+      },
+      "block_order": ["heading", "body", "button"]
+    },
+    "cta": {
+      "type": "section",
+      "settings": {
+        "content_width": "reading",
+        "block_rhythm": "lg",
+        "color_scheme": "scheme-3"
+      },
+      "blocks": {
+        "rule_top": { "type": "separator", "settings": {} },
+        "heading": {
+          "type": "title",
+          "settings": {
+            "content": "Start from the system.",
+            "tag": "h2",
+            "text_align": "center"
+          }
+        },
+        "actions": {
+          "type": "group",
+          "settings": {
+            "direction": "row",
+            "horizontal_alignment": "center",
+            "gap": 16
+          },
+          "blocks": {
+            "button_primary": {
+              "type": "button",
+              "settings": {
+                "content": "Get Token",
+                "link": "/",
+                "button_style": "solid-primary"
+              }
+            },
+            "button_secondary": {
+              "type": "button",
+              "settings": {
+                "content": "See the blocks",
+                "link": "/",
+                "button_style": "outline-primary"
+              }
+            }
+          },
+          "block_order": ["button_primary", "button_secondary"]
+        },
+        "rule_bottom": { "type": "separator", "settings": {} }
+      },
+      "block_order": ["rule_top", "heading", "actions", "rule_bottom"]
     }
   },
-  "order": [
-    "main"
-  ]
+  "order": ["hero", "features", "content", "cta"]
 }

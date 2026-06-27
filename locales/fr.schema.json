@@ -75,7 +75,11 @@
         "color_scheme": { "label": "Palette de couleurs" }
       },
       "presets": {
-        "section": { "name": "Section" }
+        "section": { "name": "Section" },
+        "hero": { "name": "Hero", "category": "Bannières" },
+        "features": { "name": "Colonnes de fonctionnalités", "category": "Fonctionnalités" },
+        "content": { "name": "Contenu", "category": "Contenu" },
+        "cta": { "name": "Appel à l'action", "category": "Bannières" }
       }
     }
   },

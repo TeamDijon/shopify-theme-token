@@ -1,7 +1,8 @@
-{% # Section v1.7.0 %}
+{% # Section v1.8.0 %}
 
 {% comment %}
   Changelog
+  - v1.8.0 — add four L2 presets (hero, features, content, cta) alongside the default empty Section. Each is a portable composition: color-scheme set via handle, all metaobject-picker settings (content_width, block_rhythm, media_size, button_style, …) left unset so they fall through to substrate defaults and carry no store-scoped GID. Block copy falls back to each block's own default content key. See `.context/docs/composition-strategy.md` § L2 — presets.
   - v1.7.0 — `--content-width` emission harmonized to rem (was px), matching the codebase-wide merchant-px / front-end-rem convention (gutter, text-style, spacing, block-layout-vars). Merchant input still px; converted at emit time via `divided_by: 16.0 | round: 3`. Per-project CSS doing arithmetic on `--content-width` (e.g., `calc(var(--content-width) - 2rem)`) now gets unit-consistent rem expressions.
   - v1.6.0 — block-rhythm now consumes the unified `--spacing-<handle>` namespace (paired with utility--css-variables v1.13.0 + layer-base.css spacing scale). Per-section dynamic style emits `--block-rhythm: var(--spacing-<picked-handle>)` instead of duplicating mobile/desktop px values; responsiveness propagates through the spacing token's @media branch. layer-theme.css inter-block margin rule reads `var(--block-rhythm)` (no mobile/desktop split at the section level). Merchant-facing setting unchanged.
   - v1.5.0 — rename custom element `<theme-section>` → `<token-section>` (theme fingerprint pass for porting agnostically). Per-project CSS using the tag selector `theme-section { ... }` must rename. Modifier value `theme-root` is unchanged (substrate selectors keep matching `[data-modifiers*='theme-root']`).
@@ -86,6 +87,122 @@
   "presets": [
     {
       "name": "t:sections.section.presets.section.name"
+    },
+    {
+      "name": "t:sections.section.presets.hero.name",
+      "category": "t:sections.section.presets.hero.category",
+      "settings": {
+        "color_scheme": "scheme-1"
+      },
+      "blocks": {
+        "media": {
+          "type": "media",
+          "settings": {
+            "bleed_desktop": "both",
+            "bleed_mobile": "both",
+            "overlay_color": "rgba(0,0,0,0.45)",
+            "color_scheme": "scheme-3",
+            "horizontal_alignment": "center",
+            "vertical_alignment": "center"
+          },
+          "blocks": {
+            "title": {
+              "type": "title",
+              "settings": { "tag": "h1", "text_align": "center" }
+            },
+            "text": {
+              "type": "richtext",
+              "settings": { "text_align": "center" }
+            },
+            "button": {
+              "type": "button",
+              "settings": {}
+            }
+          },
+          "block_order": ["title", "text", "button"]
+        }
+      },
+      "block_order": ["media"]
+    },
+    {
+      "name": "t:sections.section.presets.features.name",
+      "category": "t:sections.section.presets.features.category",
+      "settings": {
+        "color_scheme": "scheme-1"
+      },
+      "blocks": {
+        "heading": {
+          "type": "title",
+          "settings": { "tag": "h2", "text_align": "center" }
+        },
+        "columns": {
+          "type": "columns",
+          "settings": {
+            "columns": "3",
+            "gap": 24,
+            "stack_below": "60",
+            "vertical_alignment": "start"
+          },
+          "blocks": {
+            "card_1": { "type": "richtext", "settings": {} },
+            "card_2": { "type": "richtext", "settings": {} },
+            "card_3": { "type": "richtext", "settings": {} }
+          },
+          "block_order": ["card_1", "card_2", "card_3"]
+        }
+      },
+      "block_order": ["heading", "columns"]
+    },
+    {
+      "name": "t:sections.section.presets.content.name",
+      "category": "t:sections.section.presets.content.category",
+      "settings": {
+        "color_scheme": "scheme-2"
+      },
+      "blocks": {
+        "heading": {
+          "type": "title",
+          "settings": { "tag": "h2", "text_align": "center" }
+        },
+        "body": {
+          "type": "richtext",
+          "settings": { "text_align": "center" }
+        },
+        "button": {
+          "type": "button",
+          "settings": {}
+        }
+      },
+      "block_order": ["heading", "body", "button"]
+    },
+    {
+      "name": "t:sections.section.presets.cta.name",
+      "category": "t:sections.section.presets.cta.category",
+      "settings": {
+        "color_scheme": "scheme-3"
+      },
+      "blocks": {
+        "rule_top": { "type": "separator", "settings": {} },
+        "heading": {
+          "type": "title",
+          "settings": { "tag": "h2", "text_align": "center" }
+        },
+        "actions": {
+          "type": "group",
+          "settings": {
+            "direction": "row",
+            "horizontal_alignment": "center",
+            "gap": 16
+          },
+          "blocks": {
+            "button_primary": { "type": "button", "settings": {} },
+            "button_secondary": { "type": "button", "settings": {} }
+          },
+          "block_order": ["button_primary", "button_secondary"]
+        },
+        "rule_bottom": { "type": "separator", "settings": {} }
+      },
+      "block_order": ["rule_top", "heading", "actions", "rule_bottom"]
     }
   ]
 }
