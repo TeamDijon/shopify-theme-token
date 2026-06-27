@@ -24,6 +24,17 @@ Every snippet in `snippets/*.liquid` follows this structure.
 
 5. **Output** — HTML markup, followed by optional `{% stylesheet %}` and/or `{% javascript %}` blocks scoped to `.shopify-block--<name>` or the component's root class. See `.context/docs/asset-loading.md` for the file-vs-inline decision rule (renderable snippets inline; pure `utility--*` snippets typically don't carry style/script blocks). Component-rooted CSS naming (no BEM `__element`, descendants via `& .name` / `& > tag`): `.context/docs/css-standards.md`.
 
+## Output escaping
+
+Shopify Liquid does not auto-escape `{{ }}`. Interpolate caller- or user-supplied values through `| escape` — in text content and attribute values alike — so injected markup renders as text, not DOM:
+
+```liquid
+<a href="{{ link | escape }}">{{ label | escape }}</a>
+<input value="{{ value | escape }}" name="{{ name }}">
+```
+
+Escape anything sourced from a block setting, form field, `form.errors`, metafield, or URL. Leave raw only: content deliberately authored as HTML (e.g. a `richtext` body) and developer-controlled structural values (own class names, enumerated `type` values, `handleize`d ids, `asset_url` / `image_url` outputs). `name` attributes stay raw — Shopify form names (`contact[email]`) carry no escapable characters and must reach submission verbatim.
+
 ## Changelog
 
 See `.context/docs/versioning-and-changelog.md` for format and policy.
