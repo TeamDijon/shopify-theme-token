@@ -69,7 +69,7 @@
     }
   }
 
-  /* Theme-root: bleed grid. Three tracks with named lines — side tracks absorb gutter at narrow viewports and the (viewport - content) excess at wide viewports; center track caps at --content-width and is clamped to viewport minus gutter at narrow viewports. Direct children default to the content track; container blocks (group/columns/media) opt into wider spans via `bleed-desktop:<value>` / `bleed-mobile:<value>` modifiers — see `.context/docs/subgrid-migration.md` § Bleed model. */
+  /* Theme-root: bleed grid + per-section scheme paint. Three tracks with named lines — side tracks absorb gutter at narrow viewports and the (viewport - content) excess at wide viewports; center track caps at --content-width and is clamped to viewport minus gutter at narrow viewports. Direct children default to the content track; container blocks (group/columns/media) opt into wider spans via `bleed-desktop:<value>` / `bleed-mobile:<value>` modifiers — see `.context/docs/subgrid-migration.md` § Bleed model. Each theme-root paints its own scheme `background` + `color` (re-resolved from the color-scheme tokens emitted on this element), so a section-level color_scheme override renders a real background band and re-resolves text color for descendants. Body still owns base appearance for chrome + app sections (which carry no theme-root); see `.context/docs/theme-root.md` § Scheme paint. */
   [data-modifiers*='theme-root'] {
     display: grid;
     grid-template-columns:
@@ -82,6 +82,8 @@
       [bleed-end];
     justify-content: center;
     position: relative;
+    background: var(--gradient-background);
+    color: var(--color-role-foreground);
   }
 
   /* Default: direct children sit in the content track */
