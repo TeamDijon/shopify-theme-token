@@ -83,23 +83,9 @@
       "name": "Spacer",
       "settings": {
         "spacer": { "content": "Spacer" },
-        "breakpoint": {
-          "label": "Breakpoint",
-          "options": {
-            "none": "None",
-            "sm": "640px",
-            "md": "960px",
-            "lg": "1280px"
-          }
-        },
-        "spacer_block_size": { "label": "Size" },
-        "mobile_spacer_block_size": {
-          "label": "Mobile",
-          "info": "Applies below breakpoint"
-        },
-        "desktop_spacer_block_size": {
-          "label": "Desktop",
-          "info": "Breakpoint and above"
+        "size": {
+          "label": "Size",
+          "info": "Spacing token. Leave blank for none."
         },
         "appearance": { "content": "Appearance" },
         "background_color": {

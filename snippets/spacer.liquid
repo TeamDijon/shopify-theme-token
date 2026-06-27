@@ -1,7 +1,8 @@
-{% # Spacer v1.1.2 %}
+{% # Spacer v2.0.0 %}
 
 {% comment %}
   Changelog
+  - v2.0.0 — replace the px-size interface (`spacer_block_size` / `mobile_spacer_block_size` / `desktop_spacer_block_size` ranges + `breakpoint` select) with a single `size` argument backed by the `spacing` metaobject. Block-size resolves to `var(--spacing-<handle>)`, so the mobile/desktop divide now rides the spacing token's own responsive `@media` branch (fixed 48rem breakpoint) instead of per-block px + a configurable breakpoint. Same contract (responsive vertical spacer); new interface. Breaking: removed params/settings — re-pick size as a spacing token. `background_color` unchanged. Modifier emission dropped (no `breakpoint` modifier remains).
   - v1.1.2 — emit `{{ block.shopify_attributes }}` on the root for theme-editor block selection (was missing)
   - v1.1.1 — split the `margin-block: 0` shorthand into separate start/end so margin-block-start can chain block-rhythm vars (`--block-rhythm-mobile`/`--block-rhythm-desktop`) as the inner fallback; margin-block-end stays at 0
   - v1.1.0 — read background color via `var(--color-<handle>)` instead of re-extracting `hex_code.value`; reuses the global theme-color CSS variable
@@ -10,60 +11,33 @@
 
 {% doc %}
   @description
-  Renders a spacer div with responsive block-size and optional background color. Either one fixed size (no breakpoint) or a mobile/desktop pair that switches at the selected breakpoint.
+  Renders a vertical spacer whose height is a `spacing` metaobject token (`var(--spacing-<handle>)`) plus an optional background color. The mobile/desktop divide rides the spacing token's own responsive `@media` branch — no per-block breakpoint.
 
   **Intended scope:** vertical-rhythm block at the section level. Don't place inside a row-direction `group` — the spacer's `inline-size: 100%` will claim the full row and squish siblings. (Inside column-direction containers it works fine.)
 
   @param {section} [section] - The section object containing the block
   @param {block} [block] - Block object containing the settings
   @param {string} [block_id] - Unique block ID for static renders
-  @param {string} [breakpoint] - Breakpoint at which to switch from mobile to desktop size (`none`, `40`, `60`, `80`). Defaults to `none`.
-  @param {number} [spacer_block_size] - Height in px when `breakpoint` is `none`. Defaults to 0.
-  @param {number} [mobile_spacer_block_size] - Height in px below the breakpoint. Defaults to 0.
-  @param {number} [desktop_spacer_block_size] - Height in px at or above the breakpoint. Defaults to 0.
+  @param {metaobject} [size] - `spacing` metaobject token. Sets the spacer height to `var(--spacing-<handle>)` (mobile/desktop resolved through the token). No height when blank.
   @param {metaobject} [background_color] - `theme_color` metaobject for background. Defaults to transparent.
 
   @example {% render 'spacer', section: section, block: block %}
 {% enddoc %}
 
 {% liquid
-  assign breakpoint = breakpoint | default: block.settings.breakpoint | default: 'none'
-  assign spacer_block_size = spacer_block_size | default: block.settings.spacer_block_size | default: 0
-  assign mobile_spacer_block_size = mobile_spacer_block_size | default: block.settings.mobile_spacer_block_size | default: 0
-  assign desktop_spacer_block_size = desktop_spacer_block_size | default: block.settings.desktop_spacer_block_size | default: 0
+  assign size = size | default: block.settings.size | default: ''
   assign background_color = background_color | default: block.settings.background_color | default: ''
-
-  if breakpoint != 'none'
-    assign modifier_list = 'breakpoint:' | append: breakpoint
-  endif
 
   capture base_selector
     render 'utility--base-selector', section: section, block: block, identifier: block_id
   endcapture
   assign base_selector = base_selector | strip
-
-  capture modifiers
-    render 'utility--modifiers', modifier_list: modifier_list
-  endcapture
 %}
 
-<div
-  class="shopify-block shopify-block--spacer"
-  id="{{ base_selector }}"
-  {{ block.shopify_attributes }}
-  {{ modifiers }}
->
+<div class="shopify-block shopify-block--spacer" id="{{ base_selector }}" {{ block.shopify_attributes }}>
   {% capture dynamic_style %}
-    {% if spacer_block_size and spacer_block_size > 0 and breakpoint == 'none' %}
-      --spacer-block-size: {{ spacer_block_size | divided_by: 16.0 | round: 3 }}rem;
-    {% endif %}
-
-    {% if mobile_spacer_block_size and mobile_spacer_block_size > 0 and breakpoint != 'none' %}
-      --mobile-spacer-block-size: {{ mobile_spacer_block_size | divided_by: 16.0 | round: 3 }}rem;
-    {% endif %}
-
-    {% if desktop_spacer_block_size and desktop_spacer_block_size > 0 and breakpoint != 'none' %}
-      --desktop-spacer-block-size: {{ desktop_spacer_block_size | divided_by: 16.0 | round: 3 }}rem;
+    {% if size != blank %}
+      --spacer-block-size: var(--spacing-{{ size.system.handle }});
     {% endif %}
 
     {% if background_color and background_color != blank %}
@@ -83,28 +57,6 @@
       margin-block-end: 0;
       margin-inline: auto;
       background-color: var(--background-color, transparent);
-
-      &[data-modifiers*='breakpoint'] {
-        block-size: var(--mobile-spacer-block-size, 0rem);
-      }
-
-      @media (width >= 40rem) {
-        &[data-modifiers*='breakpoint:40'] {
-          block-size: var(--desktop-spacer-block-size, 0rem);
-        }
-      }
-
-      @media (width >= 60rem) {
-        &[data-modifiers*='breakpoint:60'] {
-          block-size: var(--desktop-spacer-block-size, 0rem);
-        }
-      }
-
-      @media (width >= 80rem) {
-        &[data-modifiers*='breakpoint:80'] {
-          block-size: var(--desktop-spacer-block-size, 0rem);
-        }
-      }
     }
   }
 {% endstylesheet %}

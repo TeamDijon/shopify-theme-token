@@ -92,23 +92,9 @@
       "name": "Espaceur",
       "settings": {
         "spacer": { "content": "Espaceur" },
-        "breakpoint": {
-          "label": "Point de rupture",
-          "options": {
-            "none": "Aucun",
-            "sm": "640px",
-            "md": "960px",
-            "lg": "1280px"
-          }
-        },
-        "spacer_block_size": { "label": "Taille" },
-        "mobile_spacer_block_size": {
-          "label": "Mobile",
-          "info": "Appliqué en deçà du point de rupture"
-        },
-        "desktop_spacer_block_size": {
-          "label": "Bureau",
-          "info": "Point de rupture et au-delà"
+        "size": {
+          "label": "Taille",
+          "info": "Jeton d'espacement. Laisser vide pour aucun."
         },
         "appearance": { "content": "Apparence" },
         "background_color": {

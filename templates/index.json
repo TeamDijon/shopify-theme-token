@@ -60,6 +60,7 @@
         "block_rhythm": "md"
       },
       "blocks": {
+        "spacer_top": { "type": "spacer", "settings": { "size": "lg" } },
         "heading": {
           "type": "title",
           "settings": {
@@ -97,9 +98,10 @@
             }
           },
           "block_order": ["card_1", "card_2", "card_3"]
-        }
+        },
+        "spacer_bottom": { "type": "spacer", "settings": { "size": "lg" } }
       },
-      "block_order": ["heading", "columns"]
+      "block_order": ["spacer_top", "heading", "columns", "spacer_bottom"]
     },
     "content": {
       "type": "section",
@@ -110,6 +112,7 @@
         "color_scheme": "scheme-2"
       },
       "blocks": {
+        "spacer_top": { "type": "spacer", "settings": { "size": "lg" } },
         "heading": {
           "type": "title",
           "settings": {
@@ -132,9 +135,10 @@
             "link": "/",
             "button_style": "outline-primary"
           }
-        }
+        },
+        "spacer_bottom": { "type": "spacer", "settings": { "size": "lg" } }
       },
-      "block_order": ["heading", "body", "button"]
+      "block_order": ["spacer_top", "heading", "body", "button", "spacer_bottom"]
     },
     "cta": {
       "type": "section",
@@ -145,6 +149,7 @@
         "color_scheme": "scheme-3"
       },
       "blocks": {
+        "spacer_top": { "type": "spacer", "settings": { "size": "lg" } },
         "rule_top": { "type": "separator", "settings": {} },
         "heading": {
           "type": "title",
@@ -181,9 +186,10 @@
           },
           "block_order": ["button_primary", "button_secondary"]
         },
-        "rule_bottom": { "type": "separator", "settings": {} }
+        "rule_bottom": { "type": "separator", "settings": {} },
+        "spacer_bottom": { "type": "spacer", "settings": { "size": "lg" } }
       },
-      "block_order": ["rule_top", "heading", "actions", "rule_bottom"]
+      "block_order": ["spacer_top", "rule_top", "heading", "actions", "rule_bottom", "spacer_bottom"]
     }
   },
   "order": ["hero", "features", "content", "cta"]

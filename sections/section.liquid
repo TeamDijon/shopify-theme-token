@@ -1,7 +1,8 @@
-{% # Section v1.9.0 %}
+{% # Section v1.9.1 %}
 
 {% comment %}
   Changelog
+  - v1.9.1 — presets gain leading/trailing `spacer` blocks (size `lg`) for section breathing room (features/content/cta); hero stays flush. Spacers use the `spacing` metaobject by handle (portable). Composition tweak only.
   - v1.9.0 — color scheme becomes an explicit local override. New `custom_color_scheme` checkbox (default false) gates the `color_scheme` picker (`visible_if`); the `color-scheme:<id>` modifier is emitted only when checked. Off = the section rides the global/substrate scheme (no modifier, cascades from `<body>`). Aligns with the substrate→local-override model; matches the gate now on group/columns/media. See `.context/docs/schema-conventions.md` § Color-scheme override + `theme-root.md` § Scheme paint.
   - v1.8.1 — bake seed-catalog metaobject handles into the four presets (content_width, block_rhythm, media_size, button_style). Metaobject settings store the entry handle, and Token seeds the same handles on every store, so these resolve anywhere — richer out-of-box presets without store-scoped GIDs. See `.context/docs/design-system-metaobjects.md` § Storing a metaobject reference value.
   - v1.8.0 — add four L2 presets (hero, features, content, cta) alongside the default empty Section. Each is a portable composition: color-scheme set via handle, all metaobject-picker settings (content_width, block_rhythm, media_size, button_style, …) left unset so they fall through to substrate defaults and carry no store-scoped GID. Block copy falls back to each block's own default content key. See `.context/docs/composition-strategy.md` § L2 — presets.
@@ -146,6 +147,7 @@
         "block_rhythm": "md"
       },
       "blocks": {
+        "spacer_top": { "type": "spacer", "settings": { "size": "lg" } },
         "heading": {
           "type": "title",
           "settings": { "tag": "h2", "text_align": "center" }
@@ -164,9 +166,10 @@
             "card_3": { "type": "richtext", "settings": {} }
           },
           "block_order": ["card_1", "card_2", "card_3"]
-        }
+        },
+        "spacer_bottom": { "type": "spacer", "settings": { "size": "lg" } }
       },
-      "block_order": ["heading", "columns"]
+      "block_order": ["spacer_top", "heading", "columns", "spacer_bottom"]
     },
     {
       "name": "t:sections.section.presets.content.name",
@@ -178,6 +181,7 @@
         "color_scheme": "scheme-2"
       },
       "blocks": {
+        "spacer_top": { "type": "spacer", "settings": { "size": "lg" } },
         "heading": {
           "type": "title",
           "settings": { "tag": "h2", "text_align": "center" }
@@ -189,9 +193,10 @@
         "button": {
           "type": "button",
           "settings": { "button_style": "outline-primary" }
-        }
+        },
+        "spacer_bottom": { "type": "spacer", "settings": { "size": "lg" } }
       },
-      "block_order": ["heading", "body", "button"]
+      "block_order": ["spacer_top", "heading", "body", "button", "spacer_bottom"]
     },
     {
       "name": "t:sections.section.presets.cta.name",
@@ -203,6 +208,7 @@
         "color_scheme": "scheme-3"
       },
       "blocks": {
+        "spacer_top": { "type": "spacer", "settings": { "size": "lg" } },
         "rule_top": { "type": "separator", "settings": {} },
         "heading": {
           "type": "title",
@@ -221,9 +227,10 @@
           },
           "block_order": ["button_primary", "button_secondary"]
         },
-        "rule_bottom": { "type": "separator", "settings": {} }
+        "rule_bottom": { "type": "separator", "settings": {} },
+        "spacer_bottom": { "type": "spacer", "settings": { "size": "lg" } }
       },
-      "block_order": ["rule_top", "heading", "actions", "rule_bottom"]
+      "block_order": ["spacer_top", "rule_top", "heading", "actions", "rule_bottom", "spacer_bottom"]
     }
   ]
 }

@@ -1,4 +1,9 @@
-{% # Spacer block v1.0.0 %}
+{% # Spacer block v2.0.0 %}
+
+{% comment %}
+  Changelog
+  - v2.0.0 — replace the px-size settings (`breakpoint` select + `spacer_block_size` / `mobile_spacer_block_size` / `desktop_spacer_block_size` ranges) with a single `size` picker backed by the `spacing` metaobject. Same responsive contract (mobile/desktop divide rides the spacing token's `@media` branch); new interface. `background_color` unchanged. See `.context/docs/design-system-metaobjects.md` § spacing.
+{% endcomment %}
 
 {% render 'spacer', section: section, block: block %}
 
@@ -13,51 +18,11 @@
       "content": "t:blocks.spacer.settings.spacer.content"
     },
     {
-      "type": "select",
-      "id": "breakpoint",
-      "label": "t:blocks.spacer.settings.breakpoint.label",
-      "options": [
-        { "value": "none", "label": "t:blocks.spacer.settings.breakpoint.options.none" },
-        { "value": "40", "label": "t:blocks.spacer.settings.breakpoint.options.sm" },
-        { "value": "60", "label": "t:blocks.spacer.settings.breakpoint.options.md" },
-        { "value": "80", "label": "t:blocks.spacer.settings.breakpoint.options.lg" }
-      ],
-      "default": "none"
-    },
-    {
-      "type": "range",
-      "id": "spacer_block_size",
-      "label": "t:blocks.spacer.settings.spacer_block_size.label",
-      "min": 0,
-      "max": 200,
-      "step": 2,
-      "unit": "px",
-      "default": 24,
-      "visible_if": "{{ block.settings.breakpoint == 'none' }}"
-    },
-    {
-      "type": "range",
-      "id": "mobile_spacer_block_size",
-      "label": "t:blocks.spacer.settings.mobile_spacer_block_size.label",
-      "min": 0,
-      "max": 200,
-      "step": 2,
-      "unit": "px",
-      "default": 16,
-      "info": "t:blocks.spacer.settings.mobile_spacer_block_size.info",
-      "visible_if": "{{ block.settings.breakpoint != 'none' }}"
-    },
-    {
-      "type": "range",
-      "id": "desktop_spacer_block_size",
-      "label": "t:blocks.spacer.settings.desktop_spacer_block_size.label",
-      "min": 0,
-      "max": 200,
-      "step": 2,
-      "unit": "px",
-      "default": 24,
-      "info": "t:blocks.spacer.settings.desktop_spacer_block_size.info",
-      "visible_if": "{{ block.settings.breakpoint != 'none' }}"
+      "type": "metaobject",
+      "metaobject_type": "spacing",
+      "id": "size",
+      "label": "t:blocks.spacer.settings.size.label",
+      "info": "t:blocks.spacer.settings.size.info"
     },
     {
       "type": "header",
