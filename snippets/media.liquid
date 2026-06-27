@@ -1,7 +1,8 @@
-{% # Media v1.4.0 %}
+{% # Media v1.4.1 %}
 
 {% comment %}
   Changelog
+  - v1.4.1 — add `inline-size: 100%` to `.shopify-block--media` so the block fills its grid/flow track instead of shrinking to the intrinsic width of its content. Without it, `margin-inline: auto` overrode the grid item's default stretch and the block collapsed to the placeholder SVG's intrinsic ~300px (visible on image-less / small-image media); `max-inline-size: var(--content-width)` still caps it, `margin-inline: auto` still centers it when capped.
   - v1.4.0 — replace `bleed` boolean with responsive `bleed_desktop` (none/inline_start/inline_end/both) + `bleed_mobile` (none/both) enums. Emits `bleed-desktop:<value>` / `bleed-mobile:<value>` modifiers consumed by the section's named-line bleed grid. Removes the snippet's own bleed CSS (negative-margin escape) — section handles via `grid-column`. Centered-ancestor footgun resolved by the new model: bleed only fires at section direct-child position, not deep-nested. Per the subgrid migration (`.context/docs/subgrid-migration.md`).
   - v1.3.0 — read `container_style` metaobject and emit `container-style:<handle>` modifier when set. Centralized variant CSS (card / outlined / elevated) lives in `core.css` `@layer theme`.
   - v1.2.2 — emit `{{ block.shopify_attributes }}` on the root for theme-editor block selection (was missing)
@@ -191,6 +192,7 @@
     .shopify-block--media {
       position: relative;
       overflow: hidden;
+      inline-size: 100%;
       max-inline-size: var(--content-width, 100%);
       margin-inline: auto;
 

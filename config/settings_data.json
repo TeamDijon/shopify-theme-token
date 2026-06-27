@@ -11,7 +11,7 @@
   "current": {
     "mobile_gutter": 24,
     "desktop_gutter": 56,
-    "base_text_style": "gid://shopify/Metaobject/463671591298",
+    "base_text_style": "body",
     "color_schemes": {
       "scheme-1": {
         "settings": {
