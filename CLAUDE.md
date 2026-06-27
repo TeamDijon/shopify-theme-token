@@ -34,7 +34,7 @@ Stay under ~400 lines per Liquid edit (auto-loaded `**/*.liquid` rules + the mat
 
 ### Current measurement (manually maintained — re-tally on any rule edit; `npm run check` verifies via `.scripts/context-lint.mjs`)
 
-Tally as of 2026-06-15. Update the table when adding/removing/resizing rules in `.context/rules/`.
+Tally as of 2026-06-16. Update the table when adding/removing/resizing rules in `.context/rules/`.
 
 **Always-on for any Liquid edit** (`**/*.liquid` globs):
 
@@ -50,7 +50,7 @@ Tally as of 2026-06-15. Update the table when adding/removing/resizing rules in 
 
 | Editing             | Adds                          | Total   |
 | ------------------- | ----------------------------- | ------- |
-| `snippets/*.liquid` | `snippet-convention.md` (84)  | **219** |
+| `snippets/*.liquid` | `snippet-convention.md` (95)  | **230** |
 | `blocks/*.liquid`   | `block-convention.md` (100)   | **235** |
 | `sections/*.liquid` | `section-convention.md` (132) | **267** |
 
