@@ -50,6 +50,8 @@ Each theme-root paints its own scheme background and foreground:
 
 Container blocks (`group` / `columns` / `media`) carry `color-scheme` overrides too, re-emitting tokens for their subtree, but they paint a background only via `container-style:card` / `elevated`; a plain container override changes token colors without a background fill. Section-level scheme paint is the theme-root's alone.
 
+Each level's override is opt-in: a `custom_color_scheme` setting (default off) gates whether `color-scheme:<id>` is emitted at all. Off → no modifier → the element rides the ancestor/substrate scheme; on → the picked scheme applies. See `schema-conventions.md` § Color-scheme override for the schema shape.
+
 ## Bleed grid
 
 Theme-root resolves as a CSS grid with three tracks and named lines:

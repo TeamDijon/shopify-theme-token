@@ -45,20 +45,6 @@ Every section carries these settings before its custom ones:
 ```json
 { "type": "header", "content": "Layout" },
 {
-  "type": "select",
-  "id": "layout",
-  "label": "Layout",
-  "options": [
-    { "value": "column", "label": "Stacked" },
-    { "value": "row", "label": "Side-by-side" },
-    { "value": "columns_2", "label": "Two columns" },
-    { "value": "columns_3", "label": "Three columns" },
-    { "value": "columns_4", "label": "Four columns" }
-  ],
-  "default": "column",
-  "info": "Picks the section's implicit-container layout. For finer control, wrap children in a `group` or `columns` block."
-},
-{
   "type": "metaobject",
   "metaobject_type": "content_width",
   "id": "content_width",
@@ -72,16 +58,13 @@ Every section carries these settings before its custom ones:
   "label": "Block rhythm",
   "info": "Vertical space between blocks. Leave blank for none."
 },
-{ "type": "header", "content": "Appearance" },
-{
-  "type": "color_scheme",
-  "id": "color_scheme",
-  "label": "Color scheme",
-  "default": "scheme-1"
-}
+{ "type": "header", "content": "Appearance" }
+// + the color-scheme override pair — see § Color-scheme override
 ```
 
-The section's `data-modifiers` carries `theme-root` (identity) and `color-scheme:<id>` (theming context); no `layout` modifier. Under the subgrid model, token-section is always a bleed grid (named-line columns: `bleed-start` / `content-start` / `content-end` / `bleed-end`); row / multi-track compositions live inside container blocks (`group` / `columns`). See `.context/docs/theme-root.md` § Bleed grid.
+There is no `layout` setting — under the subgrid model token-section is always a bleed grid (named-line columns: `bleed-start` / `content-start` / `content-end` / `bleed-end`); row / multi-track compositions live inside container blocks (`group` / `columns`). See `.context/docs/theme-root.md` § Bleed grid.
+
+The section's `data-modifiers` carries `theme-root` (identity) always, plus `color-scheme:<id>` only when `custom_color_scheme` is on (§ Color-scheme override).
 
 `block_rhythm` emits `--block-rhythm: var(--spacing-<picked-handle>)` via `utility--dynamic-style` — points at the unified spacing namespace emitted by `utility--css-variables`, where responsive resolution lives in the spacing token's `@media` branch. The matching rule lives in `layer-theme.css` scoped to theme-roots:
 
@@ -99,20 +82,40 @@ The `> .shopify-block:not(:first-child)` selector limits rhythm to direct childr
 
 See `.context/rules/section-convention.md` for the full section structure.
 
-## Block-level color scheme override
+## Color-scheme override
 
-Blocks that can override the section's color scheme (typically containers like `media`, `group`, `columns`) expose a single `color_scheme` setting with no default:
+A section or container block (`group`, `columns`, `media`) opts into a *local* color scheme through a checkbox-gated picker. A `color_scheme` setting requires a default and can't be left empty, so a separate boolean carries the "no local override" state:
 
 ```json
 {
+  "type": "checkbox",
+  "id": "custom_color_scheme",
+  "label": "t:<scope>.settings.custom_color_scheme.label",
+  "info": "t:<scope>.settings.custom_color_scheme.info",
+  "default": false
+},
+{
   "type": "color_scheme",
   "id": "color_scheme",
-  "label": "t:blocks.<name>.settings.color_scheme.label",
-  "info": "t:blocks.<name>.settings.color_scheme.info"
+  "default": "scheme-1",
+  "label": "t:<scope>.settings.color_scheme.label",
+  "visible_if": "{{ section.settings.custom_color_scheme }}"
 }
 ```
 
-Blank means "inherit from the section." The snippet emits a `color-scheme:<id>` modifier only when the setting is non-blank, so the per-scheme rules emitted by `utility--css-variables` re-apply to the block subtree. Replaces the experience-theme pattern of pairing a `custom_colors` checkbox with a separate scheme picker — one setting expresses "off" via blank, fewer pieces for the merchant to coordinate.
+(`block.settings.custom_color_scheme` in the `visible_if` at block level.)
+
+**Default off** — the element emits no `color-scheme:<id>` modifier and rides the cascade: `<body>` paints the global/substrate scheme, and each level draws its ancestor's `--color-role-*` tokens. **Checked** — the snippet appends `color-scheme:<color_scheme>` to `data-modifiers`, so `utility--css-variables`'s per-scheme rules re-emit the tokens for this element's subtree and (for theme-roots) the scheme paint re-backgrounds it. This is Token's substrate→local-override model: global by default, local only when asked.
+
+The emit guard keys on the boolean, not the picker value:
+
+```liquid
+if custom_color_scheme
+  assign modifier_list = modifier_list | append: ',color-scheme:' | append: color_scheme
+endif
+```
+
+`visible_if` hides the now-required picker until the override is on. This supersedes the earlier "single picker, blank = inherit" idiom — `color_scheme` can't actually be blank (it requires a default), so the boolean gate is what expresses "off." See `.context/docs/theme-root.md` § Scheme paint for the runtime (token re-emission + paint) and `modifier-system.md` for the `color-scheme:<id>` modifier.
 
 ## Grouping
 

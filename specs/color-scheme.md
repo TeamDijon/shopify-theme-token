@@ -17,7 +17,7 @@
 - `design-constants.md` — `--duration-*`, `--ease-*` (for body transitions consuming these tokens), `--radius-*` (consumers compose with role tokens for variant CSS)
 
 **Consumers**:
-- `assets/layer-theme.css` — `body` reads `--gradient-background` + `--color-role-foreground` + heading + input states; container-style variants read `--color-role-background`, `--color-role-foreground`
+- `assets/layer-theme.css` — `body` reads `--gradient-background` + `--color-role-foreground` + heading + input states; each theme-root paints `background: var(--gradient-background)` + `color: var(--color-role-foreground)` so a `color-scheme:<id>` override renders a real band (see `theme-root.md` § Scheme paint); container-style variants read `--color-role-background`, `--color-role-foreground`
 - `snippets/button.liquid` — `{% stylesheet %}` consumes `--color-role-{primary,secondary}-button-{background,text,border}` + `-hover` companions for the button-style variants
 - Every block / section with scheme-aware styling — reads `--color-role-foreground`, `--color-role-background`, `--color-role-primary`, `--color-role-border`, `--color-role-shadow` as the canonical surface
 - `theme_color` metaobject specs and consumers — explicitly defer the role-token system to this spec; the `--color-<handle>` namespace is deliberately disjoint

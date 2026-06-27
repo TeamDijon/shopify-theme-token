@@ -7,11 +7,11 @@
 **Status**: shipped
 
 **Implementation**:
-- `snippets/columns.liquid` v1.7.0 (render surface)
-- `blocks/columns.liquid` v1.5.0 (block schema + render call)
+- `snippets/columns.liquid` v1.8.0 (render surface)
+- `blocks/columns.liquid` v1.6.0 (block schema + render call)
 - `assets/token-layout.js` v1.1.0 (inner-wrapper custom element)
 
-**Reconciled**: 2026-06-05
+**Reconciled**: 2026-06-27 (block v1.6.0 / snippet v1.8.0 — color scheme gated by the new `custom_color_scheme` checkbox; `color-scheme:<id>` emitted only when on, else the block rides the surrounding scheme)
 
 **Reviewed**: pending
 
@@ -50,7 +50,8 @@ Snippet args (`{% render %}`) and block schema settings cover the same surface; 
 | `bleed_desktop` | select (`none` / `inline_start` / `inline_end` / `both`) | no | `"none"` | Columns block's bleed direction at/above 48rem. Emitted as `bleed-desktop:<value>` modifier when ≠ `none`; the section's named-line bleed grid resolves positioning. |
 | `bleed_mobile` | select (`none` / `both`) | no | `"none"` | Columns block's bleed direction below 48rem. Single-column mobile has no edge tracks; per-side bleed has no geometric meaning there. Emitted as `bleed-mobile:both` modifier when set. |
 | `container_style` | metaobject (`container_style`) | no | blank | Emits `container-style:<handle>` modifier. Centralized variant CSS in `layer-theme.css`. |
-| `color_scheme` | theme setting (`color_scheme`) | no | blank | Overrides the section's color scheme. Emits `color-scheme:<id>` modifier. |
+| `custom_color_scheme` | checkbox | no | `false` | Gates the local color-scheme override. Off → no modifier; the block rides the surrounding scheme. On → the picker applies. See `schema-conventions.md` § Color-scheme override. |
+| `color_scheme` | theme setting (`color_scheme`) | no (gated) | `"scheme-1"` | Applied only when `custom_color_scheme` is on (`visible_if`). Emits `color-scheme:<id>` modifier. |
 | `mobile_margin_block_start` | range (0–200, step 2, px) | no | `0` | Top margin below the desktop breakpoint. |
 | `desktop_margin_block_start` | range (0–200, step 2, px) | no | `0` | Top margin at/above the desktop breakpoint. |
 

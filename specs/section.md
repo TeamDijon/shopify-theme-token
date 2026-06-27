@@ -6,9 +6,9 @@
 
 **Status**: shipped
 
-**Implementation**: `sections/section.liquid` v1.8.1 (render surface + schema)
+**Implementation**: `sections/section.liquid` v1.9.0 (render surface + schema)
 
-**Reconciled**: 2026-06-27
+**Reconciled**: 2026-06-27 (v1.9.0 — color scheme gated by the new `custom_color_scheme` checkbox: `color-scheme:<id>` emitted only when on, else the section rides the global scheme; v1.8.x added the four presets + baked seed handles)
 
 **Reviewed**: pending
 
@@ -45,7 +45,8 @@ Section settings — appear in the editor sidebar:
 |---|---|---|---|---|
 | `content_width` | metaobject (`content_width`) | no | blank → 125rem substrate default | Caps the section's center grid track (`min(--content-width, 100% - 2 × --gutter)`). Emitted as `--content-width: <value>rem` in the section's dynamic style (px input from setting, rem at emission per `px-rem-emission.md`). Cascades to descendants as the bleed cap (`container-patterns.md` § Content cap and convergence). |
 | `block_rhythm` | metaobject (`spacing`) | no | blank → 0 | Vertical rhythm between direct block children. Emits `--block-rhythm: var(--spacing-<picked-handle>)` (responsive resolution baked into the spacing token's @media branch); the rhythm cascade rule in `layer-theme.css` applies it via `[data-modifiers*='theme-root'] > .shopify-block:not(:first-child)` (see `theme-root.md` § Rhythm scope). |
-| `color_scheme` | color_scheme | yes (schema-defaulted) | `"scheme-1"` | Section's color scheme. Emitted as `color-scheme:<id>` in `data-modifiers`; the per-scheme rules in `utility--css-variables` re-emit `--color-role-*` tokens scoped to the modifier-bearing element. |
+| `custom_color_scheme` | checkbox | no | `false` | Gates the local color-scheme override. Off → no `color-scheme:<id>` modifier; the section rides the global/substrate scheme. On → the picker applies. See `schema-conventions.md` § Color-scheme override. |
+| `color_scheme` | color_scheme | no (gated) | `"scheme-1"` | Applied only when `custom_color_scheme` is on (`visible_if`). Emitted as `color-scheme:<id>` in `data-modifiers`; the per-scheme rules in `utility--css-variables` re-emit `--color-role-*` tokens scoped to the modifier-bearing element, and the theme-root re-paints its `background` + `color` (see `theme-root.md` § Scheme paint). |
 
 The section has no `layout` setting — token-section is always a bleed grid; merchants wanting row / multi-track compositions wrap children in a `group` or `columns` block. See `subgrid-migration.md` § Open questions for the rationale.
 
@@ -62,7 +63,7 @@ No `@theme` wildcard. New L1 blocks ship with an entry added here; see `composit
 ## Output shape
 
 ```liquid
-<token-section data-modifiers="theme-root,color-scheme:{{ section.settings.color_scheme }}">
+<token-section data-modifiers="theme-root{% if section.settings.custom_color_scheme %},color-scheme:{{ section.settings.color_scheme }}{% endif %}">
   {% content_for 'blocks' %}
 </token-section>
 ```
@@ -103,7 +104,7 @@ Modifier-driven (not vars): `theme-root` (identity, matches bleed-grid + rhythm 
 - **Always a bleed grid.** Theme-section resolves as `display: grid` with named columns (`bleed-start` / `content-start` / `content-end` / `bleed-end`). No `layout` setting — the section's role is the bleed grid; row / multi-track compositions live inside container blocks (`group` / `columns`). See `theme-root.md` § Bleed grid.
 - **`content_width` caps the center track.** The section's `--content-width` caps the center track via `min(--content-width, 100% - 2 × --gutter)`; bleeding children spanning `bleed-start / bleed-end` reach viewport edges. A 60rem-content section gets 60rem-wide content + full-viewport bleed (capped at viewport, not at 60rem) — see `container-patterns.md` § Content cap and convergence.
 - **`block_rhythm` is the section-level rhythm baseline.** Per-block top-margin overrides (`--mobile-margin-block-start` / `--desktop-margin-block-start` from `utility--block-layout-vars`) fall through to the section rhythm via the var chain in the rhythm cascade rule. The rhythm applies to direct children only (`> .shopify-block:not(:first-child)`); container blocks (`group`, `columns`, `media`) use their own `gap` setting for between-child spacing — see `theme-root.md` § Rhythm scope.
-- **Color-scheme override.** `color-scheme:<id>` on the section root activates that scheme's `--color-role-*` tokens, scoped via the per-scheme selectors in `utility--css-variables`. Block-level color-scheme overrides (on `group`/`columns`/`media`/etc.) re-emit the tokens for their subtree.
+- **Color-scheme override (gated).** The `custom_color_scheme` checkbox (default off) gates the override: off → the section emits no `color-scheme` modifier and rides the global/substrate scheme; on → `color-scheme:<id>` activates that scheme's `--color-role-*` tokens (scoped via the per-scheme selectors in `utility--css-variables`) and the theme-root re-paints its `background` + `color` (see `theme-root.md` § Scheme paint). Block-level overrides (on `group`/`columns`/`media`) use the same gate, re-emitting tokens for their subtree.
 - **Empty section renders the wrapper.** `{% content_for 'blocks' %}` against zero blocks emits nothing inside the wrapper; the `<token-section>` outer + the `.shopify-section` wrapper still render, including all dynamic-style emission. Sections in the editor without blocks remain selectable.
 - **`disabled_on` excludes header / footer groups.** The section is not addable inside section groups for header / footer (those groups have their own specialized sections). Page-level template positions remain addable.
 - **Presets covered by their own specs.** The schema's `presets` array carries the default empty `Section` plus four shipped L2 presets — `hero`, `features`, `content`, `cta` (portable compositions: color-scheme set by handle, all metaobject-picker settings left unset so they fall to substrate defaults and carry no store-scoped GID). Each preset earns its own Tier 3 spec per `validation-contract.md` (pending). This spec covers the host; the preset compositions attach via `presets[]` entries.
