@@ -134,6 +134,8 @@ Per `validation-contract.md` Tier 2 (theme-primitive).
 
 - **Tier**: primitive (L1 block-backed; no sub-component half)
 - **Page**: `sections/validation--primitive--title.liquid` + `templates/index.validation--primitive--title.json` (shipped)
+- **Tests**: `.tests/e2e/primitive--title.spec.js` (executable; `npm run test:e2e`)
+- **Requires seeded**: `text_style/h1`, `theme_color/accent`, `icon/arrow`, `content_width/reading` — Token's shipped seed catalog (see `text-style.md`, `theme-color.md`, `icon.md`, `content-width.md` § Seed entries). A test needing an unseeded handle signals a seed-set gap, not a test workaround.
 - **API surface**:
   - **Tag matrix**: render the same content across `h1`, `h2`, `h3`, `h4`, `h5`, `h6`, `p` — verify the DOM element tag matches the setting per instance
   - **text_style override**: with `tag: h2`, set `text_style` to each shipped entry → verify the modifier is emitted and the typography matches the entry (overriding the bare `h2` style)
@@ -150,13 +152,19 @@ Per `validation-contract.md` Tier 2 (theme-primitive).
   - `text_style` set to a handle with no matching entry (e.g. seed an off-list value) → modifier still emitted; CSS rule does not match; bare-tag binding stays in effect (graceful fall-through, no broken render)
   - Inline rich text in `content` (em / strong / links) → preserved in the heading; document outline still uses the visible text
 - **Visual showcase**: matrix of tags × text_styles × alignments. Reader confirms tag-emission branch, style application via modifier, alignment per setting, color resolution, icon placement.
-- **Assertions** (prose; Playwright once installed):
-  - Each instance's rendered DOM element matches the configured `tag`
-  - Instances with `text_style` set carry `data-modifiers*='text-style:<handle>'`
-  - Computed `font-family` / `font-size` / `font-weight` resolve to the configured text_style entry's values
-  - Computed `color` matches `text_color` (or `--color-role-foreground-heading` when blank)
-  - Computed `text-align` matches `text_align` (or `start` when blank)
-  - Instances with `content_width` set have computed `max-inline-size` matching the cap; `margin-inline` resolves to `auto` on both sides
+- **Assertions** (executable — `.tests/e2e/primitive--title.spec.js`):
+  - Each instance's rendered DOM element matches the configured `tag` (`h1`–`h6`, `p`)
+  - Default instance (bare `h2`, no overrides) emits no `data-modifiers`; root carries an `id`
+  - Bare-tag bindings produce a descending font-size hierarchy (`h1` > `h2` > `h3`)
+  - `text_style` override emits `data-modifiers="text-style:<handle>"` and applies the entry typography over the bare tag (an `h3` set to `text_style: h1` computes the `h1` font-size)
+  - Inline rich text (`em` / `strong` / `a`) is preserved
+  - `icon` renders as a leading `<svg>` (first child)
+  - `text_align` `center` / `end` emit `--text-align` and compute the matching `text-align`; `start` emits nothing
+  - `text_color` resolves to the `theme_color` value (`accent` → `rgb(255, 107, 53)`) and differs from the default heading color
+  - `content_width` emits `--content-width` (`reading` → `42.5rem` / `680px`) and centers via symmetric inline margins
+  - Top-spacing emits `--mobile-/--desktop-margin-block-start` (positive `1.0rem` / `4.0rem`, negative `-1.0rem` / `-3.0rem`) — emitted contract; painted margin is Tier 3
+  - Blank `content` renders no element — no empty title leaks into the suite
+- **Deliberately unasserted**: `block.shopify_attributes` (editor-only, not emitted on `?view=` renders); off-list `text_style` handle fall-through (needs a seeded handle with no matching binding, which the shipped catalog omits). text_style typographic legibility is delegated to `validation--substrate--text-style`.
 - **Unit scope**: none (Liquid + CSS only)
 
 ## Out of scope
