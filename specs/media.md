@@ -7,10 +7,10 @@
 **Status**: shipped
 
 **Implementation**:
-- `snippets/media.liquid` v1.4.0 (render surface)
+- `snippets/media.liquid` v1.4.1 (render surface)
 - `blocks/media.liquid` v1.4.0 (block schema + render call)
 
-**Reconciled**: 2026-06-05
+**Reconciled**: 2026-06-27 (snippet v1.4.0 → v1.4.1 — added `inline-size: 100%` so the block fills its track instead of shrinking to content intrinsic width; `max-inline-size: var(--content-width)` still caps, `margin-inline: auto` still centers when capped)
 
 **Reviewed**: pending
 

@@ -27,11 +27,28 @@ Substrate selectors match all theme-roots via `[data-modifiers*='theme-root']` �
 A theme-root carries four responsibilities. They co-locate on the element by design — they're tightly coupled in practice and separating them would impose more cost than it saves.
 
 1. **JS runtime.** Custom-element class extending `BaseComponent`. Hosts the four lifecycle managers for the element's subtree.
-2. **Theming context.** Carries `color-scheme:<id>` modifier; per-scheme rules re-emit `--color-role-*` tokens scoped to the modifier-bearing element.
+2. **Theming context.** Carries `color-scheme:<id>` modifier; per-scheme rules re-emit `--color-role-*` tokens scoped to the modifier-bearing element, and the theme-root paints its own `background` + `color` from those tokens so a section-level scheme override renders a real background band. See § Scheme paint.
 3. **Layout root — bleed grid.** Theme-root resolves as a CSS grid with three tracks and four named lines (`bleed-start` / `content-start` / `content-end` / `bleed-end`). Direct children declare span via `grid-column`, gated on `bleed-desktop:<value>` / `bleed-mobile:<value>` modifiers. See § Bleed grid.
 4. **Implicit container for direct block children.** Direct `.shopify-block` children participate in the block-rhythm cascade. Container blocks (`group`, `columns`, `media`) take over composition for their own children (their own gap governs nested spacing — the cascade doesn't leak through).
 
-**Appearance defaults are not a theme-root responsibility.** Typography, color, background, transitions, and form-input styling live on `<body>` in `layer-theme.css`. They cascade to every element inside `<body>` — chrome (header / footer), theme-roots, app sections alike. Apps with their own explicit styling override per normal cascade. See `subgrid-migration.md` § Body-level appearance.
+**Base appearance lives on `<body>`; per-section scheme paint lives on the theme-root.** Typography, transitions, and form-input styling live on `<body>` in `layer-theme.css` and cascade to every element inside it — chrome (header / footer), theme-roots, app sections alike. Background + foreground color are the one split: `<body>` paints the *base* scheme (so chrome + app sections inherit it), and each theme-root *re-paints* its own scheme `background` + `color` from its `--color-role-*` tokens, so a section-level `color_scheme` override renders a real background band and re-resolves text color for descendants. See § Scheme paint and `subgrid-migration.md` § Body-level appearance.
+
+## Scheme paint
+
+Each theme-root paints its own scheme background and foreground:
+
+```css
+[data-modifiers*='theme-root'] {
+  background: var(--gradient-background);
+  color: var(--color-role-foreground);
+}
+```
+
+`background` reads `--gradient-background` (a solid color when the scheme defines no gradient, the gradient otherwise); `color` reads `--color-role-foreground`. Both resolve against the `--color-role-*` tokens emitted on the *same* element by the `color-scheme:<id>` rule — so a section carrying `color-scheme:scheme-3` paints the scheme-3 background and sets scheme-3 foreground, which descendants inherit. Without the `color` declaration here, descendants would inherit `<body>`'s already-resolved foreground (a section override would recolor nothing).
+
+`<body>` still paints the base scheme for chrome + app sections, which carry no theme-root. The theme-root paint is additive: every section paints its own band — the base scheme when unoverridden, the override scheme otherwise. Heading color (`--color-role-foreground-heading`) is applied by the body-level heading rule, which re-resolves per scheme through the same token cascade.
+
+Container blocks (`group` / `columns` / `media`) carry `color-scheme` overrides too, re-emitting tokens for their subtree, but they paint a background only via `container-style:card` / `elevated`; a plain container override changes token colors without a background fill. Section-level scheme paint is the theme-root's alone.
 
 ## Bleed grid
 
@@ -133,11 +150,11 @@ This resolves the "rhythm + gap sum" footgun that exists when a flat selector (`
 
 ## Substrate CSS shape
 
-The substrate's `layer-theme.css` carries the bleed grid, bleed-direction rules, rhythm cascade, and container-style variants. Appearance lives on `<body>` (separately). Indicative shape:
+The substrate's `layer-theme.css` carries the bleed grid, bleed-direction rules, rhythm cascade, per-section scheme paint, and container-style variants. Base appearance (typography, transitions, form inputs) lives on `<body>` separately. Indicative shape:
 
 ```css
 @layer theme {
-  /* Theme-root: bleed grid */
+  /* Theme-root: bleed grid + per-section scheme paint */
   [data-modifiers*='theme-root'] {
     display: grid;
     grid-template-columns:
@@ -150,6 +167,8 @@ The substrate's `layer-theme.css` carries the bleed grid, bleed-direction rules,
       [bleed-end];
     justify-content: center;
     position: relative;
+    background: var(--gradient-background);
+    color: var(--color-role-foreground);
   }
 
   /* Default: direct children sit in the content track */

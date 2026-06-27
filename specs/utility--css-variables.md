@@ -6,9 +6,9 @@
 
 **Status**: shipped
 
-**Implementation**: `snippets/utility--css-variables.liquid` v1.14.0 (CSS variable emitter)
+**Implementation**: `snippets/utility--css-variables.liquid` v1.14.1 (CSS variable emitter)
 
-**Reconciled**: 2026-06-04 (v1.12 added gradient per-stop opacity hooks; v1.13 added spacing-metaobject emission; v1.14 harmonized spacing emission to rem)
+**Reconciled**: 2026-06-27 (v1.14.1 — fixed `--base-*` alias emission: the base-text-style match compared metaobject drops by object identity, which never holds across drop instances; now compares by `.system.id`. v1.12 gradient per-stop opacity; v1.13 spacing-metaobject emission; v1.14 spacing rem harmonization)
 
 **Reviewed**: 2026-06-04
 

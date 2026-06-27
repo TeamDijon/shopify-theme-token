@@ -7,10 +7,10 @@
 **Status**: shipped
 
 **Implementation**:
-- `snippets/utility--css-variables.liquid` v1.14.0 (CSS variable emitter — text-style block; per-entry `:root` declarations + auto-bind selector rule)
+- `snippets/utility--css-variables.liquid` v1.14.1 (CSS variable emitter — text-style block; per-entry `:root` declarations + auto-bind selector rule)
 - Metaobject definition itself — created per `metaobject-definitions.md` § `text_style`
 
-**Reconciled**: 2026-06-15 (pin v1.11.0 → v1.14.0; css-variables v1.12.0–v1.14.0 touched only gradient + spacing emission, leaving the text-style block — per-entry `:root` declarations + auto-bind selector rule — unchanged since v1.11.0)
+**Reconciled**: 2026-06-27 (pin v1.14.0 → v1.14.1 — fixed the `--base-*` alias emission in the text-style block: the `base_text_style` match now compares by `.system.id` instead of object identity, which never held across drop instances. `base_text_style` resolves from `settings.base_text_style`, a metaobject reference setting stored as the entry handle. Per-entry `:root` declarations + auto-bind selector rule otherwise unchanged since v1.11.0)
 
 **Reviewed**: 2026-05-31
 

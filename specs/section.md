@@ -6,9 +6,9 @@
 
 **Status**: shipped
 
-**Implementation**: `sections/section.liquid` v1.7.0 (render surface + schema)
+**Implementation**: `sections/section.liquid` v1.8.0 (render surface + schema)
 
-**Reconciled**: 2026-06-05
+**Reconciled**: 2026-06-27
 
 **Reviewed**: pending
 
@@ -77,7 +77,7 @@ Section-specific CSS is minimal — most behavior comes from substrate rules mat
 
 The substrate rules that match are in `layer-theme.css` under `@layer theme`:
 
-- `[data-modifiers*='theme-root']` — bleed grid (`display: grid` + four named columns); rhythm cascade
+- `[data-modifiers*='theme-root']` — bleed grid (`display: grid` + four named columns); rhythm cascade; per-section scheme paint (`background: var(--gradient-background)` + `color: var(--color-role-foreground)`, see `theme-root.md` § Scheme paint)
 - `[data-modifiers*='theme-root'] > *` — default `grid-column: content-start / content-end`
 - `[data-modifiers*='theme-root'] > [data-modifiers*='bleed-desktop:<value>']` — bleed-direction grid-column rules
 - `[data-modifiers*='theme-root'] > .shopify-block:not(:first-child)` — block-rhythm cascade
@@ -106,7 +106,7 @@ Modifier-driven (not vars): `theme-root` (identity, matches bleed-grid + rhythm 
 - **Color-scheme override.** `color-scheme:<id>` on the section root activates that scheme's `--color-role-*` tokens, scoped via the per-scheme selectors in `utility--css-variables`. Block-level color-scheme overrides (on `group`/`columns`/`media`/etc.) re-emit the tokens for their subtree.
 - **Empty section renders the wrapper.** `{% content_for 'blocks' %}` against zero blocks emits nothing inside the wrapper; the `<token-section>` outer + the `.shopify-section` wrapper still render, including all dynamic-style emission. Sections in the editor without blocks remain selectable.
 - **`disabled_on` excludes header / footer groups.** The section is not addable inside section groups for header / footer (those groups have their own specialized sections). Page-level template positions remain addable.
-- **No `presets[]` in this spec.** The schema's `presets` array lists L2 preset entries — each preset is its own spec at Tier 3 per `validation-contract.md`. This spec covers the host; presets attach via `presets[]` entries and ship with their own preset specs.
+- **Presets covered by their own specs.** The schema's `presets` array carries the default empty `Section` plus four shipped L2 presets — `hero`, `features`, `content`, `cta` (portable compositions: color-scheme set by handle, all metaobject-picker settings left unset so they fall to substrate defaults and carry no store-scoped GID). Each preset earns its own Tier 3 spec per `validation-contract.md` (pending). This spec covers the host; the preset compositions attach via `presets[]` entries.
 
 ## Locale keys
 
@@ -119,6 +119,7 @@ Schema strings under `sections.section.*` (defined in `locales/en.default.schema
 - `sections.section.settings.appearance.content` (group header)
 - `sections.section.settings.color_scheme.label`
 - `sections.section.presets.section.name`
+- `sections.section.presets.{hero,features,content,cta}.{name,category}`
 
 No runtime strings; the section emits no user-visible chrome of its own.
 

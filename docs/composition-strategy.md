@@ -46,7 +46,7 @@ A preset is a saved composition of theme blocks, expressed as a preset entry in 
 
 **Discoverability.** Each preset carries a distinct name and a `category` key for picker grouping, drawn from the enum `banners` / `content` / `feature` / `layout` (attention surfaces / editorial bodies / repeating showcases / structural block presets). A generic section with no preset reads as an unlabeled "Section" in the editor, so the preset name and category carry the section's merchant-facing identity.
 
-**Portability.** Presets travel across stores, so preset JSON carries no store-scoped reference. A metaobject-picker setting (stored as a store-scoped GID) ships unset and falls through to the substrate default. A handle- or select-valued setting (`button-style:<handle>`, color-scheme handle) may be baked only to a seed-catalog entry — a handle that Token seeds on every store — so the reference resolves anywhere.
+**Portability.** Presets travel across stores. A `"type": "metaobject"` setting stores its value as the entry **handle**, not a store-scoped GID (see `design-system-metaobjects.md` § Storing a metaobject reference value). A handle from Token's seed catalog (`content_width: reading`, `button_style: solid-primary`, a `color_scheme` handle, …) resolves on any seeded store, so it may be baked into a preset. A handle outside the seed catalog — a per-store custom entry — won't resolve elsewhere; ship it unset so it falls through to the substrate default. The shipped presets currently leave metaobject pickers unset (conservative: every store renders, even before its catalog is tuned); baking seed-catalog handles is the richer-default alternative.
 
 ## Beyond L2 — specialized section
 

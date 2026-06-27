@@ -7,7 +7,7 @@
 **Status**: shipped
 
 **Implementation**:
-- `snippets/utility--css-variables.liquid` v1.14.0 (CSS variable emitter — `:root` gradient block, one `--gradient-<handle>` + paired `--gradient-<handle>-start-opacity` / `--gradient-<handle>-end-opacity` per non-reserved entry)
+- `snippets/utility--css-variables.liquid` v1.14.1 (CSS variable emitter — `:root` gradient block, one `--gradient-<handle>` + paired `--gradient-<handle>-start-opacity` / `--gradient-<handle>-end-opacity` per non-reserved entry)
 - Metaobject definition itself — created per `metaobject-definitions.md` § `gradient`
 
 **Reconciled**: 2026-06-15 (pin v1.12.0 → v1.14.0; css-variables v1.13.0/v1.14.0 touched only `--spacing-*` emission, leaving the gradient block — paired `--gradient-<handle>` + start/end-opacity vars introduced at v1.12.0 — unchanged)

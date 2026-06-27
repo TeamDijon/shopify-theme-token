@@ -41,6 +41,21 @@ These settings are load-bearing despite being hidden — removing them would bre
 
 **Color setting naming**: prefer role-specific ids (`text_color`, `line_color`, `background_color`, `overlay_color`) over a generic `content_color`. Labels stay user-facing ("Color"), but the id self-documents which CSS property the value drives — and disambiguates when a block exposes multiple colors (e.g. text + background).
 
+## Storing a metaobject reference value (handle, not GID)
+
+A `"type": "metaobject"` setting stores its value as the entry **handle** wherever a value is written by hand — a JSON template (`templates/*.json`), a preset's `settings` block in a section/block schema, or `config/settings_data.json`. `settings.<id>` / `section.settings.<id>` / `block.settings.<id>` then resolves that handle to the metaobject object.
+
+A `gid://shopify/Metaobject/<id>` value **silently resolves to `nil`** — no error, no theme-check offense; the setting reads blank and the consumer falls through to its default. This is the failure mode behind a section rendering on substrate defaults despite a populated-looking setting.
+
+```json
+// ✅ resolves
+{ "media_size": "half-screen", "content_width": "reading", "button_style": "solid-primary" }
+// ❌ silently nil — renders on defaults
+{ "media_size": "gid://shopify/Metaobject/463668904322" }
+```
+
+Handles are portable: Token's seed catalog uses the same handles on every store, so a handle-valued setting resolves after a theme push; a GID is store-scoped and does not. (The Shopify editor writes the handle automatically when a merchant picks an entry — this only bites hand-authored JSON.)
+
 ## Liquid usage
 
 Always guard with a blank check before accessing nested fields. Metaobject references can be blank even when a setting exists.
@@ -52,6 +67,8 @@ Always guard with a blank check before accessing nested fields. Metaobject refer
 ```
 
 When the value is passed through the modifier system, emit as `<key>:<handle>` — see `.context/docs/modifier-system.md`.
+
+**Compare references by `.system.id`, not `==`.** Two metaobject drops of the same entry are distinct instances, so `a == b` is `false` even when they point to the same entry; `a.system.id == b.system.id` is the identity test. (This bit the `base_text_style` match in `utility--css-variables`, which silently emitted no `--base-*` aliases until it switched to `.system.id`.)
 
 ### Dual-API consumption (when a snippet accepts either)
 

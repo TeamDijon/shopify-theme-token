@@ -6,7 +6,7 @@
 
 **Status**: shipped
 
-**Implementation**: `snippets/utility--css-variables.liquid` v1.14.0 — per-scheme rule block, scoped across `:root, [data-modifiers*="color-scheme:scheme-1"]` (default scheme + opt-in selector) and `[data-modifiers*="color-scheme:scheme-N"]` (per-scheme selectors). Substrate stylesheet pinned by description per `spec-convention.md` § Substrate stylesheets — the structural anchor is the per-scheme rule's selector chain + the four-group emission shape (direct color settings + brightness-derived opacity + hover variants + derived translucent tokens).
+**Implementation**: `snippets/utility--css-variables.liquid` v1.14.1 — per-scheme rule block, scoped across `:root, [data-modifiers*="color-scheme:scheme-1"]` (default scheme + opt-in selector) and `[data-modifiers*="color-scheme:scheme-N"]` (per-scheme selectors). Substrate stylesheet pinned by description per `spec-convention.md` § Substrate stylesheets — the structural anchor is the per-scheme rule's selector chain + the four-group emission shape (direct color settings + brightness-derived opacity + hover variants + derived translucent tokens).
 
 **Reconciled**: 2026-06-04
 

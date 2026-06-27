@@ -16,9 +16,9 @@
 
 **Consumers**:
 - `assets/layer-theme.css` — body transition (`var(--duration-base) var(--ease-standard)`), reduced-motion override (`transition-duration: 0s`), container-style variants (`var(--radius-default)`), block-rhythm cascade (`var(--block-rhythm)` — set per-section as `var(--spacing-<picked-handle>)`)
-- `snippets/utility--css-variables.liquid` v1.14.0 — overrides matching spacing handles with `spacing` metaobject values (mobile in `:root`, desktop in nested `@media`); cascade position drives the override
+- `snippets/utility--css-variables.liquid` v1.14.1 — overrides matching spacing handles with `spacing` metaobject values (mobile in `:root`, desktop in nested `@media`); cascade position drives the override
 - `snippets/button.liquid` v1.4.1 — transitions (`var(--duration-fast) var(--ease-out)`), focus ring (`var(--color-role-focus-ring)` + `--focus-ring-width` / `--focus-ring-offset`)
-- `snippets/icon.liquid` v1.4.1, `snippets/media.liquid` v1.4.0, every consumer of border-radius — read `--radius-*` for shape language
+- `snippets/icon.liquid` v1.4.1, `snippets/media.liquid` v1.4.1, every consumer of border-radius — read `--radius-*` for shape language
 - `assets/layer-utilities.css` — focus-visible patterns reading `--focus-ring-width` / `--focus-ring-offset`
 - Anywhere using `var(--layer-*)` for z-index stacking — sticky headers, drawers, dropdown menus, overlays
 - Anywhere using `var(--spacing-<slot>)` for component padding / gap / inset — substrate-aligned slots provide static defaults, with per-instance override via the indirection pattern (`padding: var(--component-spacing, var(--spacing-md))`)
