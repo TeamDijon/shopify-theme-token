@@ -8,7 +8,7 @@
 
 **Implementation**:
 - `snippets/utility--css-variables.liquid` v1.14.1 (CSS variable emitter — `--spacing-<handle>` per entry, mobile value in `:root`, desktop value in nested `@media (width >= 48rem)`; merchant-px input converted to rem at emit time; `@media` branch skips entries with blank `desktop_value`)
-- `sections/section.liquid` v1.8.0 (`block_rhythm` setting consumer — emits `--block-rhythm: var(--spacing-<picked-handle>)` per section)
+- `sections/section.liquid` v1.8.1 (`block_rhythm` setting consumer — emits `--block-rhythm: var(--spacing-<picked-handle>)` per section)
 - `assets/layer-theme.css` (block-rhythm cascade rule — reads `var(--block-rhythm)` for inter-block margin)
 - `assets/layer-base.css` (substrate defaults seed `--spacing-xs/sm/md/lg/xl` for the T-shirt slots; metaobject entries with matching handles override these via cascade position)
 - Metaobject definition itself — created per `metaobject-definitions.md` § `spacing`
@@ -21,7 +21,7 @@
 
 **Consumers**:
 - `snippets/utility--css-variables.liquid` v1.14.1 — iterates `metaobjects.spacing.values`, emits `--spacing-<handle>` for each (mobile in `:root`, desktop in `@media`)
-- `sections/section.liquid` v1.8.0 — `block_rhythm` setting (metaobject picker) drives `--block-rhythm: var(--spacing-<handle>)` per-section
+- `sections/section.liquid` v1.8.1 — `block_rhythm` setting (metaobject picker) drives `--block-rhythm: var(--spacing-<handle>)` per-section
 - Any consumer reading `var(--spacing-<handle>)` directly — substrate-T-shirt-slot consumers (`var(--spacing-md)` etc.) for static defaults; per-instance dynamic-style consumers via the indirection pattern (`var(--component-spacing, var(--spacing-md))` + `--component-spacing: var(--spacing-<picked>)` from per-block setting)
 - Block-level top-spacing escape-hatch (raw `mobile_margin_block_start` / `desktop_margin_block_start` px ranges on blocks) — *not* metaobject-driven; the spacing metaobject is for rhythmic / shared tokens, raw px is for per-instance overrides on top
 

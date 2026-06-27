@@ -6,7 +6,7 @@
 
 **Status**: shipped
 
-**Implementation**: `sections/section.liquid` v1.8.0 (render surface + schema)
+**Implementation**: `sections/section.liquid` v1.8.1 (render surface + schema)
 
 **Reconciled**: 2026-06-27
 
