@@ -1,7 +1,8 @@
-{% # Columns block v1.5.0 %}
+{% # Columns block v1.6.0 %}
 
 {% comment %}
   Changelog
+  - v1.6.0 — color scheme becomes an explicit local override: new `custom_color_scheme` checkbox (default false) gates the `color_scheme` picker (`visible_if`); the snippet emits `color-scheme:<id>` only when checked. `color_scheme` gains the now-required `default: scheme-1`, hidden until the checkbox is on. See `.context/docs/schema-conventions.md` § Color-scheme override.
   - v1.5.0 — replace `bleed` checkbox with `bleed_desktop` (none/inline_start/inline_end/both) + `bleed_mobile` (none/both) responsive enum API. Bleed positioning moves from the snippet's own CSS to the section's named-line bleed grid (per subgrid migration). Merchants previously setting `bleed: true` reset to `bleed_desktop: none`.
   - v1.4.0 — add `container_style` setting (metaobject ref). Emits `container-style:<handle>` modifier; centralized CSS for card/outlined/elevated variants lives in `core.css` `@layer theme`.
   - v1.3.0 — replace `@theme` blocks wildcard with an explicit whitelist of the 9 shipped L1 blocks per the block-whitelisting convention in `composition-strategy.md`
@@ -141,10 +142,18 @@
       "info": "t:blocks.columns.settings.container_style.info"
     },
     {
+      "type": "checkbox",
+      "id": "custom_color_scheme",
+      "label": "t:blocks.columns.settings.custom_color_scheme.label",
+      "info": "t:blocks.columns.settings.custom_color_scheme.info",
+      "default": false
+    },
+    {
       "type": "color_scheme",
       "id": "color_scheme",
       "label": "t:blocks.columns.settings.color_scheme.label",
-      "info": "t:blocks.columns.settings.color_scheme.info"
+      "default": "scheme-1",
+      "visible_if": "{{ block.settings.custom_color_scheme }}"
     },
     {
       "type": "header",

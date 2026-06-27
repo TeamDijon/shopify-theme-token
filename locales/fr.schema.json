@@ -72,6 +72,10 @@
           "info": "Espace vertical entre les blocs. Laisser vide pour aucun."
         },
         "appearance": { "content": "Apparence" },
+        "custom_color_scheme": {
+          "label": "Utiliser une palette personnalisée",
+          "info": "Désactivé : utilise la palette globale. Activé : applique la palette choisie à cette section et son contenu."
+        },
         "color_scheme": { "label": "Palette de couleurs" }
       },
       "presets": {
@@ -368,9 +372,12 @@
           "label": "Superposition",
           "info": "Teinte appliquée sur le média. Transparent pour aucune."
         },
+        "custom_color_scheme": {
+          "label": "Utiliser une palette personnalisée",
+          "info": "Désactivé : utilise la palette environnante. Activé : applique la palette choisie à ce bloc et son contenu."
+        },
         "color_scheme": {
-          "label": "Palette de couleurs",
-          "info": "Remplace la palette de la section pour ce bloc et ses enfants"
+          "label": "Palette de couleurs"
         },
         "top_spacing": { "content": "Espacement supérieur" },
         "mobile_margin_block_start": { "label": "Mobile" },
@@ -483,9 +490,12 @@
           "label": "Style de conteneur",
           "info": "Variante nommée (card / outlined / elevated). Laisser vide pour aucun style."
         },
+        "custom_color_scheme": {
+          "label": "Utiliser une palette personnalisée",
+          "info": "Désactivé : utilise la palette environnante. Activé : applique la palette choisie à ce bloc et son contenu."
+        },
         "color_scheme": {
-          "label": "Palette de couleurs",
-          "info": "Remplace la palette de la section pour ce bloc et ses enfants"
+          "label": "Palette de couleurs"
         },
         "top_spacing": { "content": "Espacement supérieur" },
         "mobile_margin_block_start": { "label": "Mobile" },
@@ -570,9 +580,12 @@
           "label": "Style de conteneur",
           "info": "Variante nommée (card / outlined / elevated). Laisser vide pour aucun style."
         },
+        "custom_color_scheme": {
+          "label": "Utiliser une palette personnalisée",
+          "info": "Désactivé : utilise la palette environnante. Activé : applique la palette choisie à ce bloc et son contenu."
+        },
         "color_scheme": {
-          "label": "Palette de couleurs",
-          "info": "Remplace la palette de la section pour ce bloc et ses enfants"
+          "label": "Palette de couleurs"
         },
         "top_spacing": { "content": "Espacement supérieur" },
         "mobile_margin_block_start": { "label": "Mobile" },

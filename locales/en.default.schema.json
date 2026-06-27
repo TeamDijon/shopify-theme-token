@@ -63,6 +63,10 @@
           "info": "Vertical space between blocks. Leave blank for none."
         },
         "appearance": { "content": "Appearance" },
+        "custom_color_scheme": {
+          "label": "Use a custom color scheme",
+          "info": "Off uses the global color scheme. On applies the chosen scheme to this section and its content."
+        },
         "color_scheme": { "label": "Color scheme" }
       },
       "presets": {
@@ -359,9 +363,12 @@
           "label": "Overlay",
           "info": "Tint painted over the media. Transparent for none."
         },
+        "custom_color_scheme": {
+          "label": "Use a custom color scheme",
+          "info": "Off uses the surrounding color scheme. On applies the chosen scheme to this block and its content."
+        },
         "color_scheme": {
-          "label": "Color scheme",
-          "info": "Override the section's scheme for this block and its children"
+          "label": "Color scheme"
         },
         "top_spacing": { "content": "Top spacing" },
         "mobile_margin_block_start": { "label": "Mobile" },
@@ -474,9 +481,12 @@
           "label": "Container style",
           "info": "Named variant (card / outlined / elevated). Leave blank for no styling."
         },
+        "custom_color_scheme": {
+          "label": "Use a custom color scheme",
+          "info": "Off uses the surrounding color scheme. On applies the chosen scheme to this block and its content."
+        },
         "color_scheme": {
-          "label": "Color scheme",
-          "info": "Override the section's scheme for this block and its children"
+          "label": "Color scheme"
         },
         "top_spacing": { "content": "Top spacing" },
         "mobile_margin_block_start": { "label": "Mobile" },
@@ -561,9 +571,12 @@
           "label": "Container style",
           "info": "Named variant (card / outlined / elevated). Leave blank for no styling."
         },
+        "custom_color_scheme": {
+          "label": "Use a custom color scheme",
+          "info": "Off uses the surrounding color scheme. On applies the chosen scheme to this block and its content."
+        },
         "color_scheme": {
-          "label": "Color scheme",
-          "info": "Override the section's scheme for this block and its children"
+          "label": "Color scheme"
         },
         "top_spacing": { "content": "Top spacing" },
         "mobile_margin_block_start": { "label": "Mobile" },

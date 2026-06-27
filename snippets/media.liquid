@@ -1,7 +1,8 @@
-{% # Media v1.4.1 %}
+{% # Media v1.5.0 %}
 
 {% comment %}
   Changelog
+  - v1.5.0 — color scheme gated by the new `custom_color_scheme` setting: emit the `color-scheme:<id>` modifier only when the override is on (was: emit whenever `color_scheme` was non-blank). New `custom_color_scheme` param; `color_scheme` defaults to `scheme-1`. Paired with blocks/media.liquid v1.5.0. See `.context/docs/schema-conventions.md` § Color-scheme override.
   - v1.4.1 — add `inline-size: 100%` to `.shopify-block--media` so the block fills its grid/flow track instead of shrinking to the intrinsic width of its content. Without it, `margin-inline: auto` overrode the grid item's default stretch and the block collapsed to the placeholder SVG's intrinsic ~300px (visible on image-less / small-image media); `max-inline-size: var(--content-width)` still caps it, `margin-inline: auto` still centers it when capped.
   - v1.4.0 — replace `bleed` boolean with responsive `bleed_desktop` (none/inline_start/inline_end/both) + `bleed_mobile` (none/both) enums. Emits `bleed-desktop:<value>` / `bleed-mobile:<value>` modifiers consumed by the section's named-line bleed grid. Removes the snippet's own bleed CSS (negative-margin escape) — section handles via `grid-column`. Centered-ancestor footgun resolved by the new model: bleed only fires at section direct-child position, not deep-nested. Per the subgrid migration (`.context/docs/subgrid-migration.md`).
   - v1.3.0 — read `container_style` metaobject and emit `container-style:<handle>` modifier when set. Centralized variant CSS (card / outlined / elevated) lives in `core.css` `@layer theme`.
@@ -43,7 +44,8 @@
   @param {number} [gap] - Child content gap in px. Defaults to 16.
   @param {string} [overlay_color] - Tint color (with alpha) painted over the media. No overlay when blank or fully transparent.
   @param {metaobject} [container_style] - `container_style` metaobject. Reads `.system.handle`; emits `container-style:<handle>` modifier. Centralized CSS in `core.css` handles card / outlined / elevated.
-  @param {string} [color_scheme] - Optional `color_scheme` setting value. When set, emits `color-scheme:<id>` modifier so the global scheme rules from `utility--css-variables` apply.
+  @param {boolean} [custom_color_scheme] - When true, emit the `color-scheme:<id>` override modifier so this block and its content use `color_scheme` instead of the inherited scheme. Defaults to false.
+  @param {string} [color_scheme] - Color scheme id applied when `custom_color_scheme` is true. Defaults to `scheme-1`.
   @param {number} [mobile_margin_block_start] - Top margin in px below the desktop breakpoint. Defaults to 0.
   @param {number} [desktop_margin_block_start] - Top margin in px at or above the desktop breakpoint. Defaults to 0.
 
@@ -71,7 +73,8 @@
   assign gap = gap | default: block.settings.gap | default: 16
   assign overlay_color = overlay_color | default: block.settings.overlay_color | default: ''
   assign container_style = container_style | default: block.settings.container_style | default: ''
-  assign color_scheme = color_scheme | default: block.settings.color_scheme | default: ''
+  assign custom_color_scheme = custom_color_scheme | default: block.settings.custom_color_scheme, allow_false: true | default: false, allow_false: true
+  assign color_scheme = color_scheme | default: block.settings.color_scheme | default: 'scheme-1'
   assign mobile_margin_block_start = mobile_margin_block_start | default: block.settings.mobile_margin_block_start | default: 0
   assign desktop_margin_block_start = desktop_margin_block_start | default: block.settings.desktop_margin_block_start | default: 0
 
@@ -118,7 +121,7 @@
   if container_style != blank
     assign modifier_list = modifier_list | append: ',container-style:' | append: container_style.system.handle
   endif
-  if color_scheme != blank
+  if custom_color_scheme
     assign modifier_list = modifier_list | append: ',color-scheme:' | append: color_scheme
   endif
   capture sizing_modifier

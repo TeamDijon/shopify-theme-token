@@ -1,7 +1,8 @@
-{% # Group v1.6.0 %}
+{% # Group v1.7.0 %}
 
 {% comment %}
   Changelog
+  - v1.7.0 — color scheme gated by the new `custom_color_scheme` setting: emit the `color-scheme:<id>` modifier only when the override is on (was: emit whenever `color_scheme` was non-blank). New `custom_color_scheme` param; `color_scheme` defaults to `scheme-1`. Paired with blocks/group.liquid v1.5.0. See `.context/docs/schema-conventions.md` § Color-scheme override.
   - v1.6.0 — inner wrapper tag renamed `<theme-layout>` → `<token-layout>` (theme fingerprint pass paired with `<theme-section>` → `<token-section>`). CSS selectors update `> theme-layout` → `> token-layout`. Per-project CSS targeting the old tag must rename.
   - v1.5.0 — replace inner wrapper `<div class="inner">` with `<theme-layout>` custom element (per subgrid migration Stage 3). CSS selectors update from `> .inner` to `> theme-layout`. Markup change only; computed layout unchanged. Per-project CSS targeting `.inner` inside group must rename to `theme-layout`.
   - v1.4.0 — replace `bleed` boolean with responsive `bleed_desktop` (none/inline_start/inline_end/both) + `bleed_mobile` (none/both) enums. Emits `bleed-desktop:<value>` / `bleed-mobile:<value>` modifiers consumed by the section's named-line bleed grid (substrate `layer-theme.css` rewrite). Removes the snippet's own bleed CSS — section handles via `grid-column`. Per the subgrid migration (`.context/docs/subgrid-migration.md`); strict container-only bleed model.
@@ -32,7 +33,8 @@
   @param {string} [bleed_desktop] - At/above 48rem: extend the group's start / end / both edges to the section's bleed boundary. One of `'none'` (default), `'inline_start'`, `'inline_end'`, `'both'`. Emitted as `bleed-desktop:<value>` modifier when ≠ `none`; the section's named-line bleed grid handles positioning.
   @param {string} [bleed_mobile] - Below 48rem: full-bleed only. One of `'none'` (default) or `'both'`. Single-column mobile has no edge tracks, so per-side bleed has no geometric meaning there.
   @param {metaobject} [container_style] - `container_style` metaobject. Reads `.system.handle`; emits `container-style:<handle>` modifier. Centralized CSS in `layer-theme.css` handles card / outlined / elevated.
-  @param {string} [color_scheme] - Optional `color_scheme` setting value. When set, emits `color-scheme:<id>` modifier so the global scheme rules from `utility--css-variables` apply.
+  @param {boolean} [custom_color_scheme] - When true, emit the `color-scheme:<id>` override modifier so this block and its content use `color_scheme` instead of the inherited scheme. Defaults to false.
+  @param {string} [color_scheme] - Color scheme id applied when `custom_color_scheme` is true. Defaults to `scheme-1`.
   @param {number} [mobile_margin_block_start] - Top margin in px below the desktop breakpoint. Defaults to 0.
   @param {number} [desktop_margin_block_start] - Top margin in px at or above the desktop breakpoint. Defaults to 0.
 
@@ -52,7 +54,8 @@
   assign bleed_desktop = bleed_desktop | default: block.settings.bleed_desktop | default: 'none'
   assign bleed_mobile = bleed_mobile | default: block.settings.bleed_mobile | default: 'none'
   assign container_style = container_style | default: block.settings.container_style | default: ''
-  assign color_scheme = color_scheme | default: block.settings.color_scheme | default: ''
+  assign custom_color_scheme = custom_color_scheme | default: block.settings.custom_color_scheme, allow_false: true | default: false, allow_false: true
+  assign color_scheme = color_scheme | default: block.settings.color_scheme | default: 'scheme-1'
   assign mobile_margin_block_start = mobile_margin_block_start | default: block.settings.mobile_margin_block_start | default: 0
   assign desktop_margin_block_start = desktop_margin_block_start | default: block.settings.desktop_margin_block_start | default: 0
 
@@ -69,7 +72,7 @@
   if container_style != blank
     assign modifier_list = modifier_list | append: ',container-style:' | append: container_style.system.handle
   endif
-  if color_scheme != blank
+  if custom_color_scheme
     assign modifier_list = modifier_list | append: ',color-scheme:' | append: color_scheme
   endif
 

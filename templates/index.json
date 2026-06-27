@@ -9,9 +9,7 @@
   "sections": {
     "hero": {
       "type": "section",
-      "settings": {
-        "color_scheme": "scheme-1"
-      },
+      "settings": {},
       "blocks": {
         "media": {
           "type": "media",
@@ -20,6 +18,7 @@
             "bleed_desktop": "both",
             "bleed_mobile": "both",
             "overlay_color": "rgba(0,0,0,0.45)",
+            "custom_color_scheme": true,
             "color_scheme": "scheme-3",
             "horizontal_alignment": "center",
             "vertical_alignment": "center"
@@ -58,8 +57,7 @@
       "type": "section",
       "settings": {
         "content_width": "medium",
-        "block_rhythm": "md",
-        "color_scheme": "scheme-1"
+        "block_rhythm": "md"
       },
       "blocks": {
         "heading": {
@@ -108,6 +106,7 @@
       "settings": {
         "content_width": "reading",
         "block_rhythm": "md",
+        "custom_color_scheme": true,
         "color_scheme": "scheme-2"
       },
       "blocks": {
@@ -142,6 +141,7 @@
       "settings": {
         "content_width": "reading",
         "block_rhythm": "lg",
+        "custom_color_scheme": true,
         "color_scheme": "scheme-3"
       },
       "blocks": {

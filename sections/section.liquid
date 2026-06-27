@@ -1,7 +1,8 @@
-{% # Section v1.8.1 %}
+{% # Section v1.9.0 %}
 
 {% comment %}
   Changelog
+  - v1.9.0 — color scheme becomes an explicit local override. New `custom_color_scheme` checkbox (default false) gates the `color_scheme` picker (`visible_if`); the `color-scheme:<id>` modifier is emitted only when checked. Off = the section rides the global/substrate scheme (no modifier, cascades from `<body>`). Aligns with the substrate→local-override model; matches the gate now on group/columns/media. See `.context/docs/schema-conventions.md` § Color-scheme override + `theme-root.md` § Scheme paint.
   - v1.8.1 — bake seed-catalog metaobject handles into the four presets (content_width, block_rhythm, media_size, button_style). Metaobject settings store the entry handle, and Token seeds the same handles on every store, so these resolve anywhere — richer out-of-box presets without store-scoped GIDs. See `.context/docs/design-system-metaobjects.md` § Storing a metaobject reference value.
   - v1.8.0 — add four L2 presets (hero, features, content, cta) alongside the default empty Section. Each is a portable composition: color-scheme set via handle, all metaobject-picker settings (content_width, block_rhythm, media_size, button_style, …) left unset so they fall through to substrate defaults and carry no store-scoped GID. Block copy falls back to each block's own default content key. See `.context/docs/composition-strategy.md` § L2 — presets.
   - v1.7.0 — `--content-width` emission harmonized to rem (was px), matching the codebase-wide merchant-px / front-end-rem convention (gutter, text-style, spacing, block-layout-vars). Merchant input still px; converted at emit time via `divided_by: 16.0 | round: 3`. Per-project CSS doing arithmetic on `--content-width` (e.g., `calc(var(--content-width) - 2rem)`) now gets unit-consistent rem expressions.
@@ -18,9 +19,14 @@
   assign content_width = section.settings.content_width
   assign block_rhythm = section.settings.block_rhythm
   assign base_selector = 'shopify-section-' | append: section.id
+
+  assign scheme_modifier = ''
+  if section.settings.custom_color_scheme
+    assign scheme_modifier = ',color-scheme:' | append: section.settings.color_scheme
+  endif
 %}
 
-<token-section data-modifiers="theme-root,color-scheme:{{ section.settings.color_scheme }}">
+<token-section data-modifiers="theme-root{{ scheme_modifier }}">
   {% content_for 'blocks' %}
 </token-section>
 
@@ -79,10 +85,18 @@
       "content": "t:sections.section.settings.appearance.content"
     },
     {
+      "type": "checkbox",
+      "id": "custom_color_scheme",
+      "label": "t:sections.section.settings.custom_color_scheme.label",
+      "info": "t:sections.section.settings.custom_color_scheme.info",
+      "default": false
+    },
+    {
       "type": "color_scheme",
       "id": "color_scheme",
       "label": "t:sections.section.settings.color_scheme.label",
-      "default": "scheme-1"
+      "default": "scheme-1",
+      "visible_if": "{{ section.settings.custom_color_scheme }}"
     }
   ],
   "presets": [
@@ -92,9 +106,6 @@
     {
       "name": "t:sections.section.presets.hero.name",
       "category": "t:sections.section.presets.hero.category",
-      "settings": {
-        "color_scheme": "scheme-1"
-      },
       "blocks": {
         "media": {
           "type": "media",
@@ -103,6 +114,7 @@
             "bleed_desktop": "both",
             "bleed_mobile": "both",
             "overlay_color": "rgba(0,0,0,0.45)",
+            "custom_color_scheme": true,
             "color_scheme": "scheme-3",
             "horizontal_alignment": "center",
             "vertical_alignment": "center"
@@ -131,8 +143,7 @@
       "category": "t:sections.section.presets.features.category",
       "settings": {
         "content_width": "medium",
-        "block_rhythm": "md",
-        "color_scheme": "scheme-1"
+        "block_rhythm": "md"
       },
       "blocks": {
         "heading": {
@@ -163,6 +174,7 @@
       "settings": {
         "content_width": "reading",
         "block_rhythm": "md",
+        "custom_color_scheme": true,
         "color_scheme": "scheme-2"
       },
       "blocks": {
@@ -187,6 +199,7 @@
       "settings": {
         "content_width": "reading",
         "block_rhythm": "lg",
+        "custom_color_scheme": true,
         "color_scheme": "scheme-3"
       },
       "blocks": {
