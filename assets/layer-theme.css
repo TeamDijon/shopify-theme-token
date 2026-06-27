@@ -122,9 +122,9 @@
     }
   }
 
-  /* Spacer is an explicit gap — it replaces the rhythm at its boundary rather than stacking with it. A spacer takes no rhythm margin (its height IS the gap), and the block immediately after a spacer takes none either (the spacer already spaced it). Keeps `block_rhythm` (default between-sibling gap) and spacers (explicit gaps) from doubling up. See `.context/docs/theme-root.md` § Rhythm scope. */
-  [data-modifiers*='theme-root'] > .shopify-block--spacer,
-  [data-modifiers*='theme-root'] > .shopify-block--spacer + .shopify-block {
+  /* Spacer is an explicit gap — it replaces the rhythm at its boundary rather than stacking with it. A spacer takes no rhythm margin (its height IS the gap), and the block immediately after a spacer takes none either (the spacer already spaced it). Keeps `block_rhythm` (default between-sibling gap) and spacers (explicit gaps) from doubling up. Both selectors carry `:not(:first-child)` to match the rhythm rule's (0,3,0) specificity and must stay AFTER it, so they win on source order. See `.context/docs/theme-root.md` § Rhythm scope. */
+  [data-modifiers*='theme-root'] > .shopify-block--spacer:not(:first-child),
+  [data-modifiers*='theme-root'] > .shopify-block--spacer + .shopify-block:not(:first-child) {
     margin-block-start: 0;
   }
 
