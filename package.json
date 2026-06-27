@@ -5,9 +5,11 @@
     "dev": "npx shopify theme dev --environment development",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
+    "test:e2e": "playwright test",
     "check": "node .scripts/context-lint.mjs && npm run format:check && npx shopify theme check --fail-level error"
   },
   "devDependencies": {
+    "@playwright/test": "^1.61.1",
     "@shopify/cli": "^3.92.1",
     "@shopify/prettier-plugin-liquid": "^1.10.3",
     "prettier": "^3.3.3",

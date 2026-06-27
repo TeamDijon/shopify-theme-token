@@ -25,6 +25,11 @@ package-lock.json
 # Playwright MCP — local debug artifacts (snapshots, console logs, screenshots)
 .playwright-mcp/
 
+# Playwright e2e — run output (the .tests/ specs themselves are committed)
+test-results/
+playwright-report/
+.cache/
+
 # Local backlog scaffolding — never committed
 BACKLOG.md
 

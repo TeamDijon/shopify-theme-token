@@ -8,6 +8,7 @@ package-lock.json
 .vscode
 .claude
 .scripts
+.tests
 .playwright-mcp
 
 # Working scaffolding

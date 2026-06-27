@@ -32,13 +32,95 @@
             "mobile_margin_block_start": 16,
             "desktop_margin_block_start": 64
           }
+        },
+        "negative-spacing": {
+          "type": "button",
+          "settings": {
+            "content": "Negative top margin",
+            "link": "/",
+            "mobile_margin_block_start": -16,
+            "desktop_margin_block_start": -48
+          }
+        },
+        "icon-end": {
+          "type": "button",
+          "settings": {
+            "content": "Icon trails",
+            "link": "/",
+            "icon": "arrow",
+            "icon_position": "end"
+          }
+        },
+        "icon-start": {
+          "type": "button",
+          "settings": {
+            "content": "Icon leads",
+            "link": "/",
+            "icon": "arrow",
+            "icon_position": "start"
+          }
+        },
+        "combo": {
+          "type": "button",
+          "settings": {
+            "content": "Combo",
+            "link": "/",
+            "button_style": "outline-primary",
+            "icon": "arrow",
+            "icon_position": "end"
+          }
+        },
+        "link-style": {
+          "type": "button",
+          "settings": {
+            "content": "Link style",
+            "link": "/",
+            "button_style": "link-primary"
+          }
+        },
+        "escaped-content": {
+          "type": "button",
+          "settings": {
+            "content": "Save <b>50%</b>",
+            "link": "/"
+          }
+        },
+        "escaped-href": {
+          "type": "button",
+          "settings": {
+            "content": "Escaped href",
+            "link": "/x\" data-x=\"y"
+          }
+        },
+        "width-capped": {
+          "type": "button",
+          "settings": {
+            "content": "Capped width",
+            "link": "/",
+            "content_width": "reading"
+          }
+        },
+        "blank": {
+          "type": "button",
+          "settings": {
+            "content": ""
+          }
         }
       },
       "block_order": [
         "no-link",
         "with-link",
         "external-link",
-        "with-spacing"
+        "with-spacing",
+        "negative-spacing",
+        "icon-end",
+        "icon-start",
+        "combo",
+        "link-style",
+        "escaped-content",
+        "escaped-href",
+        "width-capped",
+        "blank"
       ],
       "settings": {}
     }
