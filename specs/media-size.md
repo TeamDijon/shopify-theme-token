@@ -22,7 +22,7 @@
 - `snippets/media.liquid` v1.5.0 — primary consumer; reads the picked `media_size` entry from the media block, dispatches on `type` (or routes to the special `fill` handle) to emit the appropriate CSS via dynamic style
 - `snippets/embed.liquid` v1.2.0 — same dispatch logic for embedded video (YouTube / Vimeo iframes)
 - `snippets/utility--media-sizing.liquid` v1.1.0 — the shared resolver that both `media` and `embed` reach through
-- `blocks/media.liquid` v1.5.0, `blocks/embed.liquid` v1.0.0 — block schemas expose the `media_size` setting (metaobject picker)
+- `blocks/media.liquid` v1.6.0, `blocks/embed.liquid` v1.1.0 — block schemas expose the `media_size` setting (metaobject picker)
 
 ## Purpose
 

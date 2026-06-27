@@ -18,7 +18,7 @@
 
 **Consumers**:
 - `snippets/button.liquid` v1.4.1 — primary consumer; reads the `button_style` setting from the button block, appends `button-style:<handle>` to `data-modifiers`, and applies the matching `{% stylesheet %}` rule
-- `blocks/button.liquid` v1.2.0 — block schema exposes the `button_style` setting (metaobject picker)
+- `blocks/button.liquid` v1.3.0 — block schema exposes the `button_style` setting (metaobject picker)
 - Future consumers wanting a button-style cascade (e.g., a `cta-banner` preset configuring nested button blocks' style) — set the modifier on a parent wrapper; descendant button rules inherit via the attribute-contains selector
 
 ## Purpose

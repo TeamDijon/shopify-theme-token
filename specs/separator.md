@@ -8,9 +8,9 @@
 
 **Implementation**:
 - `snippets/separator.liquid` v1.0.5 (render surface)
-- `blocks/separator.liquid` v1.0.0 (block schema + render call)
+- `blocks/separator.liquid` v1.1.0 (block schema + render call)
 
-**Reconciled**: 2026-05-31
+**Reconciled**: 2026-06-27 (block v1.1.0 — top-margin override range widened to `-200…200`; negatives emit via `utility--block-layout-vars` v1.2.0.)
 
 **Reviewed**: pending
 
@@ -36,8 +36,8 @@ Snippet args (`{% render %}`) and block schema settings cover the same surface; 
 | `block_id` | string | no | — | Snippet-only. Override for the base-selector identifier on direct renders. |
 | `content_width` | metaobject (`content_width`) | no | blank → 100% | Caps `max-inline-size` via `--content-width`. The wrapper self-centers via `margin-inline: auto`. |
 | `line_color` | metaobject (`theme_color`) | no | blank → `--color-role-border` | Reads `.system.handle`; emits `--line-color: var(--color-<handle>)`. The `<hr>`'s `border-block-start` consumes the var with the role-border fallback. |
-| `mobile_margin_block_start` | range (0–200, step 2, px) | no | `0` | Top margin below the desktop breakpoint. |
-| `desktop_margin_block_start` | range (0–200, step 2, px) | no | `0` | Top margin at/above the desktop breakpoint. |
+| `mobile_margin_block_start` | range (-200–200, step 2, px) | no | `0` | Top margin below the desktop breakpoint. |
+| `desktop_margin_block_start` | range (-200–200, step 2, px) | no | `0` | Top margin at/above the desktop breakpoint. |
 
 ## Output shape
 

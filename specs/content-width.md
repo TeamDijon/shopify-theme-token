@@ -8,7 +8,7 @@
 
 **Implementation**:
 - `sections/section.liquid` v1.9.1 (`content_width` setting consumer — emits `--content-width: <px/16>rem` per section via dynamic style)
-- `snippets/utility--block-layout-vars.liquid` v1.1.0 (per-block emitter — emits `--content-width: <px/16>rem` when a block's `content_width` setting is set; consumed by `group`, `columns`, `media`, `richtext`, `title`, `button`)
+- `snippets/utility--block-layout-vars.liquid` v1.2.0 (per-block emitter — emits `--content-width: <px/16>rem` when a block's `content_width` setting is set; consumed by `group`, `columns`, `media`, `richtext`, `title`, `button`)
 - `assets/layer-theme.css` (bleed-grid cap rule — reads `var(--content-width, 125rem)`; the substrate fallback acts as a big-screen protection)
 - Metaobject definition itself — created per `metaobject-definitions.md` § `content_width`
 
