@@ -12,8 +12,8 @@ For block-level top margin, use a mobile + desktop range pair preceded by a "Top
   "type": "range",
   "id": "mobile_margin_block_start",
   "label": "Mobile",
-  "min": -200,
-  "max": 200,
+  "min": -100,
+  "max": 100,
   "step": 2,
   "unit": "px",
   "default": 0
@@ -22,8 +22,8 @@ For block-level top margin, use a mobile + desktop range pair preceded by a "Top
   "type": "range",
   "id": "desktop_margin_block_start",
   "label": "Desktop",
-  "min": -200,
-  "max": 200,
+  "min": -100,
+  "max": 100,
   "step": 2,
   "unit": "px",
   "default": 0

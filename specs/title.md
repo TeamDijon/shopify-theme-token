@@ -10,7 +10,7 @@
 - `snippets/title.liquid` v1.1.3 (render surface)
 - `blocks/title.liquid` v1.2.0 (block schema + render call)
 
-**Reconciled**: 2026-06-27 (block v1.2.0 — top-margin override range widened to `-200…200`; negatives emit via `utility--block-layout-vars` v1.2.0.)
+**Reconciled**: 2026-06-27 (block v1.2.0 — top-margin override range widened to `-100…100`; negatives emit via `utility--block-layout-vars` v1.2.0.)
 
 **Reviewed**: pending
 
@@ -40,8 +40,8 @@ Snippet args (`{% render %}`) and block schema settings cover the same surface; 
 | `text_align` | select (`start` / `center` / `end`) | no | `"start"` | Inline text alignment. Emits `--text-align` only when ≠ `start`. |
 | `content_width` | metaobject (`content_width`) | no | blank → 100% | Caps `max-inline-size`. Self-centers via `margin-inline: auto` when capped. |
 | `text_color` | metaobject (`theme_color`) | no | blank → `--color-role-foreground-heading` | Reads `.system.handle`; emits `--text-color: var(--color-<handle>)`. |
-| `mobile_margin_block_start` | range (-200–200, step 2, px) | no | `0` | Top margin below the desktop breakpoint. |
-| `desktop_margin_block_start` | range (-200–200, step 2, px) | no | `0` | Top margin at/above the desktop breakpoint. |
+| `mobile_margin_block_start` | range (-100–100, step 2, px) | no | `0` | Top margin below the desktop breakpoint. |
+| `desktop_margin_block_start` | range (-100–100, step 2, px) | no | `0` | Top margin at/above the desktop breakpoint. |
 
 ## Output shape
 

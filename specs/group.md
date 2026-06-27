@@ -11,7 +11,7 @@
 - `blocks/group.liquid` v1.6.0 (block schema + render call)
 - `assets/token-layout.js` v1.1.0 (inner-wrapper custom element)
 
-**Reconciled**: 2026-06-27 (block v1.6.0 / snippet v1.7.0 — color scheme gated by `custom_color_scheme`; top-margin override range widened to `-200…200`, negatives via `utility--block-layout-vars` v1.2.0)
+**Reconciled**: 2026-06-27 (block v1.6.0 / snippet v1.7.0 — color scheme gated by `custom_color_scheme`; top-margin override range widened to `-100…100`, negatives via `utility--block-layout-vars` v1.2.0)
 
 **Reviewed**: pending
 
@@ -55,8 +55,8 @@ Snippet args (`{% render %}` interface) and block schema settings cover the same
 | `container_style` | metaobject (`container_style`) | no | blank | Reads `.system.handle`; emits `container-style:<handle>` modifier. Variant CSS lives **centrally in `layer-theme.css`** `@layer theme`, scoped across the three container blocks (group/columns/media) so the same handle yields the same visual treatment across consumers. |
 | `custom_color_scheme` | checkbox | no | `false` | Gates the local color-scheme override. Off → no modifier; the block rides the surrounding scheme. On → the picker applies. See `schema-conventions.md` § Color-scheme override. |
 | `color_scheme` | theme setting (`color_scheme`) | no (gated) | `"scheme-1"` | Applied only when `custom_color_scheme` is on (`visible_if`). Emits `color-scheme:<id>` modifier; the global per-scheme rules in `utility--css-variables` re-resolve `--color-role-*` tokens within the modifier-bearing element and its descendants. |
-| `mobile_margin_block_start` | range (-200–200, step 2, px) | no | `0` | Top margin below the desktop breakpoint. Routed through `utility--block-layout-vars`. |
-| `desktop_margin_block_start` | range (-200–200, step 2, px) | no | `0` | Top margin at/above the desktop breakpoint. Same routing. |
+| `mobile_margin_block_start` | range (-100–100, step 2, px) | no | `0` | Top margin below the desktop breakpoint. Routed through `utility--block-layout-vars`. |
+| `desktop_margin_block_start` | range (-100–100, step 2, px) | no | `0` | Top margin at/above the desktop breakpoint. Same routing. |
 
 ## Whitelisted children
 

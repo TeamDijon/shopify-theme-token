@@ -10,7 +10,7 @@
 - `snippets/button.liquid` v1.4.1 (render surface)
 - `blocks/button.liquid` v1.3.0 (block schema + render call)
 
-**Reconciled**: 2026-06-27 (block v1.3.0 — top-margin override range widened to `-200…200`; negatives emit via `utility--block-layout-vars` v1.2.0. Snippet v1.4.1 — `content` label escaped per `snippet-convention.md` § Output escaping.)
+**Reconciled**: 2026-06-27 (block v1.3.0 — top-margin override range widened to `-100…100`; negatives emit via `utility--block-layout-vars` v1.2.0. Snippet v1.4.1 — `content` label escaped per `snippet-convention.md` § Output escaping.)
 
 **Reviewed**: pending
 
@@ -42,8 +42,8 @@ Snippet args (`{% render %}` interface) and block schema settings cover the same
 | `icon` | metaobject (`icon`) | no | blank | Inline SVG before/after the label via `snippets/icon.liquid`. No icon when blank. |
 | `icon_position` | select (`start` / `end`) | no | `"start"` | Schema-level `visible_if`: shown only when `icon` is set. Snippet emits `icon-position:end` modifier when `end`; CSS flips `flex-direction: row-reverse`. |
 | `content_width` | metaobject (`content_width`) | no | blank → no cap | Reads `.width.value` (px) and applies as `--content-width`. |
-| `mobile_margin_block_start` | range (-200–200, step 2, px) | no | `0` | Top margin below the desktop breakpoint. Routed through `utility--block-layout-vars` → `--mobile-margin-block-start`. |
-| `desktop_margin_block_start` | range (-200–200, step 2, px) | no | `0` | Top margin at/above the desktop breakpoint. Routed through `utility--block-layout-vars` → `--desktop-margin-block-start`. |
+| `mobile_margin_block_start` | range (-100–100, step 2, px) | no | `0` | Top margin below the desktop breakpoint. Routed through `utility--block-layout-vars` → `--mobile-margin-block-start`. |
+| `desktop_margin_block_start` | range (-100–100, step 2, px) | no | `0` | Top margin at/above the desktop breakpoint. Routed through `utility--block-layout-vars` → `--desktop-margin-block-start`. |
 
 The 3×3 button_style matrix:
 

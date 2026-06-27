@@ -10,7 +10,7 @@
 - `snippets/media.liquid` v1.5.0 (render surface)
 - `blocks/media.liquid` v1.6.0 (block schema + render call)
 
-**Reconciled**: 2026-06-27 (block v1.6.0 — color scheme gated by `custom_color_scheme` + top-margin override range widened to `-200…200` (negatives via `utility--block-layout-vars` v1.2.0); snippet v1.5.0 — `inline-size: 100%` fills the track)
+**Reconciled**: 2026-06-27 (block v1.6.0 — color scheme gated by `custom_color_scheme` + top-margin override range widened to `-100…100` (negatives via `utility--block-layout-vars` v1.2.0); snippet v1.5.0 — `inline-size: 100%` fills the track)
 
 **Reviewed**: pending
 
@@ -62,8 +62,8 @@ Snippet args (`{% render %}`) and block schema settings cover the same surface; 
 | `container_style` | metaobject (`container_style`) | no | blank | Emits `container-style:<handle>` modifier. Centralized variant CSS in `layer-theme.css` (card / outlined / elevated). |
 | `custom_color_scheme` | checkbox | no | `false` | Gates the local color-scheme override. Off → no modifier; the block rides the surrounding scheme. On → the picker applies. See `schema-conventions.md` § Color-scheme override. |
 | `color_scheme` | theme setting (`color_scheme`) | no (gated) | `"scheme-1"` | Applied only when `custom_color_scheme` is on (`visible_if`). Emits `color-scheme:<id>` modifier for this block and its descendants. |
-| `mobile_margin_block_start` | range (-200–200, step 2, px) | no | `0` | Top margin below the desktop breakpoint. |
-| `desktop_margin_block_start` | range (-200–200, step 2, px) | no | `0` | Top margin at/above the desktop breakpoint. |
+| `mobile_margin_block_start` | range (-100–100, step 2, px) | no | `0` | Top margin below the desktop breakpoint. |
+| `desktop_margin_block_start` | range (-100–100, step 2, px) | no | `0` | Top margin at/above the desktop breakpoint. |
 
 ## Whitelisted children
 

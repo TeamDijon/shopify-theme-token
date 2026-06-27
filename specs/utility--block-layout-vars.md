@@ -8,7 +8,7 @@
 
 **Implementation**: `snippets/utility--block-layout-vars.liquid` v1.2.0 (CSS variable emitter — captured by the caller's `dynamic_style` block and routed through `utility--dynamic-style`)
 
-**Reconciled**: 2026-06-27 (v1.2.0 — margin pair emitted on `!= 0` (was `> 0`) so negative overrides reach the front end, pairing with the block schemas' `-200…200` range; v1.1.0 — content_width emission harmonized to rem, matching the margin pair and the codebase-wide merchant-px/front-end-rem convention)
+**Reconciled**: 2026-06-27 (v1.2.0 — margin pair emitted on `!= 0` (was `> 0`) so negative overrides reach the front end, pairing with the block schemas' `-100…100` range; v1.1.0 — content_width emission harmonized to rem, matching the margin pair and the codebase-wide merchant-px/front-end-rem convention)
 
 **Reviewed**: 2026-06-04
 
@@ -117,7 +117,7 @@ Per `validation-contract.md` Tier 1b (substrate / utility-snippet).
   - **Desktop margin (positive + negative + 0 + blank)**: same matrix
   - **All-blank case**: all three args blank/zero → utility emits nothing; the wrapping `{% capture dynamic_style %}` produces an empty string that `utility--dynamic-style` short-circuits (no `<style>` block written)
 - **Edge cases**:
-  - Negative margin value → emitted (e.g. `-2rem`), pulling the block tighter than the section rhythm (overlap). The block schema range is `-200…200`, so negatives are a supported escape-hatch value, not an edge case.
+  - Negative margin value → emitted (e.g. `-2rem`), pulling the block tighter than the section rhythm (overlap). The block schema range is `-100…100`, so negatives are a supported escape-hatch value, not an edge case.
   - Content_width metaobject with `width.value` blank → Liquid arithmetic coerces blank to `0` through `divided_by: 16.0 | round: 3`, so the emission is `--content-width: 0rem` (valid declaration; the block's content track collapses to 0). Schema validation should prevent the merchant from saving an entry without a width.
   - Very large margin (e.g., 200px max from range schema) → emits `12.5rem` (200/16). No issue.
   - Sub-1-px-step margin (range step is 2) → preserved at full precision through the divisor + round.
