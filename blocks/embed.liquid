@@ -1,4 +1,10 @@
-{% # Embed block v1.0.0 %}
+{% # Embed block v1.1.0 %}
+
+{% comment %}
+  Changelog
+  - v1.1.0 — top-margin override range widened to `-200…200` (was `0…200`): negative values pull a block tighter than the section rhythm. Pairs with `utility--block-layout-vars` v1.2.0 (emit on `!= 0`). See `.context/docs/schema-conventions.md` § Top-spacing pair.
+  - v1.0.0 — initial
+{% endcomment %}
 
 {% render 'embed', section: section, block: block %}
 
@@ -51,7 +57,7 @@
       "type": "range",
       "id": "mobile_margin_block_start",
       "label": "t:blocks.embed.settings.mobile_margin_block_start.label",
-      "min": 0,
+      "min": -200,
       "max": 200,
       "step": 2,
       "unit": "px",
@@ -61,7 +67,7 @@
       "type": "range",
       "id": "desktop_margin_block_start",
       "label": "t:blocks.embed.settings.desktop_margin_block_start.label",
-      "min": 0,
+      "min": -200,
       "max": 200,
       "step": 2,
       "unit": "px",

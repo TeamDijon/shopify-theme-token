@@ -1,7 +1,8 @@
-{% # Columns block v1.6.0 %}
+{% # Columns block v1.7.0 %}
 
 {% comment %}
   Changelog
+  - v1.7.0 — top-margin override range widened to `-200…200` (was `0…200`): negative values pull a block tighter than the section rhythm. Pairs with `utility--block-layout-vars` v1.2.0 (emit on `!= 0`). See `.context/docs/schema-conventions.md` § Top-spacing pair.
   - v1.6.0 — color scheme becomes an explicit local override: new `custom_color_scheme` checkbox (default false) gates the `color_scheme` picker (`visible_if`); the snippet emits `color-scheme:<id>` only when checked. `color_scheme` gains the now-required `default: scheme-1`, hidden until the checkbox is on. See `.context/docs/schema-conventions.md` § Color-scheme override.
   - v1.5.0 — replace `bleed` checkbox with `bleed_desktop` (none/inline_start/inline_end/both) + `bleed_mobile` (none/both) responsive enum API. Bleed positioning moves from the snippet's own CSS to the section's named-line bleed grid (per subgrid migration). Merchants previously setting `bleed: true` reset to `bleed_desktop: none`.
   - v1.4.0 — add `container_style` setting (metaobject ref). Emits `container-style:<handle>` modifier; centralized CSS for card/outlined/elevated variants lives in `core.css` `@layer theme`.
@@ -163,7 +164,7 @@
       "type": "range",
       "id": "mobile_margin_block_start",
       "label": "t:blocks.columns.settings.mobile_margin_block_start.label",
-      "min": 0,
+      "min": -200,
       "max": 200,
       "step": 2,
       "unit": "px",
@@ -173,7 +174,7 @@
       "type": "range",
       "id": "desktop_margin_block_start",
       "label": "t:blocks.columns.settings.desktop_margin_block_start.label",
-      "min": 0,
+      "min": -200,
       "max": 200,
       "step": 2,
       "unit": "px",

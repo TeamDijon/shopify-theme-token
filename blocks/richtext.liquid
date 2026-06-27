@@ -1,7 +1,8 @@
-{% # Richtext block v1.2.0 %}
+{% # Richtext block v1.3.0 %}
 
 {% comment %}
   Changelog
+  - v1.3.0 — top-margin override range widened to `-200…200` (was `0…200`): negative values pull a block tighter than the section rhythm. Pairs with `utility--block-layout-vars` v1.2.0 (emit on `!= 0`). See `.context/docs/schema-conventions.md` § Top-spacing pair.
   - v1.2.0 — drop `narrow` checkbox. Same concern (max-width cap) now expressed by the `content_width` metaobject alone — merchants seed a `text-narrow` entry (~65ch) and pick it on richtext blocks that should be narrow. Removes the overlapping `narrow` vs `content_width` editor surface.
   - v1.1.0 — add `text_align` setting (start/center/end)
   - v1.0.0 — initial
@@ -58,7 +59,7 @@
       "type": "range",
       "id": "mobile_margin_block_start",
       "label": "t:blocks.richtext.settings.mobile_margin_block_start.label",
-      "min": 0,
+      "min": -200,
       "max": 200,
       "step": 2,
       "unit": "px",
@@ -68,7 +69,7 @@
       "type": "range",
       "id": "desktop_margin_block_start",
       "label": "t:blocks.richtext.settings.desktop_margin_block_start.label",
-      "min": 0,
+      "min": -200,
       "max": 200,
       "step": 2,
       "unit": "px",

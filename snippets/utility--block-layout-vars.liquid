@@ -1,7 +1,8 @@
-{% # Block layout vars v1.1.0 %}
+{% # Block layout vars v1.2.0 %}
 
 {% comment %}
   Changelog
+  - v1.2.0 — emit the margin pair when the value is non-zero (`!= 0`) instead of only when positive (`> 0`), so negative top-margin overrides (pull a block tighter than the section rhythm) reach the front end. Pairs with the block schemas widening the range to `-200…200`. Zero still skips (falls through to the `--block-rhythm` cascade); blank still skips.
   - v1.1.0 — `--content-width` emission harmonized to rem (was px), matching the margin pair and the codebase-wide merchant-px / front-end-rem convention. Merchant input still px (via the metaobject's `width` field); converted at emit time via `divided_by: 16.0 | round: 3`. Doc string's "centralizes the px→rem divisor" claim is now accurate for all three vars (was previously true only for the margin pair).
   - v1.0.0 — initial
 {% endcomment %}
@@ -10,8 +11,8 @@
   @description Emits the CSS custom properties shared by every block's `dynamic_style` tail: the `content_width` cap and the mobile/desktop top-margin overrides. Emits only the non-default lines (skips blanks and zeros). Centralizes the px→rem divisor and the breakpoint contract so blocks don't re-implement them and can't drift.
 
   @param {metaobject} [content_width] - `content_width` metaobject. Emits `--content-width: <px/16>rem` when present. Pass blank to omit (e.g. richtext in narrow mode).
-  @param {number} [mobile_margin_block_start] - Top margin px below the desktop breakpoint. Emits `--mobile-margin-block-start` (rem) when > 0.
-  @param {number} [desktop_margin_block_start] - Top margin px at or above the breakpoint. Emits `--desktop-margin-block-start` (rem) when > 0.
+  @param {number} [mobile_margin_block_start] - Top margin px below the desktop breakpoint. Emits `--mobile-margin-block-start` (rem) when non-zero; negative pulls the block tighter than the section rhythm. Zero / blank skip (rhythm cascade applies).
+  @param {number} [desktop_margin_block_start] - Top margin px at or above the breakpoint. Emits `--desktop-margin-block-start` (rem) when non-zero; negative pulls tighter. Zero / blank skip.
 
   @example {% render 'utility--block-layout-vars', content_width: content_width, mobile_margin_block_start: mobile_margin_block_start, desktop_margin_block_start: desktop_margin_block_start %}
 {% enddoc %}
@@ -24,14 +25,14 @@
     echo 'rem;'
   endif
 
-  if mobile_margin_block_start and mobile_margin_block_start > 0
+  if mobile_margin_block_start and mobile_margin_block_start != 0
     assign mobile_rem = mobile_margin_block_start | divided_by: 16.0 | round: 3
     echo '--mobile-margin-block-start: '
     echo mobile_rem
     echo 'rem;'
   endif
 
-  if desktop_margin_block_start and desktop_margin_block_start > 0
+  if desktop_margin_block_start and desktop_margin_block_start != 0
     assign desktop_rem = desktop_margin_block_start | divided_by: 16.0 | round: 3
     echo '--desktop-margin-block-start: '
     echo desktop_rem
