@@ -122,6 +122,12 @@
     }
   }
 
+  /* Spacer is an explicit gap — it replaces the rhythm at its boundary rather than stacking with it. A spacer takes no rhythm margin (its height IS the gap), and the block immediately after a spacer takes none either (the spacer already spaced it). Keeps `block_rhythm` (default between-sibling gap) and spacers (explicit gaps) from doubling up. See `.context/docs/theme-root.md` § Rhythm scope. */
+  [data-modifiers*='theme-root'] > .shopify-block--spacer,
+  [data-modifiers*='theme-root'] > .shopify-block--spacer + .shopify-block {
+    margin-block-start: 0;
+  }
+
   /* Container style variants — applied to any container block (group, columns, media) carrying data-modifiers="container-style:<handle>". Centralized here so the three consumers share the same visual treatment; per-project CSS can extend or override. */
   :where(
     .shopify-block--group,
