@@ -41,7 +41,7 @@ The snippet renders one field at a time. The `{% form %}` wrapper, submit button
 | `type` | string | no | `'text'` | One of `'text'` / `'email'` / `'tel'` / `'number'` / `'url'` / `'password'` / `'textarea'` / `'select'` / `'checkbox'`. Off-list → falls back to `'text'`. |
 | `name` | string | yes | — | Control `name` attribute (used in form submission). Blank → snippet `break`s. |
 | `label` | string | yes | — | Field label text. Blank → snippet `break`s. The label is mandatory; `placeholder` is never a label substitute. |
-| `id` | string | no | `field-{{ name }}` | Control id for `<label for>` association. Pass explicit when the same `name` appears more than once on a page (multiple newsletter signup forms, etc.). |
+| `id` | string | no | `field-{{ name \| handleize }}` | Control id for `<label for>` association — the `name` is handleized (`contact[email]` → `field-contact-email`) for a CSS/JS-safe id. Pass explicit when two fields would handleize to the same id (multiple newsletter signup forms, etc.). |
 | `value` | string | no | blank | Prefilled value. For `checkbox`, presence-vs-absence drives the `checked` state — `value` non-blank means checked. For `select`, `value` matches one of the `options[i].value` and pre-selects it. |
 | `required` | boolean | no | `false` | Adds `required` attribute + `aria-required="true"` + visible `*` indicator (the asterisk is `aria-hidden` — `required` already announces). |
 | `placeholder` | string | no | blank | Hint inside text-family inputs / textarea. Never a label substitute. Disallowed on `select` (would interfere with the placeholder-option pattern) and `checkbox` (no placeholder concept). |
@@ -191,7 +191,7 @@ Control surface itself (background, text color, border default, hover, focus, di
 ## Behavior
 
 - **Type branching.** The snippet `case`-branches on `type`. Text-family types (`text` / `email` / `tel` / `number` / `url` / `password`) render `<input type="<type>">`; `textarea`, `select`, `checkbox` render their respective elements. Off-list values fall to `text`.
-- **Id auto-generation.** When `id` is blank, defaults to `field-{{ name }}` with name characters preserved (Shopify form names use `contact[email]` notation; the bracket chars stay in the id). Pass an explicit `id` when uniqueness conflicts emerge (multiple newsletter forms on a page).
+- **Id auto-generation.** When `id` is blank, defaults to `field-` + the handleized `name` (`contact[email]` → `field-contact-email`), keeping the id safe for `<label for>`, `aria-describedby`, and CSS/JS targeting. Pass an explicit `id` when two fields would handleize to the same id (multiple newsletter forms on a page).
 - **`aria-describedby` assembly.** The attribute value is composed from `{{ id }}-help` + `{{ id }}-error` per which spans are present (both → space-joined; one → that one's id; neither → attribute omitted). The order matters slightly: help before error puts the help description first in the SR's announcement chain, then the error.
 - **`required` triple-wiring.** Adds the HTML `required` attribute (browser-enforced), `aria-required="true"` (AT explicitness; some older AT requires the explicit ARIA), and the visible `*` (consumer-visible). The asterisk is `aria-hidden` because `required` (and `aria-required`) already convey it.
 - **Error state triple-wiring.** When `error` is set: `aria-invalid="true"` on the control, the `<span role="alert">` error message (announced when added live; pre-rendered errors are read when the SR walks the page), `--color-role-input-border` override via variable-shadow. The triple satisfies WCAG SC 3.3.1 (Error Identification) — programmatic state + accessible message + visual distinction.
@@ -201,6 +201,7 @@ Control surface itself (background, text color, border default, hover, focus, di
 - **`placeholder` discipline.** Disallowed on `select` (Shopify form patterns use placeholder-option, not the `placeholder` attribute which isn't valid on select). Disallowed on `checkbox` (semantically meaningless). Allowed on text-family + textarea; the snippet doesn't enforce — passing a placeholder on select or checkbox is a no-op (the attribute is set but the browser ignores it).
 - **Help vs error precedence in announcement order.** Both can coexist (e.g., a help that explains format + an error that says the input doesn't match the format). Order in DOM: help before error → SR reads help first, then error. The order is intentional: the help establishes context, the error indicates the violation.
 - **Early exit on blank `name` or `label`.** Either blank → snippet `break`s with no markup. Both are mandatory because the field's HTML identity (`name` for submission) and accessibility (`label` for SR / sighted users) are non-negotiable.
+- **Output escaping.** Shopify Liquid does not auto-escape `{{ }}`, so all caller-supplied display content — `label`, `placeholder`, `help`, `error`, `value`, and option `value` / `label` — is emitted through `| escape`. `name` and `id` are developer-controlled structural attributes emitted verbatim (`name` keeps its `contact[email]` form for submission; `id` is the handleized derivation).
 
 ## A11y
 
@@ -241,7 +242,7 @@ Per `validation-contract.md` Tier 2 (theme-primitive — snippet-half).
 - **Edge cases**:
   - `name` or `label` blank → snippet `break`s; no markup
   - Off-list `type` (e.g. `'date'`) → falls to `text` (no `<input type="date">` emitted)
-  - `error` with HTML in the message → escaped (Liquid `{{ error }}` interpolation default-escapes)
+  - `error` (and any caller-supplied content: `label`, `help`, `placeholder`, `value`, option labels) with HTML → escaped. Shopify Liquid does **not** auto-escape `{{ }}`; the snippet applies `| escape` explicitly, so HTML renders as text, not markup
   - `options` blank or empty array on `select` → renders `<select>` with no options
   - Same `name` rendered twice on a page without explicit `id` → second instance's id collides; consumer must pass explicit `id`
   - Reduced-motion preference → no transitions on form-field defined here; inherited from layer-theme.css's input rules
