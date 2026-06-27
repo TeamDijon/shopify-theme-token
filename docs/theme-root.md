@@ -150,6 +150,17 @@ Inside container blocks (`group`, `columns`, `media`), the parent's `gap` settin
 
 This resolves the "rhythm + gap sum" footgun that exists when a flat selector (`.shopify-block:not(:first-child)`) matches nested blocks: a child of a container block was receiving both the rhythm-cascade margin AND the parent's gap, summed visually.
 
+**Spacers are rhythm-neutral.** A `spacer` block is an *explicit* gap, so it replaces the rhythm at its boundary instead of stacking with it: the spacer takes no rhythm margin (its height is the gap), and the block immediately after a spacer takes none either (the spacer already spaced it). A second rule encodes this:
+
+```css
+[data-modifiers*='theme-root'] > .shopify-block--spacer,
+[data-modifiers*='theme-root'] > .shopify-block--spacer + .shopify-block {
+  margin-block-start: 0;
+}
+```
+
+So `block_rhythm` (the default between-sibling gap) and spacers (explicit gaps) never double up — a spacer yields exactly its token's height at that boundary. Additive spacing is achieved with a larger spacer token, not by stacking rhythm onto it. This is the CSS encoding of the spacer = explicit-gap / rhythm = default-between-sibling split (see `spacer.md`).
+
 ## Substrate CSS shape
 
 The substrate's `layer-theme.css` carries the bleed grid, bleed-direction rules, rhythm cascade, per-section scheme paint, and container-style variants. Base appearance (typography, transitions, form inputs) lives on `<body>` separately. Indicative shape:

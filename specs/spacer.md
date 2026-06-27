@@ -65,7 +65,7 @@ No `data-modifiers` (the block emits no modifiers). Per-instance CSS custom prop
 
 `--spacer-block-size` resolves to `var(--spacing-<handle>)`, which is itself responsive (mobile value in `:root`, desktop value at `@media (width >= 48rem)`) — so the spacer needs no breakpoint media queries of its own.
 
-`margin-block-start` is not declared on the block — the theme-root rhythm cascade in `layer-theme.css` applies the section's `--block-rhythm` value via the `> .shopify-block:not(:first-child)` selector. Spacer has no per-instance top-margin setting (unlike most L1 blocks); rhythm flows entirely from the section. See `theme-root.md` § Rhythm scope.
+`margin-block-start` is forced to `0` for spacers by the substrate — the spacer is **rhythm-neutral** (see `theme-root.md` § Rhythm scope): it takes no `block_rhythm` margin and neither does the block right after it. A spacer's visible size is therefore exactly its `size` token, with no rhythm added before or after. Spacer has no per-instance top-margin setting (unlike most L1 blocks).
 
 ## CSS custom properties (exposed)
 
@@ -79,7 +79,7 @@ Both emitted per-instance via `utility--dynamic-style`, only when the source set
 ## Behavior
 
 - **Height is a spacing token.** `size` resolves a `spacing` metaobject; the snippet emits `--spacer-block-size: var(--spacing-<handle>)`. The mobile/desktop divide is the token's — defined once on the spacing entry, applied everywhere it's referenced. No per-block breakpoint or px values.
-- **Top-margin chain**: `margin-block-start` inherits the section's `--block-rhythm` cascade (the section sets `--block-rhythm: var(--spacing-<picked-handle>)`). The block-rhythm system flows naturally — no explicit top-spacing setting needed on this block.
+- **Rhythm-neutral**: a substrate rule forces `margin-block-start: 0` on the spacer and on the block immediately after it, so a spacer is an explicit gap that *replaces* the section's `block_rhythm` at its boundary rather than stacking with it. Additive spacing comes from a larger `size` token, not from rhythm + spacer. See `theme-root.md` § Rhythm scope.
 - **No px conversion at the block.** Unlike the prior px interface, the height comes pre-converted through the spacing token (merchant-px → rem at the token's emit time in `utility--css-variables`).
 - **A11y**: block is semantically empty (`<div>` with no children); no label needed — invisible to assistive technology by virtue of having no content.
 - **Reduced motion / forced colors**: no animations, no interactive states — nothing to honor.
