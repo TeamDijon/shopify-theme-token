@@ -72,7 +72,7 @@ A primitive with only one surface (sub-component-only or block-only) renders one
 
 **Files:** `sections/validation--primitive--<name>.liquid` + `templates/index.validation--primitive--<name>.json`.
 
-**Boundary:** a primitive's validation page tests only its own API. Metaobject-typed settings (`button_style`, `text_style`, `container_style`, …) are validated upstream at Tier 1a; the primitive page exercises the *resolution chain* (setting → metaobject lookup → render) but not the metaobject's own legibility.
+**Boundary:** a primitive's validation page tests only its own API. Metaobject-typed settings (`button_style`, `text_style`, `container_style`, …) are validated upstream at Tier 1a; the primitive page exercises the *resolution chain* (setting → metaobject lookup → render) but not the metaobject's own legibility. The boundary also holds downstream: a block emits its contribution (attributes, modifiers, custom properties), but the section cascade that *applies* it (the rhythm rule painting a margin, the scheme repaint) only acts on direct theme-root children — so cascade-applied outcomes are asserted at Tier 3, and a primitive page asserts the emitted custom property, not the applied result.
 
 ## Tier 3 — Preset (L2)
 
@@ -102,10 +102,11 @@ Every spec under `.context/specs/` includes a Validation section naming:
 
 - the tier (and sub-shape if substrate)
 - the validation page(s) the implementation will ship
+- the test file (`.tests/e2e/<page>.spec.js`) once written, and the seeded handles its tests require
 - the API surface to exercise (snippet args, block settings, section settings × fixtures)
 - edge cases to render (blank inputs, malformed data, empty collections, scheme-switch, locale-switch)
 - the visual showcase intent (what a reader sees on the page)
-- assertions (prose today; selectors + expectations once Playwright lands)
+- assertions — executable Playwright checks, each scoped to what the page's tier owns (emitted contribution, not cascade-applied result)
 - unit scope, when the primitive carries JS (prose today; Vitest specs once installed)
 
 The contract describes the tier; the spec describes the element's specific suite. A spec without a Validation section is incomplete.
@@ -118,7 +119,7 @@ The validation contract describes what *validation* covers. QoL deliverables rid
 
 ## Forward-compat notes
 
-Spec-level assertions are prose today. When Vitest lands under `tests/unit/` and Playwright under `tests/e2e/`, prose assertions become executable specs targeting the same Liquid surfaces. The contract does not change; only its consumers do. No tier is gated on the test-runner work.
+Playwright (`@playwright/test`) is installed; e2e specs live under `.tests/e2e/`, run via `npm run test:e2e` against a locally-running dev server (the config declares no `webServer` — it attaches to the dev server you run, never spawns its own), and stay out of `npm run check` (the static gate needs no server). The contract does not change as specs convert from prose to executable; only its consumers do. Vitest (`.tests/unit/`) for the JS sub-shape is still pending. No tier is gated on the test-runner work.
 
 ## Current state vs target state
 
@@ -134,7 +135,7 @@ Honest accounting:
 | 3 | Preset | 4 `--preset--` pages (proto-presets: hero, content, columns-features, cta-banner) | No other gaps |
 | 4 | Specialized section | 0 | Awaits specialized-section work (general-theme: FAQ, collection grid, featured product; per-project: cart-upsell, recently-viewed, …) |
 
-File-prefix rename to the contracted names landed 2026-05-29 (`--metaobject--` → `--substrate--`, `--block--` → `--primitive--`, `--section--` → `--preset--`). Snippet-half coverage on Tier 2 and Playwright assertions are still deferred per `BACKLOG.md`'s strategic direction. New specs authored from Batch 2 onward apply the contract directly.
+File-prefix rename to the contracted names landed 2026-05-29 (`--metaobject--` → `--substrate--`, `--block--` → `--primitive--`, `--section--` → `--preset--`). Executable Playwright assertions are converting page-by-page from the prose suites; `validation--primitive--button` is the reference conversion (`.tests/e2e/primitive--button.spec.js`), and the remaining settled substrate + primitive pages follow it. Snippet-half coverage on Tier 2 remains deferred. New specs authored from Batch 2 onward apply the contract directly.
 
 ## Related
 

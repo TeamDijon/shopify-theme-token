@@ -149,9 +149,20 @@ Two snippets live in `snippets/` to keep the per-topic pages thin:
 - **`validation--breadcrumb.liquid`** — renders a back-link to `?view=validation`. Drop into the top of every per-topic page (`{% render 'validation--breadcrumb' %}`). The hub itself skips it.
 - **`validation--block-labels.liquid`** — for the 9 block-validation pages. Iterates `section.blocks` and emits an inline `<style>` block that sets a `--block-label` CSS custom property on each rendered block to its merchant-facing short id. The consuming page's stylesheet reads it via `content: var(--block-label)` on a `::before` pseudo-element so each block in the matrix is labelled. Liquid does the id-cleaning because Shopify wraps each block id as `<random>__<key>` and `section.blocks[i].id` further appends a `-1` instance suffix that's stripped at render time — neither is substringable in pure CSS. Render once per page after `{% content_for 'blocks' %}`: `{% render 'validation--block-labels', section: section %}`.
 
+## Executable assertion layer
+
+Each spec's prose assertions convert into committed Playwright specs under `.tests/e2e/<page>.spec.js`, one file per validation page, named for the page suffix (`primitive--button.spec.js` → `?view=validation--primitive--button`).
+
+- **Runner**: `@playwright/test` (devDep). Run with `npm run test:e2e`.
+- **Config** (`playwright.config.js`): `baseURL` is the dev server (`http://127.0.0.1:9292`); two viewport projects — `desktop` (1280px) and `mobile` (390px) — straddle the `48rem` breakpoint so responsive assertions run in the right viewport. No `webServer` is declared: the config attaches to the dev server you run (`npm run dev`) and fails fast if it's down, rather than spawning its own.
+- **Gate**: e2e is **not** part of `npm run check`. The static gate (context-lint + prettier + theme-check) stays offline; e2e needs a live server and the seeded store. Run it separately.
+- **Tier scoping**: a spec asserts only what its page's tier owns — emitted attributes / modifiers / custom properties for a primitive, the cascade-applied result for a preset/section. See `validation-contract.md` § Tier 2 Boundary.
+- **Seed dependency**: tests rely on Token's shipped seed catalog (handles like `icon/arrow`, `button_style/link-primary`). Each spec's Validation § names the handles its tests require; a test needing an unseeded handle is a seed-set gap to surface, not a workaround to engineer.
+- **Reference**: `.tests/e2e/primitive--button.spec.js` + `.context/specs/button.md` § Validation are the worked example new pages follow.
+
 ## Working with Playwright MCP
 
-When Playwright MCP is configured, the feedback loop becomes:
+The Playwright MCP is the interactive authoring / debug aid (the committed `.tests/e2e/` suite above is the persistent layer). When iterating on a page, the feedback loop is:
 
 1. Author/edit a validation section
 2. Ensure `shopify theme dev` is running locally (default at `http://127.0.0.1:9292`)

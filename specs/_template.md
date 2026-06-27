@@ -76,10 +76,12 @@ Per `validation-contract.md`:
 
 - **Tier**: substrate (sub-shape) | primitive | preset | section
 - **Page(s)**: `validation--<...>` — list the section files the implementation will ship
+- **Tests**: `.tests/e2e/<page>.spec.js` — the executable suite (`npm run test:e2e`); `pending` until written
+- **Requires seeded**: the shipped metaobject handles the tests assume (e.g. `icon/arrow`). A test needing an unseeded handle is a seed-set gap, not a test workaround. Omit when the page needs no seeded entry.
 - **API surface**: the matrix to exercise; for primitives split into *as a snippet* and *as a block* groups when both consumer surfaces exist
 - **Edge cases**: blank inputs, malformed data, empty collections, scheme-switch, locale-switch — name the ones this element needs to cover
 - **Visual showcase**: what a reader sees on the page (the page's intent for the human eyeball pass)
-- **Assertions**: prose now — what a passing render looks like. Selectors + expectations once Playwright lands.
+- **Assertions**: executable checks in the test file. Each asserts only what the page's tier owns — a primitive page asserts the block's *emitted* contribution (attributes, modifiers, custom properties), not the section cascade's *applied* result (painted margin, scheme repaint), which is a Tier-3 concern.
 - **Unit scope** (JS-bearing only): function-level cases for any JS module the element ships. Vitest specs once installed.
 
 ## Implementation-time decisions

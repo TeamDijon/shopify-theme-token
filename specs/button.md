@@ -192,10 +192,12 @@ Per `validation-contract.md` Tier 2 (theme-primitive).
 
 - **Tier**: primitive (L1 block; no L0 sub-component half)
 - **Page**: `sections/validation--primitive--button.liquid` + `templates/index.validation--primitive--button.json` (shipped)
+- **Tests**: `.tests/e2e/primitive--button.spec.js` (executable; `npm run test:e2e`)
+- **Requires seeded**: `icon/arrow`, `button_style/link-primary`, `button_style/outline-primary`, `content_width/reading` — Token's shipped seed catalog (see `icon.md`, `button-style.md`, `content-width.md` § Seed entries). A test needing an unseeded handle signals a seed-set gap, not a test workaround.
 - **API surface** (block-backed only — no snippet-half group):
   - **Tag-emission branch**: `link` blank → `<button type="button">`; `link` set → `<a href="…">`
   - **New-tab branch**: `link` set × `open_in_new_tab: true` → `<a>` carries `target="_blank" rel="noopener noreferrer"` + sr-only span
-  - **Top-spacing**: `mobile_margin_block_start` and `desktop_margin_block_start` set independently; render confirms the correct value applies per viewport
+  - **Top-spacing**: `mobile_margin_block_start` and `desktop_margin_block_start` emit `--mobile-margin-block-start` / `--desktop-margin-block-start`; the block's API is the emission. Painting those as a margin is the section's rhythm rule (matches direct theme-root children only), validated at Tier 3.
   - **Icon position**: with `icon` set, `icon_position: end` flips visual order; `start` is the default no-modifier baseline
 - **Surface delegation**: variant styling (the 3×3 `button_style` matrix) is exercised on `validation--substrate--button-style.liquid` rather than re-tested here. The primitive page's intent is the snippet's *branching logic* (tags, attributes, modifier composition); the metaobject page's intent is the *visual matrix* per handle. Both intents stay legible by separating them.
 - **Edge cases**:
@@ -205,13 +207,22 @@ Per `validation-contract.md` Tier 2 (theme-primitive).
   - `icon` set + `icon_position: start` → no modifier emitted (start is default); icon precedes label
   - Both `mobile_margin_block_start` and `desktop_margin_block_start` blank → no per-instance margin, section block-rhythm cascade applies
 - **Visual showcase**: a vertical list of block instances, each labelled by block ID via `utility--block-labels`. Reader confirms each row's tag-emission branch (anchor underline vs button button-styling), new-tab indicator presence, icon position, and inherited margins.
-- **Assertions** (prose; Playwright once installed):
+- **Assertions** (executable — `.tests/e2e/primitive--button.spec.js`):
   - Each unlinked instance is a `<button>` with `type="button"` and no `href`
   - Each linked instance is an `<a>` with the configured `href`
-  - New-tab instances carry `target="_blank"` AND `rel="noopener noreferrer"` AND the sr-only opens-in-new-tab span (visible to AT, hidden visually)
-  - Icon-end instances carry `data-modifiers*='icon-position:end'`; computed flex-direction is `row-reverse`
-  - Top-spacing instances' computed `margin-block-start` matches the setting per breakpoint
-  - The `link-*` family preserves `min-block-size: 2.75rem` despite zero padding
+  - `link` is escaped — a hostile link value stays contained in the `href` attribute (no attribute breakout)
+  - New-tab instances carry `target="_blank"` AND `rel="noopener noreferrer"` AND the sr-only opens-in-new-tab span
+  - Default instance (no `button_style`, no icon, no spacing) emits no `data-modifiers` attribute and no margin vars (falls through to the section rhythm); the root carries an `id`
+  - Icon-end instances carry `data-modifiers*='icon-position:end'` and compute `flex-direction: row-reverse`
+  - Icon-start instances emit no `icon-position` modifier, the icon leads the label (first child is the svg), and flex-direction is `row`
+  - Two-token instance comma-joins the modifiers (`data-modifiers="button-style:outline-primary,icon-position:end"`)
+  - `content` is escaped — HTML in the label renders as literal text, no `<b>` element materializes
+  - `content_width` instances emit and apply the `--content-width` cap (`reading` → `42.5rem` / `680px`)
+  - Blank `content` renders no element — no empty button leaks into the suite
+  - The `link-*` family keeps `min-block-size` ≥ 44px with zeroed padding
+  - Every rendered instance preserves the 44px (2.75rem) touch target
+  - Top-spacing instances emit `--mobile-margin-block-start` / `--desktop-margin-block-start` (positive `1.0rem` / `4.0rem`, negative `-1.0rem` / `-3.0rem`) — the block's emitted contract. The painted-margin application is a Tier-3 assertion (blocks as direct theme-root children), not observable on a primitive page.
+- **Deliberately unasserted**: `block.shopify_attributes` (editor-only markup, not emitted on `?view=` storefront renders); the off-list-handle diagnostic (Edge cases) — exercising it requires a seeded handle with no matching CSS rule, which the shipped catalog intentionally omits; hover / reduced-motion / focus-ring (non-deterministic or substrate-tier). Variant visual styling and painted margin are delegated (see Surface delegation and the Tier-3 note above).
 - **Unit scope**: none (Liquid + CSS; no JS shipped)
 
 ## Out of scope
