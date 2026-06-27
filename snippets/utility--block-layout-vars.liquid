@@ -2,7 +2,7 @@
 
 {% comment %}
   Changelog
-  - v1.2.0 — emit the margin pair when the value is non-zero (`!= 0`) instead of only when positive (`> 0`), so negative top-margin overrides (pull a block tighter than the section rhythm) reach the front end. Pairs with the block schemas widening the range to `-200…200`. Zero still skips (falls through to the `--block-rhythm` cascade); blank still skips.
+  - v1.2.0 — emit the margin pair when the value is non-zero (`!= 0`) instead of only when positive (`> 0`), so negative top-margin overrides (pull a block tighter than the section rhythm) reach the front end. Pairs with the block schemas shifting the range to `-100…100` (symmetric; Shopify caps ranges at 101 steps). Zero still skips (falls through to the `--block-rhythm` cascade); blank still skips.
   - v1.1.0 — `--content-width` emission harmonized to rem (was px), matching the margin pair and the codebase-wide merchant-px / front-end-rem convention. Merchant input still px (via the metaobject's `width` field); converted at emit time via `divided_by: 16.0 | round: 3`. Doc string's "centralizes the px→rem divisor" claim is now accurate for all three vars (was previously true only for the margin pair).
   - v1.0.0 — initial
 {% endcomment %}

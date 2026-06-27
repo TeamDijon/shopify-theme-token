@@ -2,7 +2,7 @@
 
 {% comment %}
   Changelog
-  - v1.6.0 — top-margin override range widened to `-200…200` (was `0…200`): negative values pull a block tighter than the section rhythm. Pairs with `utility--block-layout-vars` v1.2.0 (emit on `!= 0`). See `.context/docs/schema-conventions.md` § Top-spacing pair.
+  - v1.6.0 — top-margin override range changed to `-100…100` (was `0…200`): negative values pull a block tighter than the section rhythm; the 100–200 push range is dropped (use a `spacer` block for larger gaps). Step stays 2 — Shopify caps ranges at 101 steps. Pairs with `utility--block-layout-vars` v1.2.0 (emit on `!= 0`). See `.context/docs/schema-conventions.md` § Top-spacing pair.
   - v1.5.0 — color scheme becomes an explicit local override: new `custom_color_scheme` checkbox (default false) gates the `color_scheme` picker (`visible_if`); the snippet emits `color-scheme:<id>` only when checked (was: emit whenever the optional picker was set). `color_scheme` gains the now-required `default: scheme-1`, hidden until the checkbox is on. See `.context/docs/schema-conventions.md` § Color-scheme override.
   - v1.4.0 — replace `bleed` checkbox with `bleed_desktop` (none/inline_start/inline_end/both) + `bleed_mobile` (none/both) responsive enum API. Bleed positioning moves from the snippet's own CSS to the section's named-line bleed grid (per subgrid migration). Merchants previously setting `bleed: true` reset to `bleed_desktop: none`; opt back into bleed via the new enums.
   - v1.3.0 — add `container_style` setting (metaobject ref). Emits `container-style:<handle>` modifier; centralized CSS for card/outlined/elevated variants lives in `core.css` `@layer theme`.
@@ -159,8 +159,8 @@
       "type": "range",
       "id": "mobile_margin_block_start",
       "label": "t:blocks.group.settings.mobile_margin_block_start.label",
-      "min": -200,
-      "max": 200,
+      "min": -100,
+      "max": 100,
       "step": 2,
       "unit": "px",
       "default": 0
@@ -169,8 +169,8 @@
       "type": "range",
       "id": "desktop_margin_block_start",
       "label": "t:blocks.group.settings.desktop_margin_block_start.label",
-      "min": -200,
-      "max": 200,
+      "min": -100,
+      "max": 100,
       "step": 2,
       "unit": "px",
       "default": 0
