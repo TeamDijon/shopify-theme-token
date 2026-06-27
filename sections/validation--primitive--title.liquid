@@ -1,6 +1,10 @@
-{% # Validation - Block - Title v1.0.0 %}
+{% # Validation - Block - Title v1.1.0 %}
 
 {% comment %}
+  Changelog
+  - v1.1.0 — matrix now exercises the metaobject-typed settings (text_style, icon, content_width, text_color) and text_align via handles, plus negative top-margin and a blank-content break; corrected the stale "store-specific GIDs, not bakeable" note — metaobject settings bake by handle. Pairs with the expanded `templates/index.validation--primitive--title.json` + `.tests/e2e/primitive--title.spec.js`.
+  - v1.0.0 — initial
+
   Block-validation harness for `title`. The JSON template at
   `templates/index.validation--primitive--title.json` bakes the test
   matrix; the section just renders them in a labelled list via
@@ -12,11 +16,10 @@
      by `utility--css-variables`).
   2. Rich-text content (inline_richtext) renders nested inline elements
      (<em>, <strong>, <a>) cleanly.
-  3. Top-spacing settings apply at the right breakpoint.
-
-  Not covered by JSON (metaobject settings — store-specific GIDs):
-  text_style override, icon, content_width, text_color. Verify those
-  via the metaobject validation pages or interactively.
+  3. Metaobject-typed settings (text_style, icon, content_width,
+     text_color) and text_align are baked via handles and exercised in
+     the matrix; metaobject legibility stays on the dedicated pages.
+  4. Top-spacing (positive + negative) applies at the right breakpoint.
 
   Reachable only at /?view=validation--primitive--title.
   See `.context/docs/validation.md`.
@@ -37,8 +40,8 @@
       <code>templates/index.validation--primitive--title.json</code>. Each entry below is one block instance, labelled
       by its block id. Tag variants check the element emission and the bare-tag text-style auto-binding; the richtext
       entry checks inline rich-text rendering; the spacing entry checks top-margin application across breakpoints.
-      Metaobject-typed settings (text_style, icon, content_width, text_color) are tested via their dedicated metaobject
-      pages.
+      Metaobject-typed settings (text_style, icon, content_width, text_color) are baked via handles and exercised here;
+      their typographic / visual legibility stays on the dedicated metaobject pages.
     </p>
   </header>
 

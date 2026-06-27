@@ -59,6 +59,63 @@
             "content": "Heading with <em>italic</em>, <strong>bold</strong>, and a <a href=\"#\">link</a>"
           }
         },
+        "styled": {
+          "type": "title",
+          "settings": {
+            "tag": "h3",
+            "content": "H3 styled as H1",
+            "text_style": "h1"
+          }
+        },
+        "with-icon": {
+          "type": "title",
+          "settings": {
+            "tag": "h2",
+            "content": "Title with icon",
+            "icon": "arrow"
+          }
+        },
+        "centered": {
+          "type": "title",
+          "settings": {
+            "tag": "h2",
+            "content": "Centered title",
+            "text_align": "center"
+          }
+        },
+        "end-aligned": {
+          "type": "title",
+          "settings": {
+            "tag": "h2",
+            "content": "End-aligned title",
+            "text_align": "end"
+          }
+        },
+        "colored": {
+          "type": "title",
+          "settings": {
+            "tag": "h2",
+            "content": "Accent-colored title",
+            "text_color": "accent"
+          }
+        },
+        "width-capped": {
+          "type": "title",
+          "settings": {
+            "tag": "h2",
+            "content": "Width-capped title",
+            "content_width": "reading"
+          }
+        },
+        "negative-spacing": {
+          "type": "title",
+          "settings": {
+            "tag": "h2",
+            "content": "Negative top margin",
+            "mobile_margin_block_start": -16,
+            "desktop_margin_block_start": -48
+          }
+        },
         "with-spacing": {
           "type": "title",
           "settings": {
@@ -66,6 +123,13 @@
             "content": "After 64px desktop top margin",
             "mobile_margin_block_start": 16,
             "desktop_margin_block_start": 64
+          }
+        },
+        "blank": {
+          "type": "title",
+          "settings": {
+            "tag": "h2",
+            "content": ""
           }
         }
       },
@@ -78,7 +142,15 @@
         "h6",
         "p-tag",
         "richtext",
-        "with-spacing"
+        "styled",
+        "with-icon",
+        "centered",
+        "end-aligned",
+        "colored",
+        "width-capped",
+        "negative-spacing",
+        "with-spacing",
+        "blank"
       ],
       "settings": {}
     }
