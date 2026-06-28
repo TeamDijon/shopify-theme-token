@@ -1,6 +1,9 @@
-{% # Validation - Block - Group v1.0.0 %}
+{% # Validation - Block - Group v1.1.0 %}
 
 {% comment %}
+  Changelog
+  - v1.1.0 — render groups as direct children of `<token-section>` (drop the `.block-validation-suite` flex wrapper) + base `--block-rhythm: lg` on the section, so per-block top-margin overrides paint and the page is production-faithful. Per `validation.md` § Harness layout.
+
   Block-validation harness for `group` (a container that nests
   `@theme` children). The JSON template at
   `templates/index.validation--primitive--group.json` bakes the test
@@ -40,13 +43,11 @@
   </header>
 
   {% if section.blocks.size > 0 %}
-    <div class="block-validation-suite">
-      {% content_for 'blocks' %}
-    </div>
+    {% content_for 'blocks' %}
 
     {% render 'validation--block-labels', section: section %}
   {% else %}
-    <p class="block-validation-suite__empty">No blocks declared in the template.</p>
+    <p class="validation__empty">No blocks declared in the template.</p>
   {% endif %}
 </token-section>
 
@@ -87,6 +88,10 @@
         margin-inline: auto;
         padding-block: 2rem;
         padding-inline: 1.5rem;
+
+        /* Production-faithful baseline rhythm; per-block overrides replace it
+           via the theme-root rhythm rule in layer-theme.css. */
+        --block-rhythm: var(--spacing-lg);
       }
 
       .validation__intro {
@@ -107,14 +112,7 @@
         }
       }
 
-      .block-validation-suite {
-        display: flex;
-        flex-direction: column;
-        gap: 2.5rem;
-        padding-block-start: 1.5rem;
-      }
-
-      .block-validation-suite__empty {
+      .validation__empty {
         padding: 1.5rem;
         border: 1px dashed currentColor;
         border-radius: 0.5rem;
@@ -122,17 +120,15 @@
         opacity: 0.7;
       }
 
-      /* Outline the group wrapper so the layout bounds + alignment
-         behaviour is observable. Inset padding so children don't sit
-         flush against the dashed line. */
-      .block-validation-suite > .shopify-block--group {
+      /* Outline the group wrapper so the layout bounds + alignment behaviour
+         are observable (outline doesn't affect layout — no fidelity cost). */
+      token-section > .shopify-block--group {
         position: relative;
-        padding: 1rem;
         outline: 1px dashed rgba(0, 0, 0, 0.18);
         outline-offset: -1px;
       }
 
-      .block-validation-suite > .shopify-block--group::before {
+      token-section > .shopify-block--group::before {
         content: var(--block-label, '');
         position: absolute;
         inset-block-end: calc(100% + 0.375rem);
