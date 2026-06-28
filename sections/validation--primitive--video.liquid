@@ -52,8 +52,8 @@
     </div>
 
     <div class="case" data-case="loop-off">
-      <span class="case__label">loop off</span>
-      {% render 'video', video: desktop_video, video_mode: 'content', video_loop: false %}
+      <span class="case__label">loop off — autoplay plays once, then stops (watch the sine-brightness freeze)</span>
+      {% render 'video', video: desktop_video, video_mode: 'content', video_autoplay: true, video_loop: false %}
     </div>
 
     <div class="case" data-case="preload-metadata">
@@ -62,7 +62,7 @@
     </div>
 
     <div class="case" data-case="art-direction">
-      <span class="case__label">art-direction — mobile &lt;source&gt;</span>
+      <span class="case__label">art-direction — mobile &lt;source&gt; (selected at load per viewport; reload to switch, &lt;video&gt; isn't resize-responsive)</span>
       {% render 'video', video: desktop_video, mobile_video: mobile_video %}
     </div>
 
@@ -115,11 +115,14 @@
       .case {
         margin-block-start: 2.5rem;
 
-        & media-video,
+        /* Fill the content track (representative width), like the image page. */
+        & media-video {
+          display: block;
+        }
+
         & video {
           display: block;
           inline-size: 100%;
-          max-inline-size: 480px;
           block-size: auto;
         }
       }
