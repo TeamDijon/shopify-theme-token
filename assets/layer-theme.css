@@ -97,11 +97,11 @@
       grid-column: bleed-start / bleed-end;
     }
 
-    [data-modifiers*='theme-root'] > [data-modifiers*='bleed-desktop:inline-start'] {
+    [data-modifiers*='theme-root'] > [data-modifiers*='bleed-desktop:inline_start'] {
       grid-column: bleed-start / content-end;
     }
 
-    [data-modifiers*='theme-root'] > [data-modifiers*='bleed-desktop:inline-end'] {
+    [data-modifiers*='theme-root'] > [data-modifiers*='bleed-desktop:inline_end'] {
       grid-column: content-start / bleed-end;
     }
   }
