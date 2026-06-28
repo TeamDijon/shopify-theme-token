@@ -8,7 +8,7 @@
 
 **Implementation**: `snippets/image.liquid` v1.0.0 (render surface)
 
-**Reconciled**: 2026-06-05
+**Reconciled**: 2026-06-28 (snippet v1.0.0 unchanged — dedicated L0 validation page + executable suite added; `preload` clarified to an HTTP `Link` response header, not a DOM `<link>`)
 
 **Reviewed**: pending
 
@@ -31,7 +31,7 @@ A sub-component primitive (no block; never the root of an L1 theme block). Consu
 | `sizes_value` | string | no | `"auto, 100vw"` | Value for the `sizes` attribute. Auto-sizing fallback for lazy images; `100vw` for older engines. Override with a specific value when consumer's layout constrains intrinsic sizing (e.g. inside a `1-2` columns track, pass `"(min-width: 48rem) 33vw, 100vw"`). |
 | `loading` | string | no | `"lazy"` | `loading` attribute. `eager` for above-the-fold critical imagery. |
 | `fetchpriority` | string | no | `"auto"` | `fetchpriority` attribute. `high` for LCP candidates; `low` for tertiary imagery. |
-| `preload` | boolean | no | `false` | Emit a `<link rel="preload">` hint in the document head (via Shopify's `image_tag` preload param). Use sparingly — only LCP-critical images benefit; others compete for bandwidth. |
+| `preload` | boolean | no | `false` | Emit a preload hint via Shopify's `image_tag` preload param — surfaces as an HTTP `Link: …; rel="preload"; as="image"; imagesrcset=…` **response header** (not a DOM `<link>`), and `image_tag` couples it to `loading="eager"`. Use sparingly — only LCP-critical images benefit; others compete for bandwidth. |
 
 ## Width ladders
 
@@ -90,7 +90,7 @@ Shopify's `image_tag` filter handles the `<img>` rendering — including the `al
 - **`sizes_value` defaults to `"auto, 100vw"`.** The `auto` keyword (modern engines) lets the browser infer size from the image's intrinsic size at load time; the `100vw` fallback is for engines without `sizes: auto` support. Override with a specific value when consumer layout has known sizing (e.g. fixed-width sidebar image).
 - **`loading="lazy"` by default.** Browser's native lazy-load. Above-the-fold imagery should override to `loading: 'eager'` + `fetchpriority: 'high'` to avoid render-delay.
 - **Width / height for layout stability.** Both ladders emit the intrinsic `width`/`height` (or mobile equivalents) to reserve layout space — preventing layout shift as the image loads. Browsers compute the aspect ratio from these attributes; downstream CSS can override via `inline-size: 100%`.
-- **Preload coordination.** `preload: true` routes through `image_tag`'s preload param, which (per Shopify's filter docs) emits a `<link rel="preload" imagesrcset>` in the head. Consumers ship one preload per page; combined `preload: true` on multiple images creates head-tag pollution and bandwidth competition.
+- **Preload coordination.** `preload: true` routes through `image_tag`'s preload param, which emits an HTTP `Link: …; rel="preload"; as="image"; imagesrcset=…` **response header** (not a DOM `<link>`) and forces `loading="eager"` on the `<img>` (a preloaded image shouldn't lazy-load). Consumers ship one preload per page; combined `preload: true` on multiple images creates header pollution and bandwidth competition.
 
 ## A11y
 
@@ -106,8 +106,10 @@ None — alt text comes from the image object's `.alt` field (merchant-set in ad
 
 Per `validation-contract.md` Tier 1b / Tier 2 boundary (utility-shape snippet consumed by L1 blocks; today validated through consumers).
 
-- **Tier**: theme-primitive (L0; no block-backed primitive page since no L1 block wraps this snippet directly — `media` block validates the consumer path)
-- **Page**: covered indirectly through `validation--primitive--media.liquid`; future dedicated L0 page would be `validation--primitive--image.liquid` snippet-half group
+- **Tier**: theme-primitive (L0 snippet — no block wraps it, so the harness renders `{% render 'image' %}` directly, each case tagged `data-case=<id>`, rather than a block matrix)
+- **Page**: `sections/validation--primitive--image.liquid` + `templates/index.validation--primitive--image.json` (shipped). The two source images are real store Files referenced via `image_picker` settings (`shopify://shop_images/<file>`) → real image objects for `image_url`/`image_tag`.
+- **Tests**: `.tests/e2e/primitive--image.spec.js` (executable; `npm run test:e2e`)
+- **Requires seeded**: store Files `landscape.png` (2560×1440) + `portrait.png` (1440×2560), uploaded by `.scripts/seed-validation-assets.mjs` (needs `write_files`); referenced by handle as `shopify://shop_images/<file>`. Source ≥ 2560px so the full width ladder emits unclamped.
 - **API surface** *(as a snippet)*:
   - **Single-image render**: image set, no mobile_image → single `<img>` with full ladder
   - **Art-direction render**: image + mobile_image set → `<picture>` with mobile `<source>` and fallback `<img>`
@@ -122,11 +124,12 @@ Per `validation-contract.md` Tier 1b / Tier 2 boundary (utility-shape snippet co
   - Custom `sizes_value` for known layouts (e.g. `"(min-width: 48rem) 33vw, 100vw"` for a 3-column track) → carried through to both ladders' `sizes` attribute
   - Lazy + eager combination (lazy default with `fetchpriority: 'high'`) → browsers honor both; lazy controls when, fetchpriority controls how aggressively
 - **Visual showcase**: indirect through `validation--primitive--media` (image media_type case). Reader confirms responsive ladder loads (DevTools network tab shows the chosen width); art-direction switches at the 48rem boundary.
-- **Assertions** (prose; Playwright once installed):
-  - Single-image case emits `<img>` with `srcset` containing the desktop ladder widths
-  - Art-direction case emits `<picture>` with a `<source media="(max-width: 47.99rem)">` and a fallback `<img>`
-  - `loading`, `fetchpriority`, `sizes`, `width`, `height` attributes match the args
-  - `preload: true` adds a `<link rel="preload" as="image" imagesrcset>` to `<head>`
+- **Assertions** (executable — `.tests/e2e/primitive--image.spec.js`):
+  - The `shopify://shop_images/<file>` ref resolves to a real image object (the `<img>` renders — a blank would `break`); single-image case emits the full 13-width ladder (`360…2560`), `sizes="auto, 100vw"`, `loading="lazy"`, `fetchpriority="auto"`, intrinsic `width="2560"`/`height="1440"`, a `src`, and a non-empty `alt` (from the file's metadata)
+  - Art-direction emits `<picture>` with `<source media="(max-width: 47.99rem)">` carrying the 9-width mobile ladder (`360…1440`) and a fallback `<img>` carrying the 9-width desktop ladder (`768…2560`)
+  - `loading` / `fetchpriority` knobs apply (`eager` + `high`; `low`); `sizes_value` override carries to the `sizes` attribute
+  - `preload: true` emits an HTTP `Link` response header with `rel="preload"`, `as="image"`, `imagesrcset=…` (not a DOM `<link>`) and forces `loading="eager"`
+  - Blank `image` renders nothing (snippet `break` — no `<img>`/`<picture>`)
 - **Unit scope**: none (Liquid + Shopify filters; no JS)
 
 ## Out of scope
