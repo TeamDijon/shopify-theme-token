@@ -1,7 +1,8 @@
-{% # Button block v1.3.0 %}
+{% # Button block v1.4.0 %}
 
 {% comment %}
   Changelog
+  - v1.4.0 — top-margin override range narrowed to `0…100` (step 2): the override is an absolute value that replaces the section rhythm; negatives (overlap) dropped — no block-level use case. Tighten with a small positive below the rhythm; use a `spacer` for larger gaps. Pairs with `utility--block-layout-vars` v1.2.1 (emit on `> 0`).
   - v1.3.0 — top-margin override range changed to `-100…100` (was `0…200`): negative values pull a block tighter than the section rhythm; the 100–200 push range is dropped (use a `spacer` block for larger gaps). Step stays 2 — Shopify caps ranges at 101 steps. Pairs with `utility--block-layout-vars` v1.2.0 (emit on `!= 0`). See `.context/docs/schema-conventions.md` § Top-spacing pair.
   - v1.2.0 — `visible_if`-gate `open_in_new_tab` on `link != blank` (the setting had no effect on unlinked buttons; now hidden in that case)
   - v1.1.0 — add `icon_position` setting (start/end), visible only when an icon is selected
@@ -76,7 +77,7 @@
       "type": "range",
       "id": "mobile_margin_block_start",
       "label": "t:blocks.button.settings.mobile_margin_block_start.label",
-      "min": -100,
+      "min": 0,
       "max": 100,
       "step": 2,
       "unit": "px",
@@ -86,7 +87,7 @@
       "type": "range",
       "id": "desktop_margin_block_start",
       "label": "t:blocks.button.settings.desktop_margin_block_start.label",
-      "min": -100,
+      "min": 0,
       "max": 100,
       "step": 2,
       "unit": "px",
