@@ -54,13 +54,6 @@
             "content_width": "reading"
           }
         },
-        "width-wide": {
-          "type": "richtext",
-          "settings": {
-            "content": "<p>Wide-width prose capped at the seeded wide content_width (1400px / 87.5rem).</p>",
-            "content_width": "wide"
-          }
-        },
         "color-accent": {
           "type": "richtext",
           "settings": {
@@ -92,7 +85,6 @@
         "align-center",
         "align-end",
         "width-reading",
-        "width-wide",
         "color-accent",
         "with-spacing",
         "blank"

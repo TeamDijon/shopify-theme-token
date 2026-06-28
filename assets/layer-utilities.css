@@ -10,6 +10,15 @@
     & :is(h2, .h2, h3, .h3) {
       margin-block-start: 1.5rem;
     }
+    /* Reaffirm list markers so a downstream reset that blanket-strips
+       list-style (e.g. `ul { list-style: none }`) can't silently drop prose
+       bullets/numbers — the prose layer owns its markers. */
+    & ul {
+      list-style: disc outside;
+    }
+    & ol {
+      list-style: decimal outside;
+    }
     & :is(ul, ol) {
       margin-inline-start: 0.75rem;
       padding-inline-start: 0.75rem;

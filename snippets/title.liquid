@@ -1,7 +1,8 @@
-{% # Title v1.1.3 %}
+{% # Title v1.1.4 %}
 
 {% comment %}
   Changelog
+  - v1.1.4 — fix title shrinking to content width inside flex/grid containers (group / columns): the unconditional `margin-inline: auto` disabled grid `justify-self: stretch`, so an uncapped title collapsed to its content instead of filling the track. `margin-inline: auto` now emits only when a `content_width` cap is set (the centering case); uncapped title fills its container. No API change.
   - v1.1.3 — internal: scheme-role var refs migrate to `--color-role-*` namespace (no API change)
   - v1.1.2 — emit `{{ block.shopify_attributes }}` on the root for theme-editor block selection (was missing)
   - v1.1.1 — route content_width + top-margin vars through `utility--block-layout-vars`; output unchanged
@@ -75,6 +76,11 @@
       --text-align: {{ text_align }};
     {% endif %}
 
+    {% comment %} Self-center only when capped — auto margins would otherwise disable grid/flex stretch and collapse the block to content width. {% endcomment %}
+    {% if content_width != blank %}
+      margin-inline: auto;
+    {% endif %}
+
     {% if text_color and text_color != blank %}
       --text-color: var(--color-{{ text_color.system.handle }});
     {% endif %}
@@ -88,9 +94,12 @@
   @layer components {
     .shopify-block--title {
       max-inline-size: var(--content-width, 100%);
-      margin-inline: auto;
       color: var(--text-color, var(--color-role-foreground-heading));
       text-align: var(--text-align, start);
+
+      /* margin-inline: auto is emitted per-instance only when content_width is
+         set (see dynamic style). Unconditional auto margins disable grid/flex
+         stretch, collapsing an uncapped block to its content width. */
 
       & svg {
         display: inline-flex;

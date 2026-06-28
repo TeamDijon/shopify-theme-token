@@ -267,6 +267,21 @@ test.describe('validation--primitive--columns', () => {
     expect(r.innerVar).toBe('1fr 2fr');
   });
 
+  // ── Child fill (regression: richtext/title margin-inline:auto) ────────────
+  test('an uncapped richtext child fills its grid track (does not shrink to content)', async ({ page }) => {
+    const r = await page.getByText('Equal-2 first', { exact: true }).evaluate((el) => {
+      const rt = el.closest('.shopify-block--richtext');
+      const tl = rt.closest('token-layout');
+      const trackCount = getComputedStyle(tl).gridTemplateColumns.split(' ').length;
+      const expectedTrack = tl.getBoundingClientRect().width / trackCount;
+      return { rtWidth: rt.getBoundingClientRect().width, expectedTrack };
+    });
+    // an uncapped richtext (no content_width) must stretch to its 1fr track, not
+    // collapse to its text width — guards snippet/richtext.liquid v1.2.2 (auto
+    // margins emitted only when capped). Allow for the gap eating into the track.
+    expect(r.rtWidth).toBeGreaterThan(r.expectedTrack * 0.9);
+  });
+
   // ── Empty ─────────────────────────────────────────────────────────────────
   test('empty columns renders the outer + token-layout wrapper with no children', async ({ page }) => {
     const r = await page.evaluate(() => {

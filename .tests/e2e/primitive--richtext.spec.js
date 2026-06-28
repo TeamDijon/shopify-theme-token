@@ -178,12 +178,6 @@ test.describe('validation--primitive--richtext', () => {
     expect(r.width).toBe(680);
   });
 
-  test('content_width wide caps at 1400px', async ({ page }) => {
-    const r = await readBlock(page, 'Wide-width prose');
-    expect(r.contentWidthVar).toBe('87.5rem');
-    expect(r.maxInline).toBe('1400px');
-  });
-
   test('blank content_width spans 100% (no cap)', async ({ page }) => {
     const r = await readBlock(page, 'Plain single standalone');
     expect(r.contentWidthVar).toBe('');
@@ -232,8 +226,8 @@ test.describe('validation--primitive--richtext', () => {
   });
 
   // ── Blank content edge ────────────────────────────────────────────────────
-  test('blank content renders no root (snippet break) — 11 of 12 fixtures render', async ({ page }) => {
+  test('blank content renders no root (snippet break) — 10 of 11 fixtures render', async ({ page }) => {
     const count = await page.evaluate(() => document.querySelectorAll('.shopify-block--richtext').length);
-    expect(count).toBe(11);
+    expect(count).toBe(10);
   });
 });

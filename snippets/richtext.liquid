@@ -1,7 +1,8 @@
-{% # Richtext v1.2.1 %}
+{% # Richtext v1.2.2 %}
 
 {% comment %}
   Changelog
+  - v1.2.2 — fix richtext shrinking to content width inside flex/grid containers (group / columns): the unconditional `margin-inline: auto` disabled grid `justify-self: stretch`, so an uncapped richtext collapsed to its content instead of filling the track. `margin-inline: auto` now emits only when a `content_width` cap is set (the centering case); uncapped richtext fills its container. No API change.
   - v1.2.1 — internal: scheme-role var refs migrate to `--color-role-*` namespace (no API change)
   - v1.2.0 — drop `narrow` param. Same concern (max-width cap) is now expressed by `content_width` alone — merchants pick a `text-narrow` `content_width` metaobject entry (~65ch) when they want a narrow column. The `prose:narrow` modifier and the corresponding `core.css` rule are gone.
   - v1.1.2 — emit `{{ block.shopify_attributes }}` on the root for theme-editor block selection (was missing)
@@ -64,6 +65,11 @@
       --text-align: {{ text_align }};
     {% endif %}
 
+    {% comment %} Self-center only when capped — auto margins would otherwise disable grid/flex stretch and collapse the block to content width. {% endcomment %}
+    {% if content_width != blank %}
+      margin-inline: auto;
+    {% endif %}
+
     {% if text_color and text_color != blank %}
       --text-color: var(--color-{{ text_color.system.handle }});
     {% endif %}
@@ -77,9 +83,12 @@
   @layer components {
     .shopify-block--richtext {
       max-inline-size: var(--content-width, 100%);
-      margin-inline: auto;
       color: var(--text-color, var(--color-role-foreground));
       text-align: var(--text-align, start);
+
+      /* margin-inline: auto is emitted per-instance only when content_width is
+         set (see dynamic style). Unconditional auto margins disable grid/flex
+         stretch, collapsing an uncapped block to its content width. */
     }
   }
 {% endstylesheet %}
