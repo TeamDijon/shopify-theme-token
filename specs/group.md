@@ -226,14 +226,14 @@ Per `validation-contract.md` Tier 2 (theme-primitive).
   - `space-between` in column direction normalizes to start — `--horizontal-alignment` is not emitted and `align-items` resolves to `start` (never the invalid `space-between`)
   - `stack-below:40` → container query against the group's own inline-size: `flex-direction: row` when the group is ≥ 40rem wide, `column` when narrower (verified across the desktop / mobile viewports). `stack-below:80` stays `column` even on the 1280px desktop viewport (the group is < 80rem), proving the query is against the group's width, not the viewport
   - `gap` emits `--gap` (rem) and applies as `token-layout` `gap`; zero gap emits nothing
-  - Bleed settings emit the bleed modifiers (`bleed-desktop:both`, `bleed-mobile:both`, `bleed-desktop:inline_start`) — the raw setting value (underscore). The painted `grid-column` is the section's bleed grid (Tier 3), not asserted here
+  - Bleed emits the modifiers (`bleed-desktop:both`, `bleed-mobile:both`, `bleed-desktop:inline_start` — raw underscore value) **and paints**: the harness `token-section` is the real theme-root grid, so `bleed-both` computes `grid-column: bleed-start / bleed-end` and is wider than a content block; `inline_start` computes `bleed-start / content-end` on desktop and falls back to the content track on mobile (desktop-only bleed)
   - `container_style:card` emits the modifier and pulls centralized variant CSS from `layer-theme.css` (computed `border-radius: 8px`, `padding: 24px`, non-`none` `box-shadow` — absent on a plain group)
   - `custom_color_scheme` + `color_scheme:scheme-2` emits `color-scheme:scheme-2`, re-resolves `--color-role-background` to scheme-2's value, and paints a background band (computed `background-color` = scheme-2's bg, vs transparent on a plain group)
   - `content_width` caps the group (`--content-width` + `max-inline-size`)
   - Recursive nesting: a group inside a group renders both, each with its own `direction` modifier and `token-layout` flex-direction; the nested non-querying group sizes to its content (no collapse)
   - Empty group renders the outer `.shopify-block--group` + `token-layout` wrapper with no children
   - Top-spacing overrides emit `--mobile-/--desktop-margin-block-start` (loose `1.0rem` / `4.0rem`, tight `0.5rem` / `1.0rem`) — absolute values that replace the rhythm
-- **Deliberately unasserted**: bleed *painting* (the section's `grid-column` bleed grid acts only on direct children of a real `<token-section>` grid — a Tier-3 concern asserted on preset / section pages, not on this contained primitive harness); `block.shopify_attributes` (editor-only). `container_style` legibility is delegated to `validation--substrate--container-style`.
+- **Deliberately unasserted**: `block.shopify_attributes` (editor-only). `container_style` legibility is delegated to `validation--substrate--container-style`. (Bleed painting is now asserted here — the harness `token-section` is the real theme-root grid.)
 - **Unit scope**: none (Liquid + CSS only; no JS)
 
 ## Out of scope

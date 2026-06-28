@@ -122,7 +122,7 @@ No runtime strings.
 Per `validation-contract.md` Tier 2 (theme-primitive).
 
 - **Tier**: primitive (L1 block-backed; no sub-component half)
-- **Page**: `sections/validation--primitive--richtext.liquid` v1.1.0 (production-faithful — blocks render as direct children of `<token-section>` with a base `--block-rhythm: lg`, not the `.block-validation-suite` flex wrapper; the dead `narrow` / `prose:narrow` fixtures were purged when that setting was removed in block v1.2.0) + `templates/index.validation--primitive--richtext.json` (shipped)
+- **Page**: `sections/validation--primitive--richtext.liquid` v1.2.0 (production-faithful — `token-section` is the real theme-root grid; chrome + the layout-neutral outline/label indicator come from the shared `validation--harness-styles` snippet; the dead `narrow` / `prose:narrow` fixtures were purged when that setting was removed in block v1.2.0) + `templates/index.validation--primitive--richtext.json` (shipped)
 - **Tests**: `.tests/e2e/primitive--richtext.spec.js` (executable; `npm run test:e2e`)
 - **Requires seeded**: `content_width/reading` (680px); `theme_color/accent`. The accent token's *value* is store-defined — the test resolves `--color-accent` at runtime rather than asserting a literal hex. (A `wide` cap was dropped from the matrix — the harness container never exceeds ~1232px, so a 1400px cap is a visual no-op; `reading` exercises the cap + self-center.)
 - **API surface**:

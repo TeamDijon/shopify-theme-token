@@ -80,13 +80,13 @@ Validation surfaces render two distinct content types. They must NOT impose cons
 
 **Anti-pattern**: wrapping validation content in a `.canvas` div with its own `max-inline-size` / `padding-inline`. The wrapper's constraints cascade onto every block inside — bleed math breaks (blocks bleed to the wrapper's edge, not the section's), and the page no longer represents production behavior.
 
-The chrome's own styling MUST stay within its own selector (`.validation__intro` typography, etc.). It does not impose width/padding on the validation content. `token-section` handles those production-style:
+The chrome's own styling MUST stay within its own selector (`.validation__intro` typography, etc.). It does not impose width/padding on the validation content. `token-section` is the real theme-root grid, so it handles sizing production-style:
 
-- `max-inline-size: var(--content-width)` caps the section's content area
-- `padding-inline: var(--gutter)` (mobile: `var(--mobile-gutter)`) sets the inner gutter
-- Per-section `utility--dynamic-style` overrides `--content-width` when a narrower test surface is needed; token-section honors it the production way
+- The named-line grid's content track caps at `--content-width` and the gutter tracks supply the inner inset — the harness adds no `padding-inline` (a `padding-inline` would double the gutter and shift bleed math)
+- The harness only caps the overall surface (`max-inline-size`, e.g. 80rem) and centers it, plus `padding-block` for vertical breathing — set once in `validation--harness-styles`
+- Per-section `utility--dynamic-style` overrides `--content-width` when a narrower test surface is needed; the grid honors it the production way
 
-Existing validation sections from the 21-page inventory carry the wrapper anti-pattern (token-section gets `max-inline-size` + `padding-inline` applied directly). Retrofit at next touch; tracked in `BACKLOG.md`.
+The primitive validation sections (`button`, `title`, `group`, `columns`, `richtext`) are retrofitted to this model. Remaining pages from the 21-page inventory retrofit at next touch.
 
 ## Harness layout
 
@@ -95,14 +95,14 @@ Tier 2 / 3 pages (primitive + preset) render the matrix as **direct children of 
 - **Painted rhythm.** The section sets a base `--block-rhythm` (e.g. `var(--spacing-lg)`), so per-block top-margin overrides paint through the real theme-root rhythm rule (`[data-modifiers*='theme-root'] > .shopify-block:not(:first-child)`), which only matches *direct* children. A block's spacing reads on the page exactly as it would in a merchant's section. The Tier-2 *tests* still assert the emitted custom property, not the painted margin (`validation-contract.md` § Tier 2 Boundary); the paint is the human-eyeball half.
 - **Native sizing / alignment.** Blocks inherit only the section's production constraints (`--content-width` cap, gutter), so `content_width`, `text_align`, and bleed behave as in production — not collapsed to content-width by a flex wrapper's auto-margins.
 
-**The token-section `display` matches how the primitive lays out in production** — there is no single correct value:
+**The token-section is the real production theme-root bleed grid** — the harness does NOT override `display`. The `theme-root` modifier pulls in the `@layer theme` named-line grid (`[bleed-start] … [content-start] … [content-end] … [bleed-end]`), so the page lays out exactly as production:
 
-- **Block-level primitives** (`title`, `richtext`, `separator`, `media`, `group`, `columns`, …) → `display: block`. They stack and span the content width naturally, so alignment and `content_width` centering render true.
-- **Inline-level primitives** (`button`) → a column stacking context (`display: flex; flex-direction: column; align-items: flex-start`). Inline-flex blocks neither stack nor honor block margins under `display: block`; the column flow stacks them one-per-row, flush-start, and lets `margin-block-start` paint — mirroring how the production bleed grid auto-places button blocks into rows.
+- **Block-level primitives** (`title`, `richtext`, `separator`, `media`, `group`, `columns`, …) → no `display` override. Blocks are grid items in the content track; rhythm margins don't collapse (grid), `content_width` self-centering distributes via grid auto-margins (the centering is geometric — `getComputedStyle().marginLeft` reports `0`, so tests measure position, not the margin property), and **bleed modifiers actually paint** (`grid-column: bleed-start / bleed-end` etc.) — so bleed is asserted at the primitive tier (group / columns), not deferred to a section-tier page.
+- **Inline-level primitives** (`button`) → override to a column stacking context (`display: flex; flex-direction: column; align-items: flex-start`) because button is inline-flex, not block-level. The flex column stacks buttons one-per-row, flush-start, so `margin-block-start` paints; `padding-inline: var(--gutter)` aligns it with the grid pages' content inset.
 
-DOM-id labels (`validation--block-labels` + a `::before`) attach to `token-section > .shopify-block--<name>` regardless of the chosen display.
+**Shared chrome.** The harness chrome (intro / empty state), the token-section cap (`max-inline-size` + `padding-block` + base `--block-rhythm`), and the layout-neutral use-case indicator (dashed `outline` + DOM-id `::before` label on `token-section > .shopify-block`, reading `--block-label` from `validation--block-labels`) live once in `snippets/validation--harness-styles.liquid`, scoped via the `[class*='shopify-section--validation--']` prefix. Each validation section renders it (`{% render 'validation--harness-styles' %}`) and keeps only genuine per-page exceptions (e.g. button's flex override). The indicator is outline-only — no padding/background on blocks or tracks (those shift layout and cost fidelity).
 
-This layout contract is expected to **evolve** as new composition-layer primitives arrive (containers with their own internal grid, full-bleed media, sticky tracks, …). The invariant is *blocks as direct children of a theme-root carrying a base rhythm*; the specific `display` and rhythm value are per-primitive choices, set when a new element's production layout calls for it.
+This layout contract is expected to **evolve** as new composition-layer primitives arrive. The invariant is *blocks as direct children of the real theme-root grid carrying a base rhythm*; only genuinely non-block-level primitives (inline-flex) override `display`.
 
 ## Schema-driven matrix
 

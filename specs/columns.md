@@ -203,7 +203,7 @@ No runtime strings.
 Per `validation-contract.md` Tier 2 (theme-primitive).
 
 - **Tier**: primitive (L1 block-backed; no sub-component half)
-- **Page**: `sections/validation--primitive--columns.liquid` v1.1.0 (production-faithful — blocks render as direct children of `<token-section>` with a base `--block-rhythm: lg`, not the `.block-validation-suite` flex wrapper) + `templates/index.validation--primitive--columns.json` (shipped)
+- **Page**: `sections/validation--primitive--columns.liquid` v1.2.0 (production-faithful — `token-section` is the real theme-root bleed grid, so blocks sit in the content track and bleed modifiers paint; chrome + the layout-neutral outline/label indicator come from the shared `validation--harness-styles` snippet) + `templates/index.validation--primitive--columns.json` (shipped)
 - **Tests**: `.tests/e2e/primitive--columns.spec.js` (executable; `npm run test:e2e`)
 - **Requires seeded**: `container_style/card`, `content_width/reading` (Token's shipped seed catalog); color scheme `scheme-2` must exist in the theme's color schemes. A test needing an unseeded handle signals a seed-set gap, not a test workaround.
 - **API surface**:
@@ -230,7 +230,7 @@ Per `validation-contract.md` Tier 2 (theme-primitive).
   - `stack-below:40` / `:60` → container query against the block's own inline-size: the grid holds at its track count when the block is ≥ the breakpoint, collapses to a single track when narrower (verified across the desktop / mobile viewports). `stack-below:80` stays single-column even on the 1280px desktop viewport (the block is < 80rem), proving the query is against the block's width, not the viewport
   - `sticky-track:first` pins the first grid child (`position: sticky`); `sticky-track:second` pins the last and leaves the first static
   - Sticky disables under stack-below collapse: a `stack-below:80` + `sticky-track:first` block (collapsed at every harness viewport) computes `position: static` on the pinned child — regression guard for the specificity fix (snippet v1.8.1). A `stack-below:40` + `sticky-track:first` block re-enables sticky where the grid re-expands (sticky on the 1280px desktop viewport, static on the collapsed mobile viewport)
-  - Bleed settings emit the bleed modifiers (`bleed-desktop:both`, `bleed-mobile:both`, `bleed-desktop:inline_start`) — the raw setting value (underscore). The painted `grid-column` is the section's bleed grid (Tier 3), not asserted here
+  - Bleed emits the modifiers (`bleed-desktop:both`, `bleed-mobile:both`, `bleed-desktop:inline_start` — raw underscore value) **and paints**: the harness `token-section` is the real theme-root grid, so `bleed-both` computes `grid-column: bleed-start / bleed-end` and is wider than a content block; `inline_start` computes `bleed-start / content-end` on desktop and falls back to the content track on mobile (desktop-only bleed); a non-bleed block sits in `content-start / content-end`
   - `container_style:card` emits the modifier and pulls centralized variant CSS from `layer-theme.css` (computed `border-radius: 8px`, `padding: 24px`, non-`none` `box-shadow`)
   - `custom_color_scheme` + `color_scheme:scheme-2` emits `color-scheme:scheme-2`, re-resolves `--color-role-background` to scheme-2's value, and paints a background band (computed `background-color` = scheme-2's bg, vs transparent on a plain columns)
   - `content_width` caps the block (`--content-width` + `max-inline-size`)
@@ -238,7 +238,7 @@ Per `validation-contract.md` Tier 2 (theme-primitive).
   - Child fill: an uncapped richtext track child fills its `1fr` track (width ≈ track width, not its content width) — regression guard for the text-block `margin-inline: auto` fix (`richtext` v1.2.2 / `title` v1.1.4): auto inline margins are gated on a `content_width` cap so they don't disable grid `justify-self: stretch`
   - Empty columns renders the outer `.shopify-block--columns` + `token-layout` wrapper with no children
   - Top-spacing overrides emit `--mobile-/--desktop-margin-block-start` (loose `1.0rem` / `4.0rem`, tight `0.5rem` / `1.0rem`) — absolute values that replace the rhythm
-- **Deliberately unasserted**: bleed *painting* (the section's `grid-column` bleed grid acts only on direct children of a real `<token-section>` grid — a Tier-3 concern asserted on preset / section pages, not on this contained primitive harness); `block.shopify_attributes` (editor-only). `container_style` legibility is delegated to `validation--substrate--container-style`.
+- **Deliberately unasserted**: `block.shopify_attributes` (editor-only). `container_style` legibility is delegated to `validation--substrate--container-style`. (Bleed painting is now asserted here — the harness `token-section` is the real theme-root grid.)
 - **Unit scope**: none (Liquid + CSS only)
 
 ## Out of scope
