@@ -72,7 +72,7 @@
           "type": "group",
           "blocks": {
             "c1": { "type": "button", "settings": { "content": "Vertically centered", "link": "/" } },
-            "c2": { "type": "richtext", "settings": { "content": "<p>Taller child with two lines of body copy so the cross-axis alignment is observable next to the short button.</p>" } }
+            "c2": { "type": "richtext", "settings": { "content": "<p>This is a deliberately long paragraph of body copy that wraps across several lines, so the short button beside it has clear vertical room and the row's cross-axis (vertical) centering reads obviously at a glance.</p>" } }
           },
           "block_order": ["c1", "c2"],
           "settings": { "direction": "row", "vertical_alignment": "center", "stack_below": "none", "gap": 24 }
