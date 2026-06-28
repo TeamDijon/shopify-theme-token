@@ -22,11 +22,15 @@ import { STORE, VERSION, requireCreds, gql, assertNoUserErrors } from './lib/sho
 
 const DIR = '.scripts/seed/assets';
 
-// Images only for now. Video assets get added when the video L0 page is built
-// (the video reference form needs a manual spike after the first upload).
+// contentType drives the staged-upload resource + fileCreate contentType.
+// Images reference in theme settings as shopify://shop_images/<filename> (confirmed).
+// The video reference form is verified during the video L0 page build (Shopify-hosted
+// video may differ; the handle may not survive upload). A missing binary is skipped
+// (warn), so this stays runnable before the user-supplied clip.mp4 lands.
 const ASSETS = [
-  { filename: 'landscape.png', mimeType: 'image/png', alt: 'Validation landscape placeholder' },
-  { filename: 'portrait.png', mimeType: 'image/png', alt: 'Validation portrait placeholder' },
+  { filename: 'landscape.png', mimeType: 'image/png', contentType: 'IMAGE', alt: 'Validation landscape placeholder' },
+  { filename: 'portrait.png', mimeType: 'image/png', contentType: 'IMAGE', alt: 'Validation portrait placeholder' },
+  { filename: 'clip.mp4', mimeType: 'video/mp4', contentType: 'VIDEO', alt: 'Validation video clip' },
 ];
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -35,7 +39,7 @@ async function findFile(filename) {
   const data = await gql(
     `query ($q: String!) {
       files(first: 1, query: $q) {
-        edges { node { fileStatus alt ... on MediaImage { id image { url } } } }
+        edges { node { fileStatus alt ... on MediaImage { id } ... on Video { id } } }
       }
     }`,
     { q: `filename:${filename}` },
@@ -53,7 +57,13 @@ async function stageUpload(asset, size) {
     }`,
     {
       input: [
-        { filename: asset.filename, mimeType: asset.mimeType, resource: 'IMAGE', httpMethod: 'POST', fileSize: String(size) },
+        {
+          filename: asset.filename,
+          mimeType: asset.mimeType,
+          resource: asset.contentType,
+          httpMethod: 'POST',
+          fileSize: String(size),
+        },
       ],
     },
   );
@@ -73,16 +83,17 @@ async function createFile(asset, resourceUrl) {
   const data = await gql(
     `mutation ($files: [FileCreateInput!]!) {
       fileCreate(files: $files) {
-        files { fileStatus alt ... on MediaImage { id } }
+        files { fileStatus alt ... on MediaImage { id } ... on Video { id } }
         userErrors { field message }
       }
     }`,
-    { files: [{ originalSource: resourceUrl, contentType: 'IMAGE', alt: asset.alt, filename: asset.filename }] },
+    { files: [{ originalSource: resourceUrl, contentType: asset.contentType, alt: asset.alt, filename: asset.filename }] },
   );
   assertNoUserErrors('fileCreate', data.fileCreate);
 }
 
-async function waitReady(filename, tries = 30) {
+// Videos process slower than images, so allow a longer window.
+async function waitReady(filename, tries = 60) {
   for (let i = 0; i < tries; i++) {
     const f = await findFile(filename);
     if (f?.fileStatus === 'READY') return;
@@ -97,22 +108,30 @@ async function main() {
   console.log(`Seeding validation assets on ${STORE} (${VERSION})\n`);
 
   for (const asset of ASSETS) {
+    const ref =
+      asset.contentType === 'IMAGE'
+        ? `shopify://shop_images/${asset.filename}`
+        : '(video — verify reference form during the video L0 page build)';
+
     const existing = await findFile(asset.filename);
     if (existing?.fileStatus === 'READY') {
-      console.log(`  ${asset.filename}: exists (READY) — shopify://shop_images/${asset.filename}`);
+      console.log(`  ${asset.filename}: exists (READY) — ${ref}`);
       continue;
     }
     const path = `${DIR}/${asset.filename}`;
-    if (!existsSync(path)) throw new Error(`missing binary: ${path} — run: node .scripts/seed/generate-assets.mjs`);
+    if (!existsSync(path)) {
+      console.log(`  ${asset.filename}: SKIPPED — binary not found at ${path}`);
+      continue;
+    }
     const bytes = readFileSync(path);
     const target = await stageUpload(asset, bytes.length);
     await putBinary(target, bytes, asset.filename);
     await createFile(asset, target.resourceUrl);
     await waitReady(asset.filename);
-    console.log(`  ${asset.filename}: uploaded — shopify://shop_images/${asset.filename}`);
+    console.log(`  ${asset.filename}: uploaded — ${ref}`);
   }
 
-  console.log('\nDone. Reference in theme settings as shopify://shop_images/<filename>. Re-run anytime — present files skip.');
+  console.log('\nDone. Images reference as shopify://shop_images/<filename>. Re-run anytime — present files skip, missing binaries are skipped.');
 }
 
 main().catch((e) => {
