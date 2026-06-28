@@ -67,7 +67,7 @@ The mp4 URL extraction walks `video.sources` and takes the first source where `s
 - **Loop default true.** Atmosphere mode usually wants loop (background ambience); content mode loop is opt-out via `video_loop: false`. Default true for both modes.
 - **Poster from `preview_image`.** Shopify generates a preview image per uploaded video; the snippet pulls it via `image_url: width: 1920`. The poster renders before the video plays (and during buffering / when paused). Escape via `| escape` for safety.
 - **MP4-only source today.** `video.sources` exposes per-format URLs; the snippet picks mp4. HLS (`source.format == 'hls'`) and DASH support would be additive — needs `type="application/vnd.apple.mpegurl"` source emission and a JS HLS-shim for non-Safari browsers.
-- **Art direction via additional source.** `mobile_video` becomes the first `<source>` with a `media` query. Browsers walk sources in order and pick the first match — the mobile source wins below 48rem, the fallback wins above.
+- **Art direction via additional source.** `mobile_video` becomes the first `<source>` with a `media` query. Browsers walk sources in order and pick the first match — the mobile source wins below 48rem, the fallback wins above. **Load-time only**: unlike `<picture>` (images), `<video>` evaluates `<source media>` once at resource-selection and does **not** re-select on viewport resize — the right source loads per viewport, but switching requires a reload. Resize-responsive video swapping would need JS (a future `media-video.js` enhancement) or paired CSS-toggled `<video>` elements.
 - **`playsinline` always set.** iOS Safari defaults to fullscreen-on-play for `<video>` unless `playsinline` is present. Always emit; never harmful on non-iOS.
 - **`preload="none"` by default.** Bandwidth-friendly: the browser fetches nothing until the user interacts (atmosphere mode auto-plays, so the browser fetches as needed; content mode waits for the click). `metadata` loads dimensions + first frame for layout stability. `auto` preloads the full asset — appropriate only for LCP-critical videos.
 - **Early-exit on blank video.** `video == blank` → `break`. Consumers guard with their own placeholder (`media.liquid` falls back to `placeholder_svg_tag`).
@@ -91,7 +91,7 @@ Per `validation-contract.md` Tier 2 (L0 snippet — no block wraps it, so the ha
 - **Requires seeded**: store Files videos `landscape.mp4` + `portrait.mp4`, uploaded by `.scripts/seed-validation-assets.mjs` (needs `write_files`). Real encoded clips — Shopify's transcoder rejects degenerate stubs; processing is async (poll to READY before sources/poster exist).
 - **API surface** *(as a snippet)*:
   - **Mode matrix**: `atmosphere` (autoplay, muted, no controls, loop) × `content` × `video_autoplay ∈ {false, true}` × `video_controls ∈ {minimal, full}` × `video_loop ∈ {false, true}`
-  - **Art direction**: video + mobile_video set → mobile `<source>` precedes fallback; resize across 48rem to verify switch
+  - **Art direction**: video + mobile_video set → mobile `<source>` precedes fallback; **reload** at each viewport to verify (load-time selection — `<video>` isn't resize-responsive)
   - **Preload variants**: `none` (default), `metadata`, `auto` — DevTools network tab shows initial fetch behavior
   - **Poster rendering**: video with `preview_image` set vs blank — verify the poster URL emission (Shopify generates preview_image automatically on upload, so blank is rare)
 - **Edge cases**:
@@ -105,7 +105,7 @@ Per `validation-contract.md` Tier 2 (L0 snippet — no block wraps it, so the ha
   - Atmosphere mode: `autoplay`, `muted`, `loop`, `playsinline`, **no** `controls`, `preload="none"`, poster present, an mp4 `<source>`
   - Content mode: `minimal` hides controls + no autoplay (not force-muted); `full` + `video_autoplay` → `controls` + `autoplay` + forced `muted`
   - `video_loop: false` drops `loop`; `video_preload: 'metadata'` sets `preload="metadata"`
-  - Art-direction: a `<source media="(max-width: 47.99rem)">` (mp4) precedes the fallback `<source>` (no media query)
+  - Art-direction: a `<source media="(max-width: 47.99rem)">` (mp4) precedes the fallback `<source>` (no media query), and the `<video>` selects per viewport at load — `currentSrc` resolves to the media source on the mobile project, the fallback on desktop (load-time only; not resize-responsive)
   - Blank `video` renders nothing (snippet `break` — no `<media-video>`/`<video>`)
 - **Deliberately unasserted**: the poster's exact URL (store-CDN-specific); runtime playback (browser behavior, not the snippet's emission); HLS `m3u8` source (the snippet emits mp4 only by design).
 - **Unit scope**: future — the `<media-video>` custom element's JS lands as a separate spec when implemented (`assets/media-video.js` extending `BaseComponent`).
