@@ -75,6 +75,7 @@ N/A — variants drive concrete visual values (border, shadow, padding, backgrou
 - **Off-list handle is the diagnostic mode.** A merchant-created entry whose handle has no matching CSS rule in `layer-theme.css` emits the modifier but produces no variant styling — same diagnostic as `button_style`'s off-list-handle behavior. In a properly-paired extension this is transient; in production it indicates an incomplete extension.
 - **Per-project extension is two-step.** Token's base ship covers three variants (`card` / `outlined` / `elevated`). Adding a new variant requires (1) creating a `container_style` metaobject entry with the new handle AND (2) extending `layer-theme.css` `@layer theme` with a matching `:where(.shopify-block--group, .shopify-block--columns, .shopify-block--media)[data-modifiers*='container-style:<new-handle>']` rule. The 3-selector `:where()` chain is the constraint that keeps semantics shared across the container family.
 - **No cascading.** Selecting `card` on a group does NOT propagate to nested containers. Each container level opts in independently.
+- **Composes with a color-scheme band.** `card` / `elevated` fill via `var(--color-role-background)`, so when a container also carries a `color_scheme` override (which paints its own scheme band), the variant's scheme-derived fill wins on source order — the band is redundant under `card` / `elevated`. `outlined` (no fill) lets the band show through. See `theme-root.md` § Scheme paint.
 
 ## Seed entries
 

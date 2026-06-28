@@ -105,7 +105,7 @@ A section or container block (`group`, `columns`, `media`) opts into a *local* c
 
 (`block.settings.custom_color_scheme` in the `visible_if` at block level.)
 
-**Default off** — the element emits no `color-scheme:<id>` modifier and rides the cascade: `<body>` paints the global/substrate scheme, and each level draws its ancestor's `--color-role-*` tokens. **Checked** — the snippet appends `color-scheme:<color_scheme>` to `data-modifiers`, so `utility--css-variables`'s per-scheme rules re-emit the tokens for this element's subtree and (for theme-roots) the scheme paint re-backgrounds it. This is Token's substrate→local-override model: global by default, local only when asked.
+**Default off** — the element emits no `color-scheme:<id>` modifier and rides the cascade: `<body>` paints the global/substrate scheme, and each level draws its ancestor's `--color-role-*` tokens. **Checked** — the snippet appends `color-scheme:<color_scheme>` to `data-modifiers`, so `utility--css-variables`'s per-scheme rules re-emit the tokens for this element's subtree, and the scheme paint re-backgrounds the element with a band — sections (theme-roots) and the three container blocks (`group` / `columns` / `media`) alike. This is Token's substrate→local-override model: global by default, local only when asked.
 
 The emit guard keys on the boolean, not the picker value:
 
