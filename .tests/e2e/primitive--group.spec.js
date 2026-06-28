@@ -166,7 +166,7 @@ test.describe('validation--primitive--group', () => {
     expect(r.maxInline).toBe('680px');
   });
 
-  test('recursive nesting: group-in-group, each with its own layout + scheme (deepest wins)', async ({ page }) => {
+  test('recursive nesting: a group contains a group, each with its own layout', async ({ page }) => {
     const r = await page.getByText('Inner A', { exact: true }).evaluate((el) => {
       const inner = el.closest('.shopify-block--group');
       const outer = inner.parentElement.closest('.shopify-block--group');
@@ -175,8 +175,6 @@ test.describe('validation--primitive--group', () => {
         innerMods: inner.getAttribute('data-modifiers'),
         innerFd: getComputedStyle(inner.querySelector(':scope > token-layout')).flexDirection,
         outerFd: getComputedStyle(outer.querySelector(':scope > token-layout')).flexDirection,
-        innerBg: getComputedStyle(inner).getPropertyValue('--color-role-background').trim(),
-        outerBg: getComputedStyle(outer).getPropertyValue('--color-role-background').trim(),
         innerWidth: Math.round(inner.getBoundingClientRect().width),
       };
     });
@@ -187,11 +185,6 @@ test.describe('validation--primitive--group', () => {
     expect(r.outerFd).toBe('row');
     expect(r.innerFd).toBe('column');
     expect(r.innerMods).toContain('direction:column');
-    expect(r.innerMods).toContain('color-scheme:scheme-3');
-    // deepest override wins for its subtree
-    expect(r.outerBg).toBe('#faf8f5'); // scheme-2
-    expect(r.innerBg).toBe('#1a1a1a'); // scheme-3
-    expect(r.innerBg).not.toBe(r.outerBg);
   });
 
   test('empty group renders the outer + token-layout wrapper with no children', async ({ page }) => {

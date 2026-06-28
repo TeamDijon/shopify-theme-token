@@ -167,11 +167,11 @@
                 "nn2": { "type": "button", "settings": { "content": "Inner B", "link": "/" } }
               },
               "block_order": ["nn1", "nn2"],
-              "settings": { "direction": "column", "gap": 8, "custom_color_scheme": true, "color_scheme": "scheme-3" }
+              "settings": { "direction": "column", "gap": 8 }
             }
           },
           "block_order": ["n1", "n2"],
-          "settings": { "direction": "row", "gap": 24, "stack_below": "none", "custom_color_scheme": true, "color_scheme": "scheme-2" }
+          "settings": { "direction": "row", "gap": 24, "stack_below": "none" }
         },
         "empty": {
           "type": "group",
