@@ -1,21 +1,31 @@
-{% # Validation - Block - Spacer v1.0.0 %}
+{% # Validation - Block - Spacer v2.0.0 %}
 
 {% comment %}
-  Block-validation harness for `spacer`. Iterates `section.blocks`
-  (defined in `templates/index.validation--primitive--spacer.json` — the
-  template IS the test spec) and renders each with a label drawn from
-  the block id.
+  Changelog
+  - v2.0.0 — token-section is now the real production theme-root grid (drop the `display: block` override + the `.block-validation-suite` flex wrapper). Spacers render as direct children of the grid, so the rhythm-neutral substrate rule applies and is assertable (a spacer + the block after it take no rhythm margin). Harness chrome + the outline/label indicator move to `validation--harness-styles`. Template matrix rewritten for spacer v2.0.0 (single `size` picker backed by the `spacing` metaobject, baked by handle; the old px `breakpoint`/`spacer_block_size` settings are gone). Per `validation.md` § Harness layout.
+  - v1.0.0 — initial
+
+  Block-validation harness for `spacer`. The JSON template at
+  `templates/index.validation--primitive--spacer.json` bakes the test
+  matrix as block instances; the section renders them directly as children
+  of the theme-root grid, labelled via `validation--block-labels`.
 
   Diagnostic intent:
-  1. Each block instance exercises a different setting combination
-     (fixed sizes, breakpoint pairs, with/without background). The
-     visual height of each rendered spacer should match its declared
-     settings.
-  2. Faint dashed outline on each spacer so its bounds are visible
-     even when no background_color is set or when the size is 0.
+  1. Each `size` token resolves to its spacing height; resize across 768px
+     to validate the token's own mobile/desktop divide.
+  2. `background_color` turns the spacer into a colored band.
+  3. Spacer is rhythm-neutral — it takes no --block-rhythm margin even
+     though the section sets one. The dashed outline shows each spacer's
+     bounds even when transparent / 0-height.
+
+  Per-page exception: spacers are rhythm-neutral (margin-block-start forced
+  to 0), so as direct grid children they would butt together with no gap.
+  A harness-only `margin-block-end` separates the cases for legibility — it
+  touches neither the measured `block-size` (the spacer's height) nor
+  `margin-block-start` (the rhythm-neutral property under test).
 
   Reachable only at /?view=validation--primitive--spacer.
-  See `.context/docs/validation.md` for the validation-suite convention.
+  See `.context/docs/validation.md`.
 {% endcomment %}
 
 {% liquid
@@ -29,21 +39,21 @@
   <header class="validation__intro">
     <h1>Block: spacer</h1>
     <p>
-      The block matrix is baked into the JSON template at
-      <code>templates/index.validation--primitive--spacer.json</code>. Each entry below is one block instance from that
-      file, labelled by its block id. Resize the viewport across the 640/960/1280px breakpoints to validate the
-      breakpoint-driven entries.
+      Matrix in
+      <code>templates/index.validation--primitive--spacer.json</code>. Each entry is one block instance — a
+      <code>size</code> token (baked by handle), with or without a <code>background_color</code> band. Resize across
+      768px to validate the token's mobile/desktop divide. The dashed outline shows each spacer's bounds even when
+      transparent or 0-height; spacers are rhythm-neutral, so the visible gap between cases is a harness affordance, not
+      block rhythm.
     </p>
   </header>
 
   {% if section.blocks.size > 0 %}
-    <div class="block-validation-suite">
-      {% content_for 'blocks' %}
-    </div>
+    {% content_for 'blocks' %}
 
     {% render 'validation--block-labels', section: section %}
   {% else %}
-    <p class="block-validation-suite__empty">No blocks declared in the template.</p>
+    <p class="validation__empty">No blocks declared in the template.</p>
   {% endif %}
 </token-section>
 
@@ -53,6 +63,7 @@
   {% endif %}
 {% endcapture %}
 {% render 'utility--dynamic-style', base_selector: base_selector, css_content: dynamic_style %}
+{% render 'validation--harness-styles' %}
 
 {% schema %}
 {
@@ -77,68 +88,12 @@
 
 {% stylesheet %}
   @layer components {
+    /* Per-page exception: separate the rhythm-neutral spacers for legibility.
+       margin-block-end is harness-only — it leaves block-size (height under
+       test) and margin-block-start (rhythm-neutral, under test) untouched. */
     .shopify-section--validation--primitive--spacer {
-      token-section {
-        display: block;
-        max-inline-size: var(--max-inline-size, 80rem);
-        margin-inline: auto;
-        padding-block: 2rem;
-        padding-inline: 1.5rem;
-      }
-
-      .validation__intro {
-        margin-block-end: 2rem;
-
-        h1 {
-          margin-block-end: 0.5rem;
-        }
-
-        p {
-          max-inline-size: 65ch;
-          opacity: 0.75;
-        }
-
-        code {
-          font-family: ui-monospace, monospace;
-          font-size: 0.95em;
-        }
-      }
-
-      /* Render each spacer at its true height so the diagnostic isn't
-         distorted; float the DOM-id label above each via absolute
-         positioning. Generous gap + top padding gives labels room. */
-      .block-validation-suite {
-        display: flex;
-        flex-direction: column;
-        gap: 2.5rem;
-        padding-block-start: 1.5rem;
-      }
-
-      .block-validation-suite__empty {
-        padding: 1.5rem;
-        border: 1px dashed currentColor;
-        border-radius: 0.5rem;
-        text-align: center;
-        opacity: 0.7;
-      }
-
-      /* Each spacer carries `id="shopify-block-<block-id>"`. Outline
-         shows bounds even at 0 height; ::before floats the id as a
-         label above the spacer. */
-      .block-validation-suite > .shopify-block--spacer {
-        position: relative;
-        outline: 1px dashed rgba(0, 0, 0, 0.18);
-        outline-offset: -1px;
-      }
-
-      .block-validation-suite > .shopify-block--spacer::before {
-        content: var(--block-label, '');
-        position: absolute;
-        inset-block-end: calc(100% + 0.375rem);
-        inset-inline-start: 0;
-        font-family: ui-monospace, monospace;
-        font-size: 0.8125rem;
-        font-weight: 600;
+      token-section > .shopify-block--spacer {
+        margin-block-end: 2.5rem;
       }
     }
   }
