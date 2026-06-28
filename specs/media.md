@@ -10,7 +10,7 @@
 - `snippets/media.liquid` v1.5.0 (render surface)
 - `blocks/media.liquid` v1.7.0 (block schema + render call)
 
-**Reconciled**: 2026-06-27 (block v1.7.0 — color scheme gated by `custom_color_scheme` + top-margin override range narrowed to `0…100` (absolute override / negatives dropped via `utility--block-layout-vars` v1.2.1); snippet v1.5.0 — `inline-size: 100%` fills the track)
+**Reconciled**: 2026-06-28 (block v1.7.0 / snippet v1.5.0 unchanged — validation section retrofitted to v1.1.0 (real theme-root grid + shared harness styles) and the executable suite added; the template's stale `bleed: true` boolean and ungated `color_scheme` fixtures were corrected to the current `bleed_desktop`/`bleed_mobile` enums + `custom_color_scheme` gate. Earlier block v1.7.0: color scheme gated by `custom_color_scheme` + top-margin range narrowed to `0…100`; snippet v1.5.0: `inline-size: 100%` fills the track.)
 
 **Reviewed**: pending
 
@@ -245,7 +245,10 @@ No runtime strings (the `<media-video>` element's a11y label propagates from the
 Per `validation-contract.md` Tier 2 (theme-primitive).
 
 - **Tier**: primitive (L1 block-backed; no sub-component half)
-- **Page**: `sections/validation--primitive--media.liquid` + `templates/index.validation--primitive--media.json` (shipped)
+- **Page**: `sections/validation--primitive--media.liquid` v1.1.0 (production-faithful — `token-section` is the real theme-root grid, so blocks sit in the content track and bleed modifiers paint; chrome + the layout-neutral outline/label indicator come from the shared `validation--harness-styles` snippet) + `templates/index.validation--primitive--media.json` (shipped)
+- **Tests**: `.tests/e2e/primitive--media.spec.js` (executable; `npm run test:e2e`)
+- **Requires seeded**: `media_size` handles (`16-9`, `1-1`, `half-screen`, `fill`); `content_width/reading`; `container_style/card`; color scheme `scheme-2`.
+- **Asset strategy**: the page validates the **composition surface** via the placeholder SVG (media renders it when the asset is blank) + handle-seeded `media_size` + modifier/structure emission — assets are GID-bound and can't be seeded in a template JSON. Asset-dependent **pixel** behaviours are deferred to dedicated L0 pages (see "L0 deferral" under Assertions): art-direction `<picture><source>` switching, `object-fit` rendered pixels, `srcset`/`sizes`, video playback / controls / autoplay / loop.
 - **API surface**:
   - **media_type × asset variation**: `image` with image set; `image` blank → placeholder; `video` with video set; `video` blank → placeholder
   - **Art direction**: both desktop + mobile assets set → modifier emitted; resize viewport shows mobile asset below 48rem
@@ -267,13 +270,18 @@ Per `validation-contract.md` Tier 2 (theme-primitive).
   - Overlay color set to `rgba(0,0,0,0)` → snippet skips emitting `<media-overlay>` (the explicit no-emit branch)
   - Empty `contents` → no `<media-contents>` element; modifier `has-children` absent
 - **Visual showcase**: matrix sections per concern (sizing, bleed, overlay, alignment, scheme-override). Reader confirms each cell renders as configured.
-- **Assertions** (prose; Playwright once installed):
-  - Sizing instances have computed `aspect-ratio` or `block-size` matching the configured `media_size`
-  - `sizing:fill` instances have `block-size: 100svh`
-  - `[data-modifiers*='bleed-desktop']` / `[data-modifiers*='bleed-mobile']` instances (as direct children of `<token-section>`) have computed `grid-column` matching the section's named-line bleed grid rule for that modifier
-  - `image-fit:contain` instances' inner `<img>` has `object-fit: contain`
-  - `<media-overlay>` is present when `overlay_color` is non-blank non-transparent, absent otherwise
-  - `<media-contents>`'s computed `justify-content` / `align-items` match the alignment settings
+- **Assertions** (executable — `.tests/e2e/primitive--media.spec.js`):
+  - `media_type:image` / `media_type:video` emit their modifier; assetless fixtures render the placeholder `<svg>` media surface
+  - Sizing: `media_size` ratio handles → `sizing:ratio` + computed `aspect-ratio` (`16 / 9`, `1 / 1`); relative (`half-screen`) → `sizing:height` + `block-size ≈ 0.5 × viewport` (`aspect-ratio: auto`); `fill` → `sizing:fill` + `block-size ≈ viewport`
+  - `image_fit:contain` emits the modifier + computes `object-fit: contain` on the media element; default `cover` emits no modifier + `object-fit: cover`
+  - `<media-overlay>` present with `overlay_color`'s computed `background-color`, absent when unset
+  - `<media-contents>` computed `justify-content` / `align-items` match `vertical_alignment` / `horizontal_alignment` (hero default `end` / `start`); `--gap` emits when > 0, unset at zero; `has-children` + `<media-contents>` present with overlay blocks (incl. a nested `group` child), absent on the childless fixture
+  - Bleed emits the modifiers **and paints** (harness `token-section` is the real theme-root grid): `bleed-both` → `grid-column: bleed-start / bleed-end`, wider than content; `inline_start` → `bleed-start / content-end` on desktop, content track on mobile (desktop-only bleed)
+  - `container-style:card` emits the modifier + pulls centralized variant CSS (`border-radius: 8px`, non-`none` `box-shadow`); `color-scheme:scheme-2` emits the modifier + paints a scheme band
+  - `content_width` caps `max-inline-size` (680px) and centers symmetrically (geometric — grid auto margins)
+  - Top-spacing override emits `--mobile-/--desktop-margin-block-start` (`1.0rem` / `4.0rem`)
+- **L0 deferral (not asserted here)**: art-direction `<picture><source>` switching, `object-fit` rendered pixels (cover vs contain visual), `srcset`/`sizes`, and video playback / controls / autoplay / loop are GID-bound and belong to dedicated `image.liquid` + `video.liquid` (L0) validation pages (pending). The media page asserts the block's composition contract (modifier emission, sizing, overlay, content placement, bleed painting) via the placeholder.
+- **Deliberately unasserted**: `block.shopify_attributes` (editor-only); `container_style` legibility (delegated to `validation--substrate--container-style`).
 - **Unit scope**: none directly (Liquid + CSS only). The `<media-video>` element's JS lives in the video snippet's spec.
 
 ## Out of scope
