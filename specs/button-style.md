@@ -7,7 +7,7 @@
 **Status**: shipped
 
 **Implementation**:
-- `snippets/button.liquid` v1.4.1 (consumer + stylesheet host — appends `button-style:<handle>` to `data-modifiers`; the snippet's `{% stylesheet %}` block carries per-handle CSS rules targeting `[data-modifiers*='button-style:<handle>']`)
+- `snippets/button.liquid` v1.5.0 (consumer + stylesheet host — appends `button-style:<handle>` to `data-modifiers`; the snippet's `{% stylesheet %}` block carries per-handle CSS rules targeting `[data-modifiers*='button-style:<handle>']`)
 - Metaobject definition itself — created per `metaobject-definitions.md` § `button_style`
 
 **Reconciled**: 2026-06-01
@@ -17,8 +17,8 @@
 **Depends on**: none — substrate-root token type. Consumed via the modifier system per `modifier-system.md`.
 
 **Consumers**:
-- `snippets/button.liquid` v1.4.1 — primary consumer; reads the `button_style` setting from the button block, appends `button-style:<handle>` to `data-modifiers`, and applies the matching `{% stylesheet %}` rule
-- `blocks/button.liquid` v1.4.0 — block schema exposes the `button_style` setting (metaobject picker)
+- `snippets/button.liquid` v1.5.0 — primary consumer; reads the `button_style` setting from the button block, appends `button-style:<handle>` to `data-modifiers`, and applies the matching `{% stylesheet %}` rule
+- `blocks/button.liquid` v1.5.0 — block schema exposes the `button_style` setting (metaobject picker)
 - Future consumers wanting a button-style cascade (e.g., a `cta-banner` preset configuring nested button blocks' style) — set the modifier on a parent wrapper; descendant button rules inherit via the attribute-contains selector
 
 ## Purpose

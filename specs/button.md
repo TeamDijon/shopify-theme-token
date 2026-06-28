@@ -7,10 +7,10 @@
 **Status**: shipped
 
 **Implementation**:
-- `snippets/button.liquid` v1.4.1 (render surface)
-- `blocks/button.liquid` v1.4.0 (block schema + render call)
+- `snippets/button.liquid` v1.5.0 (render surface)
+- `blocks/button.liquid` v1.5.0 (block schema + render call)
 
-**Reconciled**: 2026-06-27 (block v1.4.0 — top-margin override range narrowed to `0…100`; absolute override, negatives dropped, via `utility--block-layout-vars` v1.2.1. Snippet v1.4.1 — `content` label escaped per `snippet-convention.md` § Output escaping.)
+**Reconciled**: 2026-06-28 (snippet v1.5.0 / block v1.5.0 — add `full_width` (none / mobile / always) → `full-width:<scope>` modifier + `inline-size: 100%` CSS, capped by `content_width`. 2026-06-27: block v1.4.0 — top-margin override range narrowed to `0…100`; absolute override, negatives dropped, via `utility--block-layout-vars` v1.2.1. Snippet v1.4.1 — `content` label escaped per `snippet-convention.md` § Output escaping.)
 
 **Reviewed**: pending
 
@@ -42,6 +42,7 @@ Snippet args (`{% render %}` interface) and block schema settings cover the same
 | `icon` | metaobject (`icon`) | no | blank | Inline SVG before/after the label via `snippets/icon.liquid`. No icon when blank. |
 | `icon_position` | select (`start` / `end`) | no | `"start"` | Schema-level `visible_if`: shown only when `icon` is set. Snippet emits `icon-position:end` modifier when `end`; CSS flips `flex-direction: row-reverse`. |
 | `content_width` | metaobject (`content_width`) | no | blank → no cap | Reads `.width.value` (px) and applies as `--content-width`. |
+| `full_width` | select (`none` / `mobile` / `always`) | no | `"none"` | Stretch to the container (`inline-size: 100%`), capped by `content_width` when set. `mobile` = full below 48rem, auto at/above; `always` = full at every width. Emits a `full-width:<scope>` modifier (`none` → no modifier). |
 | `mobile_margin_block_start` | range (0–100, step 2, px) | no | `0` | Top margin below the desktop breakpoint. Routed through `utility--block-layout-vars` → `--mobile-margin-block-start`. |
 | `desktop_margin_block_start` | range (0–100, step 2, px) | no | `0` | Top margin at/above the desktop breakpoint. Routed through `utility--block-layout-vars` → `--desktop-margin-block-start`. |
 
@@ -156,7 +157,8 @@ Button-specific vars defined in the snippet's stylesheet (overridable by per-pro
 
 - **Tag selection.** `link != blank` → `<a href="…">`; `link == blank` → `<button type="button">`. The branch is the only structural decision; everything else (variants, icon, modifiers) overlays on either tag.
 - **New-tab branch.** When `open_in_new_tab` is true AND the tag is `<a>`, the snippet appends `target="_blank" rel="noopener noreferrer"` to the behavior attribute and emits a sibling `<span class="sr-only">{{ 'accessibility.opens_in_new_tab' | t }}</span>` after the content for screen readers. The `rel` includes both `noopener` (security) and `noreferrer` (privacy); both are non-negotiable on external links from a Shopify storefront. The block schema `visible_if`-hides the setting when `link` is blank, so the unlinked-but-checked branch isn't reachable from the editor.
-- **Modifier composition.** `data-modifiers` carries up to two tokens — `button-style:<handle>` (when `button_style` is set) and `icon-position:end` (when icon is set AND position is `end`). The default `start` icon position emits no modifier; the absence is the default. Both tokens accumulate via the `modifier_list` builder, then route through `utility--modifiers` for emission. Blank list → no attribute (not `data-modifiers=""`).
+- **Modifier composition.** `data-modifiers` carries up to three tokens — `button-style:<handle>` (when `button_style` is set), `icon-position:end` (when icon is set AND position is `end`), and `full-width:<scope>` (when `full_width` ≠ `none`). Defaults (`start` icon position, `none` full width) emit no modifier; the absence is the default. Tokens accumulate via the `modifier_list` builder, then route through `utility--modifiers` for emission. Blank list → no attribute (not `data-modifiers=""`).
+- **Full width.** `full_width` (`none` / `mobile` / `always`) emits `full-width:<scope>`; the snippet's CSS sets `inline-size: 100%`, still capped by `--content-width` when `content_width` is set. `mobile` is full below 48rem and resets to `auto` at/above; `always` is full at every width. The two scope values are collision-free under the `*=` selector — neither `full-width:always` nor `full-width:mobile` is a substring of the other.
 - **Per-project handle extension.** Token's base ship includes the 3×3 family/variant CSS in this snippet's stylesheet. Per-project, new handles are added in pairs: a `button_style` metaobject entry (gets the merchant a picker option) AND a matching `[data-modifiers*='button-style:<new-handle>']` rule (gets the merchant the styling). A handle present in the metaobject but missing CSS still emits the modifier on `data-modifiers`; with no variant override matching, the cascade leaves defaults in place and the button visually equals solid-primary — a development-time diagnostic signalling "CSS not yet added for this handle." In a properly-paired extension this state is transient (between adding the entry and authoring the rule); in production it indicates an incomplete extension.
 - **Touch target preservation in `link-*`.** The link family zeroes padding, border, and background — but keeps `--button-min-size: 2.75rem`. The visible footprint is text-link, but the *hit target* stays at 44×44, satisfying WCAG 2.5.5 (Target Size). Documented because a casual CSS reader sees padding zeroed and might assume the target shrinks too.
 - **Hover treatments per family.** `solid-*` darkens the bg via `color-mix(in oklab, var(--button-background), black 12%)`. `outline-*` adds a translucent tint of `--button-color` via `rgb(from var(--button-color) r g b / var(--opacity-subtle, 0.05))` relative-color syntax — operates directly on `--button-color` without an intermediate `-rgb` triplet companion. `link-*` reduces opacity to `0.75`, no background. All three differ deliberately — same intent (signal hover), shape-appropriate execution. Minimal by design — per-project button styles typically override the base ruleset wholesale; a hover-state custom-property layer (`--button-background-hover`, `--button-foreground-hover`) is the additive path if "override hover only, keep base" becomes a real pattern.
@@ -178,6 +180,7 @@ Schema strings under `blocks.button.*` (defined in `locales/en.default.schema.js
 - `blocks.button.settings.icon.label`
 - `blocks.button.settings.icon_position.{label,options.{start,end}}`
 - `blocks.button.settings.content_width.{label,info}`
+- `blocks.button.settings.full_width.{label,info,options.{none,mobile,always}}`
 - `blocks.button.settings.top_spacing.content` (group header)
 - `blocks.button.settings.{mobile,desktop}_margin_block_start.label`
 - `blocks.button.presets.button.{name,category}`
@@ -222,6 +225,7 @@ Per `validation-contract.md` Tier 2 (theme-primitive).
   - The `link-*` family keeps `min-block-size` ≥ 44px with zeroed padding
   - Every rendered instance preserves the 44px (2.75rem) touch target
   - Top-spacing instances emit `--mobile-margin-block-start` / `--desktop-margin-block-start` — a loose override (`1.0rem` / `4.0rem`) and a tighter-than-rhythm override (`0.5rem` / `1.0rem`), both absolute values that replace the section rhythm. The painted-margin application is a Tier-3 assertion (blocks as direct theme-root children), not observable on a primitive page.
+  - `full_width:always` fills the container at every viewport (computed `inline-size` = the container's content width); `full_width:mobile` fills below 48rem and is content-width at/above
 - **Deliberately unasserted**: `block.shopify_attributes` (editor-only markup, not emitted on `?view=` storefront renders); the off-list-handle diagnostic (Edge cases) — exercising it requires a seeded handle with no matching CSS rule, which the shipped catalog intentionally omits; hover / reduced-motion / focus-ring (non-deterministic or substrate-tier). Variant visual styling and painted margin are delegated (see Surface delegation and the Tier-3 note above).
 - **Unit scope**: none (Liquid + CSS; no JS shipped)
 
