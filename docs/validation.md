@@ -88,6 +88,22 @@ The chrome's own styling MUST stay within its own selector (`.validation__intro`
 
 Existing validation sections from the 21-page inventory carry the wrapper anti-pattern (token-section gets `max-inline-size` + `padding-inline` applied directly). Retrofit at next touch; tracked in `BACKLOG.md`.
 
+## Harness layout
+
+Tier 2 / 3 pages (primitive + preset) render the matrix as **direct children of `<token-section>`** — no presentation wrapper between the theme-root and the blocks (the wrapper is the anti-pattern above). This keeps the page production-faithful in two ways a wrapper breaks:
+
+- **Painted rhythm.** The section sets a base `--block-rhythm` (e.g. `var(--spacing-lg)`), so per-block top-margin overrides paint through the real theme-root rhythm rule (`[data-modifiers*='theme-root'] > .shopify-block:not(:first-child)`), which only matches *direct* children. A block's spacing reads on the page exactly as it would in a merchant's section. The Tier-2 *tests* still assert the emitted custom property, not the painted margin (`validation-contract.md` § Tier 2 Boundary); the paint is the human-eyeball half.
+- **Native sizing / alignment.** Blocks inherit only the section's production constraints (`--content-width` cap, gutter), so `content_width`, `text_align`, and bleed behave as in production — not collapsed to content-width by a flex wrapper's auto-margins.
+
+**The token-section `display` matches how the primitive lays out in production** — there is no single correct value:
+
+- **Block-level primitives** (`title`, `richtext`, `separator`, `media`, `group`, `columns`, …) → `display: block`. They stack and span the content width naturally, so alignment and `content_width` centering render true.
+- **Inline-level primitives** (`button`) → a column stacking context (`display: flex; flex-direction: column; align-items: flex-start`). Inline-flex blocks neither stack nor honor block margins under `display: block`; the column flow stacks them one-per-row, flush-start, and lets `margin-block-start` paint — mirroring how the production bleed grid auto-places button blocks into rows.
+
+DOM-id labels (`validation--block-labels` + a `::before`) attach to `token-section > .shopify-block--<name>` regardless of the chosen display.
+
+This layout contract is expected to **evolve** as new composition-layer primitives arrive (containers with their own internal grid, full-bleed media, sticky tracks, …). The invariant is *blocks as direct children of a theme-root carrying a base rhythm*; the specific `display` and rhythm value are per-primitive choices, set when a new element's production layout calls for it.
+
 ## Schema-driven matrix
 
 Tiers 2, 3, and 4 share one pattern: the validation section accepts `@theme` blocks (Tiers 2 + 3) or declares its own inline-block schema (Tier 4 / Framing-A), and the **template JSON** bakes the test matrix into block instances. The JSON IS the test spec — diffing it tells you what scenarios changed.
