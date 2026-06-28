@@ -172,9 +172,13 @@ test.describe('validation--primitive--group', () => {
         outerFd: getComputedStyle(outer.querySelector(':scope > token-layout')).flexDirection,
         innerBg: getComputedStyle(inner).getPropertyValue('--color-role-background').trim(),
         outerBg: getComputedStyle(outer).getPropertyValue('--color-role-background').trim(),
+        innerWidth: Math.round(inner.getBoundingClientRect().width),
       };
     });
     expect(r.distinct).toBe(true);
+    // regression guard: a non-querying nested group must NOT collapse to 0 (it
+    // has no container-type, so its content sizes it) — see snippets/group.liquid.
+    expect(r.innerWidth).toBeGreaterThan(0);
     expect(r.outerFd).toBe('row');
     expect(r.innerFd).toBe('column');
     expect(r.innerMods).toContain('direction:column');
