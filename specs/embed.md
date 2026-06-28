@@ -7,10 +7,10 @@
 **Status**: shipped
 
 **Implementation**:
-- `snippets/embed.liquid` v1.2.0 (render surface)
+- `snippets/embed.liquid` v1.2.1 (render surface)
 - `blocks/embed.liquid` v1.2.0 (block schema + render call)
 
-**Reconciled**: 2026-06-27 (block v1.2.0 — top-margin override range narrowed to `0…100`; absolute override, negatives dropped, via `utility--block-layout-vars` v1.2.1.)
+**Reconciled**: 2026-06-28 (snippet v1.2.1 — add `inline-size: 100%` so the wrapper doesn't collapse to 0 in a non-stretching parent, surfaced by the validation page; same fix separator shipped earlier. Validation page retrofitted to the grid harness; executable suite added.)
 
 **Reviewed**: pending
 
@@ -97,6 +97,7 @@ Component-rooted on `.shopify-block--embed`. Layered in `@layer components`.
 .shopify-block--embed {
   position: relative;
   overflow: hidden;
+  inline-size: 100%;
   max-inline-size: var(--content-width, 100%);
   margin-inline: auto;
   aspect-ratio: 16 / 9;
@@ -150,6 +151,8 @@ html[data-modifiers*='shopify-design-mode'] .shopify-block--embed > .diagnostic 
 }
 ```
 
+The explicit `inline-size: 100%` is load-bearing: the wrapper's content is all absolutely-positioned (iframe / placeholder, both `position: absolute; inset: 0`), so it has no intrinsic width — `margin-inline: auto` + `max-inline-size` alone collapse it to 0 in a non-stretching parent (a flex item, or a grid item where `margin-inline: auto` disables `justify-self: stretch`). The 100% guarantees a width to cap against. Same pattern as `separator`.
+
 The default `aspect-ratio: 16 / 9` on the root provides a fallback before any `sizing:*` modifier matches — if `media_size` is blank, the iframe still renders at 16:9. The `sizing:ratio` rule overrides only when `media_size` populates `--media-ratio`.
 
 `margin-block-start` chains through `--mobile-margin-block-start` → `--desktop-margin-block-start` → section's `--block-rhythm` via `utility--block-layout-vars` (the section sets `--block-rhythm: var(--spacing-<picked-handle>)`).
@@ -202,32 +205,33 @@ Runtime strings (`locales/en.default.json` + `locales/fr.json`):
 
 ## Validation
 
-Per `validation-contract.md` Tier 2 (theme-primitive).
+Per `validation-contract.md` Tier 2 (theme-primitive; L1 block-backed, no sub-component half).
 
-- **Tier**: primitive (L1 block-backed; no sub-component half)
-- **Page**: `sections/validation--primitive--embed.liquid` + `templates/index.validation--primitive--embed.json` (shipped)
+- **Page**: `sections/validation--primitive--embed.liquid` + `templates/index.validation--primitive--embed.json` (shipped). The page is the production theme-root grid harness (renders `validation--harness-styles`); the JSON bakes the matrix, each case selected in tests by its `--block-label`. `media_size` + `content_width` are baked by metaobject handle. Two per-page exceptions (see the section's stylesheet): an inside-block label (embed is `overflow: hidden`, so the shared above-block label is clipped — placed inside top-left, lifted by a doubled section class because the blank / unparseable cases carry no `[data-modifiers]`); and a display-width cap (embeds are live third-party iframes — a dozen at full width make an enormous, network-heavy page).
+- **Tests**: `.tests/e2e/primitive--embed.spec.js` (executable; `npm run test:e2e`)
+- **Requires seeded**: `media_size` handle `1-1`; `content_width` handle `narrow` — from Token's shipped catalog. The provider URLs are public YouTube / Vimeo IDs baked in the matrix (no store seeding).
 - **API surface**:
-  - **URL parsing matrix**: every supported shape per provider (4 YouTube, 3 Vimeo + unlisted) → verify provider modifier + embed URL emission
-  - **Unknown URL**: `https://example.com/video/xyz` → placeholder SVG + diagnostic in editor; no iframe
-  - **Title fallback**: blank `title` → SR reads `accessibility.embedded_content` translation; non-blank → reads the literal
-  - **Sizing matrix**: blank `media_size` (defaults to 16/9), each shipped entry — verify aspect-ratio / block-size emission via modifier + var
-  - **content_width × sizing**: capped content_width × `sizing:fill` → wrapper caps inline; block-size still fills viewport (height isn't affected by content_width)
+  - **URL parsing matrix**: every supported shape per provider (4 YouTube: watch / short / shorts / embed; 3 Vimeo: public / unlisted / player) → provider modifier + embed src
+  - **Unknown / blank URL**: placeholder SVG branch (unknown → + editor-only diagnostic; blank → no diagnostic)
+  - **Sizing**: blank `media_size` (16/9 default) vs a ratio handle → `sizing:*` modifier + aspect-ratio
+  - **content_width**: capped via the emitted `--content-width`
   - **Top-spacing**: independent mobile + desktop values
-- **Surface delegation**: URL-parsing correctness is the snippet's responsibility; provider iframe behavior (autoplay, controls, fullscreen) is the provider's responsibility — this page validates that the snippet emits the correct iframe markup, not the iframe's runtime behavior.
+- **Surface delegation**: URL-parsing correctness + emitted iframe markup are the snippet's responsibility; provider iframe runtime behavior (autoplay, controls, fullscreen) is the provider's — unasserted.
 - **Edge cases**:
-  - Blank `url` → placeholder SVG only; no diagnostic emitted (the editor-only diagnostic conditions on `url != blank` — a blank URL is "not yet configured", not "configured wrong")
-  - Unparseable URL → placeholder SVG + diagnostic element; diagnostic visible only when `<html>` carries `shopify-design-mode`
+  - Blank `url` → placeholder SVG only; no diagnostic (the editor-only diagnostic conditions on `url != blank` — blank is "not yet configured", not "configured wrong")
+  - Unparseable URL → placeholder SVG + diagnostic element; diagnostic `display: none` unless `<html>` carries `shopify-design-mode`
   - Vimeo URL with unlisted hash (`vimeo.com/<ID>/<HASH>`) → embed URL includes `?h=<HASH>`
-  - YouTube `watch` URL with extra params (`?v=<ID>&t=42s`) → ID parsed from `?v=`, extra params dropped
-  - Trailing slash on URLs (`youtu.be/<ID>/`) → ID resolves to clean value (the split-on-`/` first-element fallback)
-  - Iframe focus → inset focus ring visible (not clipped by overflow: hidden)
-- **Visual showcase**: per-provider URL variants in a grid; sizing variants per provider; unrecognized URL row showing the diagnostic; blank URL showing the placeholder.
-- **Assertions** (prose; Playwright once installed):
-  - Parsed URLs produce iframes with the correct `src` per provider's embed pattern
-  - Iframes carry `loading="lazy"`, `title="<merchant value or default>"`, and provider-specific `allow` policy
-  - Unknown URLs produce no `<iframe>`; produce `<p class="diagnostic">`
-  - The diagnostic is `display: none` outside editor; visible when `html[data-modifiers*='shopify-design-mode']`
-  - Sizing modes emit the expected modifier and var; computed `aspect-ratio` / `block-size` match
+  - In a non-stretching parent (direct grid child, flex item) the wrapper still renders at full width — `inline-size: 100%` prevents the shrink-to-0 its absolutely-positioned content would otherwise cause (regression-guarded)
+  - Iframe focus → inset focus ring visible (not clipped by `overflow: hidden`)
+- **Assertions** (executable — `.tests/e2e/primitive--embed.spec.js`):
+  - All four YouTube shapes normalize to `https://www.youtube.com/embed/<id>`; `provider:youtube` modifier; `loading="lazy"`, `allowfullscreen`, YouTube `allow` policy
+  - Vimeo public → `https://player.vimeo.com/video/<id>`; `provider:vimeo`; Vimeo `allow` policy; unlisted appends `?h=<hash>`; player URL used as-is
+  - `title` carries the merchant value on the iframe
+  - Unparseable → no iframe, placeholder SVG present, `.diagnostic` present at `display: none`; blank → no iframe, placeholder, no diagnostic
+  - Default → computed `aspect-ratio: 16 / 9`, no `sizing:*` modifier; `media_size: 1-1` → `sizing:ratio` + `--media-ratio` + computed `1 / 1`
+  - content_width emits `--content-width` (`narrow` → `37.5rem`); top-spacing emits the per-breakpoint margin vars
+  - **Regression guard**: the wrapper has non-zero width / height (does not collapse — see `inline-size: 100%`)
+- **Deliberately unasserted**: the painted `max-inline-size` for content_width (the harness caps display width, so the Tier-2 boundary asserts the emitted var); provider iframe runtime behavior; the painted `margin-block-start`.
 - **Unit scope**: none (Liquid URL parsing; no JS shipped)
 
 ## Out of scope

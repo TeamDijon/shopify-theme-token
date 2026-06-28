@@ -8,7 +8,7 @@
 
 **Implementation**:
 - `snippets/media.liquid` v1.5.1 (consumer — reads the picked entry's `type` + `value` to emit `aspect-ratio` / `block-size` / `block-size: 100%` per the mode dispatch)
-- `snippets/embed.liquid` v1.2.0 (consumer — same dispatch logic for iframe sizing)
+- `snippets/embed.liquid` v1.2.1 (consumer — same dispatch logic for iframe sizing)
 - `snippets/utility--media-sizing.liquid` v1.1.0 (helper — centralizes the mode-to-CSS emission logic so `media` and `embed` share the resolution)
 - Metaobject definition itself — created per `metaobject-definitions.md` § `media_size`
 
@@ -20,7 +20,7 @@
 
 **Consumers**:
 - `snippets/media.liquid` v1.5.1 — primary consumer; reads the picked `media_size` entry from the media block, dispatches on `type` (or routes to the special `fill` handle) to emit the appropriate CSS via dynamic style
-- `snippets/embed.liquid` v1.2.0 — same dispatch logic for embedded video (YouTube / Vimeo iframes)
+- `snippets/embed.liquid` v1.2.1 — same dispatch logic for embedded video (YouTube / Vimeo iframes)
 - `snippets/utility--media-sizing.liquid` v1.1.0 — the shared resolver that both `media` and `embed` reach through
 - `blocks/media.liquid` v1.7.0, `blocks/embed.liquid` v1.2.0 — block schemas expose the `media_size` setting (metaobject picker)
 
