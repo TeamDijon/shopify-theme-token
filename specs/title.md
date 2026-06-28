@@ -7,10 +7,10 @@
 **Status**: shipped
 
 **Implementation**:
-- `snippets/title.liquid` v1.1.3 (render surface)
+- `snippets/title.liquid` v1.1.4 (render surface)
 - `blocks/title.liquid` v1.3.0 (block schema + render call)
 
-**Reconciled**: 2026-06-27 (block v1.3.0 — top-margin override range narrowed to `0…100`; absolute override, negatives dropped, via `utility--block-layout-vars` v1.2.1.)
+**Reconciled**: 2026-06-28 (snippet v1.1.4 — `margin-inline: auto` now emitted only when `content_width` is capped, so an uncapped title fills its flex/grid container instead of collapsing to content width. Block v1.3.0 unchanged.)
 
 **Reviewed**: pending
 
@@ -66,9 +66,9 @@ Component-rooted on `.shopify-block--title`. Layered in `@layer components`.
 ```css
 .shopify-block--title {
   max-inline-size: var(--content-width, 100%);
-  margin-inline: auto;
   color: var(--text-color, var(--color-role-foreground-heading));
   text-align: var(--text-align, start);
+  /* margin-inline: auto emitted per-instance only when content_width is set */
 
   & svg {
     display: inline-flex;
@@ -104,7 +104,7 @@ Zero-emission discipline: `--text-color` only emitted when `text_color` is set; 
 - **`text_style` override path.** Setting `text_style` to a non-blank metaobject emits `data-modifiers="text-style:<handle>"`; the corresponding selector (`[data-modifiers*='text-style:<handle>']`) in `utility--css-variables` re-applies that entry's typography, overriding the bare-tag rule. Modifier-driven overrides win cleanly because they sit later in the cascade by virtue of selector specificity (`[data-modifiers*='']` adds one attribute selector beyond the bare tag).
 - **Icon placement.** Optional inline SVG before the title text, scaled to `0.75em` so it sits comfortably with cap-height. `vertical-align: -0.05em` corrects optical balance against the baseline. The icon's color inherits from the title's `color` (which itself resolves to `--text-color` or the heading role).
 - **`p` tag is the non-heading escape.** When a title-style visual element shouldn't appear in the document outline (e.g. a card eyebrow, a styled subtitle inside a richtext block), `tag: p` renders the same visual treatment without polluting the heading hierarchy. The bare-tag binding for `p` is the body text_style by default; setting `text_style` explicitly is the typical pairing here.
-- **Content-width caps + self-centers.** Capped widths center via `margin-inline: auto`. Blank `content_width` → 100% of parent.
+- **Content-width caps + self-centers; uncapped fills.** `margin-inline: auto` is emitted only when `content_width` is set, centering the capped block. Blank `content_width` → no auto margins → fills the container (100%). Load-bearing inside flex/grid parents (`group` / `columns`): unconditional auto inline margins disable grid `justify-self: stretch`, collapsing an uncapped block to its content width.
 - **Color fallback.** `--text-color` overrides `--color-role-foreground-heading` (the scheme's heading-emphasis color). Blank `text_color` keeps the role's value, which is typically a deeper / more saturated value than `--color-role-foreground` (body color).
 - **Early-exit on blank content.** `content` is `inline_richtext`; blank → snippet `break`s and the block emits no DOM. Consistent with button / richtext.
 - **`{{ block.shopify_attributes }}` emission.** On the root tag, for theme-editor block selection.

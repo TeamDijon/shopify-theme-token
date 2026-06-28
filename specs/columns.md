@@ -235,6 +235,7 @@ Per `validation-contract.md` Tier 2 (theme-primitive).
   - `custom_color_scheme` + `color_scheme:scheme-2` emits `color-scheme:scheme-2`, re-resolves `--color-role-background` to scheme-2's value, and paints a background band (computed `background-color` = scheme-2's bg, vs transparent on a plain columns)
   - `content_width` caps the block (`--content-width` + `max-inline-size`)
   - Recursive nesting: columns inside columns renders both, each with its own `--grid-template-columns` (outer `repeat(2, 1fr)`, inner `1fr 2fr`); the block-level nested columns sizes to its grid cell (no collapse)
+  - Child fill: an uncapped richtext track child fills its `1fr` track (width ≈ track width, not its content width) — regression guard for the text-block `margin-inline: auto` fix (`richtext` v1.2.2 / `title` v1.1.4): auto inline margins are gated on a `content_width` cap so they don't disable grid `justify-self: stretch`
   - Empty columns renders the outer `.shopify-block--columns` + `token-layout` wrapper with no children
   - Top-spacing overrides emit `--mobile-/--desktop-margin-block-start` (loose `1.0rem` / `4.0rem`, tight `0.5rem` / `1.0rem`) — absolute values that replace the rhythm
 - **Deliberately unasserted**: bleed *painting* (the section's `grid-column` bleed grid acts only on direct children of a real `<token-section>` grid — a Tier-3 concern asserted on preset / section pages, not on this contained primitive harness); `block.shopify_attributes` (editor-only). `container_style` legibility is delegated to `validation--substrate--container-style`.
