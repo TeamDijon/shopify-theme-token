@@ -230,7 +230,7 @@ Per `validation-contract.md` Tier 2 (theme-primitive).
   - `container_style:card` emits the modifier and pulls centralized variant CSS from `layer-theme.css` (computed `border-radius: 8px`, `padding: 24px`, non-`none` `box-shadow` — absent on a plain group)
   - `custom_color_scheme` + `color_scheme:scheme-2` emits `color-scheme:scheme-2`, re-resolves `--color-role-background` to scheme-2's value, and paints a background band (computed `background-color` = scheme-2's bg, vs transparent on a plain group)
   - `content_width` caps the group (`--content-width` + `max-inline-size`)
-  - Recursive nesting: a group inside a group renders both, each with its own `direction` modifier and `token-layout` flex-direction; with per-level `color_scheme` overrides the deepest wins for its subtree (`--color-role-background` differs inner vs outer)
+  - Recursive nesting: a group inside a group renders both, each with its own `direction` modifier and `token-layout` flex-direction; the nested non-querying group sizes to its content (no collapse)
   - Empty group renders the outer `.shopify-block--group` + `token-layout` wrapper with no children
   - Top-spacing overrides emit `--mobile-/--desktop-margin-block-start` (loose `1.0rem` / `4.0rem`, tight `0.5rem` / `1.0rem`) — absolute values that replace the rhythm
 - **Deliberately unasserted**: bleed *painting* (the section's `grid-column` bleed grid acts only on direct children of a real `<token-section>` grid — a Tier-3 concern asserted on preset / section pages, not on this contained primitive harness); `block.shopify_attributes` (editor-only). `container_style` legibility is delegated to `validation--substrate--container-style`.
