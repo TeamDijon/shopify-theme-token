@@ -8,9 +8,9 @@
 
 **Implementation**:
 - `snippets/button.liquid` v1.4.1 (render surface)
-- `blocks/button.liquid` v1.3.0 (block schema + render call)
+- `blocks/button.liquid` v1.4.0 (block schema + render call)
 
-**Reconciled**: 2026-06-27 (block v1.3.0 — top-margin override range widened to `-100…100`; negatives emit via `utility--block-layout-vars` v1.2.0. Snippet v1.4.1 — `content` label escaped per `snippet-convention.md` § Output escaping.)
+**Reconciled**: 2026-06-27 (block v1.4.0 — top-margin override range narrowed to `0…100`; absolute override, negatives dropped, via `utility--block-layout-vars` v1.2.1. Snippet v1.4.1 — `content` label escaped per `snippet-convention.md` § Output escaping.)
 
 **Reviewed**: pending
 
@@ -42,8 +42,8 @@ Snippet args (`{% render %}` interface) and block schema settings cover the same
 | `icon` | metaobject (`icon`) | no | blank | Inline SVG before/after the label via `snippets/icon.liquid`. No icon when blank. |
 | `icon_position` | select (`start` / `end`) | no | `"start"` | Schema-level `visible_if`: shown only when `icon` is set. Snippet emits `icon-position:end` modifier when `end`; CSS flips `flex-direction: row-reverse`. |
 | `content_width` | metaobject (`content_width`) | no | blank → no cap | Reads `.width.value` (px) and applies as `--content-width`. |
-| `mobile_margin_block_start` | range (-100–100, step 2, px) | no | `0` | Top margin below the desktop breakpoint. Routed through `utility--block-layout-vars` → `--mobile-margin-block-start`. |
-| `desktop_margin_block_start` | range (-100–100, step 2, px) | no | `0` | Top margin at/above the desktop breakpoint. Routed through `utility--block-layout-vars` → `--desktop-margin-block-start`. |
+| `mobile_margin_block_start` | range (0–100, step 2, px) | no | `0` | Top margin below the desktop breakpoint. Routed through `utility--block-layout-vars` → `--mobile-margin-block-start`. |
+| `desktop_margin_block_start` | range (0–100, step 2, px) | no | `0` | Top margin at/above the desktop breakpoint. Routed through `utility--block-layout-vars` → `--desktop-margin-block-start`. |
 
 The 3×3 button_style matrix:
 
@@ -221,7 +221,7 @@ Per `validation-contract.md` Tier 2 (theme-primitive).
   - Blank `content` renders no element — no empty button leaks into the suite
   - The `link-*` family keeps `min-block-size` ≥ 44px with zeroed padding
   - Every rendered instance preserves the 44px (2.75rem) touch target
-  - Top-spacing instances emit `--mobile-margin-block-start` / `--desktop-margin-block-start` (positive `1.0rem` / `4.0rem`, negative `-1.0rem` / `-3.0rem`) — the block's emitted contract. The painted-margin application is a Tier-3 assertion (blocks as direct theme-root children), not observable on a primitive page.
+  - Top-spacing instances emit `--mobile-margin-block-start` / `--desktop-margin-block-start` — a loose override (`1.0rem` / `4.0rem`) and a tighter-than-rhythm override (`0.5rem` / `1.0rem`), both absolute values that replace the section rhythm. The painted-margin application is a Tier-3 assertion (blocks as direct theme-root children), not observable on a primitive page.
 - **Deliberately unasserted**: `block.shopify_attributes` (editor-only markup, not emitted on `?view=` storefront renders); the off-list-handle diagnostic (Edge cases) — exercising it requires a seeded handle with no matching CSS rule, which the shipped catalog intentionally omits; hover / reduced-motion / focus-ring (non-deterministic or substrate-tier). Variant visual styling and painted margin are delegated (see Surface delegation and the Tier-3 note above).
 - **Unit scope**: none (Liquid + CSS; no JS shipped)
 

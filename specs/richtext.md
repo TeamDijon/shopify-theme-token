@@ -8,9 +8,9 @@
 
 **Implementation**:
 - `snippets/richtext.liquid` v1.2.1 (render surface)
-- `blocks/richtext.liquid` v1.3.0 (block schema + render call)
+- `blocks/richtext.liquid` v1.4.0 (block schema + render call)
 
-**Reconciled**: 2026-06-27 (block v1.3.0 — top-margin override range widened to `-100…100`; negatives emit via `utility--block-layout-vars` v1.2.0.)
+**Reconciled**: 2026-06-27 (block v1.4.0 — top-margin override range narrowed to `0…100`; absolute override, negatives dropped, via `utility--block-layout-vars` v1.2.1.)
 
 **Reviewed**: pending
 
@@ -40,8 +40,8 @@ Snippet args (`{% render %}`) and block schema settings cover the same surface; 
 | `text_align` | select (`start` / `center` / `end`) | no | `"start"` | Inline text alignment. Emits `--text-align` only when ≠ `start`. |
 | `content_width` | metaobject (`content_width`) | no | blank → 100% | Caps `max-inline-size`. Self-centers via `margin-inline: auto`. Pick a `text-narrow` entry (~65ch) for prose readability; pick wider entries for full-bleed body. |
 | `text_color` | metaobject (`theme_color`) | no | blank → `--color-role-foreground` | Reads `.system.handle`; emits `--text-color: var(--color-<handle>)`. Note the role fallback is `--color-role-foreground` (body), not `--color-role-foreground-heading` — richtext is body copy. |
-| `mobile_margin_block_start` | range (-100–100, step 2, px) | no | `0` | Top margin below the desktop breakpoint. |
-| `desktop_margin_block_start` | range (-100–100, step 2, px) | no | `0` | Top margin at/above the desktop breakpoint. |
+| `mobile_margin_block_start` | range (0–100, step 2, px) | no | `0` | Top margin below the desktop breakpoint. |
+| `desktop_margin_block_start` | range (0–100, step 2, px) | no | `0` | Top margin at/above the desktop breakpoint. |
 
 ## Output shape
 

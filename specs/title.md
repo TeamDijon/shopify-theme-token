@@ -8,9 +8,9 @@
 
 **Implementation**:
 - `snippets/title.liquid` v1.1.3 (render surface)
-- `blocks/title.liquid` v1.2.0 (block schema + render call)
+- `blocks/title.liquid` v1.3.0 (block schema + render call)
 
-**Reconciled**: 2026-06-27 (block v1.2.0 — top-margin override range widened to `-100…100`; negatives emit via `utility--block-layout-vars` v1.2.0.)
+**Reconciled**: 2026-06-27 (block v1.3.0 — top-margin override range narrowed to `0…100`; absolute override, negatives dropped, via `utility--block-layout-vars` v1.2.1.)
 
 **Reviewed**: pending
 
@@ -40,8 +40,8 @@ Snippet args (`{% render %}`) and block schema settings cover the same surface; 
 | `text_align` | select (`start` / `center` / `end`) | no | `"start"` | Inline text alignment. Emits `--text-align` only when ≠ `start`. |
 | `content_width` | metaobject (`content_width`) | no | blank → 100% | Caps `max-inline-size`. Self-centers via `margin-inline: auto` when capped. |
 | `text_color` | metaobject (`theme_color`) | no | blank → `--color-role-foreground-heading` | Reads `.system.handle`; emits `--text-color: var(--color-<handle>)`. |
-| `mobile_margin_block_start` | range (-100–100, step 2, px) | no | `0` | Top margin below the desktop breakpoint. |
-| `desktop_margin_block_start` | range (-100–100, step 2, px) | no | `0` | Top margin at/above the desktop breakpoint. |
+| `mobile_margin_block_start` | range (0–100, step 2, px) | no | `0` | Top margin below the desktop breakpoint. |
+| `desktop_margin_block_start` | range (0–100, step 2, px) | no | `0` | Top margin at/above the desktop breakpoint. |
 
 ## Output shape
 
@@ -162,7 +162,7 @@ Per `validation-contract.md` Tier 2 (theme-primitive).
   - `text_align` `center` / `end` emit `--text-align` and compute the matching `text-align`; `start` emits nothing
   - `text_color` resolves to the `theme_color` value (`accent` → `rgb(255, 107, 53)`) and differs from the default heading color
   - `content_width` emits `--content-width` (`reading` → `42.5rem` / `680px`) and centers via symmetric inline margins
-  - Top-spacing emits `--mobile-/--desktop-margin-block-start` (positive `1.0rem` / `4.0rem`, negative `-1.0rem` / `-3.0rem`) — emitted contract; painted margin is Tier 3
+  - Top-spacing emits `--mobile-/--desktop-margin-block-start` — a loose override (`1.0rem` / `4.0rem`) and a tighter-than-rhythm override (`0.5rem` / `1.0rem`), both absolute values that replace the section rhythm; painted in the production-faithful harness
   - Blank `content` renders no element — no empty title leaks into the suite
 - **Deliberately unasserted**: `block.shopify_attributes` (editor-only, not emitted on `?view=` renders); off-list `text_style` handle fall-through (needs a seeded handle with no matching binding, which the shipped catalog omits). text_style typographic legibility is delegated to `validation--substrate--text-style`.
 - **Unit scope**: none (Liquid + CSS only)

@@ -6,9 +6,9 @@
 
 **Status**: shipped
 
-**Implementation**: `snippets/utility--block-layout-vars.liquid` v1.2.0 (CSS variable emitter — captured by the caller's `dynamic_style` block and routed through `utility--dynamic-style`)
+**Implementation**: `snippets/utility--block-layout-vars.liquid` v1.2.1 (CSS variable emitter — captured by the caller's `dynamic_style` block and routed through `utility--dynamic-style`)
 
-**Reconciled**: 2026-06-27 (v1.2.0 — margin pair emitted on `!= 0` (was `> 0`) so negative overrides reach the front end, pairing with the block schemas' `-100…100` range; v1.1.0 — content_width emission harmonized to rem, matching the margin pair and the codebase-wide merchant-px/front-end-rem convention)
+**Reconciled**: 2026-06-27 (v1.2.1 — margin pair guard back to `> 0` after the block schemas dropped negatives (range narrowed to `0…100`); the override is an absolute value that replaces the section rhythm. v1.1.0 — content_width emission harmonized to rem, matching the margin pair and the codebase-wide merchant-px/front-end-rem convention)
 
 **Reviewed**: 2026-06-04
 
@@ -34,8 +34,8 @@ The snippet takes three optional args and emits the matching CSS variable lines 
 | Arg | Type | Required | Default | Notes |
 |---|---|---|---|---|
 | `content_width` | metaobject (`content_width`) | no | blank | When present, emits `--content-width: <px/16>rem` from the entry's `.width.value` (converted via `divided_by: 16.0 \| round: 3`). Pass blank (or omit) to skip — useful when the block has its own width logic. |
-| `mobile_margin_block_start` | number (px) | no | `0` or blank | When non-zero, emits `--mobile-margin-block-start: <rem>` converted via `divided_by: 16.0 \| round: 3` (negative pulls the block tighter than the rhythm). Skipped when 0 or blank — the block-rhythm cascade rule's fallback applies. |
-| `desktop_margin_block_start` | number (px) | no | `0` or blank | When non-zero, emits `--desktop-margin-block-start: <rem>` (same conversion; negative allowed). Skipped when 0 or blank. |
+| `mobile_margin_block_start` | number (px) | no | `0` or blank | When > 0, emits `--mobile-margin-block-start: <rem>` converted via `divided_by: 16.0 \| round: 3` — an absolute value that replaces the section rhythm for this block. Skipped when 0 or blank — the block-rhythm cascade rule's fallback applies. |
+| `desktop_margin_block_start` | number (px) | no | `0` or blank | When > 0, emits `--desktop-margin-block-start: <rem>` (same conversion; replaces the section rhythm). Skipped when 0 or blank. |
 
 Invoked inline from a block's dynamic-style capture:
 
@@ -82,8 +82,8 @@ Per-instance vars emitted (shared by every L1 block):
 | Variable | Type | Source |
 |---|---|---|
 | `--content-width` | `<value>rem` (px-converted) | `content_width.width.value` when the metaobject arg is set; omitted otherwise |
-| `--mobile-margin-block-start` | `<value>rem` (px-converted) | `mobile_margin_block_start` when != 0 (negative allowed); omitted when 0 or blank |
-| `--desktop-margin-block-start` | `<value>rem` (px-converted) | `desktop_margin_block_start` when != 0 (negative allowed); omitted when 0 or blank |
+| `--mobile-margin-block-start` | `<value>rem` (px-converted) | `mobile_margin_block_start` when > 0; omitted when 0 or blank |
+| `--desktop-margin-block-start` | `<value>rem` (px-converted) | `desktop_margin_block_start` when > 0; omitted when 0 or blank |
 
 Consumed by:
 - The block's own CSS for `max-inline-size: var(--content-width, ...)` and the inherited block-rhythm cascade rule in `layer-theme.css` reading `--mobile-margin-block-start` / `--desktop-margin-block-start`
@@ -91,7 +91,7 @@ Consumed by:
 
 ## Behavior
 
-- **Skip-on-default.** Each of the three vars is conditionally emitted. The conditions are: `content_width != blank`, `mobile_margin_block_start != 0`, `desktop_margin_block_start != 0`. Zero or blank values produce no declaration, preserving the cascade fallback chain; non-zero values (positive *or* negative) emit, so a negative override pulls the block tighter than the section rhythm.
+- **Skip-on-default.** Each of the three vars is conditionally emitted. The conditions are: `content_width != blank`, `mobile_margin_block_start > 0`, `desktop_margin_block_start > 0`. Zero or blank values produce no declaration, preserving the cascade fallback chain; a positive value emits an absolute margin that replaces the section rhythm for that block (independent of the rhythm's size — a 16px override is 1rem wherever the block sits).
 - **px → rem conversion for all three vars.** All three values are stored as px (margins via Shopify range setting, content_width via the metaobject's `width` field) but emitted in rem (`value | divided_by: 16.0 | round: 3`). Matches the codebase-wide merchant-px / front-end-rem convention (gutter, text-style sizes, spacing metaobject). Three-decimal rounding (`round: 3`) preserves sub-pixel precision at typical font-sizes without emitting excessive trailing digits.
 - **No internal validation.** The snippet trusts its inputs — invalid metaobject references, malformed number values, etc. fall through to whatever Liquid produces (empty strings, `NaN` from divided_by, etc.). The block's setting schema is the validation layer; the utility just emits.
 - **Order-stable output.** Emission order is fixed: `content_width` → mobile margin → desktop margin. Predictable for debugging via DevTools.
@@ -113,16 +113,16 @@ Per `validation-contract.md` Tier 1b (substrate / utility-snippet).
 - **Page(s)**: covered indirectly by every L1 block's primitive validation page (`sections/validation--primitive--<block>.liquid` for the 9 L1 blocks). Each primitive page exercises the per-instance var emission as part of its block-half matrix. No dedicated `validation--substrate--block-layout-vars` page; the utility's behavior is observable through every block consumer.
 - **API surface** (matrix to exercise per consumer):
   - **Content-width pick + blank**: block with metaobject picker resolved → `--content-width: <px/16>rem` emitted; blank picker → no declaration
-  - **Mobile margin (positive + negative + 0 + blank)**: non-zero (incl. negative) → `--mobile-margin-block-start: <rem>` emitted; zero or blank → no declaration
-  - **Desktop margin (positive + negative + 0 + blank)**: same matrix
+  - **Mobile margin (positive + 0 + blank)**: > 0 → `--mobile-margin-block-start: <rem>` emitted; zero or blank → no declaration
+  - **Desktop margin (positive + 0 + blank)**: same matrix
   - **All-blank case**: all three args blank/zero → utility emits nothing; the wrapping `{% capture dynamic_style %}` produces an empty string that `utility--dynamic-style` short-circuits (no `<style>` block written)
 - **Edge cases**:
-  - Negative margin value → emitted (e.g. `-2rem`), pulling the block tighter than the section rhythm (overlap). The block schema range is `-100…100`, so negatives are a supported escape-hatch value, not an edge case.
+  - Override is absolute → emitted as a `<rem>` value that replaces the section rhythm for that block, independent of the rhythm's size (a 16px override is 1rem wherever the block sits). The block schema range is `0…100`; tighten below the rhythm with a small positive, use a `spacer` for larger gaps.
   - Content_width metaobject with `width.value` blank → Liquid arithmetic coerces blank to `0` through `divided_by: 16.0 | round: 3`, so the emission is `--content-width: 0rem` (valid declaration; the block's content track collapses to 0). Schema validation should prevent the merchant from saving an entry without a width.
-  - Very large margin (e.g., 200px max from range schema) → emits `12.5rem` (200/16). No issue.
+  - Largest margin (100px max from range schema) → emits `6.25rem` (100/16). No issue.
   - Sub-1-px-step margin (range step is 2) → preserved at full precision through the divisor + round.
 - **Visual showcase**: per consumer's validation page — verify computed `--mobile-margin-block-start` / `--desktop-margin-block-start` / `--content-width` on the block element match the spec's expectations across the matrix.
-- **Assertions** (prose; Playwright once installed):
+- **Assertions** (exercised via consumer pages' executable tests — e.g. `.tests/e2e/primitive--button.spec.js`, `.tests/e2e/primitive--title.spec.js`):
   - When all three args are set, the block's computed style includes all three custom properties with the expected rem values
   - When mobile_margin_block_start is 0, the property is absent; the cascade rule's fallback resolves to `var(--block-rhythm, 0rem)`
   - When content_width is blank, the property is absent; the block inherits the section's `--content-width` via CSS cascade

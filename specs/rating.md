@@ -46,7 +46,7 @@ Block schema settings (consumed via `block.settings.*` per `block-convention.md`
 | `show_count` | checkbox | no | `true` | When `false`, hides the count even when resolved. |
 | `size` | select | no | `'default'` | One of `small` / `default` / `large`. Emits `size:<value>` modifier; CSS maps to `--rating-star-size`. |
 | `color_scheme` | color_scheme | no | (scheme inherited) | Standard appearance setting; emits `color-scheme:<id>` modifier per the schema-conventions block-level color-scheme override pattern. |
-| `mobile_margin_block_start` | range (-100–100, step 2, px) | no | `0` | Standard top-spacing setting; routes through `utility--block-layout-vars` → `--mobile-margin-block-start`. |
+| `mobile_margin_block_start` | range (0–100, step 2, px) | no | `0` | Standard top-spacing setting; routes through `utility--block-layout-vars` → `--mobile-margin-block-start`. |
 | `desktop_margin_block_start` | range | no | `0` | Same as mobile pair. |
 
 ## Output shape

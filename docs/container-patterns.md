@@ -264,7 +264,7 @@ A typical desktop layout sets a tighter vertical rhythm (e.g. 1.5rem between sta
 
 Block-rhythm cascades from the section's `spacing` metaobject and applies between siblings via top-margin on `:not(:first-child)`. Per-block `mobile_margin_block_start` / `desktop_margin_block_start` settings override the cascade per instance.
 
-Authoring rule: set the section rhythm to the section's *typical* spacing. Per-block overrides operate in both directions — positive to add breathing room, negative to pull a block tighter than the rhythm. The schema range for top-margin includes negative values.
+Authoring rule: set the section rhythm to the section's *typical* spacing. A per-block override (`mobile_margin_block_start` / `desktop_margin_block_start`, range `0…100`) *replaces* the rhythm with an absolute value for that block — it is not added on top, so the same value yields the same gap wherever the block sits. A value below the rhythm tightens; a larger value loosens; the `spacer` block covers large gaps. Block-level overlap (negative) is not supported.
 
 Negative top-margin is the explicit exception to the rhythm grid; use it for one-off tightening.
 

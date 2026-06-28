@@ -12,7 +12,7 @@ For block-level top margin, use a mobile + desktop range pair preceded by a "Top
   "type": "range",
   "id": "mobile_margin_block_start",
   "label": "Mobile",
-  "min": -100,
+  "min": 0,
   "max": 100,
   "step": 2,
   "unit": "px",
@@ -22,7 +22,7 @@ For block-level top margin, use a mobile + desktop range pair preceded by a "Top
   "type": "range",
   "id": "desktop_margin_block_start",
   "label": "Desktop",
-  "min": -100,
+  "min": 0,
   "max": 100,
   "step": 2,
   "unit": "px",
@@ -34,7 +34,7 @@ The snippet reads both settings and emits `--mobile-margin-block-start` and `--d
 
 ### Override idiom
 
-Top-margin overrides the section's `block_rhythm` cascade per block, in both directions. The range is symmetric around zero: positive values add breathing room beyond the section rhythm; negative values pull a block tighter than the rhythm. Authoring rule: set the section rhythm to the section's typical spacing, then use positive overrides for breathing-room exceptions and negative overrides for tightening exceptions. Negative top-margin is the explicit, declared exception to the rhythm grid; use it for one-off tightening.
+Top-margin overrides the section's `block_rhythm` for that block with an **absolute** value — the override *replaces* the rhythm, it is not added on top of it. So a block configured at `8px` keeps `8px` wherever it sits, regardless of the blocks before or after. The range is `0…100` (positive only). Authoring rule: set the section rhythm to the section's typical spacing, then add a per-block override only where a block needs a different gap — a value below the rhythm tightens it, a larger value loosens it; the `spacer` block covers large gaps. Block-level overlap (negative margin) is intentionally unsupported — deliberate overlap is a positioned / container concern, not block rhythm.
 
 See `container-patterns.md` § Block-rhythm override idiom.
 

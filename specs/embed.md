@@ -8,9 +8,9 @@
 
 **Implementation**:
 - `snippets/embed.liquid` v1.2.0 (render surface)
-- `blocks/embed.liquid` v1.1.0 (block schema + render call)
+- `blocks/embed.liquid` v1.2.0 (block schema + render call)
 
-**Reconciled**: 2026-06-27 (block v1.1.0 — top-margin override range widened to `-100…100`; negatives emit via `utility--block-layout-vars` v1.2.0.)
+**Reconciled**: 2026-06-27 (block v1.2.0 — top-margin override range narrowed to `0…100`; absolute override, negatives dropped, via `utility--block-layout-vars` v1.2.1.)
 
 **Reviewed**: pending
 
@@ -55,8 +55,8 @@ Snippet args (`{% render %}`) and block schema settings cover the same surface; 
 | `title` | text | no | `accessibility.embedded_content` translation | Iframe `title` attribute for screen readers. Falls back to the locale-keyed default when blank. |
 | `media_size` | metaobject (`media_size`) | no | blank → 16/9 aspect ratio default | Reads `.system.handle` (for `fill` special-case), `.type.value`, `.value.value`. Routed through `utility--media-sizing`. |
 | `content_width` | metaobject (`content_width`) | no | blank → 100% | Caps `max-inline-size`. |
-| `mobile_margin_block_start` | range (-100–100, step 2, px) | no | `0` | Top margin below the desktop breakpoint. |
-| `desktop_margin_block_start` | range (-100–100, step 2, px) | no | `0` | Top margin at/above the desktop breakpoint. |
+| `mobile_margin_block_start` | range (0–100, step 2, px) | no | `0` | Top margin below the desktop breakpoint. |
+| `desktop_margin_block_start` | range (0–100, step 2, px) | no | `0` | Top margin at/above the desktop breakpoint. |
 
 No mobile_media_size override (unlike `media`) — embed's primary axis is the iframe's aspect ratio, which is provider-locked; per-breakpoint sizing override has limited value.
 
