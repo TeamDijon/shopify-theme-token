@@ -10,7 +10,7 @@
 - `snippets/richtext.liquid` v1.2.1 (render surface)
 - `blocks/richtext.liquid` v1.4.0 (block schema + render call)
 
-**Reconciled**: 2026-06-27 (block v1.4.0 — top-margin override range narrowed to `0…100`; absolute override, negatives dropped, via `utility--block-layout-vars` v1.2.1.)
+**Reconciled**: 2026-06-28 (snippet v1.2.1 / block v1.4.0 unchanged — spec body corrected during the executable-test pass to match the prose layer's actual declarations: prose sets spacing only; list markers + link underlines are preserved UA defaults, not prose rules. Validation section now pins the executable suite.)
 
 **Reviewed**: pending
 
@@ -20,7 +20,7 @@
 
 ## Purpose
 
-Long-form rich-text primitive. Renders a `<div>` wrapping a Shopify `richtext` setting's output (multiple paragraphs, lists, links, em/strong inline styling). Distinguishes from `title` by intent: richtext is the body-text companion that always carries the `prose` utility-modifier — `@layer utilities` rules apply paragraph spacing, list bullets, link underlines, and other typographic affordances appropriate for multi-paragraph bodies.
+Long-form rich-text primitive. Renders a `<div>` wrapping a Shopify `richtext` setting's output (multiple paragraphs, lists, links, em/strong inline styling). Distinguishes from `title` by intent: richtext is the body-text companion that always carries the `prose` utility-modifier — `@layer utilities` rules apply the multi-paragraph **rhythm** (paragraph-to-paragraph spacing, list indentation, heading spacing). List markers (`disc` / `decimal`) and link underlines are the browser defaults, preserved because the reset strips them only from `ul[class]` / `ol[class]` / classed links — the prose layer itself declares no `list-style` or `text-decoration` (see Behavior § marker provenance).
 
 <!-- REVIEW: Spec - Per template:design-principle-upfront-purpose, would the Purpose lead better with the "opts into the global prose substrate" principle? Currently this lands in sentence 3 of ¶1. Draft: "The body-text companion to `title` — always opts into the substrate's `prose` utility modifier so paragraph spacing, list bullets, link underlines, and other multi-paragraph typographic affordances are applied globally from `@layer utilities` rather than re-declared per block. Renders a `<div>` wrapping a Shopify `richtext` setting's output (paragraphs, lists, links, em/strong inline styling)." Question: keep current framing, swap to draft, or split the difference? -->
 
@@ -71,7 +71,7 @@ Component-rooted on `.shopify-block--richtext`. Layered in `@layer components`.
 }
 ```
 
-The block's own CSS is structural-only — width, centering, color, alignment. Typographic affordances (paragraph spacing, list bullets, link decoration, blockquote treatment, code styling) live in `layer-utilities.css` under `[data-modifiers*='prose']`. The split is deliberate: the same prose treatment applies to richtext blocks, validation page bodies, and any consumer that opts in via the modifier.
+The block's own CSS is structural-only — width, centering, color, alignment. Multi-paragraph rhythm (paragraph spacing, list indentation/margins, heading spacing, first/last-child margin collapse) lives in `layer-utilities.css` under `[data-modifiers*='prose']`. The split is deliberate: the same prose treatment applies to richtext blocks, validation page bodies, and any consumer that opts in via the modifier. The prose layer declares spacing only — list markers and link underlines come from the browser defaults (not reset for unclassed elements), so the layer does not re-declare them.
 
 `margin-block-start` chains through `--mobile-margin-block-start` → `--desktop-margin-block-start` → section's `--block-rhythm` via `utility--block-layout-vars` (the section sets `--block-rhythm: var(--spacing-<picked-handle>)`).
 
@@ -95,6 +95,7 @@ Zero-emission discipline: `--text-color` only emitted when `text_color` is set; 
 - **`content_width` is the readability lever.** A blank `content_width` lets richtext span 100% — useful for full-bleed marketing copy. A `text-narrow` (~65ch) entry constrains line length for legible prose. The cap drives both layout and the visual rhythm of paragraphs; merchants picking a narrow value get classical-typography readability, picking a wide value get full-width body.
 - **Capped width self-centers.** `margin-inline: auto` activates when `max-inline-size` < parent width. Blank `content_width` → 100% → no centering effect.
 - **No `text_style` setting.** Richtext doesn't expose `text_style` because the underlying rich-text content already has structural elements (`<p>`, `<ul>`, `<ol>`, `<blockquote>`, `<h2>`–`<h6>` inside the rich text) — those elements bind to their respective `text_style` entries via the bare-tag pattern in `utility--css-variables`. A merchant wanting "all paragraphs in this block at large size" picks a wider `content_width` or composes a `title` block before the richtext for the emphasis.
+- **Marker / underline provenance + first-last collapse.** The prose layer (`layer-utilities.css`) sets spacing only: direct children get `margin-block: 1rem`, with `> :first-child` and `> :last-child` collapsed to `0`. A single-paragraph block therefore gets **no** rhythm (the lone `<p>` is both first and last); spacing appears only between siblings. List markers (`disc` / `decimal`) and link underlines are browser defaults, surviving because the reset strips list-style only from `ul[class]` / `ol[class]` and never resets `a` decoration. The prose layer does not declare `list-style` or `text-decoration` — a future reset/base rule that blanket-strips either would silently drop markers/underlines from prose with nothing in the layer to restore them.
 - **Schema input is Shopify's `richtext` type.** The setting accepts HTML markup with a restricted tag set (`<p>`, `<ul>`, `<ol>`, `<li>`, `<strong>`, `<em>`, `<a>`, etc.). Shopify enforces sanitization; the snippet emits the value directly via `{{ content }}`.
 - **Early-exit on blank content.** `content` blank → snippet `break`s; nothing renders.
 - **`{{ block.shopify_attributes }}` emission.** On the outer wrapper, for theme-editor block selection.
@@ -120,7 +121,9 @@ No runtime strings.
 Per `validation-contract.md` Tier 2 (theme-primitive).
 
 - **Tier**: primitive (L1 block-backed; no sub-component half)
-- **Page**: `sections/validation--primitive--richtext.liquid` + `templates/index.validation--primitive--richtext.json` (shipped)
+- **Page**: `sections/validation--primitive--richtext.liquid` v1.1.0 (production-faithful — blocks render as direct children of `<token-section>` with a base `--block-rhythm: lg`, not the `.block-validation-suite` flex wrapper; the dead `narrow` / `prose:narrow` fixtures were purged when that setting was removed in block v1.2.0) + `templates/index.validation--primitive--richtext.json` (shipped)
+- **Tests**: `.tests/e2e/primitive--richtext.spec.js` (executable; `npm run test:e2e`)
+- **Requires seeded**: `content_width/reading` (680px) + `content_width/wide` (1400px); `theme_color/accent`. The accent token's *value* is store-defined — the test resolves `--color-accent` at runtime rather than asserting a literal hex.
 - **API surface**:
   - **content variation**: single paragraph, multi-paragraph, list (`<ul>`, `<ol>`), links, inline em/strong — verify the `prose` rules apply (paragraph spacing, list bullets, link underline)
   - **text_align**: `start` (default), `center`, `end`
@@ -134,13 +137,18 @@ Per `validation-contract.md` Tier 2 (theme-primitive).
   - Blank `content_width` → wrapper spans 100%; `margin-inline: auto` has no visible effect
   - `text_color` set to a handle with no matching `theme_color` entry → `--text-color: var(--color-<handle>)` emits; the CSS variable resolves to its declaration default (or unset if not declared anywhere)
 - **Visual showcase**: a vertical stack of richtext blocks demonstrating content variations × widths × alignments. Reader confirms prose rules apply (paragraph spacing, list bullets, link decoration); content_width caps line length where set; color resolution matches.
-- **Assertions** (prose; Playwright once installed):
-  - Each instance carries `data-modifiers="prose"` on the root
-  - Each instance's computed `max-inline-size` matches the configured `content_width` (or 100% when blank)
-  - Computed `color` matches `text_color` (or `--color-role-foreground` when blank)
-  - Inner `<p>` elements have non-zero `margin-block` per the prose utility's paragraph spacing rule
-  - Inner `<ul>`/`<ol>` elements have appropriate list-marker presence
-  - Inner `<a>` elements have non-`none` `text-decoration`
+- **Assertions** (executable — `.tests/e2e/primitive--richtext.spec.js`):
+  - Every richtext root carries `data-modifiers="prose"` (no conditional emission)
+  - Paragraph rhythm: a lone paragraph collapses both margins (first AND last child → `0` top and bottom); in a multi-paragraph block the middle paragraph gets `16px` top + bottom, the first collapses its top, the last its bottom
+  - Lists render markers: `<ul>` computes `list-style-type: disc` (position `outside`, non-zero `padding-inline-start`), `<ol>` computes `decimal` — UA defaults preserved through the reset (the prose layer declares no `list-style`)
+  - Inline: `<em>` computes `font-style: italic`, `<strong>` `font-weight ≥ 700`, `<a>` `text-decoration-line` contains `underline` (UA default, not reset)
+  - A nested `<h2>` (not the block's first child) binds a larger `text_style` (`font-size` > the body paragraph) and gets the prose `:is(h2, h3)` top margin (`24px`)
+  - `text_align` start is zero-emission (`--text-align` unset, computed `start`); center / end emit the var and set computed `text-align`
+  - `content_width` reading caps `max-inline-size` to `680px` (`--content-width: 42.5rem`) and self-centers (symmetric auto margins; real gutter on the desktop viewport where the cap is below available width); `wide` caps to `1400px` (`87.5rem`); blank spans `100%`
+  - `text_color` emits `--text-color` and recolors computed `color` to the resolved `--color-accent` token (≠ the default body color); blank `text_color` resolves to `--color-role-foreground`
+  - Top-spacing override emits `--mobile-margin-block-start: 1.0rem` / `--desktop-margin-block-start: 4.0rem` (absolute values)
+  - Blank `content` renders no root (snippet `break`) — 11 of the 12 fixtures produce a `.shopify-block--richtext`
+- **Deliberately unasserted**: `block.shopify_attributes` (editor-only); the prose layer's blockquote/`hr`-adjacency rules (no fixtures); `text_color` literal hex (store-defined — resolved at runtime).
 - **Unit scope**: none (Liquid + CSS only)
 
 ## Out of scope
