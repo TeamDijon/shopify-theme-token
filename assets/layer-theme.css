@@ -128,6 +128,12 @@
     margin-block-start: 0;
   }
 
+  /* Local color-scheme override on a container block (group / columns / media) paints a real background band — the same operation as the theme-root scheme paint, one level finer (body base → section → region). The `color` declaration is load-bearing: it re-resolves descendants' plain inherited text color, which `--color-role-*` token re-emission alone does not. Placed BEFORE the container-style variants so card / elevated (whose own fill is already scheme-derived) win on source order; `outlined` + a band compose additively. Theme-roots paint via their own rule and are not matched here. */
+  :where(.shopify-block--group, .shopify-block--columns, .shopify-block--media)[data-modifiers*='color-scheme'] {
+    background: var(--gradient-background);
+    color: var(--color-role-foreground);
+  }
+
   /* Container style variants — applied to any container block (group, columns, media) carrying data-modifiers="container-style:<handle>". Centralized here so the three consumers share the same visual treatment; per-project CSS can extend or override. */
   :where(
     .shopify-block--group,

@@ -32,6 +32,7 @@ function readGroup(page, childText, exact = true) {
       contentWidth: gcs.getPropertyValue('--content-width').trim(),
       maxInline: gcs.maxInlineSize,
       schemeBg: gcs.getPropertyValue('--color-role-background').trim(),
+      bg: gcs.backgroundColor,
       mobileMargin: gcs.getPropertyValue('--mobile-margin-block-start').trim(),
       desktopMargin: gcs.getPropertyValue('--desktop-margin-block-start').trim(),
     };
@@ -153,6 +154,10 @@ test.describe('validation--primitive--group', () => {
     expect(sch.mods).toContain('color-scheme:scheme-2');
     expect(sch.schemeBg).toBe('#faf8f5');
     expect(sch.schemeBg).not.toBe(def.schemeBg);
+    // the override now paints a real background band (scheme-2 bg); a plain group
+    // (no color-scheme) paints nothing
+    expect(sch.bg).toBe('rgb(250, 248, 245)');
+    expect(def.bg).toBe('rgba(0, 0, 0, 0)');
   });
 
   test('content_width caps the group (--content-width + max-inline-size)', async ({ page }) => {
