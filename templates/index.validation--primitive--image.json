@@ -1,0 +1,12 @@
+{
+  "sections": {
+    "main": {
+      "type": "validation--primitive--image",
+      "settings": {
+        "desktop_image": "shopify://shop_images/landscape.png",
+        "mobile_image": "shopify://shop_images/portrait.png"
+      }
+    }
+  },
+  "order": ["main"]
+}
