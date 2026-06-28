@@ -233,6 +233,15 @@
           "label": "Content width",
           "info": "Leave blank for full width"
         },
+        "full_width": {
+          "label": "Full width",
+          "info": "Stretch the button to fill its container (capped by Content width).",
+          "options": {
+            "none": "No",
+            "mobile": "On mobile only",
+            "always": "Always"
+          }
+        },
         "top_spacing": { "content": "Top spacing" },
         "mobile_margin_block_start": { "label": "Mobile" },
         "desktop_margin_block_start": { "label": "Desktop" }

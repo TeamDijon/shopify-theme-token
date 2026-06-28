@@ -145,11 +145,42 @@ test.describe('validation--primitive--button', () => {
     expect(await link.getAttribute('data-x')).toBeNull();
   });
 
+  test('full_width:always fills the container at every viewport', async ({ page }) => {
+    const r = await page.getByRole('link', { name: 'Full width always' }).evaluate((el) => {
+      const ts = el.closest('token-section');
+      const cs = getComputedStyle(ts);
+      const container = ts.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+      return { mods: el.getAttribute('data-modifiers'), w: el.getBoundingClientRect().width, container };
+    });
+    expect(r.mods).toContain('full-width:always');
+    expect(Math.round(r.w)).toBe(Math.round(r.container));
+  });
+
+  test('full_width:mobile fills below 48rem and is content-width at/above', async ({ page }) => {
+    const r = await page.getByRole('link', { name: 'Full width on mobile' }).evaluate((el) => {
+      const ts = el.closest('token-section');
+      const cs = getComputedStyle(ts);
+      const container = ts.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+      return {
+        mods: el.getAttribute('data-modifiers'),
+        w: el.getBoundingClientRect().width,
+        container,
+        wide: window.innerWidth >= 768,
+      };
+    });
+    expect(r.mods).toContain('full-width:mobile');
+    if (r.wide) {
+      expect(r.w).toBeLessThan(r.container); // auto (content width) at/above 48rem
+    } else {
+      expect(Math.round(r.w)).toBe(Math.round(r.container)); // full below 48rem
+    }
+  });
+
   test('blank-content instance renders no element — no empty button leaks into the suite', async ({ page }) => {
     const buttons = page.locator('token-section .shopify-block--button');
     const count = await buttons.count();
-    // 13 fixtures, minus the blank-content one which breaks before emitting a root.
-    expect(count).toBe(12);
+    // 15 fixtures, minus the blank-content one which breaks before emitting a root.
+    expect(count).toBe(14);
     for (let i = 0; i < count; i++) {
       const text = (await buttons.nth(i).innerText()).trim();
       expect(text.length).toBeGreaterThan(0);

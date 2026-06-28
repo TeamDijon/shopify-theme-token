@@ -1,7 +1,8 @@
-{% # Button block v1.4.0 %}
+{% # Button block v1.5.0 %}
 
 {% comment %}
   Changelog
+  - v1.5.0 — add `full_width` setting (none / mobile / always): emits a `full-width:<scope>` modifier; the snippet's CSS sets `inline-size: 100%` (capped by `content_width` when set), with a 48rem reset for the mobile-only case.
   - v1.4.0 — top-margin override range narrowed to `0…100` (step 2): the override is an absolute value that replaces the section rhythm; negatives (overlap) dropped — no block-level use case. Tighten with a small positive below the rhythm; use a `spacer` for larger gaps. Pairs with `utility--block-layout-vars` v1.2.1 (emit on `> 0`).
   - v1.3.0 — top-margin override range changed to `-100…100` (was `0…200`): negative values pull a block tighter than the section rhythm; the 100–200 push range is dropped (use a `spacer` block for larger gaps). Step stays 2 — Shopify caps ranges at 101 steps. Pairs with `utility--block-layout-vars` v1.2.0 (emit on `!= 0`). See `.context/docs/schema-conventions.md` § Top-spacing pair.
   - v1.2.0 — `visible_if`-gate `open_in_new_tab` on `link != blank` (the setting had no effect on unlinked buttons; now hidden in that case)
@@ -68,6 +69,18 @@
       "id": "content_width",
       "label": "t:blocks.button.settings.content_width.label",
       "info": "t:blocks.button.settings.content_width.info"
+    },
+    {
+      "type": "select",
+      "id": "full_width",
+      "label": "t:blocks.button.settings.full_width.label",
+      "info": "t:blocks.button.settings.full_width.info",
+      "options": [
+        { "value": "none", "label": "t:blocks.button.settings.full_width.options.none" },
+        { "value": "mobile", "label": "t:blocks.button.settings.full_width.options.mobile" },
+        { "value": "always", "label": "t:blocks.button.settings.full_width.options.always" }
+      ],
+      "default": "none"
     },
     {
       "type": "header",

@@ -1,7 +1,8 @@
-{% # Button v1.4.1 %}
+{% # Button v1.5.0 %}
 
 {% comment %}
   Changelog
+  - v1.5.0 — add `full_width` param (none / mobile / always): emits a `full-width:<scope>` modifier; CSS sets `inline-size: 100%` (capped by `content_width` when set), with a 48rem reset so `mobile` is full below the breakpoint only. Modifier values are collision-free (`full-width:always` / `full-width:mobile` — neither substrings the other).
   - v1.4.1 — escape the `content` label (`{{ content | escape }}`); the `text`-type block setting is plain text and Shopify does not sanitize it on output (`href` was already escaped). Per `snippet-convention.md` § Output escaping.
   - v1.4.0 — drop the internal `--button-color-rgb` intermediate. Outline-hover translucency migrates to `rgb(from var(--button-color) r g b / var(--opacity-subtle, 0.05))` relative-color syntax (paired with `utility--css-variables` v1.11.0 dropping `--color-role-*-rgb` companions). No external API change — per-project overrides of `--button-color-rgb` would break, but the property was never documented as exposed.
   - v1.3.0 — rename exposed `--button-bg` / `--button-fg` custom properties to `--button-background` / `--button-foreground` for naming consistency with the substrate's full-word convention; transition now uses substrate motion vars (`var(--duration-fast) var(--ease-out)`) instead of hardcoded `0.15s ease-out`. Per-project overrides of `--button-bg` / `--button-fg` must rename.
@@ -29,6 +30,7 @@
   @param {metaobject} [icon] - `icon` metaobject. Inline SVG before the label. No icon when blank.
   @param {string} [icon_position] - `'start'` (default, icon leads the label) or `'end'` (icon trails). Ignored when no icon is set.
   @param {metaobject} [content_width] - `content_width` metaobject. Reads `.width.value` (px) and applies as `max-inline-size`. No cap when blank.
+  @param {string} [full_width] - `'none'` (default, content width), `'mobile'` (100% below 48rem, auto above), or `'always'` (100% at all widths). Emits a `full-width:<scope>` modifier; capped by `content_width` when set.
   @param {number} [mobile_margin_block_start] - Top margin in px below the desktop breakpoint. Defaults to 0.
   @param {number} [desktop_margin_block_start] - Top margin in px at or above the desktop breakpoint. Defaults to 0.
 
@@ -47,6 +49,7 @@
   assign icon = icon | default: block.settings.icon
   assign icon_position = icon_position | default: block.settings.icon_position | default: 'start'
   assign content_width = content_width | default: block.settings.content_width | default: ''
+  assign full_width = full_width | default: block.settings.full_width | default: 'none'
   assign mobile_margin_block_start = mobile_margin_block_start | default: block.settings.mobile_margin_block_start | default: 0
   assign desktop_margin_block_start = desktop_margin_block_start | default: block.settings.desktop_margin_block_start | default: 0
 
@@ -71,6 +74,13 @@
       assign modifier_list = modifier_list | append: ','
     endif
     assign modifier_list = modifier_list | append: 'icon-position:end'
+  endif
+
+  if full_width != 'none'
+    if modifier_list != blank
+      assign modifier_list = modifier_list | append: ','
+    endif
+    assign modifier_list = modifier_list | append: 'full-width:' | append: full_width
   endif
 
   capture base_selector
@@ -157,6 +167,20 @@
       /* Icon position: end — flip flex order so the icon trails the label */
       &[data-modifiers*='icon-position:end'] {
         flex-direction: row-reverse;
+      }
+
+      /* Full width: fill the container (still capped by --content-width when set).
+         `mobile` is full below the breakpoint then resets to auto; `always` stays
+         full at every width. Values are collision-free under the *= selector. */
+      &[data-modifiers*='full-width:always'],
+      &[data-modifiers*='full-width:mobile'] {
+        inline-size: 100%;
+      }
+
+      @media (width >= 48rem) {
+        &[data-modifiers*='full-width:mobile'] {
+          inline-size: auto;
+        }
       }
 
       &:focus-visible {

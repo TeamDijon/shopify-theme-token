@@ -242,6 +242,15 @@
           "label": "Largeur du contenu",
           "info": "Laisser vide pour la pleine largeur"
         },
+        "full_width": {
+          "label": "Pleine largeur",
+          "info": "Étirer le bouton pour remplir son conteneur (limité par la largeur du contenu).",
+          "options": {
+            "none": "Non",
+            "mobile": "Sur mobile uniquement",
+            "always": "Toujours"
+          }
+        },
         "top_spacing": { "content": "Espacement supérieur" },
         "mobile_margin_block_start": { "label": "Mobile" },
         "desktop_margin_block_start": { "label": "Bureau" }
