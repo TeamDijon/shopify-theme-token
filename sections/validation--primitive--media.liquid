@@ -90,8 +90,11 @@
   @layer components {
     /* Per-page exception: media is `overflow: hidden`, which clips the shared
        above-the-block use-case label. Place it inside the top-left corner
-       instead (over the placeholder), above the overlay/contents stacking. */
-    .shopify-section--validation--primitive--media token-section > .shopify-block--media::before {
+       instead (over the placeholder), above the overlay/contents stacking.
+       The `[data-modifiers]` qualifier (always present on media) lifts this
+       above the shared label rule's specificity so every inset wins — without
+       it the two rules tie and the shared `inset-inline-start: 0` survives. */
+    .shopify-section--validation--primitive--media token-section > .shopify-block--media[data-modifiers]::before {
       inset-block-start: 0.5rem;
       inset-block-end: auto;
       inset-inline-start: 0.5rem;
