@@ -85,3 +85,17 @@
   ]
 }
 {% endschema %}
+
+{% stylesheet %}
+  @layer components {
+    /* Per-page exception: media is `overflow: hidden`, which clips the shared
+       above-the-block use-case label. Place it inside the top-left corner
+       instead (over the placeholder), above the overlay/contents stacking. */
+    .shopify-section--validation--primitive--media token-section > .shopify-block--media::before {
+      inset-block-start: 0.5rem;
+      inset-block-end: auto;
+      inset-inline-start: 0.5rem;
+      z-index: 1;
+    }
+  }
+{% endstylesheet %}

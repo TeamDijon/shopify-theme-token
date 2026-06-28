@@ -3,65 +3,80 @@
     "main": {
       "type": "validation--primitive--media",
       "blocks": {
-        "placeholder-only": {
+        "image-placeholder": {
           "type": "media",
-          "settings": { "media_type": "image", "media_size": "16-9" }
-        },
-        "size-ratio-169": {
-          "type": "media",
-          "blocks": {
-            "t": { "type": "title", "settings": { "tag": "h3", "content": "Ratio 16-9" } }
-          },
-          "block_order": ["t"],
           "settings": { "media_type": "image", "media_size": "16-9" }
         },
         "size-ratio-11": {
           "type": "media",
-          "blocks": {
-            "t": { "type": "title", "settings": { "tag": "h3", "content": "Ratio 1-1" } }
-          },
-          "block_order": ["t"],
           "settings": { "media_type": "image", "media_size": "1-1" }
         },
         "size-relative-half": {
           "type": "media",
-          "blocks": {
-            "t": { "type": "title", "settings": { "tag": "h3", "content": "Relative half-screen" } }
-          },
-          "block_order": ["t"],
           "settings": { "media_type": "image", "media_size": "half-screen" }
         },
         "size-fill": {
           "type": "media",
-          "blocks": {
-            "t": { "type": "title", "settings": { "tag": "h3", "content": "Fill mode" } }
-          },
-          "block_order": ["t"],
           "settings": { "media_type": "image", "media_size": "fill" }
         },
         "type-video": {
           "type": "media",
-          "blocks": {
-            "t": { "type": "title", "settings": { "tag": "h3", "content": "Video atmosphere" } }
-          },
-          "block_order": ["t"],
           "settings": { "media_type": "video", "video_mode": "atmosphere", "media_size": "16-9" }
         },
         "fit-contain": {
           "type": "media",
-          "blocks": {
-            "t": { "type": "title", "settings": { "tag": "h3", "content": "Contain fit" } }
-          },
-          "block_order": ["t"],
           "settings": { "media_type": "image", "image_fit": "contain", "media_size": "16-9" }
         },
         "overlay-tint": {
           "type": "media",
+          "settings": { "media_type": "image", "media_size": "16-9", "overlay_color": "rgba(0, 51, 153, 0.4)" }
+        },
+        "bleed-both": {
+          "type": "media",
+          "settings": {
+            "media_type": "image",
+            "media_size": "16-9",
+            "bleed_desktop": "both",
+            "bleed_mobile": "both"
+          }
+        },
+        "bleed-start": {
+          "type": "media",
+          "settings": { "media_type": "image", "media_size": "16-9", "bleed_desktop": "inline_start" }
+        },
+        "container-card": {
+          "type": "media",
+          "settings": { "media_type": "image", "media_size": "16-9", "container_style": "card" }
+        },
+        "scheme-override": {
+          "type": "media",
+          "settings": {
+            "media_type": "image",
+            "media_size": "16-9",
+            "custom_color_scheme": true,
+            "color_scheme": "scheme-2"
+          }
+        },
+        "width-capped": {
+          "type": "media",
+          "settings": { "media_type": "image", "media_size": "16-9", "content_width": "reading" }
+        },
+        "with-spacing": {
+          "type": "media",
+          "settings": {
+            "media_type": "image",
+            "media_size": "16-9",
+            "mobile_margin_block_start": 16,
+            "desktop_margin_block_start": 64
+          }
+        },
+        "overlay-default": {
+          "type": "media",
           "blocks": {
-            "t": { "type": "title", "settings": { "tag": "h3", "content": "Overlay tint" } }
+            "t": { "type": "title", "settings": { "tag": "h3", "content": "Hero default (bottom-start)" } }
           },
           "block_order": ["t"],
-          "settings": { "media_type": "image", "media_size": "16-9", "overlay_color": "rgba(0, 51, 153, 0.4)" }
+          "settings": { "media_type": "image", "media_size": "16-9" }
         },
         "align-center": {
           "type": "media",
@@ -76,18 +91,27 @@
             "vertical_alignment": "center"
           }
         },
-        "align-start-top": {
+        "align-end": {
           "type": "media",
           "blocks": {
-            "t": { "type": "title", "settings": { "tag": "h3", "content": "Start-top overlay" } }
+            "t": { "type": "title", "settings": { "tag": "h3", "content": "End-start overlay" } }
           },
           "block_order": ["t"],
           "settings": {
             "media_type": "image",
             "media_size": "16-9",
-            "horizontal_alignment": "start",
+            "horizontal_alignment": "end",
             "vertical_alignment": "start"
           }
+        },
+        "gap-zero": {
+          "type": "media",
+          "blocks": {
+            "t": { "type": "title", "settings": { "tag": "h3", "content": "Gap-zero overlay" } },
+            "b": { "type": "button", "settings": { "content": "No-gap CTA", "link": "/" } }
+          },
+          "block_order": ["t", "b"],
+          "settings": { "media_type": "image", "media_size": "16-9", "gap": 0, "vertical_alignment": "center" }
         },
         "grouped-overlay": {
           "type": "media",
@@ -104,100 +128,27 @@
           },
           "block_order": ["g"],
           "settings": { "media_type": "image", "media_size": "16-9", "vertical_alignment": "center" }
-        },
-        "gap-zero": {
-          "type": "media",
-          "blocks": {
-            "t": { "type": "title", "settings": { "tag": "h3", "content": "Gap-zero overlay" } },
-            "b": { "type": "button", "settings": { "content": "No-gap CTA", "link": "/" } }
-          },
-          "block_order": ["t", "b"],
-          "settings": { "media_type": "image", "media_size": "16-9", "gap": 0, "vertical_alignment": "center" }
-        },
-        "bleed-both": {
-          "type": "media",
-          "blocks": {
-            "t": { "type": "title", "settings": { "tag": "h3", "content": "Bleed both media" } }
-          },
-          "block_order": ["t"],
-          "settings": {
-            "media_type": "image",
-            "media_size": "16-9",
-            "bleed_desktop": "both",
-            "bleed_mobile": "both"
-          }
-        },
-        "bleed-start": {
-          "type": "media",
-          "blocks": {
-            "t": { "type": "title", "settings": { "tag": "h3", "content": "Bleed start media" } }
-          },
-          "block_order": ["t"],
-          "settings": { "media_type": "image", "media_size": "16-9", "bleed_desktop": "inline_start" }
-        },
-        "container-card": {
-          "type": "media",
-          "blocks": {
-            "t": { "type": "title", "settings": { "tag": "h3", "content": "Card media" } }
-          },
-          "block_order": ["t"],
-          "settings": { "media_type": "image", "media_size": "16-9", "container_style": "card" }
-        },
-        "scheme-override": {
-          "type": "media",
-          "blocks": {
-            "t": { "type": "title", "settings": { "tag": "h3", "content": "Scheme-2 media" } }
-          },
-          "block_order": ["t"],
-          "settings": {
-            "media_type": "image",
-            "media_size": "16-9",
-            "custom_color_scheme": true,
-            "color_scheme": "scheme-2",
-            "vertical_alignment": "center"
-          }
-        },
-        "width-capped": {
-          "type": "media",
-          "blocks": {
-            "t": { "type": "title", "settings": { "tag": "h3", "content": "Capped media" } }
-          },
-          "block_order": ["t"],
-          "settings": { "media_type": "image", "media_size": "16-9", "content_width": "reading" }
-        },
-        "with-spacing": {
-          "type": "media",
-          "blocks": {
-            "t": { "type": "title", "settings": { "tag": "h3", "content": "Spacing media" } }
-          },
-          "block_order": ["t"],
-          "settings": {
-            "media_type": "image",
-            "media_size": "16-9",
-            "mobile_margin_block_start": 16,
-            "desktop_margin_block_start": 64
-          }
         }
       },
       "block_order": [
-        "placeholder-only",
-        "size-ratio-169",
+        "image-placeholder",
         "size-ratio-11",
         "size-relative-half",
         "size-fill",
         "type-video",
         "fit-contain",
         "overlay-tint",
-        "align-center",
-        "align-start-top",
-        "grouped-overlay",
-        "gap-zero",
         "bleed-both",
         "bleed-start",
         "container-card",
         "scheme-override",
         "width-capped",
-        "with-spacing"
+        "with-spacing",
+        "overlay-default",
+        "align-center",
+        "align-end",
+        "gap-zero",
+        "grouped-overlay"
       ],
       "settings": {}
     }

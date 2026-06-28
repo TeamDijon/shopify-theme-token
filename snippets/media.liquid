@@ -1,7 +1,8 @@
-{% # Media v1.5.0 %}
+{% # Media v1.5.1 %}
 
 {% comment %}
   Changelog
+  - v1.5.1 — fix `gap: 0` being unreachable: `<media-contents>` used `gap: var(--gap, 1rem)`, but the snippet skips emitting `--gap` at zero (zero-emission discipline), so a merchant setting gap 0 fell back to 16px (same as the default). Fallback corrected to `0rem`, matching group/columns. CSS-only.
   - v1.5.0 — color scheme gated by the new `custom_color_scheme` setting: emit the `color-scheme:<id>` modifier only when the override is on (was: emit whenever `color_scheme` was non-blank). New `custom_color_scheme` param; `color_scheme` defaults to `scheme-1`. Paired with blocks/media.liquid v1.5.0. See `.context/docs/schema-conventions.md` § Color-scheme override.
   - v1.4.1 — add `inline-size: 100%` to `.shopify-block--media` so the block fills its grid/flow track instead of shrinking to the intrinsic width of its content. Without it, `margin-inline: auto` overrode the grid item's default stretch and the block collapsed to the placeholder SVG's intrinsic ~300px (visible on image-less / small-image media); `max-inline-size: var(--content-width)` still caps it, `margin-inline: auto` still centers it when capped.
   - v1.4.0 — replace `bleed` boolean with responsive `bleed_desktop` (none/inline_start/inline_end/both) + `bleed_mobile` (none/both) enums. Emits `bleed-desktop:<value>` / `bleed-mobile:<value>` modifiers consumed by the section's named-line bleed grid. Removes the snippet's own bleed CSS (negative-margin escape) — section handles via `grid-column`. Centered-ancestor footgun resolved by the new model: bleed only fires at section direct-child position, not deep-nested. Per the subgrid migration (`.context/docs/subgrid-migration.md`).
@@ -263,7 +264,7 @@
         flex-direction: column;
         justify-content: var(--vertical-alignment, end);
         align-items: var(--horizontal-alignment, start);
-        gap: var(--gap, 1rem);
+        gap: var(--gap, 0rem);
         padding: var(--gutter, 1rem);
 
         /* Inset focus rings for focusable children so the media's overflow: hidden doesn't clip them */
