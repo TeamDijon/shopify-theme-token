@@ -116,10 +116,16 @@
       .case {
         margin-block-start: 2.5rem;
 
-        & img,
+        /* Fill the content track so the image renders at a representative width —
+           with sizes="auto", candidate selection follows the rendered width, so a
+           fixed cap here would shrink the image AND make sizes_value a visual no-op. */
         & picture {
           display: block;
-          max-inline-size: 320px;
+        }
+
+        & img {
+          display: block;
+          inline-size: 100%;
           block-size: auto;
         }
       }
