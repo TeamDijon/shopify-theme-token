@@ -7,10 +7,10 @@
 **Status**: shipped
 
 **Implementation**:
-- `snippets/media.liquid` v1.5.0 (render surface)
+- `snippets/media.liquid` v1.5.1 (render surface)
 - `blocks/media.liquid` v1.7.0 (block schema + render call)
 
-**Reconciled**: 2026-06-28 (block v1.7.0 / snippet v1.5.0 unchanged — validation section retrofitted to v1.1.0 (real theme-root grid + shared harness styles) and the executable suite added; the template's stale `bleed: true` boolean and ungated `color_scheme` fixtures were corrected to the current `bleed_desktop`/`bleed_mobile` enums + `custom_color_scheme` gate. Earlier block v1.7.0: color scheme gated by `custom_color_scheme` + top-margin range narrowed to `0…100`; snippet v1.5.0: `inline-size: 100%` fills the track.)
+**Reconciled**: 2026-06-28 (snippet v1.5.1 — `<media-contents>` gap fallback corrected `1rem` → `0rem` so `gap: 0` is reachable, CSS-only. Validation section retrofitted to v1.1.0 (real theme-root grid + shared harness styles, overflow-clipped use-case label moved inside) + executable suite added (fixtures anchored by `--block-label`, feature fixtures carry no redundant overlay content); the template's stale `bleed: true` boolean and ungated `color_scheme` fixtures were corrected to the current `bleed_desktop`/`bleed_mobile` enums + `custom_color_scheme` gate. Block v1.7.0 unchanged.)
 
 **Reviewed**: pending
 
@@ -158,7 +158,7 @@ Component-rooted on `.shopify-block--media`. Layered in `@layer components`.
     flex-direction: column;
     justify-content: var(--vertical-alignment, end);
     align-items: var(--horizontal-alignment, start);
-    gap: var(--gap, 1rem);
+    gap: var(--gap, 0rem);
     padding: var(--gutter, 1rem);
 
     & .shopify-block--button:focus-visible {
@@ -191,7 +191,7 @@ Layout vars from the snippet:
 |---|---|---|
 | `--horizontal-alignment` | `align-items` on `<media-contents>` | `start` (only emitted when ≠ `start`) |
 | `--vertical-alignment` | `justify-content` on `<media-contents>` | `end` (only emitted when ≠ `end`) |
-| `--gap` | Gap between overlay children (rem) | `1rem` (only emitted when > 0) |
+| `--gap` | Gap between overlay children (rem) | `0rem` fallback (emitted only when > 0; schema default is 16px → `1rem`) |
 | `--overlay-color` | Overlay tint | `transparent` (only emitted when overlay is non-transparent) |
 
 Zero-emission discipline throughout.
@@ -275,7 +275,7 @@ Per `validation-contract.md` Tier 2 (theme-primitive).
   - Sizing: `media_size` ratio handles → `sizing:ratio` + computed `aspect-ratio` (`16 / 9`, `1 / 1`); relative (`half-screen`) → `sizing:height` + `block-size ≈ 0.5 × viewport` (`aspect-ratio: auto`); `fill` → `sizing:fill` + `block-size ≈ viewport`
   - `image_fit:contain` emits the modifier + computes `object-fit: contain` on the media element; default `cover` emits no modifier + `object-fit: cover`
   - `<media-overlay>` present with `overlay_color`'s computed `background-color`, absent when unset
-  - `<media-contents>` computed `justify-content` / `align-items` match `vertical_alignment` / `horizontal_alignment` (hero default `end` / `start`); `--gap` emits when > 0, unset at zero; `has-children` + `<media-contents>` present with overlay blocks (incl. a nested `group` child), absent on the childless fixture
+  - `<media-contents>` computed `justify-content` / `align-items` match `vertical_alignment` / `horizontal_alignment` (hero default `end` / `start`); `--gap` emits when > 0 (computes the gap), is unset at zero and **computes to `0`** (regression guard for the `0rem` fallback fix); `has-children` + `<media-contents>` present with overlay blocks (incl. a nested `group` child), absent on the childless fixture
   - Bleed emits the modifiers **and paints** (harness `token-section` is the real theme-root grid): `bleed-both` → `grid-column: bleed-start / bleed-end`, wider than content; `inline_start` → `bleed-start / content-end` on desktop, content track on mobile (desktop-only bleed)
   - `container-style:card` emits the modifier + pulls centralized variant CSS (`border-radius: 8px`, non-`none` `box-shadow`); `color-scheme:scheme-2` emits the modifier + paints a scheme band
   - `content_width` caps `max-inline-size` (680px) and centers symmetrically (geometric — grid auto margins)
