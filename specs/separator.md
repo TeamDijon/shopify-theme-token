@@ -10,7 +10,7 @@
 - `snippets/separator.liquid` v1.0.5 (render surface)
 - `blocks/separator.liquid` v1.2.0 (block schema + render call)
 
-**Reconciled**: 2026-06-27 (block v1.2.0 — top-margin override range narrowed to `0…100`; absolute override, negatives dropped, via `utility--block-layout-vars` v1.2.1.)
+**Reconciled**: 2026-06-28 (snippet v1.0.5 + block v1.2.0 unchanged — validation page retrofitted to the production theme-root grid harness; executable suite added; `content_width` + `line_color` baked by metaobject handle.)
 
 **Reviewed**: pending
 
@@ -112,25 +112,26 @@ No runtime strings; separator is structural with no semantic role announcement b
 
 ## Validation
 
-Per `validation-contract.md` Tier 2 (theme-primitive).
+Per `validation-contract.md` Tier 2 (theme-primitive; L1 block-backed, no sub-component half).
 
-- **Tier**: primitive (L1 block-backed; no sub-component half)
-- **Page**: `sections/validation--primitive--separator.liquid` + `templates/index.validation--primitive--separator.json` (shipped)
+- **Page**: `sections/validation--primitive--separator.liquid` + `templates/index.validation--primitive--separator.json` (shipped). The page is the production theme-root grid harness (renders `validation--harness-styles`); the JSON bakes the matrix as block instances, each selected in tests by its `--block-label`. `content_width` + `line_color` are baked by metaobject **handle** (`"content_width": "narrow"`, `"line_color": "primary"`) — the same handle-reference form `index.json` uses for `spacing`, so the matrix is JSON-portable.
+- **Tests**: `.tests/e2e/primitive--separator.spec.js` (executable; `npm run test:e2e`)
+- **Requires seeded**: `content_width` handles `narrow` (600) + `medium` (1000); `theme_color` handles `primary` + `accent` — from Token's shipped catalog (`.scripts/seed-metaobjects.mjs`).
 - **API surface**:
-  - **content_width variation**: blank, narrow (e.g. 30rem), medium (60rem), wide (100rem) → wrapper caps and centers at each value
-  - **line_color variation**: blank (defaults to `--color-role-border`), each shipped `theme_color` entry → border color matches
-  - **Top-spacing**: independent mobile and desktop values; render confirms the correct one applies per viewport
+  - **content_width variation**: blank (full content track), `narrow`, `medium` → wrapper caps and centers at each value
+  - **line_color variation**: blank (`--color-role-border`), `primary`, `accent` → `<hr>` border color resolves to the picked token
+  - **Top-spacing**: independent mobile / desktop overrides; zero-emission — a `0` value emits no var and falls through to the section `--block-rhythm`
 - **Edge cases**:
-  - Blank `content_width` → wrapper spans 100% of parent
-  - Blank `line_color` → border color resolves to `--color-role-border` (scheme structural border)
-  - Inside a flex parent (e.g. as a child of `direction:row` group) → wrapper still renders at 100% width thanks to the explicit `inline-size: 100%` (without this, the wrapper would collapse to 0 — see CSS rationale)
-  - Inside a narrow container with `content_width` > container width → CSS `min()` semantics handled by browser; effectively caps at container
-- **Visual showcase**: a vertical stack of separators demonstrating width and color variants, each labelled. Reader confirms hairline weight is consistent, color resolution matches the picker, and the flex-parent case renders the line at full width.
-- **Assertions** (prose; Playwright once installed):
-  - Each instance's computed `inline-size` matches the configured `content_width` (or 100% when blank)
-  - Each instance's `<hr>` computed `border-block-start-color` matches the configured `line_color` (or the scheme's `--color-role-border` when blank)
-  - The `<hr>` has computed `border-block-start-width: 1px`
-  - Top-spacing instances' computed `margin-block-start` matches per breakpoint
+  - Blank `content_width` → wrapper spans the content track (no `--content-width` emitted)
+  - Blank `line_color` → border resolves to `--color-role-border` (no `--line-color` emitted)
+  - Inside a flex parent (e.g. a `direction:row` group) → wrapper still renders at 100% width thanks to the explicit `inline-size: 100%` (without it the wrapper collapses to 0 — see CSS rationale)
+  - `content_width` > container width → browser `min()` semantics cap at the container
+- **Assertions** (executable — `.tests/e2e/primitive--separator.spec.js`):
+  - Default: no `--content-width` / `--line-color` emitted; `<hr>` border is a hairline (`border-block-start-width: 1px`, `solid`) at the `--color-role-border` color; wrapper spans the content track
+  - `content_width` caps: emitted `--content-width` (rem) + computed `max-inline-size` (px) match the handle (`narrow` → `37.5rem` / `600px`; `medium` → `62.5rem` / `1000px`); the capped wrapper renders narrower than full and centers (geometric `leftGap ≈ rightGap`, desktop)
+  - `line_color`: emitted `--line-color` resolves to the picked token on the `<hr>` border (`primary` → `rgb(46, 91, 255)`, `accent` → `rgb(255, 107, 53)`), distinct from the role-border default
+  - Top-spacing: the override emits `--mobile-margin-block-start` / `--desktop-margin-block-start` (rem) only for non-zero values; a `0` value leaves its var unset
+- **Deliberately unasserted**: the painted `margin-block-start` (Tier-2 boundary asserts the emitted custom property, not the cascade-applied margin — `validation-contract.md` § Tier 2 Boundary); the exact `--color-role-border` value per non-default scheme (the harness runs the default scheme).
 - **Unit scope**: none (Liquid + CSS only)
 
 ## Out of scope
