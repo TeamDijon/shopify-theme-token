@@ -79,7 +79,7 @@ When a new L1 block ships, this whitelist needs an entry per the `composition-st
 <div class="shopify-block shopify-block--group"
      id="<base-selector>"
      {{ block.shopify_attributes }}
-     data-modifiers="direction:row,stack-below:60,bleed-desktop:inline-start,bleed-mobile:both,container-style:card,color-scheme:scheme-2">
+     data-modifiers="direction:row,stack-below:60,bleed-desktop:inline_start,bleed-mobile:both,container-style:card,color-scheme:scheme-2">
   <token-layout>
     <!-- children rendered via {% content_for 'blocks' %} -->
   </token-layout>
@@ -201,6 +201,8 @@ Per `validation-contract.md` Tier 2 (theme-primitive).
 
 - **Tier**: primitive (L1 block; no L0 sub-component half)
 - **Page**: `sections/validation--primitive--group.liquid` + `templates/index.validation--primitive--group.json` (shipped)
+- **Tests**: `.tests/e2e/primitive--group.spec.js` (executable; `npm run test:e2e`)
+- **Requires seeded**: `container_style/card`, `content_width/reading` (Token's shipped seed catalog); color scheme `scheme-2` must exist in the theme's color schemes. A test needing an unseeded handle signals a seed-set gap, not a test workaround.
 - **API surface** (block-backed only — no snippet-half group):
   - **Direction × stack-below matrix**: row with each `stack_below ∈ {none, 40, 60, 80}`; column (stack_below not honored).
   - **Alignment matrix per direction**: row × `horizontal_alignment ∈ {start, center, end, space-between}` × `vertical_alignment ∈ {start, center, end}`; column × `horizontal_alignment ∈ {start, center, end}` (space-between normalized to start).
@@ -217,14 +219,21 @@ Per `validation-contract.md` Tier 2 (theme-primitive).
   - `bleed_desktop: inline_start` on a group **nested inside another container** → bleed modifier is emitted but the section's `>` direct-child bleed-grid-column rule doesn't match (nested group isn't a direct child of `<token-section>`); the nested group positions in its container's layout, no bleed
   - `stack_below: 40` in column direction → stack-below modifier still emits if it weren't `visible_if`-gated in row only; the schema gating means the case is unreachable from the editor, but a direct snippet render could pass it. Snippet renders honor the modifier; CSS rule fires correctly (column stays column, since the `stack-below` rule reverts to column on narrow which is column already).
 - **Visual showcase**: matrix sections, each labelled. Reader confirms layout per direction × stack-below × alignment cell; bleed treatments render at the expected breakpoint with the expected per-side (or both-sides) extension to the section's content cap; container_style variants look the same as on `validation--primitive--columns` and `validation--primitive--media` (centralized CSS verification); color-scheme override propagates to descendants.
-- **Assertions** (prose; Playwright once installed):
-  - `direction:column` instances have computed `flex-direction: column` on `token-layout`
-  - `direction:row` + `stack-below:40` instances have `flex-direction: column` below 40rem container width, `row` at/above
-  - `align-items` / `justify-content` resolve to the expected value per direction
-  - `bleed_mobile:both` / `bleed_desktop:both` / `bleed_desktop:inline-start` / `bleed_desktop:inline-end` instances (as direct children of `<token-section>`) have computed `grid-column` matching the section's named-line bleed grid rule for that modifier; nested-inside-another-container instances do not bleed (section's `>` selector doesn't match)
-  - `container_style:card` instances pull their variant rule from `layer-theme.css`, not the group snippet's stylesheet (verify via computed-style chain)
-  - `color_scheme:scheme-2` override emits `--color-role-background`, `--color-role-foreground` (etc.) values from scheme 2's settings on the group element
-  - Nested groups each emit their own container query context; child stack-below works against immediate parent's inline-size
+- **Assertions** (executable — `.tests/e2e/primitive--group.spec.js`):
+  - `direction:column` → `token-layout` computes `flex-direction: column`; `direction:row` → `row` with `justify-content: start` by default
+  - Row `horizontal_alignment` center / end / space-between → `justify-content` matches; `vertical_alignment` center → `align-items` center
+  - Column `horizontal_alignment` center / end → `align-items` matches
+  - `space-between` in column direction normalizes to start — `--horizontal-alignment` is not emitted and `align-items` resolves to `start` (never the invalid `space-between`)
+  - `stack-below:40` → container query against the group's own inline-size: `flex-direction: row` when the group is ≥ 40rem wide, `column` when narrower (verified across the desktop / mobile viewports). `stack-below:80` stays `column` even on the 1280px desktop viewport (the group is < 80rem), proving the query is against the group's width, not the viewport
+  - `gap` emits `--gap` (rem) and applies as `token-layout` `gap`; zero gap emits nothing
+  - Bleed settings emit the bleed modifiers (`bleed-desktop:both`, `bleed-mobile:both`, `bleed-desktop:inline_start`) — the raw setting value (underscore). The painted `grid-column` is the section's bleed grid (Tier 3), not asserted here
+  - `container_style:card` emits the modifier and pulls centralized variant CSS from `layer-theme.css` (computed `border-radius: 8px`, `padding: 24px`, non-`none` `box-shadow` — absent on a plain group)
+  - `custom_color_scheme` + `color_scheme:scheme-2` emits `color-scheme:scheme-2` and re-resolves `--color-role-background` to scheme-2's value (differing from the inherited default)
+  - `content_width` caps the group (`--content-width` + `max-inline-size`)
+  - Recursive nesting: a group inside a group renders both, each with its own `direction` modifier and `token-layout` flex-direction; with per-level `color_scheme` overrides the deepest wins for its subtree (`--color-role-background` differs inner vs outer)
+  - Empty group renders the outer `.shopify-block--group` + `token-layout` wrapper with no children
+  - Top-spacing overrides emit `--mobile-/--desktop-margin-block-start` (loose `1.0rem` / `4.0rem`, tight `0.5rem` / `1.0rem`) — absolute values that replace the rhythm
+- **Deliberately unasserted**: bleed *painting* (the section's `grid-column` bleed grid — Tier 3; also currently a substrate bug — `layer-theme.css` matches `inline-start` / `inline-end` with a hyphen while the snippet emits the underscore setting value, so per-side bleed never paints); `block.shopify_attributes` (editor-only). `container_style` legibility is delegated to `validation--substrate--container-style`.
 - **Unit scope**: none (Liquid + CSS only; no JS)
 
 ## Out of scope
