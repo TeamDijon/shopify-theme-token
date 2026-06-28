@@ -17,41 +17,10 @@
  * Scope: minimal EN catalog — enough to render a real page. font/typeface entries are
  * store-specific and intentionally NOT seeded (text styles fall back to system fonts).
  */
-import { readFileSync, readdirSync, existsSync } from 'node:fs';
+import { readdirSync, existsSync } from 'node:fs';
+import { STORE, VERSION, requireCreds, gql, assertNoUserErrors } from './lib/shopify-admin.mjs';
 
-// ---- env ----
-const env = {};
-if (existsSync('.env')) {
-  for (const line of readFileSync('.env', 'utf8').split('\n')) {
-    if (line.trimStart().startsWith('#')) continue;
-    const m = line.match(/^\s*([A-Z0-9_]+)\s*=\s*(.*?)\s*$/);
-    if (m) env[m[1]] = m[2];
-  }
-}
-const STORE = env.SHOPIFY_STORE || process.env.SHOPIFY_STORE;
-const TOKEN = env.SHOPIFY_ACCESS_TOKEN || process.env.SHOPIFY_ACCESS_TOKEN;
-const VERSION = env.SHOPIFY_API_VERSION || process.env.SHOPIFY_API_VERSION || '2026-04';
-if (!STORE || !TOKEN) {
-  console.error('Missing SHOPIFY_STORE / SHOPIFY_ACCESS_TOKEN (.env)');
-  process.exit(1);
-}
-const ENDPOINT = `https://${STORE}.myshopify.com/admin/api/${VERSION}/graphql.json`;
-
-// ---- graphql ----
-async function gql(query, variables = {}) {
-  const res = await fetch(ENDPOINT, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'X-Shopify-Access-Token': TOKEN },
-    body: JSON.stringify({ query, variables }),
-  });
-  const json = await res.json();
-  if (json.errors) throw new Error('GraphQL: ' + JSON.stringify(json.errors, null, 2));
-  return json.data;
-}
-function assertNoUserErrors(label, payload) {
-  const errs = payload?.userErrors ?? [];
-  if (errs.length) throw new Error(`${label}: ` + JSON.stringify(errs));
-}
+requireCreds();
 
 // ---- field + validation helpers ----
 const field = (key, name, type, opts = {}) => ({

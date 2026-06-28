@@ -6,6 +6,10 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test:e2e": "playwright test",
+    "seed": "npm run seed:metaobjects && npm run seed:assets",
+    "seed:metaobjects": "node .scripts/seed-metaobjects.mjs",
+    "seed:assets": "node .scripts/seed-validation-assets.mjs",
+    "seed:assets:generate": "node .scripts/seed/generate-assets.mjs",
     "check": "node .scripts/context-lint.mjs && npm run format:check && npx shopify theme check --fail-level error"
   },
   "devDependencies": {
