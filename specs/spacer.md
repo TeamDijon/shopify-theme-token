@@ -10,7 +10,7 @@
 - `snippets/spacer.liquid` v2.0.0 (render surface)
 - `blocks/spacer.liquid` v2.0.0 (block schema + theme-editor wrapper)
 
-**Reconciled**: 2026-06-27 (v2.0.0 — replaced the px-size interface (`breakpoint` select + `spacer_block_size` / `mobile_` / `desktop_` ranges) with a single `size` picker backed by the `spacing` metaobject; height resolves to `var(--spacing-<handle>)`, mobile/desktop divide carried by the token. Same responsive contract, new interface.)
+**Reconciled**: 2026-06-28 (snippet + block v2.0.0 unchanged — validation page retrofitted to the production theme-root grid harness; template matrix rewritten to the `size`-handle interface; executable suite added. v2.0.0 replaced the px-size interface (`breakpoint` select + `spacer_block_size` / `mobile_` / `desktop_` ranges) with a single `size` picker backed by the `spacing` metaobject; height resolves to `var(--spacing-<handle>)`, mobile/desktop divide carried by the token.)
 
 **Reviewed**: pending
 
@@ -95,20 +95,26 @@ Both emitted per-instance via `utility--dynamic-style`, only when the source set
 
 ## Validation
 
-Per `validation-contract.md`:
+Per `validation-contract.md` Tier 2 (theme-primitive; block-backed only).
 
-- **Tier**: primitive (Tier 2)
-- **Page**: `sections/validation--primitive--spacer.liquid` + `templates/index.validation--primitive--spacer.json`
-- **API surface** (block-backed only):
-  - `size` ∈ {blank, `xs`, `md`, `xl`} — confirms height tracks the token's resolved value and switches mobile↔desktop at 48rem
-  - With and without `background_color`
+- **Page**: `sections/validation--primitive--spacer.liquid` + `templates/index.validation--primitive--spacer.json` (shipped). The page is the production theme-root grid harness (renders `validation--harness-styles`) carrying a base `--block-rhythm`, so the rhythm-neutral substrate rule is exercised, not just emitted. `size` + `background_color` are baked by metaobject **handle**; each case is selected in tests by its `--block-label`. Spacers are rhythm-neutral (no top margin) and often 0-height / transparent, so a harness-only `margin-block-end` separates the cases for legibility — it touches neither `block-size` nor `margin-block-start`.
+- **Tests**: `.tests/e2e/primitive--spacer.spec.js` (executable; `npm run test:e2e`)
+- **Requires seeded**: `spacing` handles `xs` (4/8) · `sm` (8/12) · `md` (16/24) · `lg` (32/48) · `xl` (64/96); `theme_color` handles `accent` + `muted` — from Token's shipped catalog (`.scripts/seed-metaobjects.mjs`).
+- **API surface**:
+  - `size` ∈ {blank, `xs`, `sm`, `md`, `lg`, `xl`} — height tracks the token's resolved value and switches mobile↔desktop at 48rem (the token's own `@media` branch)
+  - `background_color` ∈ {blank, `accent`, `muted`} — colored band vs transparent
 - **Edge cases**:
-  - `size` blank → no `--spacer-block-size` emitted; block collapses to 0
+  - `size` blank → no `--spacer-block-size` emitted; block collapses to 0 height
   - `background_color` blank → transparent (no `--background-color` emitted)
-  - block-rhythm context: spacer placed in a section with `--block-rhythm` set → `margin-block-start` inherits the rhythm value
-  - placed inside row-direction container → out-of-scope (anti-pattern; not validation-tested)
-- **Visual showcase**: matrix of cells per token × with/without background. Reader confirms vertical gaps render at the token's heights and switch at 48rem.
-- **Assertions**: prose — each cell's computed `block-size` matches the token's value × viewport, correct background. Selectors + expectations once Playwright lands.
+  - Rhythm-neutral: a spacer in a section with `--block-rhythm` set still takes `margin-block-start: 0` (the substrate forces it on the spacer and on the block immediately after it) — the spacer's height *is* the gap, not stacked on top of rhythm
+  - Placed inside a row-direction container → out of scope (anti-pattern; not validation-tested)
+- **Assertions** (executable — `.tests/e2e/primitive--spacer.spec.js`):
+  - Each `size` token emits `--spacer-block-size` and the computed `block-size` matches the token's value per viewport (desktop project → desktop value, mobile → mobile value)
+  - Blank `size` → no `--spacer-block-size`, `block-size` collapses to 0, background transparent
+  - `background_color` → `--background-color` emitted; computed `background-color` resolves to the picked token (`accent` → `rgb(255, 107, 53)`, `muted` → `rgb(107, 114, 128)`)
+  - Rhythm-neutral: a non-first spacer's computed `margin-block-start` is `0px` despite the section `--block-rhythm`
+  - `inline-size: 100%` fills the content track
+- **Deliberately unasserted**: the exact rem emission of `--spacing-<handle>` (`getComputedStyle` resolves the `var()` to a length — the computed `block-size` carries the value); the harness `margin-block-end` (a legibility affordance, not contract).
 - **Unit scope**: none (no JS)
 
 ## Out of scope
