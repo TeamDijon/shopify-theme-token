@@ -37,7 +37,7 @@ test.describe('validation--primitive--button', () => {
   });
 
   test('every button preserves the 44px (2.75rem) min touch target', async ({ page }) => {
-    const buttons = page.locator('.block-validation-suite .shopify-block--button');
+    const buttons = page.locator('token-section .shopify-block--button');
     const count = await buttons.count();
     expect(count).toBeGreaterThan(0);
     for (let i = 0; i < count; i++) {
@@ -146,7 +146,7 @@ test.describe('validation--primitive--button', () => {
   });
 
   test('blank-content instance renders no element — no empty button leaks into the suite', async ({ page }) => {
-    const buttons = page.locator('.block-validation-suite .shopify-block--button');
+    const buttons = page.locator('token-section .shopify-block--button');
     const count = await buttons.count();
     // 13 fixtures, minus the blank-content one which breaks before emitting a root.
     expect(count).toBe(12);
