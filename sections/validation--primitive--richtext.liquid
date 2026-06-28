@@ -1,6 +1,10 @@
-{% # Validation - Block - Richtext v1.0.0 %}
+{% # Validation - Block - Richtext v1.1.0 %}
 
 {% comment %}
+  Changelog
+  - v1.1.0 — render richtext blocks as direct children of `<token-section>` (drop the `.block-validation-suite` flex wrapper) + base `--block-rhythm: lg`, so per-block top-margin overrides paint and the page is production-faithful. Purge the dead `narrow` / `prose:narrow` references (the `narrow` setting was removed in block v1.2.0 — width is now a `content_width` pick). Cover `content_width` / `text_color` inline via seeded handles (the spec→test recipe seeds metaobject handles, not store GIDs). Label selectors target `token-section >`. Per `validation.md` § Harness layout.
+  - v1.0.0 — initial
+
   Block-validation harness for `richtext`. The JSON template at
   `templates/index.validation--primitive--richtext.json` bakes the test
   matrix; the section just renders them in a labelled list via
@@ -9,13 +13,11 @@
   Diagnostic intent:
   1. The snippet always emits a `prose` modifier so the global rich-
      content rules from `@layer utilities` apply (paragraph rhythm,
-     list bullets, link styling).
-  2. `narrow: true` appends `prose:narrow` and caps width at 65ch.
-  3. Content variants (paragraphs, lists, emphasis, links) all render
-     with the right typography.
-
-  Not covered (metaobject settings — store-specific GIDs): content_width,
-  text_color. Verify via metaobject pages.
+     list markers, link decoration).
+  2. Content variants (paragraphs, lists, emphasis, links, headings)
+     render with the right typography.
+  3. text_align, content_width (cap + self-center), text_color, and
+     top-spacing overrides apply.
 
   Reachable only at /?view=validation--primitive--richtext.
   See `.context/docs/validation.md`.
@@ -33,21 +35,19 @@
     <h1>Block: richtext</h1>
     <p>
       Matrix in
-      <code>templates/index.validation--primitive--richtext.json</code>. Each entry below is one block instance,
-      labelled by its block id. The snippet always emits the <code>prose</code> modifier; <code>narrow:true</code> adds
-      <code>prose:narrow</code> and caps width at 65ch. content_width / text_color settings are metaobject-typed and
-      tested via their dedicated pages.
+      <code>templates/index.validation--primitive--richtext.json</code>. Each entry is one block instance, labelled by
+      its block id. The snippet always emits the <code>prose</code> modifier; variants exercise content shapes
+      (paragraphs, lists, emphasis, links, headings), text alignment, the <code>content_width</code> cap, text color,
+      and top-spacing overrides.
     </p>
   </header>
 
   {% if section.blocks.size > 0 %}
-    <div class="block-validation-suite">
-      {% content_for 'blocks' %}
-    </div>
+    {% content_for 'blocks' %}
 
     {% render 'validation--block-labels', section: section %}
   {% else %}
-    <p class="block-validation-suite__empty">No blocks declared in the template.</p>
+    <p class="validation__empty">No blocks declared in the template.</p>
   {% endif %}
 </token-section>
 
@@ -88,6 +88,10 @@
         margin-inline: auto;
         padding-block: 2rem;
         padding-inline: 1.5rem;
+
+        /* Production-faithful baseline rhythm; per-block overrides replace it
+           via the theme-root rhythm rule in layer-theme.css. */
+        --block-rhythm: var(--spacing-lg);
       }
 
       .validation__intro {
@@ -108,14 +112,7 @@
         }
       }
 
-      .block-validation-suite {
-        display: flex;
-        flex-direction: column;
-        gap: 2.5rem;
-        padding-block-start: 1.5rem;
-      }
-
-      .block-validation-suite__empty {
+      .validation__empty {
         padding: 1.5rem;
         border: 1px dashed currentColor;
         border-radius: 0.5rem;
@@ -123,15 +120,16 @@
         opacity: 0.7;
       }
 
-      /* Outline the richtext wrapper so the bounded box (especially when
-         narrow:true caps at 65ch) is visible against the page. */
-      .block-validation-suite > .shopify-block--richtext {
+      /* Outline the richtext wrapper so the bounded box (especially when a
+         content_width cap is set) is visible against the page. Outline doesn't
+         affect layout — no fidelity cost. */
+      token-section > .shopify-block--richtext {
         position: relative;
         outline: 1px dashed rgba(0, 0, 0, 0.18);
         outline-offset: 0.5rem;
       }
 
-      .block-validation-suite > .shopify-block--richtext::before {
+      token-section > .shopify-block--richtext::before {
         content: var(--block-label, '');
         position: absolute;
         inset-block-end: calc(100% + 1rem);

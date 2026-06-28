@@ -6,40 +6,80 @@
         "plain": {
           "type": "richtext",
           "settings": {
-            "content": "<p>Plain paragraph. The quick brown fox jumps over the lazy dog while a verbose narrator describes the entire scene in unnecessary detail.</p>"
+            "content": "<p>Plain single standalone paragraph. The quick brown fox jumps over the lazy dog while a verbose narrator describes the entire scene in unnecessary detail.</p>"
           }
         },
         "multi-paragraph": {
           "type": "richtext",
           "settings": {
-            "content": "<p>First paragraph in a sequence. Tests the paragraph-to-paragraph spacing emitted by the prose utility rules.</p><p>Second paragraph follows. The gap between paragraphs should be consistent with the design-system rhythm.</p><p>Third paragraph closes the sequence.</p>"
+            "content": "<p>Multi first para — tests the paragraph-to-paragraph spacing emitted by the prose utility rules.</p><p>Multi middle para — the gap between paragraphs should be consistent with the design-system rhythm.</p><p>Multi last para — closes the sequence.</p>"
           }
         },
         "with-list": {
           "type": "richtext",
           "settings": {
-            "content": "<p>Lead paragraph introducing a list of items below.</p><ul><li>First unordered item</li><li>Second unordered item with longer text that may wrap to a second line</li><li>Third unordered item</li></ul><p>Followed by an ordered list:</p><ol><li>Step one</li><li>Step two</li><li>Step three</li></ol>"
+            "content": "<p>List lead paragraph introducing the items below.</p><ul><li>UL item one</li><li>UL item two with longer text that may wrap to a second line</li><li>UL item three</li></ul><ol><li>OL step one</li><li>OL step two</li><li>OL step three</li></ol>"
           }
         },
         "with-emphasis": {
           "type": "richtext",
           "settings": {
-            "content": "<p>This paragraph carries <em>italic emphasis</em>, <strong>bold weight</strong>, and an <a href=\"#\">inline link</a> to validate inline-element rendering inside prose.</p>"
+            "content": "<p>Emphasis paragraph carries <em>italic emphasis here</em>, <strong>bold weight here</strong>, and an <a href=\"#\">inline link here</a> to validate inline-element rendering inside prose.</p>"
           }
         },
-        "narrow": {
+        "with-heading": {
           "type": "richtext",
           "settings": {
-            "narrow": true,
-            "content": "<p>This paragraph renders inside a narrow readable column (capped at 65ch via the <strong>prose:narrow</strong> modifier). Width is enforced regardless of the parent's content width. Useful for long-form body copy where line length affects readability.</p>"
+            "content": "<p>Intro paragraph before the heading, so the h2 is not the block's first child.</p><h2>Heading inside prose</h2><p>Body paragraph after the heading — the nested h2 binds to its text_style via the bare-tag pattern and the prose rule sets its top margin.</p>"
+          }
+        },
+        "align-center": {
+          "type": "richtext",
+          "settings": {
+            "content": "<p>Centered prose body — text_align center should set text-align center on the wrapper.</p>",
+            "text_align": "center"
+          }
+        },
+        "align-end": {
+          "type": "richtext",
+          "settings": {
+            "content": "<p>End-aligned prose body — text_align end should set text-align end on the wrapper.</p>",
+            "text_align": "end"
+          }
+        },
+        "width-reading": {
+          "type": "richtext",
+          "settings": {
+            "content": "<p>Reading-width prose capped at the seeded reading content_width (680px / 42.5rem) — the readable column for long-form body copy.</p>",
+            "content_width": "reading"
+          }
+        },
+        "width-wide": {
+          "type": "richtext",
+          "settings": {
+            "content": "<p>Wide-width prose capped at the seeded wide content_width (1400px / 87.5rem).</p>",
+            "content_width": "wide"
+          }
+        },
+        "color-accent": {
+          "type": "richtext",
+          "settings": {
+            "content": "<p>Accent-colored prose — text_color accent emits --text-color and recolors the body.</p>",
+            "text_color": "accent"
           }
         },
         "with-spacing": {
           "type": "richtext",
           "settings": {
-            "content": "<p>This block carries 64px desktop top margin (0px on mobile). Validate the breakpoint swap by resizing across 768px.</p>",
-            "mobile_margin_block_start": 0,
+            "content": "<p>Spacing override prose — 16px mobile / 64px desktop top margin, absolute (replaces the section rhythm).</p>",
+            "mobile_margin_block_start": 16,
             "desktop_margin_block_start": 64
+          }
+        },
+        "blank": {
+          "type": "richtext",
+          "settings": {
+            "content": ""
           }
         }
       },
@@ -48,8 +88,14 @@
         "multi-paragraph",
         "with-list",
         "with-emphasis",
-        "narrow",
-        "with-spacing"
+        "with-heading",
+        "align-center",
+        "align-end",
+        "width-reading",
+        "width-wide",
+        "color-accent",
+        "with-spacing",
+        "blank"
       ],
       "settings": {}
     }
