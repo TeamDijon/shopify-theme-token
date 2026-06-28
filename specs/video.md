@@ -8,7 +8,7 @@
 
 **Implementation**: `snippets/video.liquid` v1.0.0 (render surface)
 
-**Reconciled**: 2026-06-05
+**Reconciled**: 2026-06-28 (snippet v1.0.0 unchanged — dedicated L0 validation page + executable suite added; video referenced via `video` setting as `shopify://files/videos/<filename>`)
 
 **Reviewed**: pending
 
@@ -84,8 +84,11 @@ None — the snippet emits no user-facing text. The `<media-video>` custom eleme
 
 ## Validation
 
-Per `validation-contract.md` Tier 2 — covered indirectly through `validation--primitive--media.liquid` (video media_type branch); future dedicated snippet-half group when L0 validation is staffed.
+Per `validation-contract.md` Tier 2 (L0 snippet — no block wraps it, so the harness renders `{% render 'video' %}` directly, each case tagged `data-case=<id>`).
 
+- **Page**: `sections/validation--primitive--video.liquid` + `templates/index.validation--primitive--video.json` (shipped). Source videos are real store Files referenced via `video` settings as **`shopify://files/videos/<filename>`** (not `shopify://shop_images/…` — that's images; `shop_videos`/numeric-id/GID forms are all rejected with "must be a valid video shopify url", and a bad value 500s the render).
+- **Tests**: `.tests/e2e/primitive--video.spec.js` (executable; `npm run test:e2e`)
+- **Requires seeded**: store Files videos `landscape.mp4` + `portrait.mp4`, uploaded by `.scripts/seed-validation-assets.mjs` (needs `write_files`). Real encoded clips — Shopify's transcoder rejects degenerate stubs; processing is async (poll to READY before sources/poster exist).
 - **API surface** *(as a snippet)*:
   - **Mode matrix**: `atmosphere` (autoplay, muted, no controls, loop) × `content` × `video_autoplay ∈ {false, true}` × `video_controls ∈ {minimal, full}` × `video_loop ∈ {false, true}`
   - **Art direction**: video + mobile_video set → mobile `<source>` precedes fallback; resize across 48rem to verify switch
@@ -97,12 +100,14 @@ Per `validation-contract.md` Tier 2 — covered indirectly through `validation--
   - Content mode + `video_autoplay: true` on a mobile device with low-power mode → browser may refuse to autoplay even with muted; the video stays paused at the poster
   - `loop: true` + `video_autoplay: false` + content mode → manually-started video loops; standard behavior
   - `playsinline` on iOS Safari → keeps the video in-page rather than fullscreen-on-play
-- **Assertions** (prose; Playwright once installed):
-  - `<video>` element attributes match the configured mode + flags
-  - In atmosphere mode: `autoplay`, `muted`, `loop` (when video_loop), no `controls`
-  - In content+autoplay: `autoplay` AND `muted` (the muted force-pair)
-  - Poster URL matches `video.preview_image | image_url: width: 1920`
-  - Art-direction case has a `<source media="(max-width: 47.99rem)">` preceding the fallback `<source>`
+- **Assertions** (executable — `.tests/e2e/primitive--video.spec.js`):
+  - The `shopify://files/videos/<file>` ref resolves to a real video object (the `<media-video>` + `<video>` render — a blank would `break`)
+  - Atmosphere mode: `autoplay`, `muted`, `loop`, `playsinline`, **no** `controls`, `preload="none"`, poster present, an mp4 `<source>`
+  - Content mode: `minimal` hides controls + no autoplay (not force-muted); `full` + `video_autoplay` → `controls` + `autoplay` + forced `muted`
+  - `video_loop: false` drops `loop`; `video_preload: 'metadata'` sets `preload="metadata"`
+  - Art-direction: a `<source media="(max-width: 47.99rem)">` (mp4) precedes the fallback `<source>` (no media query)
+  - Blank `video` renders nothing (snippet `break` — no `<media-video>`/`<video>`)
+- **Deliberately unasserted**: the poster's exact URL (store-CDN-specific); runtime playback (browser behavior, not the snippet's emission); HLS `m3u8` source (the snippet emits mp4 only by design).
 - **Unit scope**: future — the `<media-video>` custom element's JS lands as a separate spec when implemented (`assets/media-video.js` extending `BaseComponent`).
 
 ## Out of scope
