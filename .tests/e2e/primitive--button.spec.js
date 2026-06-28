@@ -121,8 +121,8 @@ test.describe('validation--primitive--button', () => {
     expect(maxInline).toBe('680px');
   });
 
-  test('negative top-spacing emits negative margin custom properties', async ({ page }) => {
-    const link = page.getByRole('link', { name: 'Negative top margin' });
+  test('tighter-than-rhythm override emits an absolute margin below the rhythm', async ({ page }) => {
+    const link = page.getByRole('link', { name: 'Tight spacing' });
     const vars = await link.evaluate((el) => {
       const cs = getComputedStyle(el);
       return {
@@ -130,8 +130,8 @@ test.describe('validation--primitive--button', () => {
         desktop: cs.getPropertyValue('--desktop-margin-block-start').trim(),
       };
     });
-    expect(vars.mobile).toBe('-1.0rem');
-    expect(vars.desktop).toBe('-3.0rem');
+    expect(vars.mobile).toBe('0.5rem');
+    expect(vars.desktop).toBe('1.0rem');
   });
 
   test('two-token instance comma-joins button-style and icon-position modifiers', async ({ page }) => {

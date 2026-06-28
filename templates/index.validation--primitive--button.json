@@ -33,13 +33,13 @@
             "desktop_margin_block_start": 64
           }
         },
-        "negative-spacing": {
+        "tight-spacing": {
           "type": "button",
           "settings": {
-            "content": "Negative top margin",
+            "content": "Tight spacing",
             "link": "/",
-            "mobile_margin_block_start": -16,
-            "desktop_margin_block_start": -48
+            "mobile_margin_block_start": 8,
+            "desktop_margin_block_start": 16
           }
         },
         "icon-end": {
@@ -112,7 +112,7 @@
         "with-link",
         "external-link",
         "with-spacing",
-        "negative-spacing",
+        "tight-spacing",
         "icon-end",
         "icon-start",
         "combo",

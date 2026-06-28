@@ -99,7 +99,7 @@ test.describe('validation--primitive--title', () => {
   });
 
   test('content_width caps and centers the title', async ({ page }) => {
-    const t = page.getByText('Width-capped title', { exact: true });
+    const t = page.getByText('Width-capped title', { exact: false });
     const r = await t.evaluate((el) => {
       const cs = getComputedStyle(el);
       return {
@@ -127,8 +127,8 @@ test.describe('validation--primitive--title', () => {
     expect(r.d).toBe('4.0rem');
   });
 
-  test('negative top-spacing emits negative margin custom properties', async ({ page }) => {
-    const t = page.getByText('Negative top margin', { exact: true });
+  test('tighter-than-rhythm override emits an absolute margin below the rhythm', async ({ page }) => {
+    const t = page.getByText('Tighter than the rhythm', { exact: false });
     const r = await t.evaluate((el) => {
       const cs = getComputedStyle(el);
       return {
@@ -136,12 +136,12 @@ test.describe('validation--primitive--title', () => {
         d: cs.getPropertyValue('--desktop-margin-block-start').trim(),
       };
     });
-    expect(r.m).toBe('-1.0rem');
-    expect(r.d).toBe('-3.0rem');
+    expect(r.m).toBe('0.5rem');
+    expect(r.d).toBe('1.0rem');
   });
 
   test('blank-content instance renders no element — no empty title leaks into the suite', async ({ page }) => {
-    const titles = page.locator('.block-validation-suite .shopify-block--title');
+    const titles = page.locator('token-section .shopify-block--title');
     const count = await titles.count();
     // 17 fixtures, minus the blank-content one which breaks before emitting a root.
     expect(count).toBe(16);

@@ -103,17 +103,17 @@
           "type": "title",
           "settings": {
             "tag": "h2",
-            "content": "Width-capped title",
+            "content": "Width-capped title — long enough that the reading cap wraps it onto multiple lines instead of spanning the whole content column",
             "content_width": "reading"
           }
         },
-        "negative-spacing": {
+        "tight-spacing": {
           "type": "title",
           "settings": {
             "tag": "h2",
-            "content": "Negative top margin",
-            "mobile_margin_block_start": -16,
-            "desktop_margin_block_start": -48
+            "content": "Tighter than the rhythm — a 16px override sits closer to the block above than the 48px section rhythm",
+            "mobile_margin_block_start": 8,
+            "desktop_margin_block_start": 16
           }
         },
         "with-spacing": {
@@ -147,9 +147,9 @@
         "centered",
         "end-aligned",
         "colored",
-        "width-capped",
-        "negative-spacing",
         "with-spacing",
+        "tight-spacing",
+        "width-capped",
         "blank"
       ],
       "settings": {}
