@@ -7,11 +7,11 @@
 **Status**: shipped
 
 **Implementation**:
-- `snippets/columns.liquid` v1.8.0 (render surface)
+- `snippets/columns.liquid` v1.8.1 (render surface)
 - `blocks/columns.liquid` v1.8.0 (block schema + render call)
 - `assets/token-layout.js` v1.1.0 (inner-wrapper custom element)
 
-**Reconciled**: 2026-06-27 (block v1.8.0 / snippet v1.8.0 — color scheme gated by `custom_color_scheme`; top-margin override range narrowed to `0…100`, absolute override / negatives dropped via `utility--block-layout-vars` v1.2.1)
+**Reconciled**: 2026-06-28 (snippet v1.8.1 — sticky-track now disables under stack-below collapse: the disable rule was outranked by the sticky enable rule on specificity, fixed by adding a second `[sticky-track]` attr so it wins on source order; CSS-only, honors the existing contract. Block v1.8.0 unchanged.)
 
 **Reviewed**: pending
 
@@ -122,8 +122,11 @@ Component-rooted on `.shopify-block--columns` (outer) and `> token-layout` (inne
   align-self: start;
 }
 
-/* Disable sticky when stack-below has collapsed */
-.shopify-block--columns[data-modifiers*='stack-below'] > token-layout > * {
+/* Disable sticky when stack-below has collapsed. The second [sticky-track] attr
+   ties this to the enable rule's specificity; later in source order it wins, so
+   the pinned child falls back to static. The @container re-enable rules below
+   carry a higher specificity and restore sticky with the grid. */
+.shopify-block--columns[data-modifiers*='stack-below'][data-modifiers*='sticky-track'] > token-layout > * {
   position: static;
 }
 
@@ -165,7 +168,7 @@ Sticky-track tuning:
 - **Stack-below via `@container` queries.** The block declares `container-name: columns` on the outer. The inner's `grid-template-columns` defaults to `1fr` when a `stack-below` modifier is present; the `@container columns (inline-size >= 40rem)` rule overrides it back to the configured `--grid-template-columns` value when the outer's width is at or above the breakpoint. Behavior: a columns block sized below 40rem stacks; above 40rem, the grid applies. Container queries against the outer's inline-size — not the viewport — so nested columns inside narrow parents stack correctly.
 - **Outer/inner is required.** Same architectural rationale as `group`. `@container columns` queries skip the element with `container-type: inline-size`. The grid lives on `<token-layout>` (the descendant); the container lives on `.shopify-block--columns` (the outer).
 - **Sticky-track pins one column.** `sticky-track:first` pins the first grid item via `position: sticky; top: var(--sticky-offset, 1rem); align-self: start`. `sticky-track:second` pins the last. Only 2-track layouts make geometric sense for sticky (the non-sticky track provides the scroll runway); the schema's `visible_if` constrains the setting to 2-track values. `align-self: start` keeps the pinned child at its natural height so the parent grid can grow taller; the non-sticky child remains free to size itself.
-- **Sticky disables under stack-below.** When stack-below has collapsed the grid to single-column, sticky has no second track to scroll against; the `position: static` override at the `[data-modifiers*='stack-below']` selector disables pin. The `@container` queries that re-enable the grid also re-enable sticky (the per-breakpoint sticky rules).
+- **Sticky disables under stack-below.** When stack-below has collapsed the grid to single-column, sticky has no second track to scroll against; the `position: static` override at the `[data-modifiers*='stack-below'][data-modifiers*='sticky-track']` selector disables pin. The two-attr selector is load-bearing — it ties the sticky enable rule's specificity so it wins on source order; a single-attr selector loses and the pin survives the collapse. The `@container` queries that re-enable the grid also re-enable sticky (the per-breakpoint sticky rules, higher specificity again).
 - **vertical_alignment hidden when sticky is active.** Schema `visible_if` ensures the editor doesn't expose the conflict; sticky forces `align-self: start` on the pinned track, so per-track alignment would be ignored anyway. The setting is preserved in the schema for the non-sticky case.
 - **Bleed via modifier emission, section grid resolves.** The snippet emits `bleed-desktop:<value>` and `bleed-mobile:<value>` modifiers; bleed positioning is handled by the section's named-line bleed grid via `grid-column` rules on direct children of `<token-section>`. Strict container-only bleed model — when this columns block is nested inside another container, the section's `>` direct-child selector doesn't match, so the nested columns positions in its container's layout and doesn't bleed. See `subgrid-migration.md`.
 - **`content_width` composes with bleed.** Bleed caps at `--content-width` (= section's content cap = bleed boundary, per `container-patterns.md` Option A). A merchant setting both `content_width: 60rem` and `bleed_desktop: both` gets a 60rem-wide bleed band — the bleed honors the cap rather than overriding it.
@@ -200,7 +203,9 @@ No runtime strings.
 Per `validation-contract.md` Tier 2 (theme-primitive).
 
 - **Tier**: primitive (L1 block-backed; no sub-component half)
-- **Page**: `sections/validation--primitive--columns.liquid` + `templates/index.validation--primitive--columns.json` (shipped — proto-preset `columns-features` may slot here at retrofit)
+- **Page**: `sections/validation--primitive--columns.liquid` v1.1.0 (production-faithful — blocks render as direct children of `<token-section>` with a base `--block-rhythm: lg`, not the `.block-validation-suite` flex wrapper) + `templates/index.validation--primitive--columns.json` (shipped)
+- **Tests**: `.tests/e2e/primitive--columns.spec.js` (executable; `npm run test:e2e`)
+- **Requires seeded**: `container_style/card`, `content_width/reading` (Token's shipped seed catalog); color scheme `scheme-2` must exist in the theme's color schemes. A test needing an unseeded handle signals a seed-set gap, not a test workaround.
 - **API surface**:
   - **Ratio matrix**: `2`, `3`, `4`, `1-2`, `2-1`, `1-3`, `3-1` × stack-below ∈ {none, 40, 60, 80} — verify grid-template-columns emission and stack-below behavior at each breakpoint
   - **Sticky-track**: `first` and `second` on each 2-track ratio — verify sticky pins the named track; scroll the parent and confirm visual behavior; stack-below collapsed → sticky disabled
@@ -218,11 +223,21 @@ Per `validation-contract.md` Tier 2 (theme-primitive).
   - Bleed modifier emitted on a columns block nested inside another container → section's bleed grid-column rule doesn't match (`>` direct-child selector); nested columns positions in its container's layout, no bleed
   - Container query support absent (legacy engines) → grid renders without stack-below switching; degrades to default `--grid-template-columns` always-on
 - **Visual showcase**: matrix sections per concern. Reader confirms ratio renders correctly at desktop/mobile, stack-below switches at the named breakpoint, sticky pins the correct track, bleed escapes the gutter.
-- **Assertions** (prose; Playwright once installed):
-  - Computed `grid-template-columns` on `token-layout` matches the configured `columns` value (above the stack-below breakpoint) or `1fr` (below)
-  - `[data-modifiers*='sticky-track:first']` instances have `position: sticky` on the first grid child above the stack-below breakpoint
-  - `[data-modifiers*='bleed-desktop']` and `[data-modifiers*='bleed-mobile']` instances (as direct children of `<token-section>`) have computed `grid-column` matching the section's named-line bleed grid rule for that modifier
-  - `[data-modifiers*='container-style:card']` instances pull their variant rule from `layer-theme.css`
+- **Assertions** (executable — `.tests/e2e/primitive--columns.spec.js`):
+  - Each of the seven ratios emits `columns:<value>`, sets `--grid-template-columns` to the expected template (`repeat(2, 1fr)` / `1fr 2fr` / … ), and lays the expected track count on `token-layout`; asymmetric ratios size tracks proportionally (1-3 → second track ≈ 3× first), equal ratios evenly
+  - `gap` emits `--gap` (rem) and applies as `token-layout` `gap`; zero gap emits nothing
+  - `vertical_alignment` start is zero-emission (`--vertical-alignment` unset, `align-items: start`); center / end / stretch emit the var and set `align-items`
+  - `stack-below:40` / `:60` → container query against the block's own inline-size: the grid holds at its track count when the block is ≥ the breakpoint, collapses to a single track when narrower (verified across the desktop / mobile viewports). `stack-below:80` stays single-column even on the 1280px desktop viewport (the block is < 80rem), proving the query is against the block's width, not the viewport
+  - `sticky-track:first` pins the first grid child (`position: sticky`); `sticky-track:second` pins the last and leaves the first static
+  - Sticky disables under stack-below collapse: a `stack-below:80` + `sticky-track:first` block (collapsed at every harness viewport) computes `position: static` on the pinned child — regression guard for the specificity fix (snippet v1.8.1). A `stack-below:40` + `sticky-track:first` block re-enables sticky where the grid re-expands (sticky on the 1280px desktop viewport, static on the collapsed mobile viewport)
+  - Bleed settings emit the bleed modifiers (`bleed-desktop:both`, `bleed-mobile:both`, `bleed-desktop:inline_start`) — the raw setting value (underscore). The painted `grid-column` is the section's bleed grid (Tier 3), not asserted here
+  - `container_style:card` emits the modifier and pulls centralized variant CSS from `layer-theme.css` (computed `border-radius: 8px`, `padding: 24px`, non-`none` `box-shadow`)
+  - `custom_color_scheme` + `color_scheme:scheme-2` emits `color-scheme:scheme-2`, re-resolves `--color-role-background` to scheme-2's value, and paints a background band (computed `background-color` = scheme-2's bg, vs transparent on a plain columns)
+  - `content_width` caps the block (`--content-width` + `max-inline-size`)
+  - Recursive nesting: columns inside columns renders both, each with its own `--grid-template-columns` (outer `repeat(2, 1fr)`, inner `1fr 2fr`); the block-level nested columns sizes to its grid cell (no collapse)
+  - Empty columns renders the outer `.shopify-block--columns` + `token-layout` wrapper with no children
+  - Top-spacing overrides emit `--mobile-/--desktop-margin-block-start` (loose `1.0rem` / `4.0rem`, tight `0.5rem` / `1.0rem`) — absolute values that replace the rhythm
+- **Deliberately unasserted**: bleed *painting* (the section's `grid-column` bleed grid acts only on direct children of a real `<token-section>` grid — a Tier-3 concern asserted on preset / section pages, not on this contained primitive harness); `block.shopify_attributes` (editor-only). `container_style` legibility is delegated to `validation--substrate--container-style`.
 - **Unit scope**: none (Liquid + CSS only)
 
 ## Out of scope
