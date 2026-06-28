@@ -30,6 +30,7 @@ function readCols(page, childText, exact = true) {
       return {
         mods: c.getAttribute('data-modifiers'),
         width: Math.round(c.getBoundingClientRect().width),
+        gridColumn: ccs.gridColumn,
         trackCount: tracks.length,
         tracks,
         gtcVar: ccs.getPropertyValue('--grid-template-columns').trim(),
@@ -194,19 +195,38 @@ test.describe('validation--primitive--columns', () => {
     }
   });
 
-  // ── Bleed (Tier 2 asserts the emitted MODIFIER; section grid paints — Tier 3) ──
-  test('bleed settings emit the bleed modifiers (painting is section-tier)', async ({ page }) => {
-    const both = await page
-      .getByText('Full-bleed columns A', { exact: true })
-      .evaluate((el) => el.closest('.shopify-block--columns').getAttribute('data-modifiers'));
-    expect(both).toContain('bleed-desktop:both');
-    expect(both).toContain('bleed-mobile:both');
-    const start = await page
-      .getByText('Start-bleed columns A', { exact: true })
-      .evaluate((el) => el.closest('.shopify-block--columns').getAttribute('data-modifiers'));
+  // ── Bleed: emission AND painting ──────────────────────────────────────────
+  // The harness token-section is the real production theme-root bleed grid, so
+  // bleed modifiers resolve to grid-column placement here (not just emission).
+  test('bleed-both emits modifiers and paints full-bleed (grid-column + wider than content)', async ({ page }) => {
+    const both = await readCols(page, 'Full-bleed columns A');
+    const content = await readCols(page, 'Equal-2 first');
+    expect(both.mods).toContain('bleed-desktop:both');
+    expect(both.mods).toContain('bleed-mobile:both'); // bleeds at both viewports
+    expect(both.gridColumn).toBe('bleed-start / bleed-end');
+    expect(both.width).toBeGreaterThan(content.width);
+  });
+
+  test('bleed inline_start (desktop-only) paints one-sided on desktop, content track on mobile', async ({
+    page,
+  }, testInfo) => {
+    const start = await readCols(page, 'Start-bleed columns A');
+    const content = await readCols(page, 'Equal-2 first');
     // raw setting value carries the underscore (`inline_start`); layer-theme.css
     // matches the same form post the substrate bleed fix.
-    expect(start).toContain('bleed-desktop:inline_start');
+    expect(start.mods).toContain('bleed-desktop:inline_start');
+    if (testInfo.project.name === 'desktop') {
+      expect(start.gridColumn).toBe('bleed-start / content-end');
+      expect(start.width).toBeGreaterThan(content.width);
+    } else {
+      // no bleed_mobile set → sits in the content track below 48rem
+      expect(start.gridColumn).toBe('content-start / content-end');
+    }
+  });
+
+  test('a non-bleed columns block sits in the content track', async ({ page }) => {
+    const content = await readCols(page, 'Equal-2 first');
+    expect(content.gridColumn).toBe('content-start / content-end');
   });
 
   // ── container_style ───────────────────────────────────────────────────────

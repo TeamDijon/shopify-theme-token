@@ -1,7 +1,8 @@
-{% # Validation - Block - Richtext v1.1.0 %}
+{% # Validation - Block - Richtext v1.2.0 %}
 
 {% comment %}
   Changelog
+  - v1.2.0 — token-section is now the real production theme-root grid (drop the `display: block` override so the bleed grid + no-collapse rhythm apply, matching production). Harness chrome + the layout-neutral outline/label indicator move to the shared `validation--harness-styles` snippet (one source of truth across all validation pages). Per `validation.md` § Harness layout.
   - v1.1.0 — render richtext blocks as direct children of `<token-section>` (drop the `.block-validation-suite` flex wrapper) + base `--block-rhythm: lg`, so per-block top-margin overrides paint and the page is production-faithful. Purge the dead `narrow` / `prose:narrow` references (the `narrow` setting was removed in block v1.2.0 — width is now a `content_width` pick). Cover `content_width` / `text_color` inline via seeded handles (the spec→test recipe seeds metaobject handles, not store GIDs). Label selectors target `token-section >`. Per `validation.md` § Harness layout.
   - v1.0.0 — initial
 
@@ -57,6 +58,7 @@
   {% endif %}
 {% endcapture %}
 {% render 'utility--dynamic-style', base_selector: base_selector, css_content: dynamic_style %}
+{% render 'validation--harness-styles' %}
 
 {% schema %}
 {
@@ -78,67 +80,3 @@
   ]
 }
 {% endschema %}
-
-{% stylesheet %}
-  @layer components {
-    .shopify-section--validation--primitive--richtext {
-      token-section {
-        display: block;
-        max-inline-size: var(--max-inline-size, 80rem);
-        margin-inline: auto;
-        padding-block: 2rem;
-        padding-inline: 1.5rem;
-
-        /* Production-faithful baseline rhythm; per-block overrides replace it
-           via the theme-root rhythm rule in layer-theme.css. */
-        --block-rhythm: var(--spacing-lg);
-      }
-
-      .validation__intro {
-        margin-block-end: 2rem;
-
-        h1 {
-          margin-block-end: 0.5rem;
-        }
-
-        p {
-          max-inline-size: 65ch;
-          opacity: 0.75;
-        }
-
-        code {
-          font-family: ui-monospace, monospace;
-          font-size: 0.95em;
-        }
-      }
-
-      .validation__empty {
-        padding: 1.5rem;
-        border: 1px dashed currentColor;
-        border-radius: 0.5rem;
-        text-align: center;
-        opacity: 0.7;
-      }
-
-      /* Outline the richtext wrapper so the bounded box (especially when a
-         content_width cap is set) is visible against the page. Outline doesn't
-         affect layout — no fidelity cost. */
-      token-section > .shopify-block--richtext {
-        position: relative;
-        outline: 1px dashed rgba(0, 0, 0, 0.18);
-        outline-offset: 0.5rem;
-      }
-
-      token-section > .shopify-block--richtext::before {
-        content: var(--block-label, '');
-        position: absolute;
-        inset-block-end: calc(100% + 1rem);
-        inset-inline-start: 0;
-        font-family: ui-monospace, monospace;
-        font-size: 0.8125rem;
-        font-weight: 600;
-        opacity: 0.7;
-      }
-    }
-  }
-{% endstylesheet %}

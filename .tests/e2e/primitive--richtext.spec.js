@@ -26,17 +26,23 @@ function readBlock(page, childText) {
     .evaluate((el) => {
       const root = el.closest('.shopify-block--richtext');
       const cs = getComputedStyle(root);
+      // Geometric gaps to the token-section edges. Grid auto-margins distribute
+      // free space but getComputedStyle reports marginLeft/Right as 0, so
+      // centering must be measured by position, not by the margin property.
+      const ts = root.closest('token-section');
+      const rRoot = root.getBoundingClientRect();
+      const rTs = ts.getBoundingClientRect();
       return {
         mods: root.getAttribute('data-modifiers'),
-        width: Math.round(root.getBoundingClientRect().width),
+        width: Math.round(rRoot.width),
         maxInline: cs.maxInlineSize,
         contentWidthVar: cs.getPropertyValue('--content-width').trim(),
         textAlign: cs.textAlign,
         textAlignVar: cs.getPropertyValue('--text-align').trim(),
         color: cs.color,
         textColorVar: cs.getPropertyValue('--text-color').trim(),
-        marginLeft: cs.marginLeft,
-        marginRight: cs.marginRight,
+        leftGap: Math.round(rRoot.left - rTs.left),
+        rightGap: Math.round(rTs.right - rRoot.right),
         mobileMargin: cs.getPropertyValue('--mobile-margin-block-start').trim(),
         desktopMargin: cs.getPropertyValue('--desktop-margin-block-start').trim(),
       };
@@ -157,25 +163,24 @@ test.describe('validation--primitive--richtext', () => {
   });
 
   // ── content_width cap + self-center ───────────────────────────────────────
-  test('content_width reading caps at 680px and self-centers when capped', async ({ page }) => {
+  test('content_width reading caps at 680px and stays symmetric (self-centered)', async ({ page }) => {
     const r = await readBlock(page, 'Reading-width prose');
     expect(r.contentWidthVar).toBe('42.5rem');
     expect(r.maxInline).toBe('680px');
-    // margin-inline: auto is always set; it centers only when the cap is below
-    // the available width (desktop). Margins stay symmetric at every viewport.
-    expect(r.marginLeft).toBe(r.marginRight);
-    if (r.width < 680 + 1) {
-      // capped (desktop): real left/right gutter from auto-centering.
-      // (mobile: block is narrower than the cap → 0/0, still symmetric.)
-    }
+    // Centering is measured by geometry, not the margin property (grid auto
+    // margins report 0 in computed style but distribute free space). Symmetric
+    // at every viewport: equal gaps when capped, 0/0 when the block is narrower
+    // than the cap.
+    expect(r.leftGap).toBe(r.rightGap);
   });
 
   test('content_width reading actually centers on the desktop viewport', async ({ page }, testInfo) => {
     test.skip(testInfo.project.name !== 'desktop', 'centering only observable when cap < available width');
     const r = await readBlock(page, 'Reading-width prose');
-    expect(parseFloat(r.marginLeft)).toBeGreaterThan(0);
-    expect(r.marginLeft).toBe(r.marginRight);
     expect(r.width).toBe(680);
+    // capped below the available width → real, equal gutters on both sides.
+    expect(r.leftGap).toBeGreaterThan(0);
+    expect(r.leftGap).toBe(r.rightGap);
   });
 
   test('blank content_width spans 100% (no cap)', async ({ page }) => {

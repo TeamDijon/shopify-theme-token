@@ -23,6 +23,7 @@ function readGroup(page, childText, exact = true) {
     return {
       mods: g.getAttribute('data-modifiers'),
       width: Math.round(g.getBoundingClientRect().width),
+      gridColumn: gcs.gridColumn,
       fd: lcs.flexDirection,
       justify: lcs.justifyContent,
       align: lcs.alignItems,
@@ -114,21 +115,31 @@ test.describe('validation--primitive--group', () => {
     expect(parseFloat(noGap.gap)).toBe(0);
   });
 
-  // Tier 2 asserts the emitted bleed MODIFIER. The painted grid-column is the
-  // section's bleed grid (Tier 3). NOTE: the modifier value is the raw setting
-  // value `inline_start` (underscore); layer-theme.css currently matches
-  // `inline-start` (hyphen), so per-side bleed does not paint — tracked as a
-  // substrate bug, separate from this block's emit contract.
-  test('bleed settings emit the bleed modifiers (painting is section-tier)', async ({ page }) => {
-    const both = await page
-      .getByText('Full-bleed group', { exact: true })
-      .evaluate((el) => el.closest('.shopify-block--group').getAttribute('data-modifiers'));
-    expect(both).toContain('bleed-desktop:both');
-    expect(both).toContain('bleed-mobile:both');
-    const start = await page
-      .getByText('Start-bleed group', { exact: true })
-      .evaluate((el) => el.closest('.shopify-block--group').getAttribute('data-modifiers'));
-    expect(start).toContain('bleed-desktop:inline_start');
+  // The harness token-section is the real production theme-root bleed grid, so
+  // bleed modifiers resolve to grid-column placement here (not just emission).
+  // The modifier value is the raw setting value `inline_start` (underscore);
+  // layer-theme.css matches the same underscore form (substrate bleed fix).
+  test('bleed-both emits modifiers and paints full-bleed (grid-column + wider than content)', async ({ page }) => {
+    const both = await readGroup(page, 'Full-bleed group');
+    const content = await readGroup(page, 'First button');
+    expect(both.mods).toContain('bleed-desktop:both');
+    expect(both.mods).toContain('bleed-mobile:both'); // bleeds at both viewports
+    expect(both.gridColumn).toBe('bleed-start / bleed-end');
+    expect(both.width).toBeGreaterThan(content.width);
+  });
+
+  test('bleed inline_start (desktop-only) paints one-sided on desktop, content track on mobile', async ({
+    page,
+  }, testInfo) => {
+    const start = await readGroup(page, 'Start-bleed group');
+    const content = await readGroup(page, 'First button');
+    expect(start.mods).toContain('bleed-desktop:inline_start');
+    if (testInfo.project.name === 'desktop') {
+      expect(start.gridColumn).toBe('bleed-start / content-end');
+      expect(start.width).toBeGreaterThan(content.width);
+    } else {
+      expect(start.gridColumn).toBe('content-start / content-end');
+    }
   });
 
   test('container_style card emits the modifier and pulls centralized variant CSS', async ({ page }) => {

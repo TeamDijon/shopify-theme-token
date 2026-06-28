@@ -101,17 +101,24 @@ test.describe('validation--primitive--title', () => {
   test('content_width caps and centers the title', async ({ page }) => {
     const t = page.getByText('Width-capped title', { exact: false });
     const r = await t.evaluate((el) => {
-      const cs = getComputedStyle(el);
+      const block = el.closest('.shopify-block--title');
+      const cs = getComputedStyle(block);
+      // Centering is measured by geometry, not the margin property — grid auto
+      // margins distribute free space but report 0 in computed style.
+      const ts = block.closest('token-section');
+      const rB = block.getBoundingClientRect();
+      const rTs = ts.getBoundingClientRect();
       return {
         cw: cs.getPropertyValue('--content-width').trim(),
         maxInline: cs.maxInlineSize,
-        mStart: cs.marginInlineStart,
-        mEnd: cs.marginInlineEnd,
+        width: Math.round(rB.width),
+        leftGap: Math.round(rB.left - rTs.left),
+        rightGap: Math.round(rTs.right - rB.right),
       };
     });
     expect(r.cw).toBe('42.5rem');
     expect(r.maxInline).toBe('680px');
-    expect(r.mStart).toBe(r.mEnd);
+    expect(r.leftGap).toBe(r.rightGap); // symmetric → centered
   });
 
   test('top-spacing emits positive margin custom properties', async ({ page }) => {

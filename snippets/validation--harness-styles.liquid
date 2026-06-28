@@ -1,0 +1,91 @@
+{% # Validation harness styles v1.0.0 %}
+
+{% doc %}
+  @description
+  Shared CSS for every primitive validation harness — the chrome (intro / empty
+  state), the production-faithful `token-section` base, and the layout-neutral
+  use-case indicator (dashed outline + DOM-id label). Scoped to all validation
+  sections via the `[class*='shopify-section--validation--']` prefix selector,
+  so one source of truth covers every page. Render it once per validation
+  section; the `{% stylesheet %}` is hoisted + deduped by Shopify.
+
+  token-section is NOT given a `display` here — the production theme-root bleed
+  grid (`@layer theme`, gated by the `theme-root` modifier) applies, so blocks
+  sit in the content track and bleed modifiers actually paint. A page whose
+  primitive isn't block-level (e.g. `button`, inline-flex) overrides `display`
+  in its own section stylesheet.
+
+  @example {% render 'validation--harness-styles' %}
+{% enddoc %}
+
+{% stylesheet %}
+  @layer components {
+    [class*='shopify-section--validation--'] {
+      /* Cap + center the harness and add vertical breathing + a base rhythm.
+         No `display` — the theme-root grid from @layer theme governs layout. */
+      token-section {
+        max-inline-size: var(--max-inline-size, 80rem);
+        margin-inline: auto;
+        padding-block: 2rem;
+
+        /* Production-faithful baseline rhythm; per-block overrides replace it
+           via the theme-root rhythm rule in layer-theme.css. */
+        --block-rhythm: var(--spacing-lg);
+      }
+
+      .validation__intro {
+        margin-block-end: 2rem;
+
+        h1 {
+          margin-block-end: 0.5rem;
+        }
+
+        p {
+          max-inline-size: 65ch;
+          opacity: 0.75;
+        }
+
+        code {
+          font-family: ui-monospace, monospace;
+          font-size: 0.95em;
+        }
+
+        a {
+          color: var(--color-role-primary);
+          text-decoration: underline;
+          text-underline-offset: 0.2em;
+        }
+      }
+
+      .validation__empty {
+        padding: 1.5rem;
+        border: 1px dashed currentColor;
+        border-radius: 0.5rem;
+        text-align: center;
+        opacity: 0.7;
+      }
+
+      /* Use-case indicator: a layout-neutral dashed outline (outline doesn't
+         affect layout, so no fidelity cost) + the DOM-id label floated above
+         each block. `--block-label` is set per block by validation--block-labels. */
+      token-section > .shopify-block {
+        position: relative;
+        outline: 1px dashed rgba(0, 0, 0, 0.18);
+        outline-offset: 2px;
+      }
+
+      token-section > .shopify-block::before {
+        content: var(--block-label, '');
+        position: absolute;
+        inset-block-end: calc(100% + 0.5rem);
+        inset-inline-start: 0;
+        color: var(--color-role-foreground, #1a1a1a);
+        font-family: ui-monospace, monospace;
+        font-size: 0.8125rem;
+        font-weight: 600;
+        opacity: 0.7;
+        white-space: nowrap;
+      }
+    }
+  }
+{% endstylesheet %}

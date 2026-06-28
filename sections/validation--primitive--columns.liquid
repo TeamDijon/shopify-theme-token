@@ -1,7 +1,8 @@
-{% # Validation - Block - Columns v1.1.0 %}
+{% # Validation - Block - Columns v1.2.0 %}
 
 {% comment %}
   Changelog
+  - v1.2.0 — token-section is now the real production theme-root grid (drop the `display: block` override so the bleed grid + no-collapse rhythm apply — bleed modifiers now paint). Harness chrome + the layout-neutral outline/label indicator move to the shared `validation--harness-styles` snippet; the per-track child decoration (padding/background that shifted track layout) is dropped for fidelity. Per `validation.md` § Harness layout.
   - v1.1.0 — render columns as direct children of `<token-section>` (drop the `.block-validation-suite` flex wrapper) + base `--block-rhythm: lg` on the section, so per-block top-margin overrides paint, bleed escapes the section grid, and the page is production-faithful. Track-outline selector follows the snippet's inner wrapper to `> token-layout` (was the dead `__inner` class). Label selectors target `token-section >`. Per `validation.md` § Harness layout.
   - v1.0.1 — target the new `.shopify-block--columns__inner > *` for column-track outlines after the snippet moved its grid to an inner wrapper
   - v1.0.0 — initial
@@ -60,6 +61,7 @@
   {% endif %}
 {% endcapture %}
 {% render 'utility--dynamic-style', base_selector: base_selector, css_content: dynamic_style %}
+{% render 'validation--harness-styles' %}
 
 {% schema %}
 {
@@ -81,74 +83,3 @@
   ]
 }
 {% endschema %}
-
-{% stylesheet %}
-  @layer components {
-    .shopify-section--validation--primitive--columns {
-      token-section {
-        display: block;
-        max-inline-size: var(--max-inline-size, 80rem);
-        margin-inline: auto;
-        padding-block: 2rem;
-        padding-inline: 1.5rem;
-
-        /* Production-faithful baseline rhythm; per-block overrides replace it
-           via the theme-root rhythm rule in layer-theme.css. */
-        --block-rhythm: var(--spacing-lg);
-      }
-
-      .validation__intro {
-        margin-block-end: 2rem;
-
-        h1 {
-          margin-block-end: 0.5rem;
-        }
-
-        p {
-          max-inline-size: 65ch;
-          opacity: 0.75;
-        }
-
-        code {
-          font-family: ui-monospace, monospace;
-          font-size: 0.95em;
-        }
-      }
-
-      .validation__empty {
-        padding: 1.5rem;
-        border: 1px dashed currentColor;
-        border-radius: 0.5rem;
-        text-align: center;
-        opacity: 0.7;
-      }
-
-      /* Outline the columns wrapper so column boundaries + alignment are
-         observable (outline doesn't affect layout — no fidelity cost). */
-      token-section > .shopify-block--columns {
-        position: relative;
-        outline: 1px dashed rgba(0, 0, 0, 0.18);
-        outline-offset: -1px;
-      }
-
-      token-section > .shopify-block--columns::before {
-        content: var(--block-label, '');
-        position: absolute;
-        inset-block-end: calc(100% + 0.375rem);
-        inset-inline-start: 0;
-        font-family: ui-monospace, monospace;
-        font-size: 0.8125rem;
-        font-weight: 600;
-        opacity: 0.7;
-      }
-
-      /* Faint background + outline on each grid track (the children of the
-         inner <token-layout>) so individual tracks are visible. */
-      token-section > .shopify-block--columns > token-layout > * {
-        background-color: rgba(0, 0, 0, 0.03);
-        outline: 1px dashed rgba(0, 0, 0, 0.12);
-        padding: 0.5rem;
-      }
-    }
-  }
-{% endstylesheet %}

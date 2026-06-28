@@ -1,7 +1,8 @@
-{% # Validation - Block - Title v1.2.0 %}
+{% # Validation - Block - Title v1.3.0 %}
 
 {% comment %}
   Changelog
+  - v1.3.0 — token-section is now the real production theme-root grid (drop the `display: block` override so the bleed grid + no-collapse rhythm apply, matching production). Harness chrome + the layout-neutral outline/label indicator move to the shared `validation--harness-styles` snippet (title gains the standard use-case outline). Per `validation.md` § Harness layout.
   - v1.2.0 — render blocks as direct children of `<token-section>` (drop the `.block-validation-suite` flex wrapper) and set a base `--block-rhythm` so the page is production-faithful: titles are full-width (text-align + content_width cap now visible) and per-block top-margin overrides paint via the theme-root rhythm rule. Per `validation.md` § Chrome / content decoupling — the wrapper was the documented anti-pattern.
   - v1.1.0 — matrix now exercises the metaobject-typed settings (text_style, icon, content_width, text_color) and text_align via handles, plus negative top-margin and a blank-content break; corrected the stale "store-specific GIDs, not bakeable" note — metaobject settings bake by handle. Pairs with the expanded `templates/index.validation--primitive--title.json` + `.tests/e2e/primitive--title.spec.js`.
   - v1.0.0 — initial
@@ -61,6 +62,7 @@
   {% endif %}
 {% endcapture %}
 {% render 'utility--dynamic-style', base_selector: base_selector, css_content: dynamic_style %}
+{% render 'validation--harness-styles' %}
 
 {% schema %}
 {
@@ -82,65 +84,3 @@
   ]
 }
 {% endschema %}
-
-{% stylesheet %}
-  @layer components {
-    .shopify-section--validation--primitive--title {
-      token-section {
-        display: block;
-        max-inline-size: var(--max-inline-size, 80rem);
-        margin-inline: auto;
-        padding-block: 2rem;
-        padding-inline: 1.5rem;
-
-        /* Production-faithful baseline rhythm: unspaced blocks inherit this;
-           per-block top-margin overrides add to / subtract from it via the
-           theme-root rhythm rule in layer-theme.css. `lg` (32/48px) leaves
-           room for the floated ::before block-id label inside the gap. */
-        --block-rhythm: var(--spacing-lg);
-      }
-
-      .validation__intro {
-        margin-block-end: 2rem;
-
-        h1 {
-          margin-block-end: 0.5rem;
-        }
-
-        p {
-          max-inline-size: 65ch;
-          opacity: 0.75;
-        }
-
-        code {
-          font-family: ui-monospace, monospace;
-          font-size: 0.95em;
-        }
-      }
-
-      .validation__empty {
-        padding: 1.5rem;
-        border: 1px dashed currentColor;
-        border-radius: 0.5rem;
-        text-align: center;
-        opacity: 0.7;
-      }
-
-      /* Float the DOM-id label above each title block. */
-      token-section > .shopify-block--title {
-        position: relative;
-      }
-
-      token-section > .shopify-block--title::before {
-        content: var(--block-label, '');
-        position: absolute;
-        inset-block-end: calc(100% + 0.375rem);
-        inset-inline-start: 0;
-        font-family: ui-monospace, monospace;
-        font-size: 0.8125rem;
-        font-weight: 600;
-        opacity: 0.7;
-      }
-    }
-  }
-{% endstylesheet %}

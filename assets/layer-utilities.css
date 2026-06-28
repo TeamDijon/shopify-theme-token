@@ -23,6 +23,12 @@
       margin-inline-start: 0.75rem;
       padding-inline-start: 0.75rem;
     }
+    /* Reaffirm link underline so a downstream `a { text-decoration: none }`
+       can't silently strip it from prose — the prose layer owns its links. */
+    & a {
+      text-decoration: underline;
+      text-decoration-skip-ink: auto;
+    }
     & li {
       margin-block: 0.5rem 0.5rem;
       text-align: left;
