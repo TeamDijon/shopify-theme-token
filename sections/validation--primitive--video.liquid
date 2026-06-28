@@ -1,0 +1,137 @@
+{% # Validation - Snippet - Video v1.0.0 %}
+
+{% comment %}
+  Snippet-validation harness for `video` (a sub-component snippet — no block, so
+  the page renders `{% render 'video' %}` directly). Sources are seeded store
+  Files (seed-validation-assets.mjs), referenced by `video` settings → real video
+  objects (sources + preview_image) for the snippet.
+
+  Diagnostic intent: atmosphere vs content mode, controls, autoplay, loop, preload,
+  poster, art-direction (mobile <source>). Each case is tagged data-case=<id>.
+
+  Reachable only at /?view=validation--primitive--video.
+  See `.context/docs/validation.md`.
+{% endcomment %}
+
+{% liquid
+  assign desktop_video = section.settings.desktop_video
+  assign mobile_video = section.settings.mobile_video
+%}
+
+<token-section data-modifiers="theme-root">
+  {% render 'validation--breadcrumb' %}
+
+  <header class="validation__intro">
+    <h1>Snippet: video</h1>
+    <p>
+      The <code>video</code> snippet renders a <code>&lt;media-video&gt;</code> wrapping a native
+      <code>&lt;video&gt;</code> with mp4 sources + poster, in atmosphere (decorative) or content (interactive) mode.
+      Sources are seeded store Files. Each case tags its render with <code>data-case</code>.
+    </p>
+  </header>
+
+  {% if desktop_video == blank %}
+    <p class="validation__empty">
+      No video seeded / referenced. Run <code>npm run seed:assets</code> and point the video settings at the seeded
+      files.
+    </p>
+  {% else %}
+    <div class="case" data-case="atmosphere">
+      <span class="case__label">atmosphere — autoplay, muted, loop, no controls</span>
+      {% render 'video', video: desktop_video, video_mode: 'atmosphere' %}
+    </div>
+
+    <div class="case" data-case="content-minimal">
+      <span class="case__label">content — minimal controls, no autoplay</span>
+      {% render 'video', video: desktop_video, video_mode: 'content', video_controls: 'minimal' %}
+    </div>
+
+    <div class="case" data-case="content-full-autoplay">
+      <span class="case__label">content — full controls + autoplay (forces muted)</span>
+      {% render 'video', video: desktop_video, video_mode: 'content', video_controls: 'full', video_autoplay: true %}
+    </div>
+
+    <div class="case" data-case="loop-off">
+      <span class="case__label">loop off</span>
+      {% render 'video', video: desktop_video, video_mode: 'content', video_loop: false %}
+    </div>
+
+    <div class="case" data-case="preload-metadata">
+      <span class="case__label">preload metadata</span>
+      {% render 'video', video: desktop_video, video_preload: 'metadata' %}
+    </div>
+
+    <div class="case" data-case="art-direction">
+      <span class="case__label">art-direction — mobile &lt;source&gt;</span>
+      {% render 'video', video: desktop_video, mobile_video: mobile_video %}
+    </div>
+
+    <div class="case" data-case="blank">
+      <span class="case__label">blank video — snippet breaks, nothing renders</span>
+      {% render 'video' %}
+    </div>
+  {% endif %}
+</token-section>
+
+{% schema %}
+{
+  "name": "Snippet: video",
+  "tag": "section",
+  "class": "shopify-section--validation--primitive--video",
+  "settings": [
+    { "type": "video", "id": "desktop_video", "label": "Desktop video" },
+    { "type": "video", "id": "mobile_video", "label": "Mobile video (art direction)" }
+  ]
+}
+{% endschema %}
+
+{% stylesheet %}
+  @layer components {
+    .shopify-section--validation--primitive--video {
+      token-section {
+        max-inline-size: 80rem;
+        margin-inline: auto;
+        padding-block: 2rem;
+      }
+
+      .validation__intro {
+        margin-block-end: 2rem;
+
+        h1 {
+          margin-block-end: 0.5rem;
+        }
+
+        p {
+          max-inline-size: 65ch;
+          opacity: 0.75;
+        }
+
+        code {
+          font-family: ui-monospace, monospace;
+          font-size: 0.95em;
+        }
+      }
+
+      .case {
+        margin-block-start: 2.5rem;
+
+        & media-video,
+        & video {
+          display: block;
+          inline-size: 100%;
+          max-inline-size: 480px;
+          block-size: auto;
+        }
+      }
+
+      .case__label {
+        display: block;
+        margin-block-end: 0.5rem;
+        font-family: ui-monospace, monospace;
+        font-size: 0.8125rem;
+        font-weight: 600;
+        opacity: 0.7;
+      }
+    }
+  }
+{% endstylesheet %}

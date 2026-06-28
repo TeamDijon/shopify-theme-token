@@ -7,9 +7,10 @@
  * Idempotent: each asset is looked up by filename first (files query); present +
  * READY → skipped. Otherwise staged-uploaded → fileCreate → polled to READY.
  * Filenames are deterministic, so the theme references them by a stable handle:
- *   shopify://shop_images/<filename>
+ *   images → shopify://shop_images/<filename>   videos → shopify://files/videos/<filename>
  *
- * Binaries live in .scripts/seed/assets/ (generate with generate-assets.mjs).
+ * Binaries live in .scripts/seed/assets/ (images via generate-assets.mjs; video
+ * clips are user-supplied — Shopify's transcoder needs real encoded video).
  * Zero dependencies (Node 18+ global fetch / FormData / Blob). Run from repo root:
  *   node .scripts/seed-validation-assets.mjs
  *
@@ -23,10 +24,10 @@ import { STORE, VERSION, requireCreds, gql, assertNoUserErrors } from './lib/sho
 const DIR = '.scripts/seed/assets';
 
 // contentType drives the staged-upload resource + fileCreate contentType.
-// Images reference in theme settings as shopify://shop_images/<filename> (confirmed).
-// The video reference form is verified during the video L0 page build (Shopify-hosted
-// video may differ; the handle may not survive upload). A missing binary is skipped
-// (warn), so this stays runnable before the user-supplied clip.mp4 lands.
+// Theme-setting references (both confirmed working):
+//   image_picker → shopify://shop_images/<filename>
+//   video        → shopify://files/videos/<filename>
+// A missing binary is skipped (warn), so this stays runnable before clips land.
 const ASSETS = [
   { filename: 'landscape.png', mimeType: 'image/png', contentType: 'IMAGE', alt: 'Validation landscape placeholder' },
   { filename: 'portrait.png', mimeType: 'image/png', contentType: 'IMAGE', alt: 'Validation portrait placeholder' },
@@ -126,7 +127,7 @@ async function main() {
     const ref =
       asset.contentType === 'IMAGE'
         ? `shopify://shop_images/${asset.filename}`
-        : '(video — verify reference form during the video L0 page build)';
+        : `shopify://files/videos/${asset.filename}`;
 
     const existing = await findFile(asset.filename);
     if (existing) {
@@ -148,7 +149,7 @@ async function main() {
     console.log(`  ${asset.filename}: uploaded${tag} — ${ref}`);
   }
 
-  console.log('\nDone. Images reference as shopify://shop_images/<filename>. Re-run anytime — present files skip, missing binaries are skipped.');
+  console.log('\nDone. Reference: images shopify://shop_images/<file>, videos shopify://files/videos/<file>. Re-run anytime — present files skip, missing binaries are skipped.');
 }
 
 main().catch((e) => {
