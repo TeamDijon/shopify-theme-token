@@ -1,22 +1,24 @@
-{% # Validation - Block - Embed v1.0.0 %}
+{% # Validation - Block - Embed v2.0.0 %}
 
 {% comment %}
+  Changelog
+  - v2.0.0 — token-section is now the real production theme-root grid (drop the `display: block` override + the `.block-validation-suite` flex wrapper + the local outline/label CSS). Blocks render as direct children; harness chrome + the layout-neutral outline/label indicator come from `validation--harness-styles`. Two per-page exceptions kept (see stylesheet): an inside-block label (embed is `overflow: hidden`) and a display-width cap (embeds are live third-party iframes). Per `validation.md` § Harness layout.
+  - v1.0.0 — initial
+
   Block-validation harness for `embed`. The JSON template at
   `templates/index.validation--primitive--embed.json` bakes the test
-  matrix; the section just renders them in a labelled list via
-  `validation--block-labels`.
+  matrix; the section renders the blocks directly as children of the
+  theme-root grid, labelled via `validation--block-labels`.
 
   Diagnostic intent:
-  1. The URL parser resolves each supported provider URL pattern to the
-     right embed_url and emits the matching `provider:youtube` /
-     `provider:vimeo` modifier. Each entry's data-modifiers attribute
-     surfaces the resolution.
+  1. The URL parser resolves each supported provider URL shape (YouTube
+     watch / short / shorts / embed; Vimeo public / unlisted / player) to
+     the right embed src + emits the matching `provider:*` modifier.
   2. Blank or unparseable URLs fall through to the placeholder branch
-     (Shopify's `placeholder_svg_tag`).
-  3. Top-spacing settings apply at the right breakpoint.
-
-  Variant sizing (`media_size`) is metaobject-typed and tested on the
-  metaobject validation page; default render is 16/9 aspect ratio.
+     (`placeholder_svg_tag`); an unparseable URL additionally emits the
+     editor-only `.diagnostic` (hidden outside `shopify-design-mode`).
+  3. media_size wires the `sizing:*` modifier + aspect-ratio; content_width
+     caps; top-spacing applies per breakpoint.
 
   Reachable only at /?view=validation--primitive--embed.
   See `.context/docs/validation.md`.
@@ -34,21 +36,20 @@
     <h1>Block: embed</h1>
     <p>
       Matrix in
-      <code>templates/index.validation--primitive--embed.json</code>. Each entry below exercises one URL shape the embed
-      snippet recognizes (YouTube watch / short / shorts / embed; Vimeo regular / unlisted / player). The label below
-      each iframe is the block id; data-modifiers attribute surfaces the resolved provider. Blank or unparseable URLs
-      render the placeholder SVG.
+      <code>templates/index.validation--primitive--embed.json</code>. Each entry exercises one URL shape the parser
+      recognizes (YouTube watch / short / shorts / embed; Vimeo public / unlisted / player), plus the placeholder branch
+      (blank + unparseable), a media_size aspect-ratio, a content_width cap, and top-spacing. The
+      <code>data-modifiers</code> attribute surfaces the resolved provider + sizing. Display width is capped (these are
+      live third-party iframes).
     </p>
   </header>
 
   {% if section.blocks.size > 0 %}
-    <div class="block-validation-suite">
-      {% content_for 'blocks' %}
-    </div>
+    {% content_for 'blocks' %}
 
     {% render 'validation--block-labels', section: section %}
   {% else %}
-    <p class="block-validation-suite__empty">No blocks declared in the template.</p>
+    <p class="validation__empty">No blocks declared in the template.</p>
   {% endif %}
 </token-section>
 
@@ -58,6 +59,7 @@
   {% endif %}
 {% endcapture %}
 {% render 'utility--dynamic-style', base_selector: base_selector, css_content: dynamic_style %}
+{% render 'validation--harness-styles' %}
 
 {% schema %}
 {
@@ -82,64 +84,34 @@
 
 {% stylesheet %}
   @layer components {
+    /* Per-page exception: embeds are live third-party iframes with a 16/9
+       aspect-ratio — at full content-track width a dozen of them make an
+       enormous, network-heavy page. Cap the DISPLAY width for legibility (unlike
+       media's lightweight SVG placeholders, which render full-size). The cap
+       overrides the block's own content_width geometry, so the content_width
+       case asserts the emitted --content-width var, not the painted width. */
     .shopify-section--validation--primitive--embed {
-      token-section {
-        display: block;
-        max-inline-size: var(--max-inline-size, 80rem);
-        margin-inline: auto;
-        padding-block: 2rem;
-        padding-inline: 1.5rem;
+      token-section > .shopify-block--embed {
+        max-inline-size: 30rem;
       }
+    }
 
-      .validation__intro {
-        margin-block-end: 2rem;
-
-        h1 {
-          margin-block-end: 0.5rem;
-        }
-
-        p {
-          max-inline-size: 65ch;
-          opacity: 0.75;
-        }
-
-        code {
-          font-family: ui-monospace, monospace;
-          font-size: 0.95em;
-        }
-      }
-
-      .block-validation-suite {
-        display: flex;
-        flex-direction: column;
-        gap: 2.5rem;
-        padding-block-start: 1.5rem;
-      }
-
-      .block-validation-suite__empty {
-        padding: 1.5rem;
-        border: 1px dashed currentColor;
-        border-radius: 0.5rem;
-        text-align: center;
-        opacity: 0.7;
-      }
-
-      .block-validation-suite > .shopify-block--embed {
-        position: relative;
-        max-inline-size: 32rem;
-      }
-
-      .block-validation-suite > .shopify-block--embed::before {
-        content: var(--block-label, '');
-        position: absolute;
-        inset-block-end: calc(100% + 0.375rem);
-        inset-inline-start: 0;
-        font-family: ui-monospace, monospace;
-        font-size: 0.8125rem;
-        font-weight: 600;
-        opacity: 0.7;
-        z-index: 1;
-      }
+    /* Embed is `overflow: hidden`, which clips the shared above-the-block label;
+       place it inside the top-left corner instead. The doubled section class
+       lifts specificity over the shared label rule — embeds without a provider /
+       sizing modifier carry no [data-modifiers], so media's [data-modifiers]
+       bump can't be reused here. */
+    .shopify-section.shopify-section--validation--primitive--embed token-section > .shopify-block--embed::before {
+      inset-block-start: 0.5rem;
+      inset-block-end: auto;
+      inset-inline-start: 0.5rem;
+      z-index: 1;
+      /* Backing chip — the label sits over live video thumbnails, so foreground
+         text alone washes out. */
+      padding: 0.125rem 0.375rem;
+      border-radius: 0.25rem;
+      background-color: rgb(255 255 255 / 0.85);
+      color: #1a1a1a;
     }
   }
 {% endstylesheet %}

@@ -73,6 +73,22 @@
             "mobile_margin_block_start": 16,
             "desktop_margin_block_start": 64
           }
+        },
+        "sized-square": {
+          "type": "embed",
+          "settings": {
+            "url": "https://www.youtube.com/embed/aqz-KE-bpKQ",
+            "title": "media_size 1:1 → sizing:ratio",
+            "media_size": "1-1"
+          }
+        },
+        "capped": {
+          "type": "embed",
+          "settings": {
+            "url": "https://www.youtube.com/embed/aqz-KE-bpKQ",
+            "title": "content_width narrow",
+            "content_width": "narrow"
+          }
         }
       },
       "block_order": [
@@ -85,7 +101,9 @@
         "vimeo-player",
         "unparseable",
         "blank-url",
-        "with-spacing"
+        "with-spacing",
+        "sized-square",
+        "capped"
       ],
       "settings": {}
     }
