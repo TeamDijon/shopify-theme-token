@@ -7,11 +7,11 @@
 **Status**: shipped
 
 **Implementation**:
-- `snippets/group.liquid` v1.7.0 (render surface)
+- `snippets/group.liquid` v1.7.1 (render surface)
 - `blocks/group.liquid` v1.7.0 (block schema + render call)
 - `assets/token-layout.js` v1.1.0 (inner-wrapper custom element)
 
-**Reconciled**: 2026-06-27 (block v1.7.0 / snippet v1.7.0 — color scheme gated by `custom_color_scheme`; top-margin override range narrowed to `0…100`, absolute override / negatives dropped via `utility--block-layout-vars` v1.2.1)
+**Reconciled**: 2026-06-28 (snippet v1.7.1 — `container-type` scoped to stack-below groups so nested non-querying groups no longer collapse as flex children. 2026-06-27: block v1.7.0 / snippet v1.7.0 — color scheme gated by `custom_color_scheme`; top-margin override range narrowed to `0…100`, absolute override / negatives dropped via `utility--block-layout-vars` v1.2.1)
 
 **Reviewed**: pending
 
@@ -85,7 +85,7 @@ When a new L1 block ships, this whitelist needs an entry per the `composition-st
 </div>
 ```
 
-**Outer/inner architecture is load-bearing.** `container-type: inline-size; container-name: group` lives on the outer (`.shopify-block--group`); the flex layout (`display: flex`, direction, alignment, gap) lives on the inner `<token-layout>`, parent-scoped via `.shopify-block--group > token-layout`. The CSS Containment spec states that `@container <name>` queries do **not** match the element with `container-type` — they only match descendants. Putting flex on the outer would make stack-below rules silently never match. The split is structural, not stylistic.
+**Outer/inner architecture is load-bearing.** `container-type: inline-size; container-name: group` lives on the outer (`.shopify-block--group`); the flex layout (`display: flex`, direction, alignment, gap) lives on the inner `<token-layout>`, parent-scoped via `.shopify-block--group > token-layout`. The CSS Containment spec states that `@container <name>` queries do **not** match the element with `container-type` — they only match descendants. Putting flex on the outer would make stack-below rules silently never match. The split is structural, not stylistic. `container-type` is applied **only to groups carrying a `stack-below` modifier** (the only groups that run a container query); applying it to every group collapses groups nested as flex children, because `inline-size` containment removes their content's contribution to their intrinsic inline-size.
 
 `data-modifiers` always carries at least `direction:column` (or `direction:row`); additional tokens append per setting (`stack-below`, `bleed-desktop`, `bleed-mobile`, `container-style`, `color-scheme`). Order is deterministic per the snippet's `modifier_list` builder.
 
@@ -97,8 +97,9 @@ Component-rooted on `.shopify-block--group` (outer) and `> token-layout` (inner)
 
 ```css
 .shopify-block--group {
-  container-type: inline-size;
-  container-name: group;
+  /* container-type + container-name are applied only on groups carrying a
+     stack-below modifier (see the stack-below rule below), not every group —
+     which would collapse nested flex-child groups to zero width. */
   max-inline-size: var(--content-width, 100%);
 
   /* Bleed is owned by the section's named-line grid (see `assets/layer-theme.css` + `subgrid-migration.md`).
@@ -167,7 +168,7 @@ Zero-emission discipline: alignment vars and gap are only emitted when they diff
 - **Bleed via modifier emission, section grid resolves.** The snippet emits `bleed-desktop:<value>` and `bleed-mobile:<value>` modifiers; bleed positioning is handled by the section's named-line bleed grid via `grid-column` rules on direct children of `<token-section>`. Strict container-only bleed model — when this group is nested inside another container, the section's `>` direct-child selector doesn't match, so the nested group positions in its container's layout and doesn't bleed. See `subgrid-migration.md`.
 - **`content_width` vs `bleed` interaction.** Under Option A (`container-patterns.md` § Content cap and convergence), bleed caps at `--content-width`. A merchant setting both `content_width: 60rem` and `bleed_desktop: both` gets a 60rem-wide bleed band — the bleed honors the section's content cap rather than overriding it. The two settings compose coherently.
 - **Color-scheme override emission (gated).** When `custom_color_scheme` is on, the block emits `data-modifiers*='color-scheme:<id>'` on the outer element (off → no modifier, the block rides the surrounding scheme). The per-scheme rule in `utility--css-variables` re-emits `--color-role-*` tokens on every element matching the modifier — including this group. Descendants inherit the new tokens via the normal CSS cascade. A nested group with its own `color_scheme` override re-emits again locally; the deepest override wins for that subtree.
-- **Recursive nesting.** A group inside a group is a fully supported composition pattern. Each nesting level has its own container query (`container-name: group` is shared — the `@container group` rule walks up to the nearest named ancestor, which is the immediate parent group). Stack-below works per-level independently.
+- **Recursive nesting.** A group inside a group is a fully supported composition pattern. Each nesting level has its own container query (`container-name: group` is shared — the `@container group` rule walks up to the nearest named ancestor, which is the immediate parent group). Stack-below works per-level independently. A nested group carries `container-type` only when it has a stack-below modifier; without it the group sizes to its content as a normal flex child — applying `container-type` to every group would collapse nested flex children to zero width.
 - **Empty group renders the wrapper, intentionally.** Container blocks emit their wrappers structurally — that's their role. The asymmetry vs leaf blocks (button/title/richtext, which `break` on blank content) is deliberate: a content-bearing primitive with no content has nothing to render; a container with no children still provides the container. Two consequences worth knowing: (1) an empty group still participates in section block-rhythm — it's a `.shopify-block` matched by the rhythm cascade selector, so a section with `[block A, empty group, block B]` carries rhythmic spacing around the empty group as if it were a real block. Authors using a group as a visual placeholder during composition should be aware. (2) an empty group with `container_style` set renders an empty styled card / outlined box / elevated panel — useful as a placeholder pattern for "I'll fill this card later," not a footgun.
 - **`{{ block.shopify_attributes }}` emission.** On the outer element, for theme-editor block selection. Safe no-op on direct snippet renders (no `block` context).
 

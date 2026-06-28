@@ -17,7 +17,7 @@
 **Depends on**: none — substrate-root token type
 
 **Consumers**:
-- `snippets/group.liquid` v1.7.0 — emits `container-style:<handle>` modifier when set; variant CSS comes from `layer-theme.css`
+- `snippets/group.liquid` v1.7.1 — emits `container-style:<handle>` modifier when set; variant CSS comes from `layer-theme.css`
 - `snippets/columns.liquid` v1.8.0 — same emission pattern
 - `snippets/media.liquid` v1.5.0 — same emission pattern
 
