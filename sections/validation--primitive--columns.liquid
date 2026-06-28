@@ -1,7 +1,8 @@
-{% # Validation - Block - Columns v1.0.1 %}
+{% # Validation - Block - Columns v1.1.0 %}
 
 {% comment %}
   Changelog
+  - v1.1.0 — render columns as direct children of `<token-section>` (drop the `.block-validation-suite` flex wrapper) + base `--block-rhythm: lg` on the section, so per-block top-margin overrides paint, bleed escapes the section grid, and the page is production-faithful. Track-outline selector follows the snippet's inner wrapper to `> token-layout` (was the dead `__inner` class). Label selectors target `token-section >`. Per `validation.md` § Harness layout.
   - v1.0.1 — target the new `.shopify-block--columns__inner > *` for column-track outlines after the snippet moved its grid to an inner wrapper
   - v1.0.0 — initial
 
@@ -14,8 +15,12 @@
   1. Each `columns` value (2 / 3 / 4 / 1-2 / 2-1 / 1-3 / 3-1) emits the
      right modifier and lays children out in the expected grid.
   2. `stack-below` collapses to single column below the breakpoint —
-     same container-query mechanism the group block uses.
-  3. Vertical alignment + gap apply correctly.
+     same container-query mechanism the group block uses (resize to
+     validate; 80 never reaches the harness width, proving @container
+     vs @media).
+  3. Sticky-track pins the named track; stack-below collapse disables it.
+  4. Vertical alignment, gap, bleed, container_style, color-scheme band,
+     content_width cap, recursion, and top-spacing overrides.
 
   Reachable only at /?view=validation--primitive--columns.
   See `.context/docs/validation.md`.
@@ -33,20 +38,19 @@
     <h1>Block: columns</h1>
     <p>
       Matrix in
-      <code>templates/index.validation--primitive--columns.json</code>. Each entry below exercises one column-count or
-      column-ratio variant, plus stack-below, vertical alignment, and spacing. Children are richtext blocks with content
-      labelling each column.
+      <code>templates/index.validation--primitive--columns.json</code>. Each entry exercises one ratio or behavior —
+      column ratios, stack-below (resize to validate; 80 never reaches the harness width), sticky-track, vertical
+      alignment, gap, bleed, container_style, the color-scheme band, content_width cap, recursion, and top-spacing.
+      Children are richtext blocks labelling each track.
     </p>
   </header>
 
   {% if section.blocks.size > 0 %}
-    <div class="block-validation-suite">
-      {% content_for 'blocks' %}
-    </div>
+    {% content_for 'blocks' %}
 
     {% render 'validation--block-labels', section: section %}
   {% else %}
-    <p class="block-validation-suite__empty">No blocks declared in the template.</p>
+    <p class="validation__empty">No blocks declared in the template.</p>
   {% endif %}
 </token-section>
 
@@ -87,6 +91,10 @@
         margin-inline: auto;
         padding-block: 2rem;
         padding-inline: 1.5rem;
+
+        /* Production-faithful baseline rhythm; per-block overrides replace it
+           via the theme-root rhythm rule in layer-theme.css. */
+        --block-rhythm: var(--spacing-lg);
       }
 
       .validation__intro {
@@ -107,14 +115,7 @@
         }
       }
 
-      .block-validation-suite {
-        display: flex;
-        flex-direction: column;
-        gap: 2.5rem;
-        padding-block-start: 1.5rem;
-      }
-
-      .block-validation-suite__empty {
+      .validation__empty {
         padding: 1.5rem;
         border: 1px dashed currentColor;
         border-radius: 0.5rem;
@@ -122,16 +123,15 @@
         opacity: 0.7;
       }
 
-      /* Outline the columns wrapper so column boundaries + alignment
-         are visible. Inset padding gives children breathing room. */
-      .block-validation-suite > .shopify-block--columns {
+      /* Outline the columns wrapper so column boundaries + alignment are
+         observable (outline doesn't affect layout — no fidelity cost). */
+      token-section > .shopify-block--columns {
         position: relative;
-        padding: 1rem;
         outline: 1px dashed rgba(0, 0, 0, 0.18);
         outline-offset: -1px;
       }
 
-      .block-validation-suite > .shopify-block--columns::before {
+      token-section > .shopify-block--columns::before {
         content: var(--block-label, '');
         position: absolute;
         inset-block-end: calc(100% + 0.375rem);
@@ -142,10 +142,9 @@
         opacity: 0.7;
       }
 
-      /* Faint background on each grid track inside .shopify-block--columns
-         so individual column tracks are visible. The grid is on the inner
-         wrapper, so target its children. */
-      .block-validation-suite > .shopify-block--columns > .shopify-block--columns__inner > * {
+      /* Faint background + outline on each grid track (the children of the
+         inner <token-layout>) so individual tracks are visible. */
+      token-section > .shopify-block--columns > token-layout > * {
         background-color: rgba(0, 0, 0, 0.03);
         outline: 1px dashed rgba(0, 0, 0, 0.12);
         padding: 0.5rem;

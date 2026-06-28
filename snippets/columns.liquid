@@ -1,7 +1,8 @@
-{% # Columns v1.8.0 %}
+{% # Columns v1.8.1 %}
 
 {% comment %}
   Changelog
+  - v1.8.1 — fix sticky-track not disabling under stack-below collapse: the disable rule (`position: static`) was outranked by the sticky enable rule on specificity, so a collapsed single-column layout kept its pinned track. Added a second `[sticky-track]` attr to the disable selector to tie the enable rule and win on source order; the @container re-enable rules already outrank it. CSS-only; honors the existing contract (no API change).
   - v1.8.0 — color scheme gated by the new `custom_color_scheme` setting: emit the `color-scheme:<id>` modifier only when the override is on (was: emit whenever `color_scheme` was non-blank). New `custom_color_scheme` param; `color_scheme` defaults to `scheme-1`. Paired with blocks/columns.liquid v1.6.0. See `.context/docs/schema-conventions.md` § Color-scheme override.
   - v1.7.0 — inner wrapper tag renamed `<theme-layout>` → `<token-layout>` (theme fingerprint pass paired with `<theme-section>` → `<token-section>`). CSS selectors update `> theme-layout` → `> token-layout`. Per-project CSS targeting the old tag must rename.
   - v1.6.0 — replace inner wrapper `<div class="inner">` with `<theme-layout>` custom element (per subgrid migration Stage 3). CSS selectors update from `> .inner` to `> theme-layout`. Markup change only; computed layout unchanged. Per-project CSS targeting `.inner` inside columns must rename to `theme-layout`.
@@ -176,8 +177,12 @@
       align-self: start;
     }
 
-    /* Disable sticky when stack-below has collapsed the grid to a single column. */
-    .shopify-block--columns[data-modifiers*='stack-below'] > token-layout > * {
+    /* Disable sticky when stack-below has collapsed the grid to a single column.
+       The extra [sticky-track] attr lifts this to the same specificity as the
+       enable rule above; later in source order, it wins the tie so the pinned
+       child falls back to static. The @container re-enable rules below carry a
+       second modifier attr (higher specificity) so sticky returns with the grid. */
+    .shopify-block--columns[data-modifiers*='stack-below'][data-modifiers*='sticky-track'] > token-layout > * {
       position: static;
     }
 
