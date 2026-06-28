@@ -7,6 +7,30 @@
           "type": "separator",
           "settings": {}
         },
+        "width-narrow": {
+          "type": "separator",
+          "settings": {
+            "content_width": "narrow"
+          }
+        },
+        "width-medium": {
+          "type": "separator",
+          "settings": {
+            "content_width": "medium"
+          }
+        },
+        "color-primary": {
+          "type": "separator",
+          "settings": {
+            "line_color": "primary"
+          }
+        },
+        "color-accent": {
+          "type": "separator",
+          "settings": {
+            "line_color": "accent"
+          }
+        },
         "mobile-spacing": {
           "type": "separator",
           "settings": {
@@ -31,6 +55,10 @@
       },
       "block_order": [
         "default",
+        "width-narrow",
+        "width-medium",
+        "color-primary",
+        "color-accent",
         "mobile-spacing",
         "desktop-spacing",
         "both-spacings"
