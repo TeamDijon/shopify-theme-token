@@ -21,9 +21,8 @@
 
 ## Purpose
 
-Flex container that groups child blocks under one configurable layout. Direction (column/row), alignment, gap, stack-below breakpoint, optional bleed, optional container style, and optional color-scheme override all flow through one block. Children compose via `{% content_for 'blocks' %}` against an **explicit whitelist** of the 9 L1 block types (no `@theme` wildcard) — including `group` itself, which makes the block recursively composable for nested layouts.
+The catch-all flex container — ratio-free, recursive, and stack-below-aware via `@container` queries against the group's own inline-size (not the viewport). Direction (column/row), alignment, gap, stack-below breakpoint, optional bleed, optional container style, and optional color-scheme override all flow through one block. Children compose via `{% content_for 'blocks' %}` against an **explicit whitelist** of the 9 L1 block types (no `@theme` wildcard) — including `group` itself, enabling nested layouts.
 
-<!-- REVIEW: Spec - Per template:design-principle-upfront-purpose, would the lead read better starting with the distinctive design principle? Group's distinguishing trait is "flex-based, ratio-free, recursive, stack-below via `@container` queries against its own width (not viewport)." Currently this surfaces over the next 4 paragraphs. Draft: "The catch-all flex container — ratio-free, recursive, and stack-below-aware via `@container` queries against the group's own inline-size (not the viewport). Direction (column/row), alignment, gap, stack-below breakpoint, optional bleed, optional container style, and optional color-scheme override all flow through one block. Children compose via `{% content_for 'blocks' %}` against an explicit 9-type whitelist that includes `group` itself, enabling nested layouts." Question: keep current 5-paragraph framing, swap to the single-paragraph lead, or split the difference? -->
 
 
 This is the most flexible of the three L1 container blocks (`group`, `columns`, `media`). Distinguishing it from siblings:
@@ -233,7 +232,7 @@ Per `validation-contract.md` Tier 2 (theme-primitive).
   - Recursive nesting: a group inside a group renders both, each with its own `direction` modifier and `token-layout` flex-direction; with per-level `color_scheme` overrides the deepest wins for its subtree (`--color-role-background` differs inner vs outer)
   - Empty group renders the outer `.shopify-block--group` + `token-layout` wrapper with no children
   - Top-spacing overrides emit `--mobile-/--desktop-margin-block-start` (loose `1.0rem` / `4.0rem`, tight `0.5rem` / `1.0rem`) — absolute values that replace the rhythm
-- **Deliberately unasserted**: bleed *painting* (the section's `grid-column` bleed grid — Tier 3; also currently a substrate bug — `layer-theme.css` matches `inline-start` / `inline-end` with a hyphen while the snippet emits the underscore setting value, so per-side bleed never paints); `block.shopify_attributes` (editor-only). `container_style` legibility is delegated to `validation--substrate--container-style`.
+- **Deliberately unasserted**: bleed *painting* (the section's `grid-column` bleed grid acts only on direct children of a real `<token-section>` grid — a Tier-3 concern asserted on preset / section pages, not on this contained primitive harness); `block.shopify_attributes` (editor-only). `container_style` legibility is delegated to `validation--substrate--container-style`.
 - **Unit scope**: none (Liquid + CSS only; no JS)
 
 ## Out of scope

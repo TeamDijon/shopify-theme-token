@@ -13,7 +13,7 @@
 - `[data-modifiers*='theme-root'] > .shopify-block:not(:first-child)` — block-rhythm cascade (per-instance margin override → section block-rhythm → `0rem`)
 - `:where(.shopify-block--group, .shopify-block--columns, .shopify-block--media)[data-modifiers*='container-style:<handle>']` — container-style variants (3 seeded: `card` / `outlined` / `elevated`)
 
-**Reconciled**: 2026-06-04
+**Reconciled**: 2026-06-28 (bleed grid — per-side desktop selectors corrected to match the emitted modifier value: `bleed-desktop:inline_start` / `inline_end` underscore, was hyphen; per-side bleed never matched before, fixed for group / columns / media. 2026-06-04 — initial reconcile.)
 
 **Reviewed**: 2026-06-04
 
@@ -114,8 +114,8 @@ Body-level so theme typography + scheme colors cascade through every element —
 /* Desktop bleed (≥ 48rem) — opt-in via bleed-desktop:<value> */
 @media (width >= 48rem) {
   [data-modifiers*='theme-root'] > [data-modifiers*='bleed-desktop:both']         { grid-column: bleed-start / bleed-end; }
-  [data-modifiers*='theme-root'] > [data-modifiers*='bleed-desktop:inline-start'] { grid-column: bleed-start / content-end; }
-  [data-modifiers*='theme-root'] > [data-modifiers*='bleed-desktop:inline-end']   { grid-column: content-start / bleed-end; }
+  [data-modifiers*='theme-root'] > [data-modifiers*='bleed-desktop:inline_start'] { grid-column: bleed-start / content-end; }
+  [data-modifiers*='theme-root'] > [data-modifiers*='bleed-desktop:inline_end']   { grid-column: content-start / bleed-end; }
 }
 
 /* Mobile bleed (< 48rem) — binary `both`-only enum */
@@ -168,7 +168,7 @@ N/A — this file consumes CSS variables from `design-constants.md` + `utility--
 - **Outer-section wrapper applies universally.** `.shopify-section` styles ours + app sections + chrome equally. Only outer-flow concerns belong here. Content-level styling (typography, background, transitions) goes on `body` so it cascades through every element including apps.
 - **Body-level appearance is the cascade fountainhead.** Every element inherits body's typography + color + transition defaults unless overridden. App sections without their own styling adopt these defaults; apps with explicit styling override per normal cascade.
 - **Theme-root bleed grid opts in via the `theme-root` modifier.** Sections without the modifier render as block-level elements with no grid. Sections with it get the three-track named-line grid. Specialized sections that need their own layout opt out by overriding `display` per `theme-root.md` § Specialized-section opt-out.
-- **Bleed-desktop and bleed-mobile are independent modifier dimensions.** A container can carry both (`bleed-desktop:both,bleed-mobile:both`) or either independently. Without `bleed-mobile`, a container with `bleed-desktop:both` stays in the content track at mobile (default placement). The enums differ: desktop offers 4 values (`none` / `inline-start` / `inline-end` / `both`); mobile is binary (`none` / `both`).
+- **Bleed-desktop and bleed-mobile are independent modifier dimensions.** A container can carry both (`bleed-desktop:both,bleed-mobile:both`) or either independently. Without `bleed-mobile`, a container with `bleed-desktop:both` stays in the content track at mobile (default placement). The enums differ: desktop offers 4 values (`none` / `inline_start` / `inline_end` / `both`); mobile is binary (`none` / `both`). The modifier value is the raw setting value (underscore); the grid-column selectors match it verbatim.
 - **Block-rhythm is direct-child-scoped.** Only `> .shopify-block:not(:first-child)` of a theme-root gets the rhythm margin. Nested blocks (inside container blocks) read their parent container's gap setting instead. Prevents the section's inter-block spacing from compounding inside containers.
 - **Block-rhythm cascade resolves through `var()` chain, not Liquid.** The per-block override → section rhythm → 0rem floor cascade is implemented entirely by the consumer-side `var(--upper, var(--lower, <floor>))` chain plus skip-on-default emission. See `dynamic-style-pattern.md` § Skip-on-default + var-fallback cascade.
 - **Container-style selectors keep specificity at zero.** `:where()` wraps the block-class enum so the rule contributes no specificity. Per-block stylesheets + per-project overrides cascade naturally without `!important` or specificity wars.
