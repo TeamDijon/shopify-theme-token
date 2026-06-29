@@ -1,7 +1,8 @@
-{% # Button v1.5.0 %}
+{% # Button v1.5.1 %}
 
 {% comment %}
   Changelog
+  - v1.5.1 — add `justify-self: start` so a bare button in a section (a direct child of the theme-root grid) hugs its content instead of filling the track. A grid item blockifies `inline-flex` → block-level `flex`, which fills its area regardless of `full_width: none` — so `full_width: none`'s "content width" contract was silently broken in a grid. `justify-self` content-sizes + start-aligns the grid item; `full-width:*` still fills (explicit `inline-size: 100%`); ignored in flex parents (`group` / `<media-contents>`), where alignment governs. CSS-only.
   - v1.5.0 — add `full_width` param (none / mobile / always): emits a `full-width:<scope>` modifier; CSS sets `inline-size: 100%` (capped by `content_width` when set), with a 48rem reset so `mobile` is full below the breakpoint only. Modifier values are collision-free (`full-width:always` / `full-width:mobile` — neither substrings the other).
   - v1.4.1 — escape the `content` label (`{{ content | escape }}`); the `text`-type block setting is plain text and Shopify does not sanitize it on output (`href` was already escaped). Per `snippet-convention.md` § Output escaping.
   - v1.4.0 — drop the internal `--button-color-rgb` intermediate. Outline-hover translucency migrates to `rgb(from var(--button-color) r g b / var(--opacity-subtle, 0.05))` relative-color syntax (paired with `utility--css-variables` v1.11.0 dropping `--color-role-*-rgb` companions). No external API change — per-project overrides of `--button-color-rgb` would break, but the property was never documented as exposed.
@@ -138,6 +139,13 @@
       align-items: center;
       justify-content: center;
       gap: 0.5em;
+
+      /* As a direct grid item (a bare button in a section), inline-flex blockifies
+         to block-level flex and would fill the track. justify-self keeps it
+         content-sized + start-aligned, honoring full_width:none; the full-width
+         variants set inline-size:100% and fill regardless. Ignored in flex parents
+         (group / media-contents), where align-items governs. */
+      justify-self: start;
 
       max-inline-size: var(--content-width, none);
       padding: var(--button-padding-block) var(--button-padding-inline);
