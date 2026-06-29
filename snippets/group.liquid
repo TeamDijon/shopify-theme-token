@@ -1,7 +1,8 @@
-{% # Group v1.7.1 %}
+{% # Group v1.7.2 %}
 
 {% comment %}
   Changelog
+  - v1.7.2 — add `inline-size: 100%` to stack-below groups. `container-type: inline-size` severs the content→inline-size path, so a stack-below group in a shrink-wrap parent (a non-stretch flex parent — e.g. a centered column group) had no resolvable width and collapsed to 0, which read as below every breakpoint and forced a permanent column (a nested centered button row never went side-by-side). `inline-size: 100%` gives the container a resolvable width — the available space it's meant to compare to the breakpoint; `max-inline-size` (content_width) still caps it. Scoped to stack-below; non-querying groups unchanged. Stretch/grid contexts already filled, so only the broken shrink-wrap case changes (0 → 100%).
   - v1.7.1 — scope `container-type: inline-size` to groups that run a container query (`[data-modifiers*='stack-below']`) instead of every group. Applied universally it collapsed groups nested as flex children to 0 width (`inline-size` containment removes the content's size contribution). Non-querying nested groups now size to content; stack-below groups are unchanged (still query their own width).
   - v1.7.0 — color scheme gated by the new `custom_color_scheme` setting: emit the `color-scheme:<id>` modifier only when the override is on (was: emit whenever `color_scheme` was non-blank). New `custom_color_scheme` param; `color_scheme` defaults to `scheme-1`. Paired with blocks/group.liquid v1.5.0. See `.context/docs/schema-conventions.md` § Color-scheme override.
   - v1.6.0 — inner wrapper tag renamed `<theme-layout>` → `<token-layout>` (theme fingerprint pass paired with `<theme-section>` → `<token-section>`). CSS selectors update `> theme-layout` → `> token-layout`. Per-project CSS targeting the old tag must rename.
@@ -139,6 +140,12 @@
       &[data-modifiers*='stack-below'] {
         container-type: inline-size;
         container-name: group;
+        /* container-type:inline-size severs the content→inline-size path, so a
+           stack-below group needs a resolvable width from outside — otherwise a
+           shrink-wrap (non-stretch flex) parent collapses it to 0 and it stacks
+           permanently. 100% is the available space it compares to the breakpoint;
+           max-inline-size still caps. Stretch/grid parents already filled this. */
+        inline-size: 100%;
       }
 
       /* Stack-below: collapse to column when container is narrower than the breakpoint */
