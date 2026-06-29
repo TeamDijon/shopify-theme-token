@@ -1,48 +1,57 @@
-{% # Validation - Section - Columns features v1.0.0 %}
+{% # Validation - Preset - Columns features v2.0.0 %}
 
 {% comment %}
-  Section-level composition validation for the "columns-features"
-  pattern: a 3-column layout where each column contains a feature
-  group (media + title + richtext stacked vertically).
+  Changelog
+  - v2.0.0 — first real Tier-3 implementation (was a stale scaffold on the old `display: block` harness). token-section is now the real production theme-root grid; harness chrome + block labels from the shared snippets. Fixture already on current block APIs (columns `3`/`stack_below`/`gap`, group `direction`/`gap`, media placeholder), so no fixture reconciliation. Per `validation-contract.md` Tier 3.
+  - v1.0.0 — initial scaffold (composition reference; not tracked as a Tier-3 implementation)
 
-  Structure: section → columns(3) → 3 × group(column) → media + title +
-  richtext.
+  Tier-3 composition validation for the "columns-features" pattern: a 3-column
+  grid where each column is a feature group (media + title + richtext stacked).
+  Structure: section → columns(3) → 3 × group(column) → media + title + richtext.
+  Exercises the deepest cross-block cascade in the corpus:
 
-  Exercises:
-
-  - Columns block at section level with 3 equal tracks.
-  - Per-column group nesting: each column's group stacks the feature
-    media/title/richtext.
-  - Container query stack-below behaviour at narrow viewports
-    (carries the same suspected self-container bug logged on the
-    columns-block matrix; the row-direction columns may collapse to a
-    single track at certain widths).
-  - Color-scheme cascade through the entire compositional tree.
-  - Media block placeholder fallback inside each feature card.
+  - Nested container-query: the columns lay out 3 tracks when the columns'
+    OWN inline-size ≥ stack_below (60rem), and collapse to 1 track below it —
+    @container against the block's width, not the viewport (3-up on desktop,
+    stacked on mobile).
+  - Group-within-column nesting: each column's group (direction: column) stacks
+    its media / title / richtext via the group's own gap, independent of the
+    section rhythm and the columns gap.
+  - Two gap scopes compose: the columns track gap (32) and the inner group gap
+    (16) are distinct and both apply.
+  - Media placeholder fallback inside each feature card (no seeded image).
 
   Reachable only at /?view=validation--preset--columns-features.
-  See `.context/docs/validation.md`.
+  See `.context/docs/validation.md` + `validation-contract.md` § Tier 3.
 {% endcomment %}
 
 {% liquid
   assign color_scheme = section.settings.color_scheme | default: 'scheme-1'
-  assign base_selector = 'shopify-section-' | append: section.id
 %}
 
 <token-section data-modifiers="theme-root,color-scheme:{{ color_scheme }}">
   {% render 'validation--breadcrumb' %}
 
+  <header class="validation__intro">
+    <h1>Composition: columns-features</h1>
+    <p>
+      A 3-column grid (<code>columns</code>) where each track is a feature <code>group</code> stacking media + title +
+      richtext. Tier-3 probes the deepest cascade: the columns' <code>stack_below</code> container-query (3-up when the
+      block is wide enough, stacked when not — resize across the column's own 60rem, not the viewport),
+      group-within-column nesting, and the two distinct gap scopes (columns track gap vs inner group gap).
+    </p>
+  </header>
+
   {% content_for 'blocks' %}
+
+  {% render 'validation--block-labels', section: section %}
 </token-section>
 
-{% capture dynamic_style %}
-  --block-rhythm: 0;
-{% endcapture %}
-{% render 'utility--dynamic-style', base_selector: base_selector, css_content: dynamic_style %}
+{% render 'validation--harness-styles' %}
 
 {% schema %}
 {
-  "name": "Section: columns-features",
+  "name": "Preset: columns-features",
   "tag": "section",
   "class": "shopify-section--validation--preset--columns-features",
   "blocks": [{ "type": "@theme" }],
@@ -56,15 +65,3 @@
   ]
 }
 {% endschema %}
-
-{% stylesheet %}
-  @layer components {
-    .shopify-section--validation--preset--columns-features token-section {
-      display: block;
-      max-inline-size: 80rem;
-      margin-inline: auto;
-      padding-block: 4rem;
-      padding-inline: 1.5rem;
-    }
-  }
-{% endstylesheet %}
