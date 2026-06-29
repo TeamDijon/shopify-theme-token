@@ -1,45 +1,54 @@
-{% # Validation - Section - Hero v1.0.0 %}
+{% # Validation - Preset - Hero v2.0.0 %}
 
 {% comment %}
-  Section-level composition validation for the "hero" pattern: a single
-  media block with bleed, overlaid title + button rendering inside the
-  block's <media-contents> overlay. Exercises:
+  Changelog
+  - v2.0.0 — first real Tier-3 implementation (was a stale scaffold predating the grid-bleed model + several block-API changes). token-section is now the real production theme-root grid (drop the `display: block` override) so the media block's bleed actually paints via grid-column. Fixture reconciled to current block APIs: media `bleed_desktop`/`bleed_mobile` enums (was the removed `bleed` boolean) + the `custom_color_scheme` gate (v1.5.0), richtext `content_width` (was the removed `narrow`), a real seeded hero image. Harness chrome from `validation--harness-styles`. Per `validation-contract.md` Tier 3.
+  - v1.0.0 — initial scaffold (composition reference; not tracked as a Tier-3 implementation)
 
-  - The media block's bleed branch (escapes the section gutter to full
-    viewport width via `inline-size: 100dvw; margin-inline: calc(50% -
-    50dvw)`).
-  - <media-contents> overlay positioning (absolute inside the media
-    wrapper) with horizontal/vertical alignment.
-  - Color-scheme override on the media block — the overlay's child
-    title + button pick up scheme-2 tokens, not the section's scheme-1.
-  - Overlay tint paints over the placeholder SVG (without an actual
-    image asset).
-  - Focus-ring inset adjustment on a focusable child inside an
-    overflow:hidden wrapper (tab into the button to validate).
+  Tier-3 composition validation for the "hero" pattern: one full-bleed media
+  block with an overlaid title + body + button rendered inside its
+  <media-contents> overlay. Exercises the cross-block cascade integration that
+  only emerges in composition:
+
+  - Bleed paints: the media block escapes the content track to the section's
+    bleed boundary (grid-column: bleed-start / bleed-end), at both viewports.
+  - Color-scheme override at block level: the media carries scheme-3 (light on
+    dark); its child title / body / button re-resolve scheme-3 tokens, not the
+    section's scheme-1.
+  - Overlay tint paints over the (real, seeded) image, below the contents.
+  - <media-contents> alignment (horizontal + vertical center) + gap.
+  - Focus-ring inset on a focusable child inside the overflow:hidden wrapper
+    (tab into the button to validate — eyeball).
 
   Reachable only at /?view=validation--preset--hero.
-  See `.context/docs/validation.md`.
+  See `.context/docs/validation.md` + `validation-contract.md` § Tier 3.
 {% endcomment %}
 
 {% liquid
   assign color_scheme = section.settings.color_scheme | default: 'scheme-1'
-  assign base_selector = 'shopify-section-' | append: section.id
 %}
 
 <token-section data-modifiers="theme-root,color-scheme:{{ color_scheme }}">
   {% render 'validation--breadcrumb' %}
 
+  <header class="validation__intro">
+    <h1>Composition: hero</h1>
+    <p>
+      A single full-bleed <code>media</code> block with an overlaid title + body + button. The media overrides the
+      section's scheme-1 with scheme-3 (light-on-dark; its overlay content re-resolves scheme-3 tokens), tints a real
+      seeded image, and bleeds to the section edge at both viewports. Tier-3 asserts the cascade-applied result, not
+      just emission.
+    </p>
+  </header>
+
   {% content_for 'blocks' %}
 </token-section>
 
-{% capture dynamic_style %}
-  --block-rhythm: 0;
-{% endcapture %}
-{% render 'utility--dynamic-style', base_selector: base_selector, css_content: dynamic_style %}
+{% render 'validation--harness-styles' %}
 
 {% schema %}
 {
-  "name": "Section: hero",
+  "name": "Preset: hero",
   "tag": "section",
   "class": "shopify-section--validation--preset--hero",
   "blocks": [{ "type": "@theme" }],
@@ -53,15 +62,3 @@
   ]
 }
 {% endschema %}
-
-{% stylesheet %}
-  @layer components {
-    .shopify-section--validation--preset--hero token-section {
-      display: block;
-      max-inline-size: 80rem;
-      margin-inline: auto;
-      padding-block: 1.5rem;
-      padding-inline: 1.5rem;
-    }
-  }
-{% endstylesheet %}
