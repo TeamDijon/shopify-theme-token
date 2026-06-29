@@ -116,6 +116,15 @@
             "full_width": "mobile"
           }
         },
+        "full-capped": {
+          "type": "button",
+          "settings": {
+            "content": "Full and capped",
+            "link": "/",
+            "full_width": "always",
+            "content_width": "reading"
+          }
+        },
         "blank": {
           "type": "button",
           "settings": {

@@ -176,11 +176,44 @@ test.describe('validation--primitive--button', () => {
     }
   });
 
+  // full_width and content_width compose: full_width sets inline-size:100% (fill),
+  // content_width sets max-inline-size (cap). Together the button must fill UP TO
+  // the cap — not to the full track (that's full_width alone) and not to content
+  // width (that's content_width alone). Guards the sizing interaction the two
+  // single-setting fixtures each leave half-covered.
+  test('full_width:always + content_width fills to the cap, not the track or content width', async ({
+    page,
+  }) => {
+    const r = await page.getByRole('link', { name: 'Full and capped' }).evaluate((el) => {
+      const ts = el.closest('token-section');
+      const cs = getComputedStyle(ts);
+      const container = ts.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+      const bcs = getComputedStyle(el);
+      return {
+        mods: el.getAttribute('data-modifiers'),
+        cw: bcs.getPropertyValue('--content-width').trim(),
+        maxInline: bcs.maxInlineSize,
+        w: Math.round(el.getBoundingClientRect().width),
+        container: Math.round(container),
+        wide: window.innerWidth >= 768,
+      };
+    });
+    expect(r.mods).toContain('full-width:always');
+    expect(r.cw).toBe('42.5rem');
+    expect(r.maxInline).toBe('680px');
+    if (r.wide) {
+      expect(r.w).toBe(680); // cap binds: fills to the 680 cap, not the wider track
+    } else {
+      expect(r.w).toBe(r.container); // below the cap: fills the available track
+      expect(r.w).toBeLessThan(680);
+    }
+  });
+
   test('blank-content instance renders no element — no empty button leaks into the suite', async ({ page }) => {
     const buttons = page.locator('token-section .shopify-block--button');
     const count = await buttons.count();
-    // 15 fixtures, minus the blank-content one which breaks before emitting a root.
-    expect(count).toBe(14);
+    // 16 fixtures, minus the blank-content one which breaks before emitting a root.
+    expect(count).toBe(15);
     for (let i = 0; i < count; i++) {
       const text = (await buttons.nth(i).innerText()).trim();
       expect(text.length).toBeGreaterThan(0);
