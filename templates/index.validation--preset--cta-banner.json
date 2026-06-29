@@ -14,8 +14,13 @@
               "type": "title",
               "settings": {
                 "tag": "h3",
-                "content": "Ready to ship?"
+                "content": "Ready to ship?",
+                "text_align": "center"
               }
+            },
+            "cta-divider": {
+              "type": "separator",
+              "settings": {}
             },
             "cta-buttons": {
               "type": "group",
@@ -44,7 +49,7 @@
               }
             }
           },
-          "block_order": ["cta-title", "cta-buttons"],
+          "block_order": ["cta-title", "cta-divider", "cta-buttons"],
           "settings": {
             "direction": "column",
             "horizontal_alignment": "center",

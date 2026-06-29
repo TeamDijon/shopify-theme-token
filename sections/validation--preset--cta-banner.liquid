@@ -1,26 +1,30 @@
-{% # Validation - Section - CTA banner v1.0.1 %}
+{% # Validation - Preset - CTA banner v2.0.0 %}
 
 {% comment %}
   Changelog
+  - v2.0.0 — first real Tier-3 implementation (was a stale scaffold on the old `display: block` harness). token-section is now the real production theme-root grid; the narrow banner comes from `--content-width` capping the content track; harness chrome + block labels from the shared snippets. Fixture gains a divider `separator` inside the flex group (between title and buttons) so the page actually exercises the "separator collapse in flex parents" concern this page owns — section-level separators are grid children that can't collapse; an in-flex separator is the real probe (regression-guards separator's `inline-size: 100%`). Per `validation-contract.md` Tier 3.
   - v1.0.1 — drop the per-block top-margin compensation now that block-rhythm cascade is fixed; rhythm spaces the three top-level blocks automatically
-  - v1.0.0 — initial
+  - v1.0.0 — initial scaffold (composition reference; not tracked as a Tier-3 implementation)
 
-  Section-level composition validation for the "cta-banner" pattern: a
-  banner with a top separator, a centered group (title + button row),
-  and a bottom separator. Exercises:
+  Tier-3 composition validation for the "cta-banner" pattern: a top separator, a
+  centered group (title + divider + a row of two buttons), and a bottom
+  separator. Exercises the cross-block cascade:
 
-  - Separators at the section level (block context, not collapsed).
-  - Nested groups: an outer column-direction group containing a title
-    and an inner row-direction group with two buttons side-by-side.
-  - Color-scheme cascade through the nested group.
+  - Separators don't collapse: the section-level separators fill the content
+    track (grid), and the divider inside the flex group fills the group width
+    (separator's inline-size: 100% — without it a separator collapses to 0 in a
+    flex parent).
+  - Nested groups: an outer column group (title + divider + button row) with an
+    inner row group of two buttons; the row stacks below 40rem (container query).
+  - Buttons hug their content inside the flex row (centered), not full-width —
+    the button's justify-self is ignored in flex, so alignment governs.
 
-  Button variant styling (button_style metaobject) needs Shopify GIDs
-  in JSON, so both buttons render with the default solid-primary
-  appearance here. The button-style metaobject page exercises variants
-  exhaustively: ?view=validation--substrate--button-style.
+  Button variant styling (button_style) needs Shopify GIDs in JSON, so both
+  buttons render default solid-primary here; variants are exercised at
+  ?view=validation--substrate--button-style.
 
   Reachable only at /?view=validation--preset--cta-banner.
-  See `.context/docs/validation.md`.
+  See `.context/docs/validation.md` + `validation-contract.md` § Tier 3.
 {% endcomment %}
 
 {% liquid
@@ -31,17 +35,31 @@
 <token-section data-modifiers="theme-root,color-scheme:{{ color_scheme }}">
   {% render 'validation--breadcrumb' %}
 
+  <header class="validation__intro">
+    <h1>Composition: cta-banner</h1>
+    <p>
+      A top separator, a centered <code>group</code> (title + divider + a row of two buttons), and a bottom separator.
+      Tier-3 probes that separators don't collapse — including the divider inside the flex group (the
+      <code>inline-size: 100%</code> guard) — the nested row-group button layout (stacks below 40rem), and that the
+      buttons hug their content in the flex row rather than filling it.
+    </p>
+  </header>
+
   {% content_for 'blocks' %}
+
+  {% render 'validation--block-labels', section: section %}
 </token-section>
 
 {% capture dynamic_style %}
-  --block-rhythm: var(--spacing-lg);
+  /* Narrow banner: cap the grid content track. Inherits to token-section. */
+  --content-width: 56rem;
 {% endcapture %}
 {% render 'utility--dynamic-style', base_selector: base_selector, css_content: dynamic_style %}
+{% render 'validation--harness-styles' %}
 
 {% schema %}
 {
-  "name": "Section: cta-banner",
+  "name": "Preset: cta-banner",
   "tag": "section",
   "class": "shopify-section--validation--preset--cta-banner",
   "blocks": [{ "type": "@theme" }],
@@ -55,21 +73,3 @@
   ]
 }
 {% endschema %}
-
-{% stylesheet %}
-  @layer components {
-    .shopify-section--validation--preset--cta-banner token-section {
-      display: block;
-      max-inline-size: 56rem;
-      margin-inline: auto;
-      padding-block: 5rem;
-      padding-inline: 1.5rem;
-      text-align: center;
-    }
-
-    /* Centre the inner group on the section's main axis. */
-    .shopify-section--validation--preset--cta-banner token-section > .shopify-block--group {
-      margin-inline: auto;
-    }
-  }
-{% endstylesheet %}
