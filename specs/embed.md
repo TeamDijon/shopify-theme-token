@@ -207,7 +207,7 @@ Runtime strings (`locales/en.default.json` + `locales/fr.json`):
 
 Per `validation-contract.md` Tier 2 (theme-primitive; L1 block-backed, no sub-component half).
 
-- **Page**: `sections/validation--primitive--embed.liquid` + `templates/index.validation--primitive--embed.json` (shipped). The page is the production theme-root grid harness (renders `validation--harness-styles`); the JSON bakes the matrix, each case selected in tests by its `--block-label`. `media_size` + `content_width` are baked by metaobject handle. Two per-page exceptions (see the section's stylesheet): an inside-block label (embed is `overflow: hidden`, so the shared above-block label is clipped — placed inside top-left, lifted by a doubled section class because the blank / unparseable cases carry no `[data-modifiers]`); and a display-width cap (embeds are live third-party iframes — a dozen at full width make an enormous, network-heavy page).
+- **Page**: `sections/validation--primitive--embed.liquid` + `templates/index.validation--primitive--embed.json` (shipped). The page is the production theme-root grid harness (renders `validation--harness-styles`); the JSON bakes the matrix, each case selected in tests by its `--block-label`. `media_size` + `content_width` are baked by metaobject handle. Embeds render full-width (production-faithful — the page is long, the live iframes lazy-load). One per-page exception (see the section's stylesheet): an inside-block label (embed is `overflow: hidden`, so the shared above-block label is clipped — placed inside top-left with a backing chip for legibility over live thumbnails, lifted by a doubled section class because the blank / unparseable cases carry no `[data-modifiers]`).
 - **Tests**: `.tests/e2e/primitive--embed.spec.js` (executable; `npm run test:e2e`)
 - **Requires seeded**: `media_size` handle `1-1`; `content_width` handle `narrow` — from Token's shipped catalog. The provider URLs are public YouTube / Vimeo IDs baked in the matrix (no store seeding).
 - **API surface**:
@@ -229,9 +229,9 @@ Per `validation-contract.md` Tier 2 (theme-primitive; L1 block-backed, no sub-co
   - `title` carries the merchant value on the iframe
   - Unparseable → no iframe, placeholder SVG present, `.diagnostic` present at `display: none`; blank → no iframe, placeholder, no diagnostic
   - Default → computed `aspect-ratio: 16 / 9`, no `sizing:*` modifier; `media_size: 1-1` → `sizing:ratio` + `--media-ratio` + computed `1 / 1`
-  - content_width emits `--content-width` (`narrow` → `37.5rem`); top-spacing emits the per-breakpoint margin vars
+  - content_width caps the wrapper: emitted `--content-width` (`narrow` → `37.5rem`) + painted `max-inline-size` (`600px`); top-spacing emits the per-breakpoint margin vars
   - **Regression guard**: the wrapper has non-zero width / height (does not collapse — see `inline-size: 100%`)
-- **Deliberately unasserted**: the painted `max-inline-size` for content_width (the harness caps display width, so the Tier-2 boundary asserts the emitted var); provider iframe runtime behavior; the painted `margin-block-start`.
+- **Deliberately unasserted**: provider iframe runtime behavior (autoplay, controls, fullscreen); the painted `margin-block-start`.
 - **Unit scope**: none (Liquid URL parsing; no JS shipped)
 
 ## Out of scope
