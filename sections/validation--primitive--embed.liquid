@@ -1,8 +1,9 @@
-{% # Validation - Block - Embed v2.0.0 %}
+{% # Validation - Block - Embed v2.0.1 %}
 
 {% comment %}
   Changelog
-  - v2.0.0 — token-section is now the real production theme-root grid (drop the `display: block` override + the `.block-validation-suite` flex wrapper + the local outline/label CSS). Blocks render as direct children; harness chrome + the layout-neutral outline/label indicator come from `validation--harness-styles`. Two per-page exceptions kept (see stylesheet): an inside-block label (embed is `overflow: hidden`) and a display-width cap (embeds are live third-party iframes). Per `validation.md` § Harness layout.
+  - v2.0.1 — drop the display-width cap so embeds fill the content track full-width like production (the cap re-introduced the display compression the harness model deliberately removed; the small + centered look was a harness artifact, not embed's real rendering). Page is taller; loading=lazy bounds the iframe network cost. content_width case now asserts painted geometry. Keep the inside-block label exception (overflow: hidden).
+  - v2.0.0 — token-section is now the real production theme-root grid (drop the `display: block` override + the `.block-validation-suite` flex wrapper + the local outline/label CSS). Blocks render as direct children; harness chrome + the layout-neutral outline/label indicator come from `validation--harness-styles`. Per `validation.md` § Harness layout.
   - v1.0.0 — initial
 
   Block-validation harness for `embed`. The JSON template at
@@ -39,8 +40,8 @@
       <code>templates/index.validation--primitive--embed.json</code>. Each entry exercises one URL shape the parser
       recognizes (YouTube watch / short / shorts / embed; Vimeo public / unlisted / player), plus the placeholder branch
       (blank + unparseable), a media_size aspect-ratio, a content_width cap, and top-spacing. The
-      <code>data-modifiers</code> attribute surfaces the resolved provider + sizing. Display width is capped (these are
-      live third-party iframes).
+      <code>data-modifiers</code> attribute surfaces the resolved provider + sizing. Embeds render full-width (live
+      third-party iframes; the page is long — they lazy-load).
     </p>
   </header>
 
@@ -84,18 +85,6 @@
 
 {% stylesheet %}
   @layer components {
-    /* Per-page exception: embeds are live third-party iframes with a 16/9
-       aspect-ratio — at full content-track width a dozen of them make an
-       enormous, network-heavy page. Cap the DISPLAY width for legibility (unlike
-       media's lightweight SVG placeholders, which render full-size). The cap
-       overrides the block's own content_width geometry, so the content_width
-       case asserts the emitted --content-width var, not the painted width. */
-    .shopify-section--validation--primitive--embed {
-      token-section > .shopify-block--embed {
-        max-inline-size: 30rem;
-      }
-    }
-
     /* Embed is `overflow: hidden`, which clips the shared above-the-block label;
        place it inside the top-left corner instead. The doubled section class
        lifts specificity over the shared label rule — embeds without a provider /

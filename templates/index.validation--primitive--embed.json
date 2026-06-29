@@ -6,28 +6,28 @@
         "youtube-watch": {
           "type": "embed",
           "settings": {
-            "url": "https://www.youtube.com/watch?v=aqz-KE-bpKQ",
+            "url": "https://www.youtube.com/watch?v=vj01PAffOac",
             "title": "YouTube watch URL"
           }
         },
         "youtube-short-url": {
           "type": "embed",
           "settings": {
-            "url": "https://youtu.be/aqz-KE-bpKQ",
+            "url": "https://youtu.be/vj01PAffOac",
             "title": "YouTube short URL"
           }
         },
         "youtube-shorts": {
           "type": "embed",
           "settings": {
-            "url": "https://www.youtube.com/shorts/aqz-KE-bpKQ",
+            "url": "https://www.youtube.com/shorts/-d8C0NuXiFM",
             "title": "YouTube Shorts"
           }
         },
         "youtube-embed": {
           "type": "embed",
           "settings": {
-            "url": "https://www.youtube.com/embed/aqz-KE-bpKQ",
+            "url": "https://www.youtube.com/embed/vj01PAffOac",
             "title": "YouTube embed URL"
           }
         },
@@ -68,7 +68,7 @@
         "with-spacing": {
           "type": "embed",
           "settings": {
-            "url": "https://youtu.be/aqz-KE-bpKQ",
+            "url": "https://youtu.be/vj01PAffOac",
             "title": "After 64px desktop margin",
             "mobile_margin_block_start": 16,
             "desktop_margin_block_start": 64
@@ -77,7 +77,7 @@
         "sized-square": {
           "type": "embed",
           "settings": {
-            "url": "https://www.youtube.com/embed/aqz-KE-bpKQ",
+            "url": "https://www.youtube.com/embed/vj01PAffOac",
             "title": "media_size 1:1 → sizing:ratio",
             "media_size": "1-1"
           }
@@ -85,7 +85,7 @@
         "capped": {
           "type": "embed",
           "settings": {
-            "url": "https://www.youtube.com/embed/aqz-KE-bpKQ",
+            "url": "https://www.youtube.com/embed/vj01PAffOac",
             "title": "content_width narrow",
             "content_width": "narrow"
           }

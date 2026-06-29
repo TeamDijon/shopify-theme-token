@@ -12,8 +12,17 @@ import { test, expect } from '@playwright/test';
 // --block-label (embed carries no stable text).
 
 const PATH = '/?view=validation--primitive--embed';
-const YT_EMBED = 'https://www.youtube.com/embed/aqz-KE-bpKQ';
 const VIMEO_EMBED = 'https://player.vimeo.com/video/76979871';
+
+// Each YouTube URL shape normalizes to /embed/<id>. watch / short-url / embed
+// carry the same id; shorts uses a distinct real Shorts id (leading hyphen —
+// exercises the parser on a real-world id shape).
+const YT_CASES = {
+  'youtube-watch': 'https://www.youtube.com/embed/vj01PAffOac',
+  'youtube-short-url': 'https://www.youtube.com/embed/vj01PAffOac',
+  'youtube-shorts': 'https://www.youtube.com/embed/-d8C0NuXiFM',
+  'youtube-embed': 'https://www.youtube.com/embed/vj01PAffOac',
+};
 
 test.beforeEach(async ({ page }) => {
   await page.goto(PATH);
@@ -47,6 +56,7 @@ function readEmbed(page, label) {
       hasDiagnostic: !!diag,
       diagnosticDisplay: diag ? getComputedStyle(diag).display : null,
       aspectRatio: cs.aspectRatio,
+      maxInline: cs.maxInlineSize,
       mediaRatioVar: cs.getPropertyValue('--media-ratio').trim(),
       contentWidthVar: cs.getPropertyValue('--content-width').trim(),
       mobileMargin: cs.getPropertyValue('--mobile-margin-block-start').trim(),
@@ -56,13 +66,13 @@ function readEmbed(page, label) {
 }
 
 test.describe('validation--primitive--embed', () => {
-  // All four YouTube URL shapes normalize to the same /embed/<id> src.
-  for (const label of ['youtube-watch', 'youtube-short-url', 'youtube-shorts', 'youtube-embed']) {
+  // Each YouTube URL shape normalizes to its /embed/<id> src.
+  for (const [label, expectedSrc] of Object.entries(YT_CASES)) {
     test(`youtube ${label} → /embed/<id> iframe + provider modifier`, async ({ page }) => {
       const r = await readEmbed(page, label);
       expect(r.mods).toContain('provider:youtube');
       expect(r.iframe).not.toBeNull();
-      expect(r.iframe.src).toBe(YT_EMBED);
+      expect(r.iframe.src).toBe(expectedSrc);
       expect(r.iframe.loading).toBe('lazy');
       expect(r.iframe.allow).toContain('encrypted-media'); // YouTube allow policy
       expect(r.iframe.allowfullscreen).toBe(true);
@@ -129,11 +139,11 @@ test.describe('validation--primitive--embed', () => {
     expect(square.aspectRatio).toContain('1 / 1');
   });
 
-  test('content_width caps via the emitted --content-width var', async ({ page }) => {
-    // The harness caps embed display width, so assert the emitted var (Tier-2
-    // boundary), not the painted max-inline-size.
+  test('content_width caps the wrapper (emitted var + painted max-inline-size)', async ({ page }) => {
     const r = await readEmbed(page, 'capped');
     expect(r.contentWidthVar).toBe('37.5rem'); // narrow 600px / 16
+    expect(r.maxInline).toBe('600px'); // painted (embeds render full-width now, so the cap is real)
+    expect(r.width).toBeLessThanOrEqual(601); // wrapper actually capped at 600
   });
 
   test('top-spacing overrides emit per-breakpoint margin vars', async ({ page }) => {
