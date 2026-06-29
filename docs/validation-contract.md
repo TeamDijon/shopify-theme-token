@@ -82,7 +82,7 @@ A primitive with only one surface (sub-component-only or block-only) renders one
 
 **Files:** `sections/validation--preset--<name>.liquid` + `templates/index.validation--preset--<name>.json`.
 
-**Tier 3 work is parked.** L2 preset authoring + validation lands after L1 block validation hardens. The 4 existing `sections/validation--preset--*.liquid` scaffolds (`hero`, `content`, `columns-features`, `cta-banner`) remain on disk as composition references but are not tracked as Tier 3 implementations — track in `BACKLOG.md` until block validation is settled.
+**Tier 3 is implemented (2026-06-29).** The 4 `sections/validation--preset--*.liquid` pages (`hero`, `content`, `columns-features`, `cta-banner`) are real Tier-3 implementations on the production grid harness, each with an executable suite (`.tests/e2e/preset--*.spec.js`) asserting the cascade-applied composition. They are *composition-integration fixtures*, not shipped L2 presets — authoring the shipped preset catalog (preset entries on `section.liquid` + per-preset specs) is a separate product decision. The compositions earned their keep: building them surfaced (and the suites now guard) four primitive issues the isolated pages structurally couldn't — capped text-block self-centering in flex (`title`/`richtext` `justify-self`), a bare button filling the section grid (`button` `justify-self`), and a stack-below group collapsing to 0 in a shrink-wrap parent (`group` `inline-size: 100%`).
 
 ## Tier 4 — Specialized section (Beyond L2)
 
@@ -132,7 +132,7 @@ Honest accounting:
 | 1c | Utility CSS | 0 | Substrate rules uncovered |
 | 1d | Utility JS | 0 | Awaits Vitest |
 | 2 | Theme-primitive | 9 `--primitive--` pages cover L1 blocks only; no snippet-half group, no L0 sub-component coverage | Add snippet-half groups; ship pages for the 9 written L0 specs |
-| 3 | Preset | 4 `--preset--` pages (proto-presets: hero, content, columns-features, cta-banner) | No other gaps |
+| 3 | Preset | 4 `--preset--` pages with executable suites (hero, content, columns-features, cta-banner) | Shipped preset catalog (entries on `section.liquid` + specs) is separate product work, not a validation gap |
 | 4 | Specialized section | 0 | Awaits specialized-section work (general-theme: FAQ, collection grid, featured product; per-project: cart-upsell, recently-viewed, …) |
 
 File-prefix rename to the contracted names landed 2026-05-29 (`--metaobject--` → `--substrate--`, `--block--` → `--primitive--`, `--section--` → `--preset--`). Executable Playwright assertions are converting page-by-page from the prose suites; `validation--primitive--button` is the reference conversion (`.tests/e2e/primitive--button.spec.js`), and the remaining settled substrate + primitive pages follow it. Snippet-half coverage on Tier 2 remains deferred. New specs authored from Batch 2 onward apply the contract directly.
