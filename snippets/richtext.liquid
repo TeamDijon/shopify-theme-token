@@ -1,7 +1,8 @@
-{% # Richtext v1.2.2 %}
+{% # Richtext v1.2.3 %}
 
 {% comment %}
   Changelog
+  - v1.2.3 — center a capped block via `justify-self: center` instead of `margin-inline: auto`. Auto inline margins win over a flex parent's `align-items`, so a capped richtext inside a flex container (group, `<media-contents>`) self-centered instead of following the container's alignment. `justify-self` centers in grid contexts (section content track, columns track — unchanged) but is ignored in flex, so the container alignment governs. Still emitted only when `content_width` is capped (uncapped stretches). No API change.
   - v1.2.2 — fix richtext shrinking to content width inside flex/grid containers (group / columns): the unconditional `margin-inline: auto` disabled grid `justify-self: stretch`, so an uncapped richtext collapsed to its content instead of filling the track. `margin-inline: auto` now emits only when a `content_width` cap is set (the centering case); uncapped richtext fills its container. No API change.
   - v1.2.1 — internal: scheme-role var refs migrate to `--color-role-*` namespace (no API change)
   - v1.2.0 — drop `narrow` param. Same concern (max-width cap) is now expressed by `content_width` alone — merchants pick a `text-narrow` `content_width` metaobject entry (~65ch) when they want a narrow column. The `prose:narrow` modifier and the corresponding `core.css` rule are gone.
@@ -20,7 +21,7 @@
   @param {string} [block_id] - Unique block ID for static renders
   @param {string} [content] - HTML rich-text body. Skips render when blank.
   @param {string} [text_align] - Inline text alignment. One of `'start'` (default), `'center'`, `'end'`.
-  @param {metaobject} [content_width] - `content_width` metaobject. Reads `.width.value` (px). Full width when blank. Capped width self-centers via `margin-inline: auto`.
+  @param {metaobject} [content_width] - `content_width` metaobject. Reads `.width.value` (px). Full width when blank. Capped width centers via `justify-self: center` in grid contexts; inside a flex container it follows the container's alignment.
   @param {metaobject} [text_color] - `theme_color` metaobject. Reads `.system.handle` to consume `var(--color-<handle>)`. Falls back to `--color-role-foreground` when blank.
   @param {number} [mobile_margin_block_start] - Top margin in px below the desktop breakpoint. Defaults to 0.
   @param {number} [desktop_margin_block_start] - Top margin in px at or above the desktop breakpoint. Defaults to 0.
@@ -65,9 +66,9 @@
       --text-align: {{ text_align }};
     {% endif %}
 
-    {% comment %} Self-center only when capped — auto margins would otherwise disable grid/flex stretch and collapse the block to content width. {% endcomment %}
+    {% comment %} Center only when capped, via justify-self (grid contexts) — ignored in flex, so a flex parent's alignment governs (no auto-margin override). Uncapped stretches. {% endcomment %}
     {% if content_width != blank %}
-      margin-inline: auto;
+      justify-self: center;
     {% endif %}
 
     {% if text_color and text_color != blank %}
@@ -86,9 +87,10 @@
       color: var(--text-color, var(--color-role-foreground));
       text-align: var(--text-align, start);
 
-      /* margin-inline: auto is emitted per-instance only when content_width is
-         set (see dynamic style). Unconditional auto margins disable grid/flex
-         stretch, collapsing an uncapped block to its content width. */
+      /* justify-self: center is emitted per-instance only when content_width is
+         set (see dynamic style) — centers in grid contexts, ignored in flex so
+         the container's alignment governs. Auto inline margins would instead win
+         over flex align-items, force-centering a capped block in a flex parent. */
     }
   }
 {% endstylesheet %}
