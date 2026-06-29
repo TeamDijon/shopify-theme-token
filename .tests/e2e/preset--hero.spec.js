@@ -108,6 +108,34 @@ test.describe('validation--preset--hero', () => {
     expect(r.hasOverlay).toBe(true);
   });
 
+  // Regression guard for the capped-text-block self-centering bug: a capped
+  // child (the reading-width richtext) must follow the flex container's start
+  // alignment, NOT self-center. Asserting the container's align-items alone
+  // (above) misses it — the child geometry is what regressed. The fix
+  // (justify-self:center, ignored in flex) makes all children share the start
+  // edge; the old margin-inline:auto centered the capped one.
+  test('bottom-left: the capped richtext child aligns start with its siblings (not centered)', async ({ page }) => {
+    const lefts = await page.locator('.shopify-block--media').evaluateAll((els, label) => {
+      const strip = (s) => s.trim().replace(/^'|'$/g, '');
+      const media = els.find((e) => strip(getComputedStyle(e).getPropertyValue('--block-label')) === label);
+      const contents = media.querySelector(':scope > media-contents');
+      const L = (sel) => Math.round(contents.querySelector(sel).getBoundingClientRect().left);
+      const rt = contents.querySelector('.shopify-block--richtext');
+      return {
+        title: L('.shopify-block--title'),
+        richtext: Math.round(rt.getBoundingClientRect().left),
+        button: L('.shopify-block--button'),
+        rtWidth: Math.round(rt.getBoundingClientRect().width),
+        rtMaxInline: getComputedStyle(rt).maxInlineSize,
+      };
+    }, 'bottom-left');
+    // capped (so a self-center would be visible): max-inline-size is the reading cap
+    expect(lefts.rtMaxInline).toBe('680px');
+    // the capped richtext shares the start edge with the uncapped title + the button
+    expect(Math.abs(lefts.richtext - lefts.title)).toBeLessThanOrEqual(1);
+    expect(Math.abs(lefts.richtext - lefts.button)).toBeLessThanOrEqual(1);
+  });
+
   test('short-fit: keeps the wide 16:9 box (no portrait mobile override) — short content still fits', async ({
     page,
   }, testInfo) => {
