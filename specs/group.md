@@ -7,11 +7,11 @@
 **Status**: shipped
 
 **Implementation**:
-- `snippets/group.liquid` v1.7.1 (render surface)
+- `snippets/group.liquid` v1.7.2 (render surface)
 - `blocks/group.liquid` v1.7.0 (block schema + render call)
 - `assets/token-layout.js` v1.1.0 (inner-wrapper custom element)
 
-**Reconciled**: 2026-06-28 (snippet v1.7.1 — `container-type` scoped to stack-below groups so nested non-querying groups no longer collapse as flex children. 2026-06-27: block v1.7.0 / snippet v1.7.0 — color scheme gated by `custom_color_scheme`; top-margin override range narrowed to `0…100`, absolute override / negatives dropped via `utility--block-layout-vars` v1.2.1)
+**Reconciled**: 2026-06-29 (snippet v1.7.2 — stack-below groups get `inline-size: 100%` so `container-type: inline-size` has a resolvable width: a stack-below group shrink-wrapped by a non-stretch flex parent (e.g. a centered nested group) collapsed to 0 and stacked permanently. Surfaced by the cta-banner Tier-3 page. v1.7.1 — `container-type` scoped to stack-below groups so nested non-querying groups no longer collapse as flex children. Block v1.7.0 unchanged.)
 
 **Reviewed**: pending
 
@@ -164,6 +164,7 @@ Zero-emission discipline: alignment vars and gap are only emitted when they diff
 - **Direction × stack-below interaction.** `direction: column` ignores `stack_below` entirely (column doesn't stack). `direction: row` honors stack-below — below the breakpoint, the inner is `flex-direction: column`; at or above, it flips back to `row` via the `@container` rule. The fallback (no `@container` support, though all current engines support it) renders as column — graceful degradation.
 - **Container queries against the group's own width, not viewport.** This is the load-bearing reason for `@container` vs `@media`. A row-direction group placed inside a narrow column or sidebar stacks based on the column's inline-size — correctly — even though the viewport may be wider than the named breakpoint. Standard responsive thinking ("at 768px, stack") doesn't apply; the question is "is this group narrower than 40/60/80rem?"
 - **Outer/inner wrapper architecture is required**, not cosmetic. `@container group` queries skip the element that defines the container. If flex were on the outer, stack-below rules would silently never fire. The `<token-layout>` wrapper exists so the flex layout sits on a descendant of the container-defining element.
+- **Stack-below groups carry `inline-size: 100%`.** `container-type: inline-size` severs the content→inline-size path, so a stack-below group has no width unless one is resolvable from outside. A stretch / grid parent supplies it; a *shrink-wrap* parent (a non-stretch flex parent — e.g. a `horizontal_alignment: center` column group) does not, and the group collapses to `0` — reading as below every breakpoint and stacking permanently. `inline-size: 100%` gives the container the available space it compares to the breakpoint (`max-inline-size` / `content_width` still caps). Scoped to stack-below groups; non-querying groups stay content-sized.
 - **`space-between` in column direction normalizes to `start`.** CSS doesn't accept `align-items: space-between` (it's a `justify-content` value), and silently invalid values inherit the cascade default — which would be unpredictable. The snippet's Liquid pre-normalizes (`if direction == 'column' and horizontal_alignment == 'space-between' → horizontal_alignment = 'start'`) so the emitted `--horizontal-alignment` is always valid.
 - **Bleed via modifier emission, section grid resolves.** The snippet emits `bleed-desktop:<value>` and `bleed-mobile:<value>` modifiers; bleed positioning is handled by the section's named-line bleed grid via `grid-column` rules on direct children of `<token-section>`. Strict container-only bleed model — when this group is nested inside another container, the section's `>` direct-child selector doesn't match, so the nested group positions in its container's layout and doesn't bleed. See `subgrid-migration.md`.
 - **`content_width` vs `bleed` interaction.** Under Option A (`container-patterns.md` § Content cap and convergence), bleed caps at `--content-width`. A merchant setting both `content_width: 60rem` and `bleed_desktop: both` gets a 60rem-wide bleed band — the bleed honors the section's content cap rather than overriding it. The two settings compose coherently.
