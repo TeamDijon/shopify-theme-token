@@ -147,6 +147,7 @@
         "width-capped",
         "full-always",
         "full-mobile",
+        "full-capped",
         "blank"
       ],
       "settings": {}
