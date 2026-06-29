@@ -7,11 +7,11 @@
 **Status**: shipped
 
 **Implementation**:
-- `snippets/richtext.liquid` v1.2.2 (render surface)
+- `snippets/richtext.liquid` v1.2.3 (render surface)
 - `blocks/richtext.liquid` v1.4.0 (block schema + render call)
 - `assets/layer-utilities.css` `@layer utilities` — `[data-modifiers*='prose']` rhythm + reaffirmed list markers (`ul`/`ol` `list-style`)
 
-**Reconciled**: 2026-06-28 (snippet v1.2.2 — `margin-inline: auto` now emitted only when `content_width` is capped, so an uncapped richtext fills its flex/grid container instead of collapsing to content width; prose layer reaffirms list markers so a downstream reset can't strip them. Block v1.4.0 unchanged.)
+**Reconciled**: 2026-06-29 (snippet v1.2.3 — capped block centers via `justify-self: center` instead of `margin-inline: auto`, so a capped richtext inside a flex container follows the container's `align-items` instead of force-centering; grid centering unchanged. Surfaced by the hero Tier-3 page. Block v1.4.0 unchanged.)
 
 **Reviewed**: pending
 
@@ -39,7 +39,7 @@ Snippet args (`{% render %}`) and block schema settings cover the same surface; 
 | `block_id` | string | no | — | Snippet-only. |
 | `content` | richtext | yes | — | HTML rich-text body. Snippet `break`s when blank. |
 | `text_align` | select (`start` / `center` / `end`) | no | `"start"` | Inline text alignment. Emits `--text-align` only when ≠ `start`. |
-| `content_width` | metaobject (`content_width`) | no | blank → 100% | Caps `max-inline-size`. Self-centers via `margin-inline: auto`. Pick a `text-narrow` entry (~65ch) for prose readability; pick wider entries for full-bleed body. |
+| `content_width` | metaobject (`content_width`) | no | blank → 100% | Caps `max-inline-size`. Centers via `justify-self: center` in grid contexts; inside a flex container follows the container's alignment. Pick a `text-narrow` entry (~65ch) for prose readability; pick wider entries for full-bleed body. |
 | `text_color` | metaobject (`theme_color`) | no | blank → `--color-role-foreground` | Reads `.system.handle`; emits `--text-color: var(--color-<handle>)`. Note the role fallback is `--color-role-foreground` (body), not `--color-role-foreground-heading` — richtext is body copy. |
 | `mobile_margin_block_start` | range (0–100, step 2, px) | no | `0` | Top margin below the desktop breakpoint. |
 | `desktop_margin_block_start` | range (0–100, step 2, px) | no | `0` | Top margin at/above the desktop breakpoint. |
@@ -68,7 +68,7 @@ Component-rooted on `.shopify-block--richtext`. Layered in `@layer components`.
   max-inline-size: var(--content-width, 100%);
   color: var(--text-color, var(--color-role-foreground));
   text-align: var(--text-align, start);
-  /* margin-inline: auto emitted per-instance only when content_width is set */
+  /* justify-self: center emitted per-instance only when content_width is set */
 }
 ```
 
@@ -94,7 +94,7 @@ Zero-emission discipline: `--text-color` only emitted when `text_color` is set; 
 - **Always emits `prose` modifier.** The block doesn't ship a "plain text" mode — every richtext gets prose treatment. The contract is "rich content with affordances," not "any HTML body." Per-project escapes to non-prose treatment go through bare `<div>` markup in specialized sections, not through this block.
 - **Body color, not heading color.** `--color-role-foreground` is the scheme's body text color; `--color-role-foreground-heading` is reserved for `title`. The richtext role and title role are intentionally disjoint — a scheme can tune body vs heading independently without breaking either block's contract.
 - **`content_width` is the readability lever.** A blank `content_width` lets richtext span 100% — useful for full-bleed marketing copy. A `text-narrow` (~65ch) entry constrains line length for legible prose. The cap drives both layout and the visual rhythm of paragraphs; merchants picking a narrow value get classical-typography readability, picking a wide value get full-width body.
-- **Capped width self-centers; uncapped fills.** `margin-inline: auto` is emitted only when `content_width` is set, centering the capped block within its container. Blank `content_width` → no auto margins → the block fills its container (100%). This is load-bearing inside flex/grid parents (`group` / `columns`): unconditional auto inline margins disable grid `justify-self: stretch`, collapsing an uncapped block to its content width — so the auto margin is gated on the cap.
+- **Capped width centers (grid) or follows the container (flex); uncapped fills.** `justify-self: center` is emitted only when `content_width` is set. In a grid context (section content track, columns track) it centers the capped block; in a flex container (`group`, `<media-contents>`) `justify-self` is ignored, so the container's `align-items` governs — a capped block follows the container's alignment instead of force-centering. Blank `content_width` → no `justify-self` override → the block fills its container (grid `justify-self: stretch`). `justify-self` replaced `margin-inline: auto` here: auto inline margins win over a flex parent's alignment (force-centering a capped block) and disable grid stretch (collapsing an uncapped one) — `justify-self` does neither. The two are identical in grid contexts (both content-size a capped block to its cap and center it).
 - **No `text_style` setting.** Richtext doesn't expose `text_style` because the underlying rich-text content already has structural elements (`<p>`, `<ul>`, `<ol>`, `<blockquote>`, `<h2>`–`<h6>` inside the rich text) — those elements bind to their respective `text_style` entries via the bare-tag pattern in `utility--css-variables`. A merchant wanting "all paragraphs in this block at large size" picks a wider `content_width` or composes a `title` block before the richtext for the emphasis.
 - **Marker provenance + first-last collapse.** The prose layer (`layer-utilities.css`) sets spacing — direct children get `margin-block: 1rem`, with `> :first-child` and `> :last-child` collapsed to `0`. A single-paragraph block therefore gets **no** rhythm (the lone `<p>` is both first and last); spacing appears only between siblings. The prose layer also **reaffirms list markers** (`& ul { list-style: disc outside }` / `& ol { list-style: decimal outside }`) so a downstream reset that blanket-strips `list-style` can't silently drop them. Link underlines remain the browser default (the reset never resets `a` decoration) — the prose layer does not re-declare `text-decoration`, so a future `a { text-decoration: none }` in reset/base would drop prose link underlines with nothing in the layer to restore them.
 - **Schema input is Shopify's `richtext` type.** The setting accepts HTML markup with a restricted tag set (`<p>`, `<ul>`, `<ol>`, `<li>`, `<strong>`, `<em>`, `<a>`, etc.). Shopify enforces sanitization; the snippet emits the value directly via `{{ content }}`.
@@ -135,7 +135,7 @@ Per `validation-contract.md` Tier 2 (theme-primitive).
 - **Edge cases**:
   - Blank `content` → snippet `break`s; nothing renders (no root element)
   - Content with nested `<h2>` (richtext field accepts headings) → bare-tag auto-binding via `text_style` applies the matching heading style inside the richtext block
-  - Blank `content_width` → wrapper spans 100%; `margin-inline: auto` has no visible effect
+  - Blank `content_width` → wrapper spans 100%; no `justify-self` override (grid stretch fills)
   - `text_color` set to a handle with no matching `theme_color` entry → `--text-color: var(--color-<handle>)` emits; the CSS variable resolves to its declaration default (or unset if not declared anywhere)
 - **Visual showcase**: a vertical stack of richtext blocks demonstrating content variations × widths × alignments. Reader confirms prose rules apply (paragraph spacing, list bullets, link decoration); content_width caps line length where set; color resolution matches.
 - **Assertions** (executable — `.tests/e2e/primitive--richtext.spec.js`):
@@ -145,7 +145,7 @@ Per `validation-contract.md` Tier 2 (theme-primitive).
   - Inline: `<em>` computes `font-style: italic`, `<strong>` `font-weight ≥ 700`, `<a>` `text-decoration-line` contains `underline` (UA default, not reset)
   - A nested `<h2>` (not the block's first child) binds a larger `text_style` (`font-size` > the body paragraph) and gets the prose `:is(h2, h3)` top margin (`24px`)
   - `text_align` start is zero-emission (`--text-align` unset, computed `start`); center / end emit the var and set computed `text-align`
-  - `content_width` reading caps `max-inline-size` to `680px` (`--content-width: 42.5rem`) and self-centers (symmetric auto margins; real gutter on the desktop viewport where the cap is below available width); blank spans `100%` with no auto margins (fills the container — guarded on the `columns` page where an uncapped richtext child must fill its grid track, not shrink to content)
+  - `content_width` reading caps `max-inline-size` to `680px` (`--content-width: 42.5rem`) and centers in the grid (symmetric leftGap ≈ rightGap on the desktop viewport where the cap is below available width; `justify-self: center`); blank spans `100%` and fills the container (no `justify-self` override — guarded on the `columns` page where an uncapped richtext child must fill its grid track, not shrink to content)
   - `text_color` emits `--text-color` and recolors computed `color` to the resolved `--color-accent` token (≠ the default body color); blank `text_color` resolves to `--color-role-foreground`
   - Top-spacing override emits `--mobile-margin-block-start: 1.0rem` / `--desktop-margin-block-start: 4.0rem` (absolute values)
   - Blank `content` renders no root (snippet `break`) — 11 of the 12 fixtures produce a `.shopify-block--richtext`
