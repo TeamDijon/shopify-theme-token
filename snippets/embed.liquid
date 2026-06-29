@@ -1,7 +1,8 @@
-{% # Embed v1.2.1 %}
+{% # Embed v1.2.2 %}
 
 {% comment %}
   Changelog
+  - v1.2.2 — center a capped embed via `justify-self: center` instead of `margin-inline: auto`. Auto inline margins win over a flex parent's `align-items`, so a capped embed inside a flex container (group, `<media-contents>`) self-centered instead of following the container. `justify-self` centers in grid contexts (section content track, columns track — unchanged) but is ignored in flex, so the container alignment governs. Safe unconditionally because the explicit `inline-size: 100%` already sizes the block (justify-self is a no-op when uncapped, centers the narrower block when capped). One coherent centering mechanism across the content-sized leaves — see `.context/docs/block-alignment.md`. No API change.
   - v1.2.1 — add `inline-size: 100%` so the wrapper doesn't shrink-to-fit to 0 in a non-stretching parent (its content is all absolutely-positioned — iframe / placeholder — so it has no intrinsic width, and `margin-inline: auto` + `max-inline-size` alone leave no resolved size on a flex item or a grid item, the latter because `margin-inline: auto` disables `justify-self: stretch`). Matches `separator.liquid` v1.0.2. Output unchanged otherwise.
   - v1.2.0 — rename BEM-style diagnostic class `shopify-block--embed__diagnostic` to rscss-compliant `.diagnostic` (scoped via `.shopify-block--embed > .diagnostic`). Per-project CSS targeting the old class name must rename. Aligns with the `group.liquid` v1.3.0 / `columns.liquid` v1.4.0 rscss precedent.
   - v1.1.2 — emit `{{ block.shopify_attributes }}` on the root for theme-editor block selection (was missing)
@@ -178,8 +179,14 @@
       overflow: hidden;
       inline-size: 100%;
       max-inline-size: var(--content-width, 100%);
-      margin-inline: auto;
       aspect-ratio: 16 / 9;
+
+      /* Center when capped, via justify-self — centers in grid contexts, ignored
+         in flex so the container's alignment governs. The explicit inline-size:
+         100% makes this a no-op when uncapped. Auto inline margins would instead
+         win over flex align-items, force-centering a capped block in a flex
+         parent. See `.context/docs/block-alignment.md`. */
+      justify-self: center;
 
       /* Sizing override: aspect ratio from media_size metaobject */
       &[data-modifiers*='sizing:ratio'] {

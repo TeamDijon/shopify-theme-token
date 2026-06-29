@@ -1,7 +1,8 @@
-{% # Group v1.7.2 %}
+{% # Group v1.7.3 %}
 
 {% comment %}
   Changelog
+  - v1.7.3 — center a capped group via `inline-size: 100%` + `justify-self: center` (emitted together, only when `content_width` is set), per the block-alignment model: a content-sized block centers in a grid context and follows the container in flex. Emitted conditionally (not in the stylesheet) because the group fills its track via grid stretch when uncapped — an unconditional `justify-self` would disable stretch and shrink an uncapped group to content. `inline-size: 100%` makes the capped group fill to its cap (rather than shrink to content) so it reads as a centered box of the capped width, mirroring `media`/`separator`/`embed`; `justify-self: center` centers that box (ignored in flex parents, where alignment governs). The `--horizontal-alignment` setting still governs the group's *children*; this governs the group's own placement. CSS-only. See `.context/docs/block-alignment.md`.
   - v1.7.2 — add `inline-size: 100%` to stack-below groups. `container-type: inline-size` severs the content→inline-size path, so a stack-below group in a shrink-wrap parent (a non-stretch flex parent — e.g. a centered column group) had no resolvable width and collapsed to 0, which read as below every breakpoint and forced a permanent column (a nested centered button row never went side-by-side). `inline-size: 100%` gives the container a resolvable width — the available space it's meant to compare to the breakpoint; `max-inline-size` (content_width) still caps it. Scoped to stack-below; non-querying groups unchanged. Stretch/grid contexts already filled, so only the broken shrink-wrap case changes (0 → 100%).
   - v1.7.1 — scope `container-type: inline-size` to groups that run a container query (`[data-modifiers*='stack-below']`) instead of every group. Applied universally it collapsed groups nested as flex children to 0 width (`inline-size` containment removes the content's size contribution). Non-querying nested groups now size to content; stack-below groups are unchanged (still query their own width).
   - v1.7.0 — color scheme gated by the new `custom_color_scheme` setting: emit the `color-scheme:<id>` modifier only when the override is on (was: emit whenever `color_scheme` was non-blank). New `custom_color_scheme` param; `color_scheme` defaults to `scheme-1`. Paired with blocks/group.liquid v1.5.0. See `.context/docs/schema-conventions.md` § Color-scheme override.
@@ -104,6 +105,12 @@
 
     {% if vertical_alignment != 'start' %}
       --vertical-alignment: {{ vertical_alignment }};
+    {% endif %}
+
+    {% comment %} Center the group itself only when capped: inline-size:100% fills to the cap (not shrink to content), justify-self centers that box in grid contexts (ignored in flex, so a flex parent's alignment governs). Uncapped stretches (neither emitted → grid default). Distinct from --horizontal-alignment, which aligns the group's children. {% endcomment %}
+    {% if content_width != blank %}
+      inline-size: 100%;
+      justify-self: center;
     {% endif %}
 
     {% render 'utility--block-layout-vars', content_width: content_width, mobile_margin_block_start: mobile_margin_block_start, desktop_margin_block_start: desktop_margin_block_start %}

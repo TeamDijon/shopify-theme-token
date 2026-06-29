@@ -30,6 +30,7 @@ function readContent(page) {
     return {
       btnWidth: Math.round(br.width),
       btnLeftGap: Math.round(br.left - sr.left),
+      btnRightGap: Math.round(sr.right - br.right),
       hasTitle: !!title,
       hasRt: !!rt,
       hasBtn: !!btn,
@@ -76,14 +77,15 @@ test.describe('validation--preset--content', () => {
     expect(r.para2MarginTop).not.toBe(rhythm);
   });
 
-  // Regression guard for the bare-grid button fix (v1.5.1): a button is a direct
-  // grid item here, which blockifies inline-flex → block-level flex; without
-  // justify-self:start it filled the column (ignoring full_width:none). It must
-  // hug its content and align to the column start.
-  test('the CTA button hugs its content (not full-width) and aligns to the column start', async ({ page }) => {
+  // Regression guard for the block-alignment model (button v1.5.2): a button is a
+  // direct grid item here, which blockifies inline-flex → block-level flex;
+  // without justify-self it filled the column (ignoring full_width:none). It must
+  // hug its content (content-sized) AND center — center is the default alignment
+  // for content-sized blocks in a grid context. See .context/docs/block-alignment.md.
+  test('the CTA button hugs its content (not full-width) and centers in the column', async ({ page }) => {
     const r = await readContent(page);
     expect(r.btnWidth).toBeLessThan(r.titleWidth - 100); // content-sized, not filling the column
-    expect(Math.abs(r.btnLeftGap - r.titleLeftGap)).toBeLessThanOrEqual(1); // shares the column's start edge
+    expect(Math.abs(r.btnLeftGap - r.btnRightGap)).toBeLessThanOrEqual(2); // centered in the surface
   });
 
   test('content_width caps the readable column and the grid centers it', async ({ page }, testInfo) => {

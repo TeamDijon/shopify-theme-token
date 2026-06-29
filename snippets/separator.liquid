@@ -1,7 +1,8 @@
-{% # Separator v1.0.5 %}
+{% # Separator v1.0.6 %}
 
 {% comment %}
   Changelog
+  - v1.0.6 — center a capped separator via `justify-self: center` instead of `margin-inline: auto`. Auto inline margins win over a flex parent's `align-items`, so a capped separator inside a flex container (group, `<media-contents>`) self-centered instead of following the container. `justify-self` centers in grid contexts (section content track, columns track — unchanged) but is ignored in flex, so the container alignment governs. Safe unconditionally because the explicit `inline-size: 100%` already sizes the block (justify-self is a no-op when uncapped, centers the narrower block when capped). One coherent centering mechanism across the content-sized leaves — see `.context/docs/block-alignment.md`. No API change.
   - v1.0.5 — internal: scheme-role var refs migrate to `--color-role-*` namespace (no API change)
   - v1.0.4 — emit `{{ block.shopify_attributes }}` on the root for theme-editor block selection (was missing)
   - v1.0.3 — route content_width + top-margin vars through `utility--block-layout-vars`; output unchanged
@@ -54,7 +55,13 @@
     .shopify-block--separator {
       inline-size: 100%;
       max-inline-size: var(--content-width, 100%);
-      margin-inline: auto;
+
+      /* Center when capped, via justify-self — centers in grid contexts, ignored
+         in flex so the container's alignment governs. The explicit inline-size:
+         100% makes this a no-op when uncapped. Auto inline margins would instead
+         win over flex align-items, force-centering a capped block in a flex
+         parent. See `.context/docs/block-alignment.md`. */
+      justify-self: center;
 
       & hr {
         margin: 0;

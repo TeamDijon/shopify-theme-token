@@ -20,9 +20,13 @@ function readGroup(page, childText, exact = true) {
     const tl = g.querySelector(':scope > token-layout');
     const gcs = getComputedStyle(g);
     const lcs = getComputedStyle(tl);
+    const gr = g.getBoundingClientRect();
+    const pr = g.parentElement.getBoundingClientRect();
     return {
       mods: g.getAttribute('data-modifiers'),
-      width: Math.round(g.getBoundingClientRect().width),
+      width: Math.round(gr.width),
+      leftGap: Math.round(gr.left - pr.left),
+      rightGap: Math.round(pr.right - gr.right),
       gridColumn: gcs.gridColumn,
       fd: lcs.flexDirection,
       justify: lcs.justifyContent,
@@ -171,10 +175,16 @@ test.describe('validation--primitive--group', () => {
     expect(def.bg).toBe('rgba(0, 0, 0, 0)');
   });
 
-  test('content_width caps the group (--content-width + max-inline-size)', async ({ page }) => {
+  test('content_width caps the group (--content-width + max-inline-size) and centers it in the track', async ({
+    page,
+  }) => {
     const r = await readGroup(page, 'Capped-width group');
     expect(r.contentWidth).toBe('42.5rem');
     expect(r.maxInline).toBe('680px');
+    // A capped container fills to the cap (inline-size:100%) and centers via
+    // justify-self — the block-alignment model's fill-to-cap family. Symmetric
+    // gaps prove the center; equal both viewports (0/0 when the track ≤ cap).
+    expect(Math.abs(r.leftGap - r.rightGap)).toBeLessThanOrEqual(2);
   });
 
   test('recursive nesting: a group contains a group, each with its own layout', async ({ page }) => {

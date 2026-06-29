@@ -1,7 +1,8 @@
-{% # Media v1.5.1 %}
+{% # Media v1.5.2 %}
 
 {% comment %}
   Changelog
+  - v1.5.2 — center a capped media block via `justify-self: center` instead of `margin-inline: auto`. Auto inline margins win over a flex parent's `align-items`, so a capped media block inside a flex container (group, `<media-contents>`) self-centered instead of following the container. `justify-self` centers in grid contexts (section content track, columns track — unchanged) but is ignored in flex, so the container alignment governs. Safe unconditionally because the explicit `inline-size: 100%` already sizes the block (justify-self is a no-op when uncapped, centers the narrower block when capped). One coherent centering mechanism across the content-sized leaves — see `.context/docs/block-alignment.md`. No API change.
   - v1.5.1 — fix `gap: 0` being unreachable: `<media-contents>` used `gap: var(--gap, 1rem)`, but the snippet skips emitting `--gap` at zero (zero-emission discipline), so a merchant setting gap 0 fell back to 16px (same as the default). Fallback corrected to `0rem`, matching group/columns. CSS-only.
   - v1.5.0 — color scheme gated by the new `custom_color_scheme` setting: emit the `color-scheme:<id>` modifier only when the override is on (was: emit whenever `color_scheme` was non-blank). New `custom_color_scheme` param; `color_scheme` defaults to `scheme-1`. Paired with blocks/media.liquid v1.5.0. See `.context/docs/schema-conventions.md` § Color-scheme override.
   - v1.4.1 — add `inline-size: 100%` to `.shopify-block--media` so the block fills its grid/flow track instead of shrinking to the intrinsic width of its content. Without it, `margin-inline: auto` overrode the grid item's default stretch and the block collapsed to the placeholder SVG's intrinsic ~300px (visible on image-less / small-image media); `max-inline-size: var(--content-width)` still caps it, `margin-inline: auto` still centers it when capped.
@@ -198,7 +199,13 @@
       overflow: hidden;
       inline-size: 100%;
       max-inline-size: var(--content-width, 100%);
-      margin-inline: auto;
+
+      /* Center when capped, via justify-self — centers in grid contexts, ignored
+         in flex so the container's alignment governs. The explicit inline-size:
+         100% makes this a no-op when uncapped. Auto inline margins would instead
+         win over flex align-items, force-centering a capped block in a flex
+         parent. See `.context/docs/block-alignment.md`. */
+      justify-self: center;
 
       /* Media element fills the block by default */
       & > picture,

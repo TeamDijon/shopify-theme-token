@@ -1,7 +1,8 @@
-{% # Columns v1.8.1 %}
+{% # Columns v1.8.2 %}
 
 {% comment %}
   Changelog
+  - v1.8.2 — center a capped columns block via `inline-size: 100%` + `justify-self: center` (emitted together, only when `content_width` is set), per the block-alignment model: a content-sized block centers in a grid context and follows the container in flex. Emitted conditionally (not in the stylesheet) because the block fills its track via grid stretch when uncapped — an unconditional `justify-self` would disable stretch. `inline-size: 100%` is load-bearing here: the block carries `container-type: inline-size`, which severs the content→inline-size path, so `justify-self: center` alone (a non-stretch grid item) collapses it to 0; the explicit width fills it to the cap, and `justify-self: center` centers that box (ignored in flex parents, where alignment governs). Mirrors `group.liquid` v1.7.3. CSS-only. See `.context/docs/block-alignment.md`.
   - v1.8.1 — fix sticky-track not disabling under stack-below collapse: the disable rule (`position: static`) was outranked by the sticky enable rule on specificity, so a collapsed single-column layout kept its pinned track. Added a second `[sticky-track]` attr to the disable selector to tie the enable rule and win on source order; the @container re-enable rules already outrank it. CSS-only; honors the existing contract (no API change).
   - v1.8.0 — color scheme gated by the new `custom_color_scheme` setting: emit the `color-scheme:<id>` modifier only when the override is on (was: emit whenever `color_scheme` was non-blank). New `custom_color_scheme` param; `color_scheme` defaults to `scheme-1`. Paired with blocks/columns.liquid v1.6.0. See `.context/docs/schema-conventions.md` § Color-scheme override.
   - v1.7.0 — inner wrapper tag renamed `<theme-layout>` → `<token-layout>` (theme fingerprint pass paired with `<theme-section>` → `<token-section>`). CSS selectors update `> theme-layout` → `> token-layout`. Per-project CSS targeting the old tag must rename.
@@ -121,6 +122,12 @@
 
     {% if vertical_alignment != 'start' %}
       --vertical-alignment: {{ vertical_alignment }};
+    {% endif %}
+
+    {% comment %} Center the block itself only when capped: inline-size:100% fills to the cap (also required because container-type:inline-size would otherwise collapse a non-stretch grid item to 0), justify-self centers that box in grid contexts (ignored in flex, so a flex parent's alignment governs). Uncapped stretches (neither emitted → grid default). {% endcomment %}
+    {% if content_width != blank %}
+      inline-size: 100%;
+      justify-self: center;
     {% endif %}
 
     {% render 'utility--block-layout-vars', content_width: content_width, mobile_margin_block_start: mobile_margin_block_start, desktop_margin_block_start: desktop_margin_block_start %}

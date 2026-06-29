@@ -27,9 +27,13 @@ function readCols(page, childText, exact = true) {
       const ccs = getComputedStyle(c);
       const lcs = getComputedStyle(tl);
       const tracks = lcs.gridTemplateColumns.split(' ').map((n) => parseFloat(n));
+      const cr = c.getBoundingClientRect();
+      const pr = c.parentElement.getBoundingClientRect();
       return {
         mods: c.getAttribute('data-modifiers'),
-        width: Math.round(c.getBoundingClientRect().width),
+        width: Math.round(cr.width),
+        leftGap: Math.round(cr.left - pr.left),
+        rightGap: Math.round(pr.right - cr.right),
         gridColumn: ccs.gridColumn,
         trackCount: tracks.length,
         tracks,
@@ -261,10 +265,16 @@ test.describe('validation--primitive--columns', () => {
   });
 
   // ── content_width ─────────────────────────────────────────────────────────
-  test('content_width caps the block (--content-width + max-inline-size)', async ({ page }) => {
+  test('content_width caps the block (--content-width + max-inline-size) and centers it in the track', async ({
+    page,
+  }) => {
     const c = await readCols(page, 'Capped columns A');
     expect(c.contentWidth).toBe('42.5rem');
     expect(c.maxInline).toBe('680px');
+    // Capped columns fills to the cap (inline-size:100% — also avoids the
+    // container-type:inline-size 0-collapse a bare non-stretch grid item hits)
+    // and centers via justify-self. Symmetric gaps prove the center.
+    expect(Math.abs(c.leftGap - c.rightGap)).toBeLessThanOrEqual(2);
   });
 
   // ── Recursion ─────────────────────────────────────────────────────────────
