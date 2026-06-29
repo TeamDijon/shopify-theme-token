@@ -7,10 +7,10 @@
 **Status**: shipped
 
 **Implementation**:
-- `snippets/media.liquid` v1.5.1 (render surface)
+- `snippets/media.liquid` v1.5.2 (render surface)
 - `blocks/media.liquid` v1.7.0 (block schema + render call)
 
-**Reconciled**: 2026-06-28 (snippet v1.5.1 — `<media-contents>` gap fallback corrected `1rem` → `0rem` so `gap: 0` is reachable, CSS-only. Validation section retrofitted to v1.1.0 (real theme-root grid + shared harness styles, overflow-clipped use-case label moved inside) + executable suite added (fixtures anchored by `--block-label`, feature fixtures carry no redundant overlay content); the template's stale `bleed: true` boolean and ungated `color_scheme` fixtures were corrected to the current `bleed_desktop`/`bleed_mobile` enums + `custom_color_scheme` gate. Block v1.7.0 unchanged.)
+**Reconciled**: 2026-06-29 (snippet v1.5.2 — center a capped media block via `justify-self: center` instead of `margin-inline: auto`, per the block-alignment model: centers in grid, follows the container in flex. Block v1.7.0 unchanged. See `block-alignment.md`.)
 
 **Reviewed**: pending
 
@@ -106,8 +106,9 @@ Component-rooted on `.shopify-block--media`. Layered in `@layer components`.
 .shopify-block--media {
   position: relative;
   overflow: hidden;
+  inline-size: 100%;
   max-inline-size: var(--content-width, 100%);
-  margin-inline: auto;
+  justify-self: center;
 
   /* Media fills the block; cover is the default object-fit */
   & > picture, & > picture > img, & > img, & > svg,
@@ -278,7 +279,7 @@ Per `validation-contract.md` Tier 2 (theme-primitive).
   - `<media-contents>` computed `justify-content` / `align-items` match `vertical_alignment` / `horizontal_alignment` (hero default `end` / `start`); `--gap` emits when > 0 (computes the gap), is unset at zero and **computes to `0`** (regression guard for the `0rem` fallback fix); `has-children` + `<media-contents>` present with overlay blocks (incl. a nested `group` child), absent on the childless fixture
   - Bleed emits the modifiers **and paints** (harness `token-section` is the real theme-root grid): `bleed-both` → `grid-column: bleed-start / bleed-end`, wider than content; `inline_start` → `bleed-start / content-end` on desktop, content track on mobile (desktop-only bleed)
   - `container-style:card` emits the modifier + pulls centralized variant CSS (`border-radius: 8px`, non-`none` `box-shadow`); `color-scheme:scheme-2` emits the modifier + paints a scheme band
-  - `content_width` caps `max-inline-size` (680px) and centers symmetrically (geometric — grid auto margins)
+  - `content_width` caps `max-inline-size` (680px) and centers symmetrically via `justify-self: center` (geometric — measure position, not the margin property)
   - Top-spacing override emits `--mobile-/--desktop-margin-block-start` (`1.0rem` / `4.0rem`)
 - **L0 deferral (not asserted here)**: art-direction `<picture><source>` switching, `object-fit` rendered pixels (cover vs contain visual), `srcset`/`sizes`, and video playback / controls / autoplay / loop are GID-bound and belong to dedicated `image.liquid` + `video.liquid` (L0) validation pages (pending). The media page asserts the block's composition contract (modifier emission, sizing, overlay, content placement, bleed painting) via the placeholder.
 - **Deliberately unasserted**: `block.shopify_attributes` (editor-only); `container_style` legibility (delegated to `validation--substrate--container-style`).

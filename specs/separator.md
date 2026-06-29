@@ -7,10 +7,10 @@
 **Status**: shipped
 
 **Implementation**:
-- `snippets/separator.liquid` v1.0.5 (render surface)
+- `snippets/separator.liquid` v1.0.6 (render surface)
 - `blocks/separator.liquid` v1.2.0 (block schema + render call)
 
-**Reconciled**: 2026-06-28 (snippet v1.0.5 + block v1.2.0 unchanged — validation page retrofitted to the production theme-root grid harness; executable suite added; `content_width` + `line_color` baked by metaobject handle.)
+**Reconciled**: 2026-06-29 (snippet v1.0.6 — center a capped separator via `justify-self: center` instead of `margin-inline: auto`, per the block-alignment model: centers in grid, follows the container in flex (auto margins overrode flex alignment). Block v1.2.0 unchanged. See `block-alignment.md`.)
 
 **Reviewed**: pending
 
@@ -34,7 +34,7 @@ Snippet args (`{% render %}`) and block schema settings cover the same surface; 
 | `section` | section | yes (render) | — | Snippet-only. |
 | `block` | block | yes (render) | — | Snippet-only. |
 | `block_id` | string | no | — | Snippet-only. Override for the base-selector identifier on direct renders. |
-| `content_width` | metaobject (`content_width`) | no | blank → 100% | Caps `max-inline-size` via `--content-width`. The wrapper self-centers via `margin-inline: auto`. |
+| `content_width` | metaobject (`content_width`) | no | blank → 100% | Caps `max-inline-size` via `--content-width`. A capped wrapper centers via `justify-self: center` in grid; in flex it follows the container's alignment. |
 | `line_color` | metaobject (`theme_color`) | no | blank → `--color-role-border` | Reads `.system.handle`; emits `--line-color: var(--color-<handle>)`. The `<hr>`'s `border-block-start` consumes the var with the role-border fallback. |
 | `mobile_margin_block_start` | range (0–100, step 2, px) | no | `0` | Top margin below the desktop breakpoint. |
 | `desktop_margin_block_start` | range (0–100, step 2, px) | no | `0` | Top margin at/above the desktop breakpoint. |
@@ -61,7 +61,7 @@ Component-rooted on `.shopify-block--separator`. Layered in `@layer components`.
 .shopify-block--separator {
   inline-size: 100%;
   max-inline-size: var(--content-width, 100%);
-  margin-inline: auto;
+  justify-self: center;
 
   & hr {
     margin: 0;
@@ -71,7 +71,7 @@ Component-rooted on `.shopify-block--separator`. Layered in `@layer components`.
 }
 ```
 
-The outer `inline-size: 100%` is load-bearing inside flex parents — `<hr>` has no intrinsic width, and `margin-inline: auto` + `max-inline-size` alone leave the wrapper at zero size on a flex item. The explicit 100% guarantees a width to size against.
+The outer `inline-size: 100%` is load-bearing inside flex parents — `<hr>` has no intrinsic width, and `max-inline-size` alone leaves the wrapper at zero size on a flex item. The explicit 100% guarantees a width to size against, and makes `justify-self: center` a no-op when uncapped (the block already fills its area).
 
 `margin-block-start` chains through `--mobile-margin-block-start` → `--desktop-margin-block-start` → section's `--block-rhythm` via `utility--block-layout-vars` (the section sets `--block-rhythm: var(--spacing-<picked-handle>)`).
 
@@ -92,7 +92,7 @@ Zero-emission discipline: `--line-color` is only emitted when `line_color` is se
 - **Hairline border on `<hr>`.** `border-block-start: 0.0625rem solid` (= 1px on 16px base). Logical property handles RTL/vertical writing modes; the rule reads as "top side in horizontal-tb writing mode."
 - **No `<hr>` UA defaults leak.** The snippet zeroes `margin` and removes the UA `border` shorthand, then adds back only the block-start side. Browsers ship `<hr>` with `inline-size` set to a small value and a 3D `inset` border by default; the wrapper-then-hairline pattern overrides both.
 - **Color resolution chain.** `--line-color` is emitted when `line_color` is set, in the form `var(--color-<handle>)` (consuming the `theme_color` system). The CSS rule's fallback is `var(--color-role-border)` — the scheme's structural-border token. The chain is two layers: the explicit `--line-color` declaration overrides the role; blank `line_color` keeps the role.
-- **Capped width centers.** When `content_width` is set, the wrapper caps at the value and centers via `margin-inline: auto`. Blank `content_width` → wrapper spans 100% of its containing block.
+- **Capped width centers in grid, follows the container in flex.** When `content_width` is set, the wrapper caps at the value and centers via `justify-self: center` in a grid context (section content track, columns track); inside a flex container it follows the container's alignment. Blank `content_width` → wrapper spans 100% of its containing block. See `block-alignment.md`.
 - **`{{ block.shopify_attributes }}` emission.** On the outer wrapper, for theme-editor block selection. Safe no-op on direct snippet renders (no `block` context).
 - **No early-exit.** Separator has no required input; an empty configuration still renders the line at default color/width.
 

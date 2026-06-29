@@ -163,7 +163,7 @@ These primitives keep the section gutter as `padding-inline` on the scroll rail,
 
 ### Per-block `content_width`
 
-Per-block `content_width` (set on individual blocks like `title`, `richtext`, `button`) overrides the block's `max-inline-size` for itself only. The block's own CSS caps at that value; `margin-inline: auto` centers it inside the section's content track.
+Per-block `content_width` (set on individual blocks like `title`, `richtext`, `button`) overrides the block's `max-inline-size` for itself only. The block's own CSS caps at that value; the cap makes the block content-sized, so it centers via `justify-self: center` inside the section's content track (and follows the container's alignment in a flex parent — see `block-alignment.md`).
 
 This is the right answer for "image-left + content-right with narrow title on right column": each child of the right column sets its own `content_width` metaobject. The cap applies inside the right column's available width. No new mechanism needed.
 
@@ -278,6 +278,7 @@ Symmetric breathing room around content of varying height uses the columns / gro
 
 ## Related
 
+- `block-alignment.md` — horizontal *placement* of a block within its grid/flex context (this doc owns sizing; that one owns alignment)
 - `theme-root.md` — bleed grid contract (named lines, rhythm scope, four responsibilities)
 - `subgrid-migration.md` — the structural overhaul that produced this model; explains the body-level appearance shift + strict container-only bleed
 - `css-standards.md` — CSS layer model, naming, variables foundation

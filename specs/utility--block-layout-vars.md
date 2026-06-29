@@ -8,7 +8,7 @@
 
 **Implementation**: `snippets/utility--block-layout-vars.liquid` v1.2.1 (CSS variable emitter — captured by the caller's `dynamic_style` block and routed through `utility--dynamic-style`)
 
-**Reconciled**: 2026-06-27 (v1.2.1 — margin pair guard back to `> 0` after the block schemas dropped negatives (range narrowed to `0…100`); the override is an absolute value that replaces the section rhythm. v1.1.0 — content_width emission harmonized to rem, matching the margin pair and the codebase-wide merchant-px/front-end-rem convention)
+**Reconciled**: 2026-06-29 (consumer pin refresh — button/embed/media/separator/group/columns bumped for the block-alignment change; this utility's emission is unchanged. v1.2.1 — margin pair guard back to `> 0` after the block schemas dropped negatives (range narrowed to `0…100`); the override is an absolute value that replaces the section rhythm. v1.1.0 — content_width emission harmonized to rem, matching the margin pair and the codebase-wide merchant-px/front-end-rem convention)
 
 **Reviewed**: 2026-06-04
 
@@ -17,7 +17,7 @@
 - No JS, no other snippet dependencies
 
 **Consumers** (every L1 block):
-- 8 of the 9 shipped L1 blocks each render this utility inside their `{% capture dynamic_style %}` block to emit per-instance vars: `snippets/button.liquid` v1.5.1, `snippets/columns.liquid` v1.8.1, `snippets/embed.liquid` v1.2.1, `snippets/group.liquid` v1.7.2, `snippets/media.liquid` v1.5.1, `snippets/richtext.liquid` v1.2.3, `snippets/separator.liquid` v1.0.5, `snippets/title.liquid` v1.1.5. `snippets/spacer.liquid` is the exception — it has no `content_width` or top-margin pair, emitting its own `--spacer-block-size` from the `spacing` token instead
+- 8 of the 9 shipped L1 blocks each render this utility inside their `{% capture dynamic_style %}` block to emit per-instance vars: `snippets/button.liquid` v1.5.2, `snippets/columns.liquid` v1.8.2, `snippets/embed.liquid` v1.2.2, `snippets/group.liquid` v1.7.3, `snippets/media.liquid` v1.5.2, `snippets/richtext.liquid` v1.2.3, `snippets/separator.liquid` v1.0.6, `snippets/title.liquid` v1.1.5. `snippets/spacer.liquid` is the exception — it has no `content_width` or top-margin pair, emitting its own `--spacer-block-size` from the `spacing` token instead
 - Future L1 blocks (rating, etc.) — same pattern at the block layer
 - `sections/section.liquid` — does *not* consume this utility directly; section emits `--content-width` (from its own content_width setting) and `--block-rhythm` (referencing the spacing metaobject) inline. Section's block-rhythm flows through this utility's emitted `--mobile-margin-block-start` / `--desktop-margin-block-start` as the per-block override path.
 

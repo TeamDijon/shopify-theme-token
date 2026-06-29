@@ -7,10 +7,10 @@
 **Status**: shipped
 
 **Implementation**:
-- `snippets/embed.liquid` v1.2.1 (render surface)
+- `snippets/embed.liquid` v1.2.2 (render surface)
 - `blocks/embed.liquid` v1.2.0 (block schema + render call)
 
-**Reconciled**: 2026-06-28 (snippet v1.2.1 — add `inline-size: 100%` so the wrapper doesn't collapse to 0 in a non-stretching parent, surfaced by the validation page; same fix separator shipped earlier. Validation page retrofitted to the grid harness; executable suite added.)
+**Reconciled**: 2026-06-29 (snippet v1.2.2 — center a capped embed via `justify-self: center` instead of `margin-inline: auto`, per the block-alignment model: centers in grid, follows the container in flex. Block v1.2.0 unchanged. See `block-alignment.md`.)
 
 **Reviewed**: pending
 
@@ -99,8 +99,8 @@ Component-rooted on `.shopify-block--embed`. Layered in `@layer components`.
   overflow: hidden;
   inline-size: 100%;
   max-inline-size: var(--content-width, 100%);
-  margin-inline: auto;
   aspect-ratio: 16 / 9;
+  justify-self: center;
 
   /* Sizing modes (parallel to media) */
   &[data-modifiers*='sizing:ratio'] {
@@ -151,7 +151,7 @@ html[data-modifiers*='shopify-design-mode'] .shopify-block--embed > .diagnostic 
 }
 ```
 
-The explicit `inline-size: 100%` is load-bearing: the wrapper's content is all absolutely-positioned (iframe / placeholder, both `position: absolute; inset: 0`), so it has no intrinsic width — `margin-inline: auto` + `max-inline-size` alone collapse it to 0 in a non-stretching parent (a flex item, or a grid item where `margin-inline: auto` disables `justify-self: stretch`). The 100% guarantees a width to cap against. Same pattern as `separator`.
+The explicit `inline-size: 100%` is load-bearing: the wrapper's content is all absolutely-positioned (iframe / placeholder, both `position: absolute; inset: 0`), so it has no intrinsic width — `max-inline-size` alone collapses it to 0 in a non-stretching parent (a flex item, or a grid item). The 100% guarantees a width to cap against, and makes `justify-self: center` a no-op when uncapped (the block already fills its area); when capped, it centers in grid and follows the container in flex. Same pattern as `separator`. See `block-alignment.md`.
 
 The default `aspect-ratio: 16 / 9` on the root provides a fallback before any `sizing:*` modifier matches — if `media_size` is blank, the iframe still renders at 16:9. The `sizing:ratio` rule overrides only when `media_size` populates `--media-ratio`.
 

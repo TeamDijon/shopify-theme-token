@@ -7,11 +7,11 @@
 **Status**: shipped
 
 **Implementation**:
-- `snippets/columns.liquid` v1.8.1 (render surface)
+- `snippets/columns.liquid` v1.8.2 (render surface)
 - `blocks/columns.liquid` v1.8.0 (block schema + render call)
 - `assets/token-layout.js` v1.1.0 (inner-wrapper custom element)
 
-**Reconciled**: 2026-06-28 (snippet v1.8.1 — sticky-track now disables under stack-below collapse: the disable rule was outranked by the sticky enable rule on specificity, fixed by adding a second `[sticky-track]` attr so it wins on source order; CSS-only, honors the existing contract. Block v1.8.0 unchanged.)
+**Reconciled**: 2026-06-29 (snippet v1.8.2 — a capped columns block centers via `inline-size: 100%` + `justify-self: center` (emitted only when `content_width` is set), per the block-alignment model: a content-sized block fills to its cap and centers in grid, follows the container in flex. `inline-size: 100%` is load-bearing — `container-type: inline-size` would collapse a bare non-stretch grid item to 0. Block v1.8.0 unchanged. See `block-alignment.md`.)
 
 **Reviewed**: pending
 
@@ -45,7 +45,7 @@ Snippet args (`{% render %}`) and block schema settings cover the same surface; 
 | `stack_below` | select (`none` / `40` / `60` / `80`) | no | `"60"` | Below the named container-width breakpoint (rem), collapses to single column. `none` disables. Emits `stack-below:<value>` modifier when ≠ `none`. The 60 default (md / ~960px) covers most "stack on tablet" cases. |
 | `sticky_track` | select (`none` / `first` / `second`) | no (visible only on 2-track layouts) | `"none"` | Pins the named track via `position: sticky`. Schema `visible_if` constrains to layouts with exactly 2 tracks (`2`, `1-2`, `2-1`, `1-3`, `3-1`). Disabled when stack-below has collapsed the layout. |
 | `vertical_alignment` | select (`start` / `center` / `end` / `stretch`) | no (visible only when `sticky_track: none`) | `"start"` | `align-items` on the grid container. Hidden in the editor when sticky is active because sticky forces `align-self: start` on the pinned track. |
-| `content_width` | metaobject (`content_width`) | no | blank → 100% | Caps `max-inline-size`. Composes with bleed (cap = section's content cap; per `container-patterns.md`). |
+| `content_width` | metaobject (`content_width`) | no | blank → 100% | Caps `max-inline-size`. A capped block fills to the cap (`inline-size: 100%`) and centers in a grid context via `justify-self: center`; in a flex parent it follows the container's alignment (see `block-alignment.md`). Composes with bleed (cap = section's content cap; per `container-patterns.md`). |
 | `gap` | range (0–100, step 2, px) | no | `16` | Gap between columns. Emitted as `--gap` in rem; zero-emission skipped. |
 | `bleed_desktop` | select (`none` / `inline_start` / `inline_end` / `both`) | no | `"none"` | Columns block's bleed direction at/above 48rem. Emitted as `bleed-desktop:<value>` modifier when ≠ `none`; the section's named-line bleed grid resolves positioning. |
 | `bleed_mobile` | select (`none` / `both`) | no | `"none"` | Columns block's bleed direction below 48rem. Single-column mobile has no edge tracks; per-side bleed has no geometric meaning there. Emitted as `bleed-mobile:both` modifier when set. |
@@ -233,7 +233,7 @@ Per `validation-contract.md` Tier 2 (theme-primitive).
   - Bleed emits the modifiers (`bleed-desktop:both`, `bleed-mobile:both`, `bleed-desktop:inline_start` — raw underscore value) **and paints**: the harness `token-section` is the real theme-root grid, so `bleed-both` computes `grid-column: bleed-start / bleed-end` and is wider than a content block; `inline_start` computes `bleed-start / content-end` on desktop and falls back to the content track on mobile (desktop-only bleed); a non-bleed block sits in `content-start / content-end`
   - `container_style:card` emits the modifier and pulls centralized variant CSS from `layer-theme.css` (computed `border-radius: 8px`, `padding: 24px`, non-`none` `box-shadow`)
   - `custom_color_scheme` + `color_scheme:scheme-2` emits `color-scheme:scheme-2`, re-resolves `--color-role-background` to scheme-2's value, and paints a background band (computed `background-color` = scheme-2's bg, vs transparent on a plain columns)
-  - `content_width` caps the block (`--content-width` + `max-inline-size`)
+  - `content_width` caps the block (`--content-width` + `max-inline-size`) and centers it in the track (symmetric gaps — fills to the cap via `inline-size: 100%`, centers via `justify-self: center`)
   - Recursive nesting: columns inside columns renders both, each with its own `--grid-template-columns` (outer `repeat(2, 1fr)`, inner `1fr 2fr`); the block-level nested columns sizes to its grid cell (no collapse)
   - Child fill: an uncapped richtext track child fills its `1fr` track (width ≈ track width, not its content width) — regression guard for the text-block `margin-inline: auto` fix (`richtext` v1.2.2 / `title` v1.1.4): auto inline margins are gated on a `content_width` cap so they don't disable grid `justify-self: stretch`
   - Empty columns renders the outer `.shopify-block--columns` + `token-layout` wrapper with no children

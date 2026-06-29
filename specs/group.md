@@ -7,11 +7,11 @@
 **Status**: shipped
 
 **Implementation**:
-- `snippets/group.liquid` v1.7.2 (render surface)
+- `snippets/group.liquid` v1.7.3 (render surface)
 - `blocks/group.liquid` v1.7.0 (block schema + render call)
 - `assets/token-layout.js` v1.1.0 (inner-wrapper custom element)
 
-**Reconciled**: 2026-06-29 (snippet v1.7.2 — stack-below groups get `inline-size: 100%` so `container-type: inline-size` has a resolvable width: a stack-below group shrink-wrapped by a non-stretch flex parent (e.g. a centered nested group) collapsed to 0 and stacked permanently. Surfaced by the cta-banner Tier-3 page. v1.7.1 — `container-type` scoped to stack-below groups so nested non-querying groups no longer collapse as flex children. Block v1.7.0 unchanged.)
+**Reconciled**: 2026-06-29 (snippet v1.7.3 — a capped group centers via `inline-size: 100%` + `justify-self: center` (emitted only when `content_width` is set), per the block-alignment model: a content-sized block fills to its cap and centers in grid, follows the container in flex. `--horizontal-alignment` still governs the group's children; this governs its own placement. Block v1.7.0 unchanged. See `block-alignment.md`.)
 
 **Reviewed**: pending
 
@@ -47,7 +47,7 @@ Snippet args (`{% render %}` interface) and block schema settings cover the same
 | `stack_below` | select (`none` / `40` / `60` / `80`) | no | `"60"` | In `row` direction, switches to column when the group's container inline-size is below the named breakpoint (rem). `none` disables; `40` / `60` / `80` map to the substrate breakpoint rems (sm / md / lg). Schema `visible_if` shows only when `direction == 'row'`. |
 | `horizontal_alignment` | select (`start` / `center` / `end` / `space-between`) | no | `"start"` | In `column` direction maps to `align-items`; in `row` direction maps to `justify-content`. `space-between` is silently normalized to `start` in column direction (would emit invalid `align-items: space-between`). |
 | `vertical_alignment` | select (`start` / `center` / `end`) | no | `"start"` | In `row` direction maps to `align-items`. Ignored in column direction. Schema `visible_if` shows only when `direction == 'row'`. |
-| `content_width` | metaobject (`content_width`) | no | blank → 100% (no cap) | Caps `max-inline-size` via `--content-width`. Composes with bleed — bleed caps at the section's content cap, so `content_width: 60rem` + `bleed_desktop: both` produces a 60rem-wide bleed band (see `container-patterns.md` § Content cap and convergence). |
+| `content_width` | metaobject (`content_width`) | no | blank → 100% (no cap) | Caps `max-inline-size` via `--content-width`. A capped group fills to the cap (`inline-size: 100%`) and centers in a grid context via `justify-self: center`; in a flex parent it follows the container's alignment (see `block-alignment.md`). Composes with bleed — bleed caps at the section's content cap, so `content_width: 60rem` + `bleed_desktop: both` produces a 60rem-wide bleed band (see `container-patterns.md` § Content cap and convergence). |
 | `gap` | range (0–100, step 2, px) | no | `16` | Gap between children. Emitted as `--gap` in rem (px / 16). Zero-emission skipped — `--gap` is only emitted when positive. |
 | `bleed_desktop` | select (`none` / `inline_start` / `inline_end` / `both`) | no | `"none"` | Group's bleed direction at/above 48rem. `both` matches section-bleed (caps at the section's content cap). `inline_start` / `inline_end` extend the group's start / end edge to the bleed boundary (= content cap), keeping gutter offset on the other side. Emitted as `bleed-desktop:<value>` modifier when ≠ `none`. |
 | `bleed_mobile` | select (`none` / `both`) | no | `"none"` | Group's bleed direction below 48rem. Single-column mobile has no edge tracks; per-side bleed has no geometric meaning there, so the mobile enum is binary. `both` matches section-bleed below 48rem. Emitted as `bleed-mobile:both` modifier when set. Asymmetric setting shape with `bleed_desktop` is intentional — see `container-patterns.md` § Bleed API: asymmetric mobile / desktop shapes. |
@@ -230,7 +230,7 @@ Per `validation-contract.md` Tier 2 (theme-primitive).
   - Bleed emits the modifiers (`bleed-desktop:both`, `bleed-mobile:both`, `bleed-desktop:inline_start` — raw underscore value) **and paints**: the harness `token-section` is the real theme-root grid, so `bleed-both` computes `grid-column: bleed-start / bleed-end` and is wider than a content block; `inline_start` computes `bleed-start / content-end` on desktop and falls back to the content track on mobile (desktop-only bleed)
   - `container_style:card` emits the modifier and pulls centralized variant CSS from `layer-theme.css` (computed `border-radius: 8px`, `padding: 24px`, non-`none` `box-shadow` — absent on a plain group)
   - `custom_color_scheme` + `color_scheme:scheme-2` emits `color-scheme:scheme-2`, re-resolves `--color-role-background` to scheme-2's value, and paints a background band (computed `background-color` = scheme-2's bg, vs transparent on a plain group)
-  - `content_width` caps the group (`--content-width` + `max-inline-size`)
+  - `content_width` caps the group (`--content-width` + `max-inline-size`) and centers it in the track (symmetric gaps — fills to the cap via `inline-size: 100%`, centers via `justify-self: center`)
   - Recursive nesting: a group inside a group renders both, each with its own `direction` modifier and `token-layout` flex-direction; the nested non-querying group sizes to its content (no collapse)
   - Empty group renders the outer `.shopify-block--group` + `token-layout` wrapper with no children
   - Top-spacing overrides emit `--mobile-/--desktop-margin-block-start` (loose `1.0rem` / `4.0rem`, tight `0.5rem` / `1.0rem`) — absolute values that replace the rhythm

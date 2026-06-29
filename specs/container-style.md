@@ -10,16 +10,16 @@
 - `assets/layer-theme.css` `@layer theme` — variant CSS rules scoped across `:where(.shopify-block--group, .shopify-block--columns, .shopify-block--media)[data-modifiers*='container-style:<handle>']`; substrate stylesheet pinned by description per `spec-convention.md` § Substrate stylesheets
 - Metaobject definition itself — created per `metaobject-definitions.md` § `container_style`
 
-**Reconciled**: 2026-05-31 (pin format clarified — substrate CSS pinned by description rather than version; structural anchor is the `:where()` selector chain in `@layer theme`)
+**Reconciled**: 2026-06-29 (consumer pin refresh — `media.liquid` (v1.5.2), `group.liquid` (v1.7.3), `columns.liquid` (v1.8.2) bumped for the block-alignment change; the `container-style:<handle>` emission this spec describes is unchanged. Prior: 2026-05-31, pin format clarified — substrate CSS pinned by description rather than version; structural anchor is the `:where()` selector chain in `@layer theme`)
 
 **Reviewed**: 2026-06-04
 
 **Depends on**: none — substrate-root token type
 
 **Consumers**:
-- `snippets/group.liquid` v1.7.2 — emits `container-style:<handle>` modifier when set; variant CSS comes from `layer-theme.css`
-- `snippets/columns.liquid` v1.8.1 — same emission pattern
-- `snippets/media.liquid` v1.5.1 — same emission pattern
+- `snippets/group.liquid` v1.7.3 — emits `container-style:<handle>` modifier when set; variant CSS comes from `layer-theme.css`
+- `snippets/columns.liquid` v1.8.2 — same emission pattern
+- `snippets/media.liquid` v1.5.2 — same emission pattern
 
 ## Purpose
 
