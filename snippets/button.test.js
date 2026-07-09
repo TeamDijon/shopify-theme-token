@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
-// Tier 2 (theme-primitive) assertions for the button block, converted from
-// .context/specs/button.md § Validation. The matrix under test is baked in
+// Tier 2 (theme-primitive) assertions for the button block, per
+// snippets/button.spec.md § Validation. The matrix under test is baked in
 // templates/index.validation--primitive--button.json.
 
 const PATH = '/?view=validation--primitive--button';
