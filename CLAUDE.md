@@ -18,12 +18,6 @@ Work runs through one adaptive pipeline. The `ticket-loop` skill is the executab
 
 **Layer taxonomy.** substrate / L0 (snippets) / L1 (blocks) / L2 (presets on `section.liquid`) / Beyond-L2 (specialized sections) — triage places the unit and scopes which phases run.
 
-## Doc placement guideline
-
-A pattern earns its own file in `.context/docs/` when it's referenced from 2+ rules **or 2+ specs**. Otherwise, inline the pattern in the single rule / spec that needs it.
-
-**Exceptions:** the orientation docs `.context/docs/architecture.md` (codebase layout) and `.context/docs/knowledge-architecture.md` (knowledge layer — rules / docs / specs / skills) are entry points, not referenced patterns, and are exempt from the 2+ guideline.
-
 ## Rule "Related" sections
 
 List only references the body doesn't already make. If everything's already inline, drop the section.
@@ -38,7 +32,7 @@ For the knowledge-layer map (how rules / docs / specs / skills relate, where to 
 
 ## Playwright debug artifacts
 
-When using Playwright MCP tools, pass screenshot filenames with the path prefix `.playwright-mcp/` (e.g. `filename: ".playwright-mcp/subgrid-check.png"`). The folder is `.gitignored`; root-level filenames leak into `git status`. To clean accumulated artifacts, invoke the `playwright-cleanup` skill — it walks the inventory and uses individual `rm <file>` commands, never `rm -rf` or wildcards.
+When using Playwright MCP tools, pass screenshot filenames with the path prefix `.playwright-mcp/` (e.g. `filename: ".playwright-mcp/subgrid-check.png"`) — the folder is `.gitignored`, so root-level filenames leak into `git status`. To clean accumulated artifacts, invoke the `playwright-cleanup` skill.
 
 ## Always-on Liquid context budget
 
@@ -74,5 +68,3 @@ Tally as of 2026-06-16. Update the table when adding/removing/resizing rules in 
 | `assets/icon-*.svg`                                                  | `icon-convention.md`                                   | 71    |
 | `.context/docs/**`, `.context/rules/**`, `.context/specs/**` (`.md`) | `reference-voice.md`                                   | 23    |
 | `.context/specs/**` (`.md`)                                          | `reference-voice.md` (23) + `spec-convention.md` (169) | 192   |
-
-Date patterns (arithmetic + locale translation) moved out of the always-on set to `.context/docs/liquid-dates.md` — pulled on demand, not loaded on every Liquid edit. This dropped the section-edit total from 407 to 267, leaving headroom for the L2 / specialized-section rules to come.
