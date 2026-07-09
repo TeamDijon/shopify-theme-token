@@ -44,12 +44,12 @@ When new content earns a home:
 |---|---|
 | One element's API / behavior / validation | A spec |
 | A pattern referenced by 2+ rules | A new doc |
-| A pattern referenced by 2+ specs (but not rules) | A new doc (same threshold; see `CLAUDE.md`) |
+| A pattern referenced by 2+ specs (but not rules) | A new doc (same threshold) |
 | A pattern referenced by exactly 1 rule or 1 spec | Inline in that rule / spec |
 | Authoring discipline for a specific file type (`.liquid`, `.js`, `.css`, `.md`) | A rule (or a section in an existing rule) |
 | A phase-specific runbook (when to do what) | A skill |
 
-Bias toward inlining until the 2+ threshold is crossed. Extraction is a deliberate move once the pattern recurs, not a default.
+Bias toward inlining until the 2+ threshold is crossed. Extraction is a deliberate move once the pattern recurs, not a default. Orientation docs (`architecture.md`, `knowledge-architecture.md`) are exempt from the threshold — they are entry points, not referenced patterns.
 
 ## Per-category navigation
 
@@ -147,4 +147,4 @@ If you can't answer the question from any of these, it's a real gap — propose 
 - `architecture.md` — codebase-layer counterpart to this doc
 - `composition-strategy.md` — the layer model specs map onto
 - `spec-to-component.md` — the 6-phase pipeline tying skills to specs
-- `CLAUDE.md` — project-level conventions including the 2+-reference doc-extraction guideline
+- `CLAUDE.md` — project-level conventions (context system, loop protocol, always-on budget)
