@@ -18,3 +18,10 @@ BACKLOG.md
 # Editor / atomic-write temp files (sed -i, write-file-atomic, etc.)
 **/sed*
 *.tmp.*
+
+# Colocated element sources — git-tracked contract/test/fixture, not theme files
+*.spec.md
+*.test.js
+*.validation.json
+# …but the generated validation template must push (it matches *.validation.json)
+!templates/index.validation.json
