@@ -1,4 +1,12 @@
-{% # Validation harness styles v1.0.0 %}
+{% # Validation harness styles v1.1.0 %}
+
+{% comment %}
+  Changelog
+  - v1.1.0 — broaden the scope selector to `[class*='shopify-section--validation']`
+    (dropped the trailing `--`) so it also covers the generic `validation` harness
+    (generate-and-drop model), not only the legacy per-element
+    `validation--<tier>--<name>` sections.
+{% endcomment %}
 
 {% doc %}
   @description
@@ -6,7 +14,8 @@
   state), the production-faithful `token-section` base, and the layout-neutral
   use-case indicator (dashed outline + DOM-id label). Scoped to all validation
   sections via the `[class*='shopify-section--validation--']` prefix selector,
-  so one source of truth covers every page. Render it once per validation
+  so one source of truth covers every page (generic `validation` harness + the
+  legacy per-element `validation--<tier>--<name>` sections). Render it once per validation
   section; the `{% stylesheet %}` is hoisted + deduped by Shopify.
 
   token-section is NOT given a `display` here — the production theme-root bleed
@@ -20,7 +29,7 @@
 
 {% stylesheet %}
   @layer components {
-    [class*='shopify-section--validation--'] {
+    [class*='shopify-section--validation'] {
       /* Cap + center the harness and add vertical breathing + a base rhythm.
          No `display` — the theme-root grid from @layer theme governs layout. */
       token-section {
