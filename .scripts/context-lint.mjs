@@ -7,6 +7,11 @@
  *   1. pin    — spec `path vX.Y.Z` pins vs the referenced file's version header.
  *   2. index  — every spec file is referenced in specs-index.md; every index link resolves.
  *   3. tally  — rule line counts recorded in CLAUDE.md match the files on disk.
+ *   4. colocation — a colocated `<name>.spec.md` beside code has a sibling
+ *                   `<name>.test.js`, and its Implementation pins match the
+ *                   referenced files' version headers. Transitional-safe: fires
+ *                   only on already-colocated specs, silent for the corpus still
+ *                   under .context/specs/.
  *
  * Exits non-zero when any check fails, so it can gate `npm run check` / pre-commit.
  * Irreducibly-manual checks (Reviewed sign-off, spec-vs-code semantic accuracy,
@@ -104,9 +109,42 @@ if (existsSync(CLAUDE)) {
   }
 }
 
+// ---- 4. colocation-hygiene ----
+// For every colocated `<name>.spec.md` beside code: require a sibling
+// `<name>.test.js`, and every Implementation pin must match the file's version.
+// Only fires on specs that have already colocated, so the unmigrated corpus under
+// .context/specs/ doesn't false-fail during the migration.
+const CODE_DIRS = ["snippets", "blocks", "sections", "assets"];
+for (const dir of CODE_DIRS) {
+  const absDir = join(ROOT, dir);
+  if (!existsSync(absDir)) continue;
+  for (const specFile of readdirSync(absDir).filter((f) => f.endsWith(".spec.md"))) {
+    const base = specFile.replace(/\.spec\.md$/, "");
+    if (!existsSync(join(absDir, `${base}.test.js`)))
+      note("colocation", `${dir}/${specFile}: no sibling ${base}.test.js`);
+    const header = read(join(absDir, specFile)).split(/\n##\s/)[0];
+    const seen = new Set();
+    for (const [, rel, pinned] of header.matchAll(PIN_RE)) {
+      const key = `${rel}|${pinned}`;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      const abs = join(ROOT, rel);
+      if (!existsSync(abs)) {
+        note("colocation", `${dir}/${specFile}: pins \`${rel}\` v${pinned} — file not found`);
+        continue;
+      }
+      const actual = fileVersion(abs);
+      if (actual === null)
+        note("colocation", `${dir}/${specFile}: pins \`${rel}\` v${pinned} — no version header in file`);
+      else if (actual !== pinned)
+        note("colocation", `${dir}/${specFile}: pins \`${rel}\` v${pinned} — file is v${actual}`);
+    }
+  }
+}
+
 // ---- report ----
 if (findings.length === 0) {
-  console.log("context-lint: clean ✓  (pins, specs-index, CLAUDE.md tally)");
+  console.log("context-lint: clean ✓  (pins, specs-index, tally, colocation)");
   process.exit(0);
 }
 const byCheck = {};
