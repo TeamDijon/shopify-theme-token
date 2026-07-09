@@ -1,0 +1,107 @@
+{% # Validation harness v1.0.0 %}
+
+{% comment %}
+  Generic validation harness. Renders one element's block matrix — baked into the
+  generated `templates/index.validation.json` and reached at `?view=validation` — as
+  a labelled list. Title, description, and layout come from section settings supplied
+  by the generated template; the matrix + settings originate in a colocated per-element
+  source (`snippets/<el>.validation.json`) that the generator stages into this slot,
+  tests, then drops.
+
+  Reachable only at /?view=validation. See `snippets/<el>.spec.md` § Validation and
+  `.context/docs/validation.md`.
+
+  harness_layout:
+  - grid  — production theme-root bleed grid (default; block-level elements).
+  - stack — column flex, flush-start; for content-sized / inline-flex elements
+            (e.g. button) that don't fit the production grid.
+{% endcomment %}
+
+{% liquid
+  assign title = section.settings.title | default: 'Validation'
+  assign description = section.settings.description
+  assign harness_layout = section.settings.harness_layout | default: 'grid'
+  assign max_inline_size = section.settings.max_inline_size
+  assign base_selector = 'shopify-section-' | append: section.id
+%}
+
+<token-section data-modifiers="theme-root" data-harness-layout="{{ harness_layout }}">
+  <header class="validation__intro">
+    <h1>{{ title | escape }}</h1>
+    {% if description != blank %}{{ description }}{% endif %}
+  </header>
+
+  {% if section.blocks.size > 0 %}
+    {% content_for 'blocks' %}
+
+    {% render 'validation--block-labels', section: section %}
+  {% else %}
+    <p class="validation__empty">No blocks declared in the template.</p>
+  {% endif %}
+</token-section>
+
+{% capture dynamic_style %}
+  {% if max_inline_size and max_inline_size != blank %}
+    --max-inline-size: {{ max_inline_size }}px;
+  {% endif %}
+{% endcapture %}
+{% render 'utility--dynamic-style', base_selector: base_selector, css_content: dynamic_style %}
+{% render 'validation--harness-styles' %}
+
+{% schema %}
+{
+  "name": "Validation harness",
+  "tag": "section",
+  "class": "shopify-section--validation",
+  "blocks": [{ "type": "@theme" }],
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title",
+      "default": "Validation"
+    },
+    {
+      "type": "richtext",
+      "id": "description",
+      "label": "Description"
+    },
+    {
+      "type": "select",
+      "id": "harness_layout",
+      "label": "Harness layout",
+      "options": [
+        { "value": "grid", "label": "Grid (production theme-root)" },
+        { "value": "stack", "label": "Stack (column; inline / content-sized elements)" }
+      ],
+      "default": "grid"
+    },
+    {
+      "type": "range",
+      "id": "max_inline_size",
+      "label": "Max width",
+      "min": 800,
+      "max": 1920,
+      "step": 20,
+      "unit": "px",
+      "default": 1280
+    }
+  ]
+}
+{% endschema %}
+
+{% stylesheet %}
+  @layer components {
+    .shopify-section--validation {
+      /* Content-sized / inline-flex elements (e.g. button) don't fit the production
+         theme-root grid — stack them in a flush-start column so the rhythm rule paints
+         between rows. Block-level elements use the default grid (no override). */
+      token-section[data-harness-layout='stack'] {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        padding-inline: var(--gutter);
+      }
+    }
+  }
+{% endstylesheet %}
