@@ -1,0 +1,21 @@
+# Enforce LF line endings for all text files on every platform. The context
+# branch is markdown (rules / docs / specs / skills); without this, a Windows
+# checkout (core.autocrlf=true) rewrites it to CRLF. Mirrors main's .gitattributes.
+* text=auto eol=lf
+
+# Binary assets — never normalize.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.avif binary
+*.ico binary
+*.svg text eol=lf
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.eot binary
+*.otf binary
+*.mp4 binary
+*.webm binary
