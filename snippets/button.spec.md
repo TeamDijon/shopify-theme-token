@@ -12,7 +12,7 @@
 
 **Reconciled**: 2026-06-29 (snippet v1.5.2 — `justify-self: center` for the bare-button-in-section grid case, per the block-alignment model: a content-sized block defaults to center, `start`/`end` is reached via a `group`. v1.5.1 had added `justify-self: start` for the same content-sizing fix; v1.5.2 only changes the default alignment. `full-width:*` still fills; ignored in flex parents. Block v1.5.0 unchanged. See `block-alignment.md`.)
 
-**Reviewed**: pending
+**Reviewed**: 2026-07-09
 
 **Depends on**: `snippets/icon.liquid`, `snippets/utility--base-selector.liquid`, `snippets/utility--modifiers.liquid`, `snippets/utility--block-layout-vars.liquid`, `snippets/utility--dynamic-style.liquid`, `button_style` metaobject, `icon` metaobject (optional), `content_width` metaobject (optional)
 
