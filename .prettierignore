@@ -11,6 +11,12 @@ package-lock.json
 .tests
 .playwright-mcp
 
+# Colocated element sources — carry forward the .context / .tests exemptions above.
+# Specs are prose reference (prettier reflows their tables); test files carry
+# hand-crafted formatting. Validation JSON source stays prettier-managed (plain data).
+*.spec.md
+*.test.js
+
 # Working scaffolding
 BACKLOG.md
 

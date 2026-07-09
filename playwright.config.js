@@ -17,7 +17,14 @@ export default defineConfig({
   // beside their code (`**/*.test.js`); not-yet-migrated ones remain under
   // `.tests/e2e/*.spec.js`. Both run until the migration completes.
   testMatch: ['**/*.test.js', '.tests/e2e/**/*.spec.js'],
-  testIgnore: ['**/node_modules/**', '.context/**', '.git/**', '.shopify/**', 'test-results/**', 'playwright-report/**'],
+  testIgnore: [
+    '**/node_modules/**',
+    '.context/**',
+    '.git/**',
+    '.shopify/**',
+    'test-results/**',
+    'playwright-report/**',
+  ],
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: 0,
