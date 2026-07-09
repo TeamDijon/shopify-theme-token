@@ -30,6 +30,12 @@ test-results/
 playwright-report/
 .cache/
 
+# Generated validation fixture — staged from a colocated *.validation.json source
+# into the generic `?view=validation` slot, then dropped after each test run;
+# never committed (it must still push). The obsolete hand-maintained hub that
+# previously occupied this path was removed so the rule can take effect.
+templates/index.validation.json
+
 # Local backlog scaffolding — never committed
 BACKLOG.md
 

@@ -12,7 +12,19 @@ import { defineConfig, devices } from '@playwright/test';
 // (`@media (width >= 48rem)` = 768px) so breakpoint-sensitive assertions
 // (responsive top-margins, container queries) run in the right viewport.
 export default defineConfig({
-  testDir: '.tests/e2e',
+  testDir: '.',
+  // Transitional during the colocation migration: colocated element tests live
+  // beside their code (`**/*.test.js`); not-yet-migrated ones remain under
+  // `.tests/e2e/*.spec.js`. Both run until the migration completes.
+  testMatch: ['**/*.test.js', '.tests/e2e/**/*.spec.js'],
+  testIgnore: [
+    '**/node_modules/**',
+    '.context/**',
+    '.git/**',
+    '.shopify/**',
+    'test-results/**',
+    'playwright-report/**',
+  ],
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: 0,

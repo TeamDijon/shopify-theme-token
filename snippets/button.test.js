@@ -1,10 +1,10 @@
 import { test, expect } from '@playwright/test';
 
-// Tier 2 (theme-primitive) assertions for the button block, converted from
-// .context/specs/button.md § Validation. The matrix under test is baked in
-// templates/index.validation--primitive--button.json.
+// Tier 2 (theme-primitive) assertions for the button block, per
+// snippets/button.spec.md § Validation. The matrix under test is authored in
+// snippets/button.validation.json, generated into the ?view=validation slot.
 
-const PATH = '/?view=validation--primitive--button';
+const PATH = '/?view=validation';
 
 test.beforeEach(async ({ page }) => {
   await page.goto(PATH);

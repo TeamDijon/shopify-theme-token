@@ -10,6 +10,8 @@
     "seed:metaobjects": "node .scripts/seed-metaobjects.mjs",
     "seed:assets": "node .scripts/seed-validation-assets.mjs",
     "seed:assets:generate": "node .scripts/seed/generate-assets.mjs",
+    "validation:generate": "node .scripts/validation-generate.mjs",
+    "validation:clean": "node .scripts/validation-clean.mjs",
     "check": "node .scripts/context-lint.mjs && npm run format:check && npx shopify theme check --fail-level error"
   },
   "devDependencies": {
