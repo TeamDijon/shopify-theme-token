@@ -6,6 +6,18 @@ This project uses `.context/` — a git worktree pinned to an orphan `context` b
 
 A `SessionStart` hook runs `git -C .context pull --ff-only` automatically. If it fails or reports conflicts, STOP and report before proceeding.
 
+## Loop protocol
+
+Work runs through one adaptive pipeline. The `ticket-loop` skill is the executable conductor — invoke it when work begins from a need (new element, change, fix, brief), not by reaching for an individual phase. This section is the protocol a session must know without loading the skill; the eight steps, routing, and gate semantics live in the skill.
+
+**Four layers.** Linear = upstream business need (manual; a prompt may cite a ticket to pull in). Feature branch = the provisional — prompt + plan anchors, then spec + code + test committed together. `main` = truth + the colocated element contract (spec + test beside the code). `.context` = governance only (rules, docs, skills).
+
+**One pipeline; the check never skips.** Every unit runs the same check — does this touch contract surface? are consumers and validation still honored? — while the work scales from zero. **Escape hatch:** no contract change → commit with a `No contract change: <why>` body and skip the full cycle; never leave it uncommitted.
+
+**Terminate oracle.** Done = validation-green AND reviewed against the prompt anchor. Miss either and the loop reopens.
+
+**Layer taxonomy.** substrate / L0 (snippets) / L1 (blocks) / L2 (presets on `section.liquid`) / Beyond-L2 (specialized sections) — triage places the unit and scopes which phases run.
+
 ## Doc placement guideline
 
 A pattern earns its own file in `.context/docs/` when it's referenced from 2+ rules **or 2+ specs**. Otherwise, inline the pattern in the single rule / spec that needs it.
