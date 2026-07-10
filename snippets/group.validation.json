@@ -1,0 +1,594 @@
+{
+  "settings": {
+    "title": "Block: group",
+    "description": "<p>Each row is one group block instance, labelled by its block id. Matrix per snippets/group.spec.md § Validation.</p>",
+    "harness_layout": "grid",
+    "max_inline_size": 1280
+  },
+  "blocks": {
+    "column-default": {
+      "type": "group",
+      "blocks": {
+        "c1": {
+          "type": "button",
+          "settings": {
+            "content": "First button",
+            "link": "/"
+          }
+        },
+        "c2": {
+          "type": "button",
+          "settings": {
+            "content": "Second button",
+            "link": "/"
+          }
+        },
+        "c3": {
+          "type": "button",
+          "settings": {
+            "content": "Third button",
+            "link": "/"
+          }
+        }
+      },
+      "block_order": [
+        "c1",
+        "c2",
+        "c3"
+      ],
+      "settings": {
+        "direction": "column"
+      }
+    },
+    "column-center": {
+      "type": "group",
+      "blocks": {
+        "c1": {
+          "type": "button",
+          "settings": {
+            "content": "Col-centered A",
+            "link": "/"
+          }
+        },
+        "c2": {
+          "type": "button",
+          "settings": {
+            "content": "Col-centered B",
+            "link": "/"
+          }
+        }
+      },
+      "block_order": [
+        "c1",
+        "c2"
+      ],
+      "settings": {
+        "direction": "column",
+        "horizontal_alignment": "center"
+      }
+    },
+    "column-end": {
+      "type": "group",
+      "blocks": {
+        "c1": {
+          "type": "button",
+          "settings": {
+            "content": "Col-end A",
+            "link": "/"
+          }
+        },
+        "c2": {
+          "type": "button",
+          "settings": {
+            "content": "Col-end B",
+            "link": "/"
+          }
+        }
+      },
+      "block_order": [
+        "c1",
+        "c2"
+      ],
+      "settings": {
+        "direction": "column",
+        "horizontal_alignment": "end"
+      }
+    },
+    "row-start": {
+      "type": "group",
+      "blocks": {
+        "c1": {
+          "type": "button",
+          "settings": {
+            "content": "First",
+            "link": "/"
+          }
+        },
+        "c2": {
+          "type": "button",
+          "settings": {
+            "content": "Second",
+            "link": "/"
+          }
+        },
+        "c3": {
+          "type": "button",
+          "settings": {
+            "content": "Third",
+            "link": "/"
+          }
+        }
+      },
+      "block_order": [
+        "c1",
+        "c2",
+        "c3"
+      ],
+      "settings": {
+        "direction": "row",
+        "stack_below": "none"
+      }
+    },
+    "row-center": {
+      "type": "group",
+      "blocks": {
+        "c1": {
+          "type": "button",
+          "settings": {
+            "content": "Centered first",
+            "link": "/"
+          }
+        },
+        "c2": {
+          "type": "button",
+          "settings": {
+            "content": "Centered second",
+            "link": "/"
+          }
+        }
+      },
+      "block_order": [
+        "c1",
+        "c2"
+      ],
+      "settings": {
+        "direction": "row",
+        "horizontal_alignment": "center",
+        "stack_below": "none"
+      }
+    },
+    "row-end": {
+      "type": "group",
+      "blocks": {
+        "c1": {
+          "type": "button",
+          "settings": {
+            "content": "End first",
+            "link": "/"
+          }
+        },
+        "c2": {
+          "type": "button",
+          "settings": {
+            "content": "End second",
+            "link": "/"
+          }
+        }
+      },
+      "block_order": [
+        "c1",
+        "c2"
+      ],
+      "settings": {
+        "direction": "row",
+        "horizontal_alignment": "end",
+        "stack_below": "none"
+      }
+    },
+    "row-space-between": {
+      "type": "group",
+      "blocks": {
+        "c1": {
+          "type": "button",
+          "settings": {
+            "content": "Spread first",
+            "link": "/"
+          }
+        },
+        "c2": {
+          "type": "button",
+          "settings": {
+            "content": "Spread second",
+            "link": "/"
+          }
+        }
+      },
+      "block_order": [
+        "c1",
+        "c2"
+      ],
+      "settings": {
+        "direction": "row",
+        "horizontal_alignment": "space-between",
+        "stack_below": "none"
+      }
+    },
+    "row-valign-center": {
+      "type": "group",
+      "blocks": {
+        "c1": {
+          "type": "button",
+          "settings": {
+            "content": "Vertically centered",
+            "link": "/"
+          }
+        },
+        "c2": {
+          "type": "richtext",
+          "settings": {
+            "content": "<p>This is a deliberately long paragraph of body copy that wraps across several lines, so the short button beside it has clear vertical room and the row's cross-axis (vertical) centering reads obviously at a glance.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "c1",
+        "c2"
+      ],
+      "settings": {
+        "direction": "row",
+        "vertical_alignment": "center",
+        "stack_below": "none",
+        "gap": 24
+      }
+    },
+    "column-normalized": {
+      "type": "group",
+      "blocks": {
+        "c1": {
+          "type": "button",
+          "settings": {
+            "content": "Normalized A",
+            "link": "/"
+          }
+        },
+        "c2": {
+          "type": "button",
+          "settings": {
+            "content": "Normalized B",
+            "link": "/"
+          }
+        }
+      },
+      "block_order": [
+        "c1",
+        "c2"
+      ],
+      "settings": {
+        "direction": "column",
+        "horizontal_alignment": "space-between"
+      }
+    },
+    "row-stack-below-40": {
+      "type": "group",
+      "blocks": {
+        "c1": {
+          "type": "button",
+          "settings": {
+            "content": "Stack first",
+            "link": "/"
+          }
+        },
+        "c2": {
+          "type": "button",
+          "settings": {
+            "content": "Stack second",
+            "link": "/"
+          }
+        },
+        "c3": {
+          "type": "button",
+          "settings": {
+            "content": "Stack third",
+            "link": "/"
+          }
+        }
+      },
+      "block_order": [
+        "c1",
+        "c2",
+        "c3"
+      ],
+      "settings": {
+        "direction": "row",
+        "stack_below": "40",
+        "gap": 24
+      }
+    },
+    "row-stack-below-80": {
+      "type": "group",
+      "blocks": {
+        "c1": {
+          "type": "button",
+          "settings": {
+            "content": "Wide-stack first",
+            "link": "/"
+          }
+        },
+        "c2": {
+          "type": "button",
+          "settings": {
+            "content": "Wide-stack second",
+            "link": "/"
+          }
+        }
+      },
+      "block_order": [
+        "c1",
+        "c2"
+      ],
+      "settings": {
+        "direction": "row",
+        "stack_below": "80",
+        "gap": 24
+      }
+    },
+    "gap-zero": {
+      "type": "group",
+      "blocks": {
+        "c1": {
+          "type": "button",
+          "settings": {
+            "content": "No gap A",
+            "link": "/"
+          }
+        },
+        "c2": {
+          "type": "button",
+          "settings": {
+            "content": "No gap B",
+            "link": "/"
+          }
+        }
+      },
+      "block_order": [
+        "c1",
+        "c2"
+      ],
+      "settings": {
+        "direction": "row",
+        "gap": 0,
+        "stack_below": "none"
+      }
+    },
+    "bleed-both": {
+      "type": "group",
+      "blocks": {
+        "c1": {
+          "type": "button",
+          "settings": {
+            "content": "Full-bleed group",
+            "link": "/"
+          }
+        }
+      },
+      "block_order": [
+        "c1"
+      ],
+      "settings": {
+        "direction": "column",
+        "bleed_desktop": "both",
+        "bleed_mobile": "both"
+      }
+    },
+    "bleed-start": {
+      "type": "group",
+      "blocks": {
+        "c1": {
+          "type": "button",
+          "settings": {
+            "content": "Start-bleed group",
+            "link": "/"
+          }
+        }
+      },
+      "block_order": [
+        "c1"
+      ],
+      "settings": {
+        "direction": "column",
+        "bleed_desktop": "inline_start"
+      }
+    },
+    "container-card": {
+      "type": "group",
+      "blocks": {
+        "c1": {
+          "type": "title",
+          "settings": {
+            "tag": "h3",
+            "content": "Card container"
+          }
+        },
+        "c2": {
+          "type": "richtext",
+          "settings": {
+            "content": "<p>This group carries container_style: card — the variant CSS comes from layer-theme.css, shared across group / columns / media.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "c1",
+        "c2"
+      ],
+      "settings": {
+        "direction": "column",
+        "container_style": "card",
+        "gap": 12
+      }
+    },
+    "scheme-override": {
+      "type": "group",
+      "blocks": {
+        "c1": {
+          "type": "title",
+          "settings": {
+            "tag": "h3",
+            "content": "Inside scheme-2"
+          }
+        },
+        "c2": {
+          "type": "richtext",
+          "settings": {
+            "content": "<p>Body text inside the local color-scheme override.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "c1",
+        "c2"
+      ],
+      "settings": {
+        "direction": "column",
+        "custom_color_scheme": true,
+        "color_scheme": "scheme-2",
+        "gap": 12
+      }
+    },
+    "width-capped": {
+      "type": "group",
+      "blocks": {
+        "c1": {
+          "type": "button",
+          "settings": {
+            "content": "Capped-width group",
+            "link": "/"
+          }
+        }
+      },
+      "block_order": [
+        "c1"
+      ],
+      "settings": {
+        "direction": "column",
+        "content_width": "reading"
+      }
+    },
+    "nested": {
+      "type": "group",
+      "blocks": {
+        "n1": {
+          "type": "button",
+          "settings": {
+            "content": "Outer button",
+            "link": "/"
+          }
+        },
+        "n2": {
+          "type": "group",
+          "blocks": {
+            "nn1": {
+              "type": "button",
+              "settings": {
+                "content": "Inner A",
+                "link": "/"
+              }
+            },
+            "nn2": {
+              "type": "button",
+              "settings": {
+                "content": "Inner B",
+                "link": "/"
+              }
+            }
+          },
+          "block_order": [
+            "nn1",
+            "nn2"
+          ],
+          "settings": {
+            "direction": "column",
+            "gap": 8
+          }
+        }
+      },
+      "block_order": [
+        "n1",
+        "n2"
+      ],
+      "settings": {
+        "direction": "row",
+        "gap": 24,
+        "stack_below": "none"
+      }
+    },
+    "empty": {
+      "type": "group",
+      "settings": {
+        "direction": "column"
+      }
+    },
+    "with-spacing": {
+      "type": "group",
+      "blocks": {
+        "c1": {
+          "type": "button",
+          "settings": {
+            "content": "After 64px desktop margin",
+            "link": "/"
+          }
+        }
+      },
+      "block_order": [
+        "c1"
+      ],
+      "settings": {
+        "direction": "column",
+        "mobile_margin_block_start": 16,
+        "desktop_margin_block_start": 64
+      }
+    },
+    "tight-spacing": {
+      "type": "group",
+      "blocks": {
+        "c1": {
+          "type": "button",
+          "settings": {
+            "content": "Tighter than the rhythm",
+            "link": "/"
+          }
+        }
+      },
+      "block_order": [
+        "c1"
+      ],
+      "settings": {
+        "direction": "column",
+        "mobile_margin_block_start": 8,
+        "desktop_margin_block_start": 16
+      }
+    }
+  },
+  "block_order": [
+    "column-default",
+    "column-center",
+    "column-end",
+    "row-start",
+    "row-center",
+    "row-end",
+    "row-space-between",
+    "row-valign-center",
+    "column-normalized",
+    "row-stack-below-40",
+    "row-stack-below-80",
+    "gap-zero",
+    "bleed-both",
+    "bleed-start",
+    "container-card",
+    "scheme-override",
+    "width-capped",
+    "nested",
+    "empty",
+    "with-spacing",
+    "tight-spacing"
+  ]
+}

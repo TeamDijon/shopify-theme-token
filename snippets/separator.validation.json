@@ -1,0 +1,69 @@
+{
+  "settings": {
+    "title": "Block: separator",
+    "description": "<p>Each row is one separator block instance, labelled by its block id. Matrix per snippets/separator.spec.md § Validation.</p>",
+    "harness_layout": "grid",
+    "max_inline_size": 1280
+  },
+  "blocks": {
+    "default": {
+      "type": "separator",
+      "settings": {}
+    },
+    "width-narrow": {
+      "type": "separator",
+      "settings": {
+        "content_width": "narrow"
+      }
+    },
+    "width-medium": {
+      "type": "separator",
+      "settings": {
+        "content_width": "medium"
+      }
+    },
+    "color-primary": {
+      "type": "separator",
+      "settings": {
+        "line_color": "primary"
+      }
+    },
+    "color-accent": {
+      "type": "separator",
+      "settings": {
+        "line_color": "accent"
+      }
+    },
+    "mobile-spacing": {
+      "type": "separator",
+      "settings": {
+        "mobile_margin_block_start": 32,
+        "desktop_margin_block_start": 0
+      }
+    },
+    "desktop-spacing": {
+      "type": "separator",
+      "settings": {
+        "mobile_margin_block_start": 0,
+        "desktop_margin_block_start": 64
+      }
+    },
+    "both-spacings": {
+      "type": "separator",
+      "settings": {
+        "mobile_margin_block_start": 16,
+        "desktop_margin_block_start": 48
+      }
+    }
+  },
+  "block_order": [
+    "default",
+    "width-narrow",
+    "width-medium",
+    "color-primary",
+    "color-accent",
+    "mobile-spacing",
+    "desktop-spacing",
+    "both-spacings"
+  ]
+}

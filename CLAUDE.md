@@ -67,4 +67,4 @@ Tally as of 2026-06-16. Update the table when adding/removing/resizing rules in 
 | `assets/*.js`                                                        | `js-asset-convention.md`                               | 53    |
 | `assets/icon-*.svg`                                                  | `icon-convention.md`                                   | 71    |
 | `.context/docs/**`, `.context/rules/**`, `.context/specs/**` (`.md`) | `reference-voice.md`                                   | 23    |
-| `.context/specs/**` (`.md`)                                          | `reference-voice.md` (23) + `spec-convention.md` (169) | 192   |
+| `.context/specs/**` (`.md`)                                          | `reference-voice.md` (23) + `spec-convention.md` (173) | 196   |
