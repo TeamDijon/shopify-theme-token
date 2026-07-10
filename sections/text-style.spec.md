@@ -170,7 +170,7 @@ N/A — design-system catalog, no user-facing strings beyond the `name` field fo
 Per `validation-contract.md` Tier 1a (substrate / metaobject).
 
 - **Tier**: substrate — metaobject sub-shape
-- **Page(s)**: `sections/validation--substrate--text-style.liquid` + `templates/index.validation--substrate--text-style.json` *(planned)*. May share validation surface with `utility--css-variables`'s validation page once that lands (text-style block is one of the snippet's five emission domains).
+- **Page(s)**: `sections/text-style.liquid` + `templates/page.text-style.json` *(shipped)*.
 - **API surface** (matrix to exercise):
   - **Per-entry typography catalog**: every text_style entry shown twice, once per selector form (tag binding when applicable, `[data-modifiers*='text-style:']`). Reader confirms identical typography across the two rows per entry.
   - **`h1`–`h6` auto-bind**: bare `<h1>`–`<h6>` elements rendered (no attributes, no modifiers). Reader confirms each takes the typography of the matching-handle entry.
@@ -197,7 +197,7 @@ Per `validation-contract.md` Tier 1a (substrate / metaobject).
 ## Out of scope
 
 - **CSS emission mechanics** — covered by `utility--css-variables.spec.md`. This spec describes the data contract; that spec describes how the snippet composes the CSS rules.
-- **`typeface` + `font` metaobject definitions + `utility--font-face.liquid` emission** — covered by the planned `font-system.spec.md` (merged spec covering all three because `font` is non-independent of `typeface`, and `utility--font-face` only emits from typeface data). This spec covers typography variables only; the font catalog itself + the `@font-face` rule emission live in the font-system spec.
+- **`typeface` + `font` metaobject definitions + `utility--font-face.liquid` emission** — covered by `font-system.spec.md` (merged spec covering all three because `font` is non-independent of `typeface`, and `utility--font-face` only emits from typeface data). This spec covers typography variables only; the font catalog itself + the `@font-face` rule emission live in the font-system spec.
 - **Per-entry font weight ramps** — `weight` is a single static value per entry. Variable-font axis controls (slnt, opsz, etc.) are not modeled. A variable-font ramp would warrant a new field or a new metaobject; out of this spec's surface.
 - **Letter-spacing in em / percent units** — `letter_spacing` is px-typed (converted to rem). Em-based tracking is not supported; merchant input is always pixels.
 - **Multi-style composition on one element** — an element binds to one text_style at a time. Combining (e.g., "h1 weight + eyebrow letter-spacing") requires either a new entry or per-element CSS overrides.

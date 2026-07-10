@@ -133,8 +133,8 @@ No runtime strings (the visual element renders the merchant's `content` directly
 Per `validation-contract.md` Tier 2 (theme-primitive).
 
 - **Tier**: primitive (L1 block-backed; no sub-component half)
-- **Page**: `sections/validation--primitive--title.liquid` + `templates/index.validation--primitive--title.json` (shipped)
-- **Tests**: `.tests/e2e/primitive--title.spec.js` (executable; `npm run test:e2e`)
+- **Source**: `snippets/title.validation.json` — colocated fixture matrix (`{ settings, blocks, block_order }`), staged into the generic `?view=validation` slot by `.scripts/validation-generate.mjs` (`sections/validation.liquid` harness + a generated, gitignored `templates/index.validation.json`) for the run, then dropped.
+- **Tests**: `snippets/title.test.js` (executable; `npm run test:e2e`)
 - **Requires seeded**: `text_style/h1`, `theme_color/accent`, `icon/arrow`, `content_width/reading` — Token's shipped seed catalog (see `text-style.spec.md`, `theme-color.spec.md`, `icon.spec.md`, `content-width.spec.md` § Seed entries). A test needing an unseeded handle signals a seed-set gap, not a test workaround.
 - **API surface**:
   - **Tag matrix**: render the same content across `h1`, `h2`, `h3`, `h4`, `h5`, `h6`, `p` — verify the DOM element tag matches the setting per instance
@@ -145,14 +145,14 @@ Per `validation-contract.md` Tier 2 (theme-primitive).
   - **content_width**: blank vs narrow vs wide → verify cap and centering
   - **text_color**: blank (defaults to role-heading) vs each shipped `theme_color` entry → verify color
   - **Top-spacing**: independent mobile + desktop values
-- **Surface delegation**: text_style metaobject legibility is exercised at `validation--substrate--text-style.liquid`; this page exercises only the **resolution chain** (setting → metaobject lookup → render), not the entry's typography quality.
+- **Surface delegation**: text_style metaobject legibility is exercised at the `text-style` page showcase; this run exercises only the **resolution chain** (setting → metaobject lookup → render), not the entry's typography quality.
 - **Edge cases**:
   - Blank `content` → snippet `break`s; nothing renders (no root element emitted)
   - `tag: p` with `text_style` set → `<p data-modifiers="text-style:display-large">…</p>` (mixed tag + style is valid)
   - `text_style` set to a handle with no matching entry (e.g. seed an off-list value) → modifier still emitted; CSS rule does not match; bare-tag binding stays in effect (graceful fall-through, no broken render)
   - Inline rich text in `content` (em / strong / links) → preserved in the heading; document outline still uses the visible text
 - **Visual showcase**: matrix of tags × text_styles × alignments. Reader confirms tag-emission branch, style application via modifier, alignment per setting, color resolution, icon placement.
-- **Assertions** (executable — `.tests/e2e/primitive--title.spec.js`):
+- **Assertions** (executable — `snippets/title.test.js`):
   - Each instance's rendered DOM element matches the configured `tag` (`h1`–`h6`, `p`)
   - Default instance (bare `h2`, no overrides) emits no `data-modifiers`; root carries an `id`
   - Bare-tag bindings produce a descending font-size hierarchy (`h1` > `h2` > `h3`)
@@ -164,7 +164,7 @@ Per `validation-contract.md` Tier 2 (theme-primitive).
   - `content_width` emits `--content-width` (`reading` → `42.5rem` / `680px`) and centers in the grid (`justify-self: center`; symmetric leftGap ≈ rightGap)
   - Top-spacing emits `--mobile-/--desktop-margin-block-start` — a loose override (`1.0rem` / `4.0rem`) and a tighter-than-rhythm override (`0.5rem` / `1.0rem`), both absolute values that replace the section rhythm; painted in the production-faithful harness
   - Blank `content` renders no element — no empty title leaks into the suite
-- **Deliberately unasserted**: `block.shopify_attributes` (editor-only, not emitted on `?view=` renders); off-list `text_style` handle fall-through (needs a seeded handle with no matching binding, which the shipped catalog omits). text_style typographic legibility is delegated to `validation--substrate--text-style`.
+- **Deliberately unasserted**: `block.shopify_attributes` (editor-only, not emitted on `?view=` renders); off-list `text_style` handle fall-through (needs a seeded handle with no matching binding, which the shipped catalog omits). text_style typographic legibility is delegated to the `text-style` page showcase.
 - **Unit scope**: none (Liquid + CSS only)
 
 ## Out of scope

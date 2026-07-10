@@ -109,7 +109,7 @@ N/A — design-system catalog, no user-facing strings beyond the `name` field fo
 Per `validation-contract.md` Tier 1a (substrate / metaobject).
 
 - **Tier**: substrate — metaobject sub-shape
-- **Page(s)**: `sections/validation--substrate--media-size.liquid` + `templates/index.validation--substrate--media-size.json` *(shipped)*. The page renders one media block per seeded entry, showing the sizing variation per mode.
+- **Page(s)**: `sections/media-size.liquid` + `templates/page.media-size.json` *(shipped)*. The page renders one media block per seeded entry, showing the sizing variation per mode.
 - **API surface** (matrix to exercise):
   - **Per-entry rendering**: each `media_size` metaobject entry rendered as a media block with the picker resolved. Reader confirms the rendered size matches the entry's mode + value.
   - **Mode dispatch coverage**: ratio entries render with the expected `aspect-ratio`; relative entries with the expected viewport-relative height; fixed entries (if added per-project) with the expected absolute height; `fill` with `block-size: 100%`.

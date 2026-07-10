@@ -1,7 +1,7 @@
 {
   "settings": {
     "title": "Block: button",
-    "description": "<p>Each row is one button block instance, labelled by its block id. Exercises the snippet's tag-emission branch (link → &lt;a&gt; vs no-link → &lt;button&gt;), the new-tab branch, icon position, width / full-width, and top-margin emission. Variant styling (button_style) is tested on <a href=\"?view=validation--substrate--button-style\">its metaobject page</a>.</p>",
+    "description": "<p>Each row is one button block instance, labelled by its block id. Exercises the snippet's tag-emission branch (link → &lt;a&gt; vs no-link → &lt;button&gt;), the new-tab branch, icon position, width / full-width, and top-margin emission. Variant styling (button_style) is tested on its button-style showcase page.</p>",
     "harness_layout": "stack",
     "max_inline_size": 1280
   },

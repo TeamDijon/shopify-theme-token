@@ -1,6 +1,9 @@
-{% # Validation - Snippet - Video v1.0.0 %}
+{% # Validation - Snippet - Video v1.0.1 %}
 
 {% comment %}
+  Changelog
+  - v1.0.1 — remove the `validation--breadcrumb` render (linked the retired hub); the template now generate-and-drops from the colocated `snippets/video.validation.json` source
+
   Snippet-validation harness for `video` (a sub-component snippet — no block, so
   the page renders `{% render 'video' %}` directly). Sources are seeded store
   Files (seed-validation-assets.mjs), referenced by `video` settings → real video
@@ -9,7 +12,7 @@
   Diagnostic intent: atmosphere vs content mode, controls, autoplay, loop, preload,
   poster, art-direction (mobile <source>). Each case is tagged data-case=<id>.
 
-  Reachable only at /?view=validation--primitive--video.
+  Reachable only at /?view=validation.
   See `.context/docs/validation.md`.
 {% endcomment %}
 
@@ -19,8 +22,6 @@
 %}
 
 <token-section data-modifiers="theme-root">
-  {% render 'validation--breadcrumb' %}
-
   <header class="validation__intro">
     <h1>Snippet: video</h1>
     <p>

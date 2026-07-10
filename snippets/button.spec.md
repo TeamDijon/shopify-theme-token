@@ -203,7 +203,7 @@ Per `validation-contract.md` Tier 2 (theme-primitive).
   - **New-tab branch**: `link` set × `open_in_new_tab: true` → `<a>` carries `target="_blank" rel="noopener noreferrer"` + sr-only span
   - **Top-spacing**: `mobile_margin_block_start` and `desktop_margin_block_start` emit `--mobile-margin-block-start` / `--desktop-margin-block-start`; the block's API is the emission. Painting those as a margin is the section's rhythm rule (matches direct theme-root children only), validated at Tier 3.
   - **Icon position**: with `icon` set, `icon_position: end` flips visual order; `start` is the default no-modifier baseline
-- **Surface delegation**: variant styling (the 3×3 `button_style` matrix) is exercised on `validation--substrate--button-style.liquid` rather than re-tested here. The primitive page's intent is the snippet's *branching logic* (tags, attributes, modifier composition); the metaobject page's intent is the *visual matrix* per handle. Both intents stay legible by separating them.
+- **Surface delegation**: variant styling (the 3×3 `button_style` matrix) is exercised on the `button-style` page showcase (`sections/button-style.liquid`) rather than re-tested here. The primitive page's intent is the snippet's *branching logic* (tags, attributes, modifier composition); the metaobject page's intent is the *visual matrix* per handle. Both intents stay legible by separating them.
 - **Edge cases**:
   - `content` blank → snippet `break`s; nothing renders (the block emits no root element)
   - `link` blank → `open_in_new_tab` setting hidden in the editor by `visible_if`; the unlinked-with-new-tab branch is unreachable from the schema

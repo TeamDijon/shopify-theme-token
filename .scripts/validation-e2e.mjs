@@ -3,10 +3,13 @@
  * validation-e2e — serialized validation test orchestrator (Slice 3c / D3).
  *
  * The generic `?view=validation` slot is a single generated template, so
- * generate-and-drop elements can't be staged at once. This runner loops them one at
- * a time: generate the colocated fixture → wait for `theme dev` to sync → run that
- * element's colocated test → drop the fixture. It then runs the bespoke suites
- * (image / video / presets) that hit their own committed pages (no generation).
+ * generate-and-drop elements can't be staged at once. This runner discovers every
+ * colocated `<el>.validation.json` (block primitives in snippets/, presets as
+ * sections/section--<preset>, image/video pointing at their own committed harness via
+ * the source's `harness` field) and loops them one at a time: generate the fixture →
+ * wait for `theme dev` to sync → run the colocated `<el>.test.js`. Each element
+ * overwrites the slot in place; the slot is dropped once after the loop (a per-element
+ * delete would churn theme dev's remote sync).
  *
  * Requires `npm run dev` (theme dev) running — tests hit the dev preview.
  * Tune the sync gap with VALIDATION_SETTLE_MS (default 2000).
@@ -18,7 +21,7 @@ import { join } from "node:path";
 
 const ROOT = process.cwd();
 const SETTLE_MS = Number(process.env.VALIDATION_SETTLE_MS || 2000);
-const SEARCH_DIRS = ["snippets", "blocks", "assets"];
+const SEARCH_DIRS = ["snippets", "blocks", "sections", "assets", "layout"];
 
 // Discover generate-and-drop elements: colocated <el>.validation.json + sibling <el>.test.js.
 const genDrop = [];
@@ -39,6 +42,10 @@ const failures = [];
 
 console.log(`validation-e2e: ${genDrop.length} generate-and-drop element(s), serialized through ?view=validation`);
 
+// Each element overwrites the single slot in place; we drop once at the very end.
+// Deleting + recreating the same template path per element churns theme dev's remote
+// sync (it races a delete against the next upload → "failed to delete/upload"), so we
+// let successive generates overwrite and clean only after the loop.
 for (const { el, test } of genDrop) {
   console.log(`\n──── ${el} ────`);
   try {
@@ -47,18 +54,9 @@ for (const { el, test } of genDrop) {
     run(`npx playwright test ${test}`);
   } catch {
     failures.push(el);
-  } finally {
-    run(`node .scripts/validation-clean.mjs`);
   }
 }
-
-// Bespoke pages (image / video / presets) hit their own committed templates — no generation.
-console.log(`\n──── bespoke pages (image / video / presets) ────`);
-try {
-  run(`npx playwright test .tests/e2e`);
-} catch {
-  failures.push(".tests/e2e (bespoke)");
-}
+run(`node .scripts/validation-clean.mjs`);
 
 console.log("");
 if (failures.length) {

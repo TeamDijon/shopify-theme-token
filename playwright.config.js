@@ -13,10 +13,10 @@ import { defineConfig, devices } from '@playwright/test';
 // (responsive top-margins, container queries) run in the right viewport.
 export default defineConfig({
   testDir: '.',
-  // Transitional during the colocation migration: colocated element tests live
-  // beside their code (`**/*.test.js`); not-yet-migrated ones remain under
-  // `.tests/e2e/*.spec.js`. Both run until the migration completes.
-  testMatch: ['**/*.test.js', '.tests/e2e/**/*.spec.js'],
+  // Element tests colocate beside their code (`**/*.test.js`), discovered by glob.
+  // The orchestrator (`.scripts/validation-e2e.mjs`, `npm run test:e2e`) generates
+  // each element's fixture before its test and drops it after.
+  testMatch: ['**/*.test.js'],
   testIgnore: [
     '**/node_modules/**',
     '.context/**',

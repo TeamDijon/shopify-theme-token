@@ -246,8 +246,8 @@ No runtime strings (the `<media-video>` element's a11y label propagates from the
 Per `validation-contract.md` Tier 2 (theme-primitive).
 
 - **Tier**: primitive (L1 block-backed; no sub-component half)
-- **Page**: `sections/validation--primitive--media.liquid` v1.1.0 (production-faithful — `token-section` is the real theme-root grid, so blocks sit in the content track and bleed modifiers paint; chrome + the layout-neutral outline/label indicator come from the shared `validation--harness-styles` snippet) + `templates/index.validation--primitive--media.json` (shipped)
-- **Tests**: `.tests/e2e/primitive--media.spec.js` (executable; `npm run test:e2e`)
+- **Source**: `snippets/media.validation.json` — colocated fixture matrix (`{ settings, blocks, block_order }`), staged into the generic `?view=validation` slot by `.scripts/validation-generate.mjs` (`sections/validation.liquid` harness + a generated, gitignored `templates/index.validation.json`) for the run, then dropped. The harness is production-faithful — `token-section` is the real theme-root grid, so blocks sit in the content track and bleed modifiers paint; chrome + the layout-neutral outline/label indicator come from the shared `validation--harness-styles` snippet.
+- **Tests**: `snippets/media.test.js` (executable; `npm run test:e2e`)
 - **Requires seeded**: `media_size` handles (`16-9`, `1-1`, `half-screen`, `fill`); `content_width/reading`; `container_style/card`; color scheme `scheme-2`.
 - **Asset strategy**: the page validates the **composition surface** via the placeholder SVG (media renders it when the asset is blank) + handle-seeded `media_size` + modifier/structure emission — assets are GID-bound and can't be seeded in a template JSON. Asset-dependent **pixel** behaviours are deferred to dedicated L0 pages (see "L0 deferral" under Assertions): art-direction `<picture><source>` switching, `object-fit` rendered pixels, `srcset`/`sizes`, video playback / controls / autoplay / loop.
 - **API surface**:
@@ -271,7 +271,7 @@ Per `validation-contract.md` Tier 2 (theme-primitive).
   - Overlay color set to `rgba(0,0,0,0)` → snippet skips emitting `<media-overlay>` (the explicit no-emit branch)
   - Empty `contents` → no `<media-contents>` element; modifier `has-children` absent
 - **Visual showcase**: matrix sections per concern (sizing, bleed, overlay, alignment, scheme-override). Reader confirms each cell renders as configured.
-- **Assertions** (executable — `.tests/e2e/primitive--media.spec.js`):
+- **Assertions** (executable — `snippets/media.test.js`):
   - `media_type:image` / `media_type:video` emit their modifier; assetless fixtures render the placeholder `<svg>` media surface
   - Sizing: `media_size` ratio handles → `sizing:ratio` + computed `aspect-ratio` (`16 / 9`, `1 / 1`); relative (`half-screen`) → `sizing:height` + `block-size ≈ 0.5 × viewport` (`aspect-ratio: auto`); `fill` → `sizing:fill` + `block-size ≈ viewport`
   - `image_fit:contain` emits the modifier + computes `object-fit: contain` on the media element; default `cover` emits no modifier + `object-fit: cover`
@@ -282,7 +282,7 @@ Per `validation-contract.md` Tier 2 (theme-primitive).
   - `content_width` caps `max-inline-size` (680px) and centers symmetrically via `justify-self: center` (geometric — measure position, not the margin property)
   - Top-spacing override emits `--mobile-/--desktop-margin-block-start` (`1.0rem` / `4.0rem`)
 - **L0 deferral (not asserted here)**: art-direction `<picture><source>` switching, `object-fit` rendered pixels (cover vs contain visual), `srcset`/`sizes`, and video playback / controls / autoplay / loop are GID-bound and belong to dedicated `image.liquid` + `video.liquid` (L0) validation pages (pending). The media page asserts the block's composition contract (modifier emission, sizing, overlay, content placement, bleed painting) via the placeholder.
-- **Deliberately unasserted**: `block.shopify_attributes` (editor-only); `container_style` legibility (delegated to `validation--substrate--container-style`).
+- **Deliberately unasserted**: `block.shopify_attributes` (editor-only); `container_style` legibility (delegated to the `container-style` page showcase).
 - **Unit scope**: none directly (Liquid + CSS only). The `<media-video>` element's JS lives in the video snippet's spec.
 
 ## Out of scope

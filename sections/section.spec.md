@@ -129,7 +129,7 @@ No runtime strings; the section emits no user-visible chrome of its own.
 Per `validation-contract.md` Tier 3 (preset / L2). The host section itself is exercised through its presets; there is no dedicated "section host" validation page in the current contract. Each preset's validation page configures the section's settings (`content_width`, `block_rhythm`, `color_scheme`) and renders the preset's block composition end-to-end.
 
 - **Tier**: section host — Tier 3 work is parked (see `validation-contract.md` § Tier 3). No dedicated verification surface in the current contract; bleed-grid + rhythm behavior is exercised through container-block validation pages and through preset pages once Tier 3 unparks.
-- **Page(s)**: future `validation--preset--*` series (per preset, when Tier 3 unparks).
+- **Page(s)**: the preset compositions `sections/section--<preset>.validation.json` (generate-and-drop on the generic harness; per preset, when Tier 3 unparks).
 - **API surface to exercise**:
   - **Bleed-grid cases**: section-bleed band; asymmetric image-left / image-right bleed; two-track band with both edges bleeding; three-track content-aligned; nested groups inside a bleeding columns (verify children don't independently bleed).
   - **content_width**: a section with a non-default `content_width` caps the center grid track; bleed children still span viewport-edge to viewport-edge.

@@ -86,8 +86,8 @@ None — the snippet emits no user-facing text. The `<media-video>` custom eleme
 
 Per `validation-contract.md` Tier 2 (L0 snippet — no block wraps it, so the harness renders `{% render 'video' %}` directly, each case tagged `data-case=<id>`).
 
-- **Page**: `sections/validation--primitive--video.liquid` + `templates/index.validation--primitive--video.json` (shipped). Source videos are real store Files referenced via `video` settings as **`shopify://files/videos/<filename>`** (not `shopify://shop_images/…` — that's images; `shop_videos`/numeric-id/GID forms are all rejected with "must be a valid video shopify url", and a bad value 500s the render).
-- **Tests**: `.tests/e2e/primitive--video.spec.js` (executable; `npm run test:e2e`)
+- **Source**: `snippets/video.validation.json` — colocated fixture matrix that names `"harness": "validation--primitive--video"`, so the committed harness section `sections/validation--primitive--video.liquid` renders the `{% render 'video' %}` case matrix (each case tagged `data-case=<id>`). The source is staged into the `?view=validation` slot by `.scripts/validation-generate.mjs` for the run (writing the gitignored `templates/index.validation.json`), then dropped. Source videos are real store Files referenced via `video` settings as **`shopify://files/videos/<filename>`** (not `shopify://shop_images/…` — that's images; `shop_videos`/numeric-id/GID forms are all rejected with "must be a valid video shopify url", and a bad value 500s the render).
+- **Tests**: `snippets/video.test.js` (executable; `npm run test:e2e`)
 - **Requires seeded**: store Files videos `landscape.mp4` + `portrait.mp4`, uploaded by `.scripts/seed-validation-assets.mjs` (needs `write_files`). Real encoded clips — Shopify's transcoder rejects degenerate stubs; processing is async (poll to READY before sources/poster exist).
 - **API surface** *(as a snippet)*:
   - **Mode matrix**: `atmosphere` (autoplay, muted, no controls, loop) × `content` × `video_autoplay ∈ {false, true}` × `video_controls ∈ {minimal, full}` × `video_loop ∈ {false, true}`
@@ -100,7 +100,7 @@ Per `validation-contract.md` Tier 2 (L0 snippet — no block wraps it, so the ha
   - Content mode + `video_autoplay: true` on a mobile device with low-power mode → browser may refuse to autoplay even with muted; the video stays paused at the poster
   - `loop: true` + `video_autoplay: false` + content mode → manually-started video loops; standard behavior
   - `playsinline` on iOS Safari → keeps the video in-page rather than fullscreen-on-play
-- **Assertions** (executable — `.tests/e2e/primitive--video.spec.js`):
+- **Assertions** (executable — `snippets/video.test.js`):
   - The `shopify://files/videos/<file>` ref resolves to a real video object (the `<media-video>` + `<video>` render — a blank would `break`)
   - Atmosphere mode: `autoplay`, `muted`, `loop`, `playsinline`, **no** `controls`, `preload="none"`, poster present, an mp4 `<source>`
   - Content mode: `minimal` hides controls + no autoplay (not force-muted); `full` + `video_autoplay` → `controls` + `autoplay` + forced `muted`

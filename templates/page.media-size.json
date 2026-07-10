@@ -1,0 +1,9 @@
+{
+  "sections": {
+    "main": {
+      "type": "media-size",
+      "settings": {}
+    }
+  },
+  "order": ["main"]
+}

@@ -147,7 +147,7 @@ Two keys (instead of one with conditional interpolation) — Shopify's t-filter 
 Per `validation-contract.md` Tier 2 (theme-primitive — snippet-half).
 
 - **Tier**: theme-primitive (Tier 2 — snippet-half group)
-- **Page(s)**: `sections/validation--primitive--price-with-compare.liquid` + `templates/index.validation--primitive--price-with-compare.json` *(planned)*
+- **Source**: colocated `snippets/price-with-compare.validation.json` source + `snippets/price-with-compare.test.js` — generate-and-drop through the `?view=validation` slot *(planned)*
 - **API surface** (matrix to exercise):
   - **`variant` input** with realistic data: variant whose `price` < `compare_at_price` (sale), variant whose `price = compare_at_price` (no compare-at shown), variant with `compare_at_price: null`
   - **Explicit `price` / `compare_at_price` input** (no variant): cart subtotal scenario; sale scenario; mismatch scenario (compare-at < price → hidden)

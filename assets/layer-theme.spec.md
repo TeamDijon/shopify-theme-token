@@ -191,7 +191,7 @@ N/A — pure CSS.
 Per `validation-contract.md` Tier 1c (substrate / utility-css).
 
 - **Tier**: substrate — utility-css sub-shape
-- **Page(s)**: validation surface is split across `validation--substrate--theme-color.liquid` (scheme background + foreground + heading color rendered through the body cascade), per-block validation pages (block-rhythm + bleed + container-style variants), and section validation pages (theme-root bleed grid).
+- **Page(s)**: validation surface is split across the `theme-color` page showcase (`sections/theme-color.liquid`; scheme background + foreground + heading color through the body cascade), the block primitives' generate-and-drop validation (block-rhythm + bleed + container-style variants), and the preset compositions (theme-root bleed grid).
 - **API surface** (matrix to exercise across consumers):
   - **Outer-section wrapper**: anchor links scroll to a section with `scroll-margin-block-start` honored; reduced-motion disables smooth scrolling
   - **Body cascade**: every text element inherits body typography unless overridden; every form input adopts scheme-role styling at idle / hover / focus / disabled states; placeholder color resolves to `--color-role-placeholder`

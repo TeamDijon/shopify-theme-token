@@ -1,0 +1,9 @@
+{
+  "sections": {
+    "main": {
+      "type": "button-style",
+      "settings": {}
+    }
+  },
+  "order": ["main"]
+}

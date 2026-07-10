@@ -215,7 +215,7 @@ Locale-file structure follows `locale-conventions.md`. Keys live in `locales/en.
 Per `validation-contract.md` Tier 2 (theme-primitive — snippet-half).
 
 - **Tier**: theme-primitive (Tier 2 — snippet-half group)
-- **Page(s)**: `sections/validation--primitive--pagination.liquid` + `templates/index.validation--primitive--pagination.json` *(planned)*
+- **Source**: colocated `snippets/pagination.validation.json` source + `snippets/pagination.test.js` — generate-and-drop through the `?view=validation` slot *(planned)*
 - **API surface** (matrix to exercise):
   - **Numbered mode** at multiple `paginate` states:
     - 1 page total (no pagination needed — snippet should render nothing meaningful, possibly break)

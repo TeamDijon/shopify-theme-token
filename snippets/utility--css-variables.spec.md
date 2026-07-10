@@ -268,7 +268,7 @@ N/A — pure CSS emitter, no user-facing strings.
 Per `validation-contract.md` Tier 1b (substrate / utility-snippet).
 
 - **Tier**: substrate — utility-snippet sub-shape
-- **Page(s)**: `sections/validation--utility-snippet--css-variables.liquid` + `templates/index.validation--utility-snippet--css-variables.json` *(planned — Tier 1b currently has zero pages live)*. The existing `validation--substrate--theme-color` page covers a subset (the `--color-<handle>` emission); a future page or sister-pages exercise the per-scheme switching + text-style + gutter outputs.
+- **Source**: colocated `snippets/utility--css-variables.validation.json` source + `snippets/utility--css-variables.test.js` — generate-and-drop through the `?view=validation` slot *(planned)*. The `theme-color` page showcase covers a subset (the `--color-<handle>` emission); this source (or sister sources) exercises the per-scheme switching + text-style + gutter outputs.
 - **API surface** (the matrix to exercise):
   - **Scheme isolation**: a section with three child blocks, each carrying `color-scheme:scheme-N` modifier. Reader confirms each block renders with its scheme's role tokens; the outer ancestor stays in scheme-1 (no descendant catch-all leak).
   - **Text-style selector binding**: each `text_style` entry shown via tag binding (when `h1`–`h6`) and `[data-modifiers*='text-style:<handle>']`. Reader confirms identical typography across both selector surfaces.

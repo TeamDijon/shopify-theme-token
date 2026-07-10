@@ -1,0 +1,9 @@
+{
+  "sections": {
+    "main": {
+      "type": "spacing",
+      "settings": {}
+    }
+  },
+  "order": ["main"]
+}

@@ -115,7 +115,7 @@ N/A — design-system catalog, no user-facing strings beyond the `name` field fo
 Per `validation-contract.md` Tier 1a (substrate / metaobject).
 
 - **Tier**: substrate — metaobject sub-shape
-- **Page(s)**: `sections/validation--substrate--gradient.liquid` + `templates/index.validation--substrate--gradient.json` *(planned — does not exist today)*. May co-locate with the `utility--css-variables` validation page once that lands (gradient emission is one of the snippet's five domains).
+- **Page(s)**: `sections/gradient.liquid` + `templates/page.gradient.json` *(shipped)*.
 - **API surface** (matrix to exercise):
   - **Per-entry gradient catalog**: each `gradient` metaobject entry rendered as a swatch — a sized box with `background: var(--gradient-<handle>)`. Reader confirms the rendered gradient matches the angle + role pair on the entry.
   - **Scheme cycling**: every gradient entry shown under each color scheme (parent block carries `color-scheme:scheme-N` modifier). Reader confirms the gradient re-resolves visually per scheme — same declaration, different colors because the role tokens themselves change.

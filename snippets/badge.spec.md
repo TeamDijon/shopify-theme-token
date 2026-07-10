@@ -144,7 +144,7 @@ N/A — the snippet renders a `label` arg directly. Locale-driven content (trans
 Per `validation-contract.md` Tier 2 (theme-primitive — snippet-half).
 
 - **Tier**: theme-primitive (Tier 2 — snippet-half group)
-- **Page(s)**: `sections/validation--primitive--badge.liquid` + `templates/index.validation--primitive--badge.json` *(planned)*
+- **Source**: colocated `snippets/badge.validation.json` source + `snippets/badge.test.js` — generate-and-drop through the `?view=validation` slot *(planned)*
 - **API surface** (matrix to exercise):
   - **All six tones** × **both styles**: 6 × 2 = 12 badges, each with a representative label
   - **With + without icon**: same matrix doubled (24 total)

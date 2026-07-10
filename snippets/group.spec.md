@@ -201,8 +201,8 @@ No runtime strings; no entries under `accessibility.*` (group is a structural wr
 Per `validation-contract.md` Tier 2 (theme-primitive).
 
 - **Tier**: primitive (L1 block; no L0 sub-component half)
-- **Page**: `sections/validation--primitive--group.liquid` + `templates/index.validation--primitive--group.json` (shipped)
-- **Tests**: `.tests/e2e/primitive--group.spec.js` (executable; `npm run test:e2e`)
+- **Source**: `snippets/group.validation.json` — colocated fixture matrix (`{ settings, blocks, block_order }`), staged into the generic `?view=validation` slot by `.scripts/validation-generate.mjs` (`sections/validation.liquid` harness + a generated, gitignored `templates/index.validation.json`) for the run, then dropped.
+- **Tests**: `snippets/group.test.js` (executable; `npm run test:e2e`)
 - **Requires seeded**: `container_style/card`, `content_width/reading` (Token's shipped seed catalog); color scheme `scheme-2` must exist in the theme's color schemes. A test needing an unseeded handle signals a seed-set gap, not a test workaround.
 - **API surface** (block-backed only — no snippet-half group):
   - **Direction × stack-below matrix**: row with each `stack_below ∈ {none, 40, 60, 80}`; column (stack_below not honored).
@@ -219,8 +219,8 @@ Per `validation-contract.md` Tier 2 (theme-primitive).
   - `bleed_mobile: both` + `bleed_desktop: none` → mobile bleeds (section's mobile grid-column rule matches); desktop returns to default content track (no desktop bleed modifier means no desktop grid-column override)
   - `bleed_desktop: inline_start` on a group **nested inside another container** → bleed modifier is emitted but the section's `>` direct-child bleed-grid-column rule doesn't match (nested group isn't a direct child of `<token-section>`); the nested group positions in its container's layout, no bleed
   - `stack_below: 40` in column direction → stack-below modifier still emits if it weren't `visible_if`-gated in row only; the schema gating means the case is unreachable from the editor, but a direct snippet render could pass it. Snippet renders honor the modifier; CSS rule fires correctly (column stays column, since the `stack-below` rule reverts to column on narrow which is column already).
-- **Visual showcase**: matrix sections, each labelled. Reader confirms layout per direction × stack-below × alignment cell; bleed treatments render at the expected breakpoint with the expected per-side (or both-sides) extension to the section's content cap; container_style variants look the same as on `validation--primitive--columns` and `validation--primitive--media` (centralized CSS verification); color-scheme override propagates to descendants.
-- **Assertions** (executable — `.tests/e2e/primitive--group.spec.js`):
+- **Visual showcase**: matrix sections, each labelled. Reader confirms layout per direction × stack-below × alignment cell; bleed treatments render at the expected breakpoint with the expected per-side (or both-sides) extension to the section's content cap; container_style variants look the same as on the `columns` and `media` validation runs (centralized CSS verification); color-scheme override propagates to descendants.
+- **Assertions** (executable — `snippets/group.test.js`):
   - `direction:column` → `token-layout` computes `flex-direction: column`; `direction:row` → `row` with `justify-content: start` by default
   - Row `horizontal_alignment` center / end / space-between → `justify-content` matches; `vertical_alignment` center → `align-items` center
   - Column `horizontal_alignment` center / end → `align-items` matches
@@ -234,7 +234,7 @@ Per `validation-contract.md` Tier 2 (theme-primitive).
   - Recursive nesting: a group inside a group renders both, each with its own `direction` modifier and `token-layout` flex-direction; the nested non-querying group sizes to its content (no collapse)
   - Empty group renders the outer `.shopify-block--group` + `token-layout` wrapper with no children
   - Top-spacing overrides emit `--mobile-/--desktop-margin-block-start` (loose `1.0rem` / `4.0rem`, tight `0.5rem` / `1.0rem`) — absolute values that replace the rhythm
-- **Deliberately unasserted**: `block.shopify_attributes` (editor-only). `container_style` legibility is delegated to `validation--substrate--container-style`. (Bleed painting is now asserted here — the harness `token-section` is the real theme-root grid.)
+- **Deliberately unasserted**: `block.shopify_attributes` (editor-only). `container_style` legibility is delegated to the `container-style` page showcase. (Bleed painting is now asserted here — the harness `token-section` is the real theme-root grid.)
 - **Unit scope**: none (Liquid + CSS only; no JS)
 
 ## Out of scope

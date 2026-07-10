@@ -110,7 +110,7 @@ N/A — pure-logic utility, no user-facing strings.
 Per `validation-contract.md` Tier 1b (substrate / utility-snippet).
 
 - **Tier**: substrate — utility-snippet sub-shape
-- **Page(s)**: covered indirectly by every L1 block's primitive validation page (`sections/validation--primitive--<block>.liquid` for the 9 L1 blocks). Each primitive page exercises the per-instance var emission as part of its block-half matrix. No dedicated `validation--substrate--block-layout-vars` page; the utility's behavior is observable through every block consumer.
+- **Page(s)**: covered indirectly by every L1 block's primitive validation page (`snippets/<block>.validation.json` for the 9 L1 blocks (generate-and-drop)). Each primitive page exercises the per-instance var emission as part of its block-half matrix. No dedicated block-layout-vars page; the utility's behavior is observable through every block consumer.
 - **API surface** (matrix to exercise per consumer):
   - **Content-width pick + blank**: block with metaobject picker resolved → `--content-width: <px/16>rem` emitted; blank picker → no declaration
   - **Mobile margin (positive + 0 + blank)**: > 0 → `--mobile-margin-block-start: <rem>` emitted; zero or blank → no declaration

@@ -1,0 +1,143 @@
+{
+  "settings": {
+    "title": "Composition: hero",
+    "description": "<p>Preset composition of <strong>hero</strong> — blocks labelled by id. Tier-3 asserts the cascade-applied result of the composition.</p>",
+    "harness_layout": "grid",
+    "max_inline_size": 1280,
+    "color_scheme": "scheme-1"
+  },
+  "blocks": {
+    "centered-full": {
+      "type": "media",
+      "blocks": {
+        "cf-title": {
+          "type": "title",
+          "settings": {
+            "tag": "h1",
+            "content": "Built for the long haul",
+            "text_align": "center"
+          }
+        },
+        "cf-body": {
+          "type": "richtext",
+          "settings": {
+            "content": "<p>A metaobject-driven theme you compose, not a template you fight. This overlay inherits the media block's scheme-3 tokens (light on dark), not the section's scheme-1.</p>",
+            "text_align": "center",
+            "content_width": "reading"
+          }
+        },
+        "cf-cta": {
+          "type": "button",
+          "settings": {
+            "content": "Get started",
+            "link": "/"
+          }
+        }
+      },
+      "block_order": [
+        "cf-title",
+        "cf-body",
+        "cf-cta"
+      ],
+      "settings": {
+        "media_type": "image",
+        "image": "shopify://shop_images/landscape.png",
+        "media_size": "16-9",
+        "mobile_media_size": "4-5",
+        "bleed_desktop": "both",
+        "bleed_mobile": "both",
+        "overlay_color": "rgba(0, 0, 0, 0.45)",
+        "custom_color_scheme": true,
+        "color_scheme": "scheme-3",
+        "horizontal_alignment": "center",
+        "vertical_alignment": "center",
+        "gap": 24
+      }
+    },
+    "bottom-left": {
+      "type": "media",
+      "blocks": {
+        "bl-title": {
+          "type": "title",
+          "settings": {
+            "tag": "h2",
+            "content": "Content at the bottom"
+          }
+        },
+        "bl-body": {
+          "type": "richtext",
+          "settings": {
+            "content": "<p>Default alignment — vertical end, horizontal start. The overlay still re-resolves scheme-3 over the tint.</p>",
+            "content_width": "reading"
+          }
+        },
+        "bl-cta": {
+          "type": "button",
+          "settings": {
+            "content": "Learn more",
+            "link": "/"
+          }
+        }
+      },
+      "block_order": [
+        "bl-title",
+        "bl-body",
+        "bl-cta"
+      ],
+      "settings": {
+        "media_type": "image",
+        "image": "shopify://shop_images/landscape.png",
+        "media_size": "16-9",
+        "mobile_media_size": "4-5",
+        "bleed_desktop": "both",
+        "bleed_mobile": "both",
+        "overlay_color": "rgba(0, 0, 0, 0.45)",
+        "custom_color_scheme": true,
+        "color_scheme": "scheme-3",
+        "gap": 24
+      }
+    },
+    "short-fit": {
+      "type": "media",
+      "blocks": {
+        "sf-title": {
+          "type": "title",
+          "settings": {
+            "tag": "h2",
+            "content": "Short content fits a wide box",
+            "text_align": "center"
+          }
+        },
+        "sf-cta": {
+          "type": "button",
+          "settings": {
+            "content": "Shop now",
+            "link": "/"
+          }
+        }
+      },
+      "block_order": [
+        "sf-title",
+        "sf-cta"
+      ],
+      "settings": {
+        "media_type": "image",
+        "image": "shopify://shop_images/landscape.png",
+        "media_size": "16-9",
+        "bleed_desktop": "both",
+        "bleed_mobile": "both",
+        "overlay_color": "rgba(0, 0, 0, 0.45)",
+        "custom_color_scheme": true,
+        "color_scheme": "scheme-3",
+        "horizontal_alignment": "center",
+        "vertical_alignment": "center",
+        "gap": 16
+      }
+    }
+  },
+  "block_order": [
+    "centered-full",
+    "bottom-left",
+    "short-fit"
+  ]
+}

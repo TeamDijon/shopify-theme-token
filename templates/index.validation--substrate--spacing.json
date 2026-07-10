@@ -1,9 +1,0 @@
-{
-  "sections": {
-    "main": {
-      "type": "validation--substrate--spacing",
-      "settings": {}
-    }
-  },
-  "order": ["main"]
-}

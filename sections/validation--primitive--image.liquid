@@ -1,6 +1,9 @@
-{% # Validation - Snippet - Image v1.0.0 %}
+{% # Validation - Snippet - Image v1.0.1 %}
 
 {% comment %}
+  Changelog
+  - v1.0.1 — remove the `validation--breadcrumb` render (linked the retired hub); the template now generate-and-drops from the colocated `snippets/image.validation.json` source
+
   Snippet-validation harness for `image` (a sub-component snippet — no block, so
   the page renders `{% render 'image' %}` directly rather than a block matrix).
   The two source images come from store Files (seeded by
@@ -10,7 +13,7 @@
   Diagnostic intent: srcset ladder, <picture> art-direction switch, loading /
   fetchpriority / sizes / preload knobs. Each case is tagged `data-case=<id>`.
 
-  Reachable only at /?view=validation--primitive--image.
+  Reachable only at /?view=validation.
   See `.context/docs/validation.md`.
 {% endcomment %}
 
@@ -20,8 +23,6 @@
 %}
 
 <token-section data-modifiers="theme-root">
-  {% render 'validation--breadcrumb' %}
-
   <header class="validation__intro">
     <h1>Snippet: image</h1>
     <p>

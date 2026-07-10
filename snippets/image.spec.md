@@ -107,8 +107,8 @@ None — alt text comes from the image object's `.alt` field (merchant-set in ad
 Per `validation-contract.md` Tier 1b / Tier 2 boundary (utility-shape snippet consumed by L1 blocks; today validated through consumers).
 
 - **Tier**: theme-primitive (L0 snippet — no block wraps it, so the harness renders `{% render 'image' %}` directly, each case tagged `data-case=<id>`, rather than a block matrix)
-- **Page**: `sections/validation--primitive--image.liquid` + `templates/index.validation--primitive--image.json` (shipped). The two source images are real store Files referenced via `image_picker` settings (`shopify://shop_images/<file>`) → real image objects for `image_url`/`image_tag`.
-- **Tests**: `.tests/e2e/primitive--image.spec.js` (executable; `npm run test:e2e`)
+- **Source**: `snippets/image.validation.json` — colocated fixture matrix that names `"harness": "validation--primitive--image"`, so the committed harness section `sections/validation--primitive--image.liquid` renders the `{% render 'image' %}` case matrix (each case tagged `data-case=<id>`). The source is staged into the `?view=validation` slot by `.scripts/validation-generate.mjs` for the run (writing the gitignored `templates/index.validation.json`), then dropped. The two source images are real store Files referenced via `image_picker` settings (`shopify://shop_images/<file>`) → real image objects for `image_url`/`image_tag`.
+- **Tests**: `snippets/image.test.js` (executable; `npm run test:e2e`)
 - **Requires seeded**: store Files `landscape.png` (2560×1440) + `portrait.png` (1440×2560), uploaded by `.scripts/seed-validation-assets.mjs` (needs `write_files`); referenced by handle as `shopify://shop_images/<file>`. Source ≥ 2560px so the full width ladder emits unclamped.
 - **API surface** *(as a snippet)*:
   - **Single-image render**: image set, no mobile_image → single `<img>` with full ladder
@@ -123,8 +123,8 @@ Per `validation-contract.md` Tier 1b / Tier 2 boundary (utility-shape snippet co
   - Mobile image set but matches desktop (same asset) → still wraps in `<picture>`; harmless redundancy
   - Custom `sizes_value` for known layouts (e.g. `"(min-width: 48rem) 33vw, 100vw"` for a 3-column track) → carried through to both ladders' `sizes` attribute
   - Lazy + eager combination (lazy default with `fetchpriority: 'high'`) → browsers honor both; lazy controls when, fetchpriority controls how aggressively
-- **Visual showcase**: indirect through `validation--primitive--media` (image media_type case). Reader confirms responsive ladder loads (DevTools network tab shows the chosen width); art-direction switches at the 48rem boundary.
-- **Assertions** (executable — `.tests/e2e/primitive--image.spec.js`):
+- **Visual showcase**: indirect through the `media` validation run (image media_type case). Reader confirms responsive ladder loads (DevTools network tab shows the chosen width); art-direction switches at the 48rem boundary.
+- **Assertions** (executable — `snippets/image.test.js`):
   - The `shopify://shop_images/<file>` ref resolves to a real image object (the `<img>` renders — a blank would `break`); single-image case emits the full 13-width ladder (`360…2560`), `sizes="auto, 100vw"`, `loading="lazy"`, `fetchpriority="auto"`, intrinsic `width="2560"`/`height="1440"`, a `src`, and a non-empty `alt` (from the file's metadata)
   - Art-direction emits `<picture>` with `<source media="(max-width: 47.99rem)">` carrying the 9-width mobile ladder (`360…1440`) and a fallback `<img>` carrying the 9-width desktop ladder (`768…2560`)
   - `loading` / `fetchpriority` knobs apply (`eager` + `high`; `low`); `sizes_value` override carries to the `sizes` attribute

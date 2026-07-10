@@ -141,7 +141,7 @@ N/A — design-system catalog, no user-facing strings beyond the `name` field fo
 Per `validation-contract.md` Tier 1a (substrate / metaobject).
 
 - **Tier**: substrate — metaobject sub-shape
-- **Page(s)**: `sections/validation--substrate--spacing.liquid` + `templates/index.validation--substrate--spacing.json` *(shipped — existed pre-cycle; updated 2026-06-01 to describe the new `--spacing-<handle>` emission pattern)*
+- **Page(s)**: `sections/spacing.liquid` + `templates/page.spacing.json` *(shipped — existed pre-cycle; updated 2026-06-01 to describe the new `--spacing-<handle>` emission pattern)*
 - **API surface** (matrix to exercise):
   - **Per-entry catalog**: each `spacing` metaobject entry rendered as a colored bar — height swaps from `mobile_value` to `desktop_value` when the viewport crosses 640px (validation page uses the `spacer` snippet at `breakpoint:40`). Reader confirms each bar's height matches its entry's pair.
   - **T-shirt slot override**: substrate-aligned handles (`xs` / `sm` / `md` / `lg` / `xl`) — DevTools `Computed` panel on `:root` shows the metaobject value replacing the `layer-base.css` default for the matching slot.

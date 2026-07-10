@@ -204,7 +204,7 @@ Locale-file structure follows `locale-conventions.md`. Keys live in `locales/en.
 Per `validation-contract.md` Tier 2 (theme-primitive — snippet-half).
 
 - **Tier**: theme-primitive (Tier 2 — snippet-half group)
-- **Page(s)**: `sections/validation--primitive--article-card.liquid` + `templates/index.validation--primitive--article-card.json` *(planned)*
+- **Source**: colocated `snippets/article-card.validation.json` source + `snippets/article-card.test.js` — generate-and-drop through the `?view=validation` slot *(planned)*
 - **API surface** (matrix to exercise):
   - **Article with image + author + excerpt + date** — all four metadata pieces; all `show_*` flags `true` (default + author opt-in)
   - **Article without image** (`article.image` blank) — media region omitted; card flows text-only

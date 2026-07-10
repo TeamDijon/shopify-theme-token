@@ -170,7 +170,7 @@ N/A — pure renderer, no merchant-facing or user-facing strings injected by the
 Per `validation-contract.md` Tier 2 (theme-primitive — snippet-half group).
 
 - **Tier**: theme-primitive (Tier 2 — snippet-half)
-- **Page(s)**: `sections/validation--primitive--quote.liquid` + `templates/index.validation--primitive--quote.json` *(planned)*. Co-located with the eventual `pull-quote` / `testimonial` block-half pages when those L1 specs ship.
+- **Source**: colocated `snippets/quote.validation.json` source + `snippets/quote.test.js` — generate-and-drop through the `?view=validation` slot *(planned)*. Co-located with the eventual `pull-quote` / `testimonial` block-half sources when those L1 specs ship.
 - **API surface** (matrix to exercise):
   - **Cite combinations**: all four cells of the `cite_text` × `cite_url` matrix (`blank/blank`, `set/blank`, `blank/set`, `set/set`)
   - **Mark variants**: `decorative_marks: false` (rail mode), `decorative_marks: true` (mark mode); both rendered side-by-side

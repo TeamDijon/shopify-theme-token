@@ -1,9 +1,0 @@
-{
-  "sections": {
-    "main": {
-      "type": "validation--substrate--media-size",
-      "settings": {}
-    }
-  },
-  "order": ["main"]
-}

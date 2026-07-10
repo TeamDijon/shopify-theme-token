@@ -194,7 +194,7 @@ N/A — design-system catalog, no user-facing strings beyond the `name` fields f
 Per `validation-contract.md` Tier 1a (substrate / metaobject) for the data-layer + Tier 1b (substrate / utility-snippet) for the emitter. Shares one validation page.
 
 - **Tier**: substrate — metaobject + utility-snippet (combined)
-- **Page(s)**: `sections/validation--substrate--font-system.liquid` + `templates/index.validation--substrate--font-system.json` *(planned)*
+- **Source**: colocated `snippets/font-system.validation.json` source + `snippets/font-system.test.js` — generate-and-drop through the `?view=validation` slot *(planned)*
 - **API surface** (matrix to exercise):
   - **Typeface with multiple static fonts** (regular + bold + italic + bold-italic): four `@font-face` rules emit; each has the right weight/style
   - **Typeface with one variable font**: one `@font-face` rule emits with `font-weight: <start> <end>`

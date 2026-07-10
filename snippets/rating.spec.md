@@ -185,7 +185,7 @@ None added by this block. The `star-rating` L0 owns the accessible label keys (`
 Per `validation-contract.md` Tier 2 (theme-primitive — block-half group).
 
 - **Tier**: theme-primitive (Tier 2 — block-half group; the `star-rating` snippet has its own snippet-half page)
-- **Page(s)**: `sections/validation--primitive--rating.liquid` + `templates/index.validation--primitive--rating.json` *(planned)*
+- **Source**: colocated `snippets/rating.validation.json` source + `snippets/rating.test.js` — generate-and-drop through the `?view=validation` slot *(planned)*
 - **API surface** (matrix to exercise):
   - **Default state** (`override=false`, metafield filled, product context present) → metafield value renders
   - **`override=false` + metafield blank** → block hidden (no markup)

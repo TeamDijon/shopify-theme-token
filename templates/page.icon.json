@@ -1,0 +1,9 @@
+{
+  "sections": {
+    "main": {
+      "type": "icon",
+      "settings": {}
+    }
+  },
+  "order": ["main"]
+}

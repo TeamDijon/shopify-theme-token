@@ -8,7 +8,6 @@ package-lock.json
 .vscode
 .claude
 .scripts
-.tests
 .playwright-mcp
 
 # Colocated element sources — carry forward the .context / .tests exemptions above.
