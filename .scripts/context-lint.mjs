@@ -9,6 +9,9 @@
  *                   pins matching the referenced files' version headers. A sibling
  *                   `<name>.test.js` is optional (utility JS/CSS + metaobject showcases
  *                   carry no Playwright coverage).
+ *   3. placement  — `.context/specs/` holds only the template + feedback log; a stray
+ *                   `<name>.md` there means a spec was authored in the retired location
+ *                   instead of colocated beside its code.
  *
  * Specs now colocate beside their code (discovered by glob), so the former `pin` and
  * `index` checks against `.context/specs/` + `specs-index.md` are retired — the
@@ -90,9 +93,22 @@ for (const dir of CODE_DIRS) {
   }
 }
 
+// ---- 3. placement — no specs in the retired .context/specs/ location ----
+const LEGACY_SPECS = join(ROOT, ".context", "specs");
+if (existsSync(LEGACY_SPECS)) {
+  const ALLOWED = new Set(["_template.md", "_spec-feedback.md"]);
+  for (const f of readdirSync(LEGACY_SPECS).filter((f) => f.endsWith(".md"))) {
+    if (!ALLOWED.has(f))
+      note(
+        "placement",
+        `.context/specs/${f} — specs colocate beside code; author as <name>.spec.md beside the logic owner`,
+      );
+  }
+}
+
 // ---- report ----
 if (findings.length === 0) {
-  console.log("context-lint: clean ✓  (tally, colocation)");
+  console.log("context-lint: clean ✓  (tally, colocation, placement)");
   process.exit(0);
 }
 const byCheck = {};
