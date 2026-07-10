@@ -1,0 +1,9 @@
+{
+  "sections": {
+    "main": {
+      "type": "validation--substrate--gradient",
+      "settings": {}
+    }
+  },
+  "order": ["main"]
+}
