@@ -10,7 +10,7 @@ Each element's spec lives beside the code it governs on `main`, discovered by gl
 - **block-only** → `blocks/<name>.spec.md`.
 - **section host** → `sections/section.spec.md`; **layout** → `layout/layout.spec.md`.
 - **utility JS / CSS** → `assets/<name>.spec.md`.
-- **metaobject** → `sections/<name>.spec.md`, beside its permanent `sections/validation--substrate--<name>.liquid` showcase.
+- **metaobject** → `sections/<name>.spec.md`, beside its permanent showcase (`sections/<name>.liquid` + `templates/page.<name>.json`).
 
 The spec is the source of truth for the element's API, output, behavior, and validation. Its pin block ties it to the file version(s) it governs; `.scripts/context-lint.mjs`'s `colocation` check verifies the pins match. The template stays at `.context/specs/_template.md`.
 
@@ -34,9 +34,11 @@ Each step's procedure lives in `.claude/skills/ticket-loop/references/<step>.md`
 
 ## Validation model
 
-Block elements use generate-and-drop. A colocated `<el>.validation.json` source is staged by `.scripts/validation-generate.mjs` into the generic `sections/validation.liquid` harness, reachable at `?view=validation`, tested with Playwright, then removed by `.scripts/validation-clean.mjs`. The serialized orchestrator `npm run test:e2e` (`.scripts/validation-e2e.mjs`) loops each element generate → test → drop.
+Three surfaces (see `validation-contract.md` and `validation.md`):
 
-Permanent bespoke pages remain for substrate metaobject showcases (`sections/validation--substrate--*.liquid` + committed `templates/index.validation--substrate--*.json`), snippet-only primitives (`image`, `video`), and the parked L2 presets (`validation--preset--*`).
+1. **Generate-and-drop** (default) — block primitives and L2 preset compositions. A colocated `<name>.validation.json` source is staged by `.scripts/validation-generate.mjs` into the generic `sections/validation.liquid` harness, reachable at `?view=validation`, tested by the colocated `<name>.test.js` (Playwright), then removed by `.scripts/validation-clean.mjs`. The serialized orchestrator `npm run test:e2e` (`.scripts/validation-e2e.mjs`) loops each element generate → test → drop. Block primitives live at `snippets/<name>.{validation.json,test.js}`; presets at `sections/section--<preset>.{validation.json,test.js}`.
+2. **Per-snippet committed harness** — snippet-only primitives (`image`, `video`) whose case matrix is Liquid `{% render %}` logic. The colocated source names `"harness": "validation--primitive--<name>"`; the committed harness `sections/validation--primitive--<name>.liquid` stays; the template still generate-and-drops.
+3. **Permanent page showcase** — substrate metaobjects: bare `sections/<name>.liquid` + committed `templates/page.<name>.json`, merchant-browsable via a Page with that template assigned in admin. Eyeballed, no test.
 
 ## Git strategy
 
@@ -60,6 +62,6 @@ Rule: one element per unit; substrate changes never bundle into an element unit.
 
 - `composition-strategy.md` — layer model and decision flow
 - `validation-contract.md` — per-tier validation contract
-- `validation.md` — implementation manual for validation pages
+- `validation.md` — the three validation surfaces + generate-and-drop mechanics
 - `.context/specs/_template.md` — spec template
 - `.claude/skills/ticket-loop/SKILL.md` — the executable pipeline runbook

@@ -16,7 +16,7 @@ A spec is the contract. It describes the element's API, output, behavior, valida
   - snippet, or block+snippet pair → `snippets/<name>.spec.md` (the snippet owns the logic; a pair pins both `snippets/<name>.liquid` + `blocks/<name>.liquid`).
   - block-only → `blocks/<name>.spec.md`; section host → `sections/section.spec.md`; layout → `layout/<name>.spec.md`.
   - utility JS / CSS → `assets/<name>.spec.md`.
-  - metaobject → `sections/<name>.spec.md`, beside its permanent `validation--substrate--<name>` showcase (the metaobject's visible artifact); the spec keeps the clean name, the section keeps its prefix.
+  - metaobject → `sections/<name>.spec.md`, beside its permanent bare `sections/<name>.liquid` + `templates/page.<name>.json` showcase (the metaobject's merchant-browsable visible artifact).
 - Template: copy `_template.md` and fill. Sections that don't apply get `N/A` with a one-clause reason, or omit entirely when the omission is obvious from the element's nature.
 
 ## Header fields

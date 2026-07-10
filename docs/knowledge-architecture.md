@@ -63,7 +63,7 @@ Specs live beside the code they govern on `main`, discovered by glob rather than
 - **section host** → `sections/section.spec.md`.
 - **layout** → `layout/layout.spec.md`.
 - **utility JS / CSS** → `assets/<name>.spec.md`.
-- **metaobject** → `sections/<name>.spec.md`, beside its permanent `sections/validation--substrate--<name>.liquid` showcase.
+- **metaobject** → `sections/<name>.spec.md`, beside its permanent showcase (`sections/<name>.liquid` + `templates/page.<name>.json`).
 
 The colocated pin block ties the spec to the file version(s) it governs; `.scripts/context-lint.mjs`'s `colocation` check verifies the pins match.
 
@@ -87,8 +87,8 @@ Two flavors:
 - `asset-loading.md` — where component CSS / JS lives
 - `metaobject-definitions.md` — Shopify admin setup contract
 - `design-system-metaobjects.md` — consumer patterns across metaobject types
-- `validation-contract.md` — per-tier validation harness shapes
-- `validation.md` — implementation manual for validation pages
+- `validation-contract.md` — per-tier validation contract (what each tier asserts)
+- `validation.md` — the three validation surfaces + generate-and-drop mechanics
 - `spec-to-component.md` — spec → ship pipeline
 - `theme-root.md` — bleed grid + rhythm cascade contract
 - `subgrid-migration.md` — historical record of the structural overhaul

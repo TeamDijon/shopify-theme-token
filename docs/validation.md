@@ -1,198 +1,107 @@
 # Validation suite
 
-Visual + integration test pages for metaobjects, blocks, and section compositions. Inspired by ZAG's validation pattern, scoped to three explicit layers, never linked from production.
+Visual and integration test pages for metaobjects, block primitives, and section compositions. Each element's contract, test, and validation source colocate beside the code and are discovered by glob — no index. Validation never links from production.
 
-## Why
+Coverage:
 
-- **Visual regression** — render every modifier permutation per block; screenshot or eyeball against expected.
-- **Cross-block integration** — compose real-world section patterns to catch cascade bugs (block_rhythm scope, focus-ring clipping, color-scheme collisions).
-- **Metaobject coverage** — iterate every metaobject's entries to confirm design-system definitions render as expected.
+- **Visual regression** — render every modifier permutation per element; eyeball or assert against expected.
+- **Cross-block integration** — compose section patterns to catch cascade bugs (block-rhythm scope, focus-ring clipping, color-scheme collisions).
+- **Metaobject coverage** — iterate a metaobject type's entries to confirm design-system definitions render as expected.
 
-## File structure
+## Three surfaces
 
-Four tiers per `validation-contract.md`, each with its own naming prefix:
+Validation runs through three surfaces. Each element's shape picks one; the split is deliberate and the surfaces stay separate.
 
-| Tier | Section path | Template path |
-|---|---|---|
-| Substrate — metaobject | `sections/validation--substrate--<type>.liquid` | `templates/index.validation--substrate--<type>.json` |
-| Substrate — utility snippet | `sections/validation--utility-snippet--<name>.liquid` | `templates/index.validation--utility-snippet--<name>.json` |
-| Substrate — utility CSS | `sections/validation--utility-css--<concern>.liquid` | `templates/index.validation--utility-css--<concern>.json` |
-| Theme-primitive (L0 + L1) | `sections/validation--primitive--<name>.liquid` | `templates/index.validation--primitive--<name>.json` |
-| Preset (L2) | `sections/validation--preset--<name>.liquid` | `templates/index.validation--preset--<name>.json` |
-| Specialized section (Beyond L2) | `sections/validation--section--<name>.liquid` | `templates/index.validation--section--<name>.json` |
+| Surface | What it's for | Source · test · template | Reached at |
+|---|---|---|---|
+| **Generate-and-drop** (default) | Block-composable elements: block primitives and L2 preset compositions | Colocated source `<name>.validation.json` (`{ settings, blocks, block_order }`) + test `<name>.test.js`; the template is generated on demand into the single gitignored slot `templates/index.validation.json`, rendered by the generic harness `sections/validation.liquid`, then removed | `/?view=validation` |
+| **Per-snippet committed harness** | Snippet-only primitives whose case matrix is Liquid `{% render %}` logic, not block data (`image`, `video`) | Colocated source `snippets/<name>.validation.json` (names `"harness": "validation--primitive--<name>"`) + test `snippets/<name>.test.js`; the committed harness section `sections/validation--primitive--<name>.liquid` stays; the template still generate-and-drops | `/?view=validation` |
+| **Permanent page showcase** | Substrate metaobjects (design tokens) | Bare `sections/<name>.liquid` + committed `templates/page.<name>.json`; spec `sections/<name>.spec.md`; no test (eyeballed) | A Page with the `page.<name>` template assigned in admin |
 
-Substrate — utility JS runs in Vitest under `tests/unit/`, not on a Liquid page; see `validation-contract.md` for the future-state harness.
+### Where each element lives
 
-The hub at `sections/validation.liquid` (template `templates/index.validation.json`) lists anchors to every variant — manually maintained.
+- **Block primitives** — `button`, `columns`, `embed`, `group`, `media`, `richtext`, `separator`, `spacer`, `title`: source + test at `snippets/<name>.{validation.json,test.js}` (generate-and-drop).
+- **Preset compositions** (L2 on `section.liquid`) — `hero`, `content`, `columns-features`, `cta-banner`: source + test at `sections/section--<preset>.{validation.json,test.js}`, sorting beside `section.liquid` / `section.spec.md` (generate-and-drop).
+- **Snippet-only primitives** — `image`, `video`: source + test at `snippets/<name>.{validation.json,test.js}`, pointing at a committed harness section.
+- **Substrate metaobjects** — `theme-color`, `button-style`, `container-style`, `content-width`, `gradient`, `icon`, `media-size`, `spacing`, `text-style`: bare `sections/<name>.liquid` + `templates/page.<name>.json`.
 
-## URL routing
+## Generate-and-drop lifecycle
 
-Shopify auto-matches `?view=<suffix>` to `templates/index.<suffix>.json`. So:
+The generic `?view=validation` slot is a single template, so generate-and-drop elements stage through it one at a time.
 
-- `/?view=validation` → hub page
-- `/?view=validation--substrate--theme-color` → theme_color validation
-- `/?view=validation--primitive--button` → button validation matrix
-- `/?view=validation--preset--hero` → hero composition test
+1. **Generate** — `node .scripts/validation-generate.mjs <name>` (`npm run validation:generate`) locates `<name>.validation.json` by name across `snippets/`, `blocks/`, `sections/`, `assets/`, `layout/`, wraps it in the Shopify template envelope (`{ sections: { main: { type: <harness>, ...source } }, order: ["main"] }`), and writes `templates/index.validation.json`. The source's `type` defaults to the generic `validation` harness; a `"harness"` key overrides it for the per-snippet committed harnesses.
+2. **Render** — `sections/validation.liquid` renders the matrix at `/?view=validation`. Shopify auto-matches `?view=validation` to `templates/index.validation.json`.
+3. **Test** — the colocated `<name>.test.js` (Playwright) navigates to `/?view=validation` and asserts.
+4. **Drop** — `node .scripts/validation-clean.mjs` (`npm run validation:clean`) removes the generated template. `templates/index.validation.json` is gitignored and idempotent to remove (missing file is a no-op).
 
-No layout-level includes; validation pages are reachable only via explicit query strings.
+## The orchestrator
+
+`.scripts/validation-e2e.mjs` (`npm run test:e2e`) is the serialized runner. It discovers every colocated `<name>.validation.json` with a sibling `<name>.test.js`, sorts them, and loops each: generate → settle for `theme dev` sync (`VALIDATION_SETTLE_MS`, default 2000) → run the colocated test. Successive elements overwrite the single slot in place; the template is dropped once at the very end (deleting and recreating per element races `theme dev`'s remote sync). It requires `npm run dev` (`shopify theme dev`) running — tests hit the dev preview at `http://127.0.0.1:9292`.
+
+`playwright.config.js` declares no `webServer` — it attaches to the dev server and fails fast if it's down. `testMatch` is `**/*.test.js` (colocated, glob-discovered). Two viewport projects — `desktop` (1280px) and `mobile` (390px) — straddle the `48rem` (768px) breakpoint so responsive assertions run in the right viewport. e2e is not part of `npm run check`; the static gate (context-lint + prettier + theme-check) needs no server.
+
+## Generic harness
+
+`sections/validation.liquid` renders one element's matrix as a labelled list inside a `<token-section data-modifiers="theme-root">` — the real production theme-root bleed grid. Settings come from the generated template:
+
+- `title`, `description` — chrome text.
+- `harness_layout` — `grid` (default; production theme-root bleed grid, for block-level elements) or `stack` (column flex, flush-start, for inline-flex / content-sized elements like `button` that don't fit the grid).
+- `max_inline_size` — caps and centers the overall surface (px).
+- `color_scheme` — sets a `color-scheme:<id>` modifier when a preset composition overrides the section scheme.
+- `content_width` — raw CSS value (e.g. `42.5rem`) set as `--content-width` when a preset composition caps the readable track.
+
+`color_scheme` and `content_width` carry **raw resolved values** (like `max_inline_size`): the harness reproduces the CSS a composition carries, mirroring what `section.liquid` would apply. It is a test surface, not production `section.liquid`.
+
+### Production-faithful layout
+
+The matrix renders as **direct children of `<token-section>`** — no presentation wrapper between the theme-root and the blocks. A wrapper's own `max-inline-size` / `padding-inline` would cascade onto every block, breaking bleed math and diverging from production. Two production behaviors depend on the direct-child relationship:
+
+- **Painted rhythm** — the section carries a base `--block-rhythm`, so per-block top-margin overrides paint through the real rhythm rule (`[data-modifiers*='theme-root'] > .shopify-block:not(:first-child)`), which matches only direct children. Tests assert the emitted custom property; the paint is the eyeball half.
+- **Native sizing / alignment** — blocks inherit only the section's production constraints (`--content-width` cap, gutter), so `content_width`, `text_align`, and bleed behave as in production rather than collapsing to content-width under a flex wrapper.
+
+`grid` layout leaves `display` untouched: blocks are grid items in the content track (`grid-column` bleed modifiers actually paint; `content_width` self-centering distributes via grid auto-margins, so tests measure position, not the margin property). `stack` layout overrides to a flush-start column (`display: flex; flex-direction: column; align-items: flex-start; padding-inline: var(--gutter)`) for inline-flex primitives so `margin-block-start` paints between rows.
+
+### Schema-driven matrix
+
+The source `<name>.validation.json` bakes the test matrix into block instances — the JSON is the test spec, so diffing it shows what scenarios changed. A preset source nests its composition's inner blocks under each block (matching the `section.liquid` block tree). A metaobject page needs no matrix: its section iterates `metaobjects.<type>.values` directly.
+
+### Helper snippets
+
+- `snippets/validation--harness-styles.liquid` — the shared chrome (intro / empty state), the `token-section` cap, and the layout-neutral use-case indicator (dashed outline + DOM-id `::before` label). Rendered once by the harness.
+- `snippets/validation--block-labels.liquid` — iterates `section.blocks` and sets a `--block-label` custom property per block to its merchant-facing short id, read via `content: var(--block-label)` on a `::before` so each block in the matrix is labelled. Liquid does the id-cleaning (Shopify wraps each block id and appends an instance suffix that pure CSS can't strip). Rendered after `{% content_for 'blocks' %}`.
+
+## Per-snippet committed harness
+
+`image` and `video` render via `{% render %}` with a Liquid arg matrix rather than block data, so each names a dedicated harness in its source (`"harness": "validation--primitive--<name>"`). The committed section `sections/validation--primitive--<name>.liquid` renders the arg matrix (each case tagged `data-case=<id>`); the template still generate-and-drops into the shared slot and the test hits `/?view=validation`. Source images/videos are seeded store Files (`npm run seed:assets`).
+
+## Permanent page showcase
+
+Substrate metaobjects render through a `page.` template so they are **merchant-browsable**: a merchant assigns the `page.<name>` template to a Page in admin and visits that page. The bare section `sections/<name>.liquid` iterates `metaobjects.<type>.values` and renders one card per entry surfacing the handle and consumed fields. These pages are eyeballed (computed-style assertion is possible but not wired); the spec colocates at `sections/<name>.spec.md`. They are not `index.*` templates and are not reached by `?view=`.
 
 ## Production-leak strategy
 
-Validation files commit to `main` but **never link from production templates or menus**. Three protections:
+Validation surfaces commit to `main` but never link from production templates or menus:
 
-1. **Querystring-only routing** — no anchor or link from any production page to any validation page. Customers and crawlers can't reach them.
-2. **Hub is unlinked too** — `?view=validation` is a known URL only to authors.
-3. **Pre-deploy strip (future)** — when CI deploys the theme to Shopify staging/production, strip `validation--*.{liquid,json}` before push. Document this when CI is set up.
-
-For v1, validation files ship with the published theme. They are inert without the querystring URL.
+- **Generate-and-drop** templates are gitignored and exist only during a test run, so nothing ships.
+- **`?view=validation`** is a querystring-only route with no anchor from any production page — inert without the explicit URL.
+- **`page.<name>` showcases** are merchant-addable Page templates by design; they ship, and are reachable only when a merchant assigns the template to a Page.
 
 ## Section schema conventions
 
-Validation sections aren't merchant-addable. Differences from standard section convention:
+The generic harness (`sections/validation.liquid`) and the committed per-snippet harnesses differ from standard section convention:
 
-- `"class": "shopify-section--validation--<layer>--<name>"`
-- **Omit `"presets"` entirely** — not addable from the editor.
-- **Omit `"disabled_on"`** — irrelevant since it's not addable.
-- `"settings"` — minimal. Usually a single `max_inline_size` (`type: range`) for layout control. Don't expose merchant-facing controls; the section is for theme authors.
-- **Literal English labels** — these never ship to merchants. Skip `t:` keys to keep the locale files lean.
-- Each section owns its `{% stylesheet %}` block, wrapped in `@layer components` like every other component CSS.
+- `"class": "shopify-section--validation"` (harness) / `"shopify-section--validation--primitive--<name>"` (committed).
+- **No `"presets"`** — not merchant-addable from the editor.
+- **No `"disabled_on"`** — irrelevant when not addable.
+- `"settings"` — author-facing only (harness layout, width, scheme, content-width); literal English labels, no `t:` keys (never ships to merchants).
+- Each section owns its `{% stylesheet %}` in `@layer components`.
 
-## Chrome / content decoupling
-
-Validation surfaces render two distinct content types. They must NOT impose constraints on each other:
-
-1. **Utility chrome** — authoring scaffolding: breadcrumb back to hub, section title, description, page-level legend. Carries its own typographic discipline (paragraph reading-width, code styling, opacity). Lives as a sibling of validation content under `<token-section>`.
-
-2. **Validation content** — the blocks, widgets, or matrix being tested. Rendered as a direct child of `<token-section>`, inheriting only the section's production-native constraints (`--content-width` cap + `--gutter` padding). No validation-imposed wrapper between `token-section` and the validation content.
-
-```liquid
-<token-section>
-  {% render 'validation--breadcrumb' %}
-
-  <header class="validation__intro">
-    <h1>{{ section.settings.title }}</h1>
-    <p>{{ section.settings.description }}</p>
-  </header>
-
-  {% content_for 'blocks' %}   {# or per-tier rendering pattern (block-labels helper for Tier 2, metaobject iteration for Tier 1a, etc.) #}
-</token-section>
-```
-
-**Anti-pattern**: wrapping validation content in a `.canvas` div with its own `max-inline-size` / `padding-inline`. The wrapper's constraints cascade onto every block inside — bleed math breaks (blocks bleed to the wrapper's edge, not the section's), and the page no longer represents production behavior.
-
-The chrome's own styling MUST stay within its own selector (`.validation__intro` typography, etc.). It does not impose width/padding on the validation content. `token-section` is the real theme-root grid, so it handles sizing production-style:
-
-- The named-line grid's content track caps at `--content-width` and the gutter tracks supply the inner inset — the harness adds no `padding-inline` (a `padding-inline` would double the gutter and shift bleed math)
-- The harness only caps the overall surface (`max-inline-size`, e.g. 80rem) and centers it, plus `padding-block` for vertical breathing — set once in `validation--harness-styles`
-- Per-section `utility--dynamic-style` overrides `--content-width` when a narrower test surface is needed; the grid honors it the production way
-
-The primitive validation sections (`button`, `title`, `group`, `columns`, `richtext`) are retrofitted to this model. Remaining pages from the 21-page inventory retrofit at next touch.
-
-## Harness layout
-
-Tier 2 / 3 pages (primitive + preset) render the matrix as **direct children of `<token-section>`** — no presentation wrapper between the theme-root and the blocks (the wrapper is the anti-pattern above). This keeps the page production-faithful in two ways a wrapper breaks:
-
-- **Painted rhythm.** The section sets a base `--block-rhythm` (e.g. `var(--spacing-lg)`), so per-block top-margin overrides paint through the real theme-root rhythm rule (`[data-modifiers*='theme-root'] > .shopify-block:not(:first-child)`), which only matches *direct* children. A block's spacing reads on the page exactly as it would in a merchant's section. The Tier-2 *tests* still assert the emitted custom property, not the painted margin (`validation-contract.md` § Tier 2 Boundary); the paint is the human-eyeball half.
-- **Native sizing / alignment.** Blocks inherit only the section's production constraints (`--content-width` cap, gutter), so `content_width`, `text_align`, and bleed behave as in production — not collapsed to content-width by a flex wrapper's auto-margins.
-
-**The token-section is the real production theme-root bleed grid** — the harness does NOT override `display`. The `theme-root` modifier pulls in the `@layer theme` named-line grid (`[bleed-start] … [content-start] … [content-end] … [bleed-end]`), so the page lays out exactly as production:
-
-- **Block-level primitives** (`title`, `richtext`, `separator`, `media`, `group`, `columns`, …) → no `display` override. Blocks are grid items in the content track; rhythm margins don't collapse (grid), `content_width` self-centering distributes via grid auto-margins (the centering is geometric — `getComputedStyle().marginLeft` reports `0`, so tests measure position, not the margin property), and **bleed modifiers actually paint** (`grid-column: bleed-start / bleed-end` etc.) — so bleed is asserted at the primitive tier (group / columns), not deferred to a section-tier page.
-- **Inline-level primitives** (`button`) → override to a column stacking context (`display: flex; flex-direction: column; align-items: flex-start`) because button is inline-flex, not block-level. The flex column stacks buttons one-per-row, flush-start, so `margin-block-start` paints; `padding-inline: var(--gutter)` aligns it with the grid pages' content inset.
-
-**Shared chrome.** The harness chrome (intro / empty state), the token-section cap (`max-inline-size` + `padding-block` + base `--block-rhythm`), and the layout-neutral use-case indicator (dashed `outline` + DOM-id `::before` label on `token-section > .shopify-block`, reading `--block-label` from `validation--block-labels`) live once in `snippets/validation--harness-styles.liquid`, scoped via the `[class*='shopify-section--validation--']` prefix. Each validation section renders it (`{% render 'validation--harness-styles' %}`) and keeps only genuine per-page exceptions (e.g. button's flex override). The indicator is outline-only — no padding/background on blocks or tracks (those shift layout and cost fidelity).
-
-This layout contract is expected to **evolve** as new composition-layer primitives arrive. The invariant is *blocks as direct children of the real theme-root grid carrying a base rhythm*; only genuinely non-block-level primitives (inline-flex) override `display`.
-
-## Schema-driven matrix
-
-Tiers 2, 3, and 4 share one pattern: the validation section accepts `@theme` blocks (Tiers 2 + 3) or declares its own inline-block schema (Tier 4 / Framing-A), and the **template JSON** bakes the test matrix into block instances. The JSON IS the test spec — diffing it tells you what scenarios changed.
-
-Tier 1a (metaobject) iterates `metaobjects.<type>.values` directly; the JSON template carries only section settings, no per-entry matrix.
-
-Pattern (Tier 2 sketch):
-
-```json
-{
-  "sections": {
-    "main": {
-      "type": "validation--primitive--button",
-      "blocks": {
-        "primary": { "type": "button", "settings": { ... } },
-        "secondary": { "type": "button", "settings": { "button_style": "..." } },
-        "outline": { "type": "button", "settings": { "button_style": "..." } },
-        ...
-      },
-      "block_order": ["primary", "secondary", "outline", "..."],
-      "settings": {}
-    }
-  },
-  "order": ["main"]
-}
-```
-
-The validation section renders `{% content_for 'blocks' %}` inside a labelled wrapper — a presentation harness for the matrix.
-
-## Hub registration
-
-After authoring a validation section, add an anchor in `sections/validation.liquid` so the hub stays current. Convention: alphabetical order within each layer subheading.
-
-## The 21-section inventory
-
-21 of 21 pages live. File names predate the four-tier contract; renames pending retrofit per `BACKLOG.md`.
-
-**Metaobjects — Tier 1a / substrate (8 sections, `--metaobject--*` today)**
-
-`theme-color`, `icon`, `text-style`, `button-style`, `container-style`, `media-size`, `content-width`, `spacing`. Each iterates `metaobjects.<type>.values` and renders a card per entry surfacing handle + relevant fields.
-
-**Blocks — Tier 2 / primitive (9 sections, `--block--*` today)**
-
-`spacer`, `separator`, `title`, `richtext`, `button`, `media`, `embed`, `group`, `columns`. Each pairs with a JSON template that bakes the modifier matrix into block instances; the section harness renders them via `{% content_for 'blocks' %}` with the labelling helper.
-
-**Compositions — Tier 3 / preset (4 sections, `--section--*` today)**
-
-- `hero` — media + overlaid title + button + bleed
-- `content` — title + richtext + button stacked, exercises block_rhythm + top spacing
-- `columns-features` — columns containing media + title + richtext per column, exercises container queries
-- `cta-banner` — separator + group + button variants
-
-These compositions cover the cross-block interactions: block_rhythm layer-cascade collision, separator collapse in flex parents, group/columns self-container-query. They serve as regression guards.
-
-## Helper snippets
-
-Two snippets live in `snippets/` to keep the per-topic pages thin:
-
-- **`validation--breadcrumb.liquid`** — renders a back-link to `?view=validation`. Drop into the top of every per-topic page (`{% render 'validation--breadcrumb' %}`). The hub itself skips it.
-- **`validation--block-labels.liquid`** — for the 9 block-validation pages. Iterates `section.blocks` and emits an inline `<style>` block that sets a `--block-label` CSS custom property on each rendered block to its merchant-facing short id. The consuming page's stylesheet reads it via `content: var(--block-label)` on a `::before` pseudo-element so each block in the matrix is labelled. Liquid does the id-cleaning because Shopify wraps each block id as `<random>__<key>` and `section.blocks[i].id` further appends a `-1` instance suffix that's stripped at render time — neither is substringable in pure CSS. Render once per page after `{% content_for 'blocks' %}`: `{% render 'validation--block-labels', section: section %}`.
-
-## Executable assertion layer
-
-Each spec's prose assertions convert into committed Playwright specs under `.tests/e2e/<page>.spec.js`, one file per validation page, named for the page suffix (`primitive--button.spec.js` → `?view=validation--primitive--button`).
-
-- **Runner**: `@playwright/test` (devDep). Run with `npm run test:e2e`.
-- **Config** (`playwright.config.js`): `baseURL` is the dev server (`http://127.0.0.1:9292`); two viewport projects — `desktop` (1280px) and `mobile` (390px) — straddle the `48rem` breakpoint so responsive assertions run in the right viewport. No `webServer` is declared: the config attaches to the dev server you run (`npm run dev`) and fails fast if it's down, rather than spawning its own.
-- **Gate**: e2e is **not** part of `npm run check`. The static gate (context-lint + prettier + theme-check) stays offline; e2e needs a live server and the seeded store. Run it separately.
-- **Tier scoping**: a spec asserts only what its page's tier owns — emitted attributes / modifiers / custom properties for a primitive, the cascade-applied result for a preset/section. See `validation-contract.md` § Tier 2 Boundary.
-- **Seed dependency**: tests rely on Token's shipped seed catalog (handles like `icon/arrow`, `button_style/link-primary`). Each spec's Validation § names the handles its tests require; a test needing an unseeded handle is a seed-set gap to surface, not a workaround to engineer.
-- **Reference**: `.tests/e2e/primitive--button.spec.js` + `button.spec.md` § Validation are the worked example new pages follow.
-
-## Working with Playwright MCP
-
-The Playwright MCP is the interactive authoring / debug aid (the committed `.tests/e2e/` suite above is the persistent layer). When iterating on a page, the feedback loop is:
-
-1. Author/edit a validation section
-2. Ensure `shopify theme dev` is running locally (default at `http://127.0.0.1:9292`)
-3. `browser_navigate` to `http://127.0.0.1:9292/?view=validation--<topic>`
-4. `browser_screenshot` for visual check
-5. `browser_axe` for a11y audit on the rendered page
-6. `browser_evaluate` to inspect computed styles when verifying CSS variables resolved correctly
-
-If no MCP available, fallback: author asks the user to load the URL and report findings.
+The metaobject showcase sections (`sections/<name>.liquid`) are bare merchant-facing sections rendered through a `page.` template and follow standard `section-convention.md`.
 
 ## Related
 
-- `validation-contract.md` — per-tier functional contract (what each tier validates, harness shape, current-state gaps)
-- `block-convention.md` — block structure (validation sections compose them)
-- `section-convention.md` — section structure (validation sections are simplified standard sections)
+- `validation-contract.md` — per-tier functional contract (what each tier asserts, mapped onto the three surfaces)
+- `block-convention.md` — block structure (block primitives compose them)
+- `section-convention.md` — section structure (the metaobject showcases follow it)
 - `design-system-metaobjects.md` — metaobject types and consumption fields
 - `asset-loading.md` — where component CSS lives
