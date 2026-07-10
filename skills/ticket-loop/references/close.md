@@ -2,7 +2,7 @@
 
 The only place the loop merges to `main`. Surface a diff + verdict every time; block for approval
 only when the change touches the contract or the intent asked for a pre-merge look. On go, merge
-the feature branch, drop the provisional anchors, and clean up.
+the feature branch (`--no-ff`, anchors kept), and clean up.
 
 ## Inputs
 
@@ -31,26 +31,20 @@ On **no-go**, the change does not merge: route the objection back through audit'
 contract objection reopens Diamond 1 (`spec`), a build objection reopens Diamond 2
 (`implementation`) — then the loop flows forward to `close` again.
 
-## 3. On go — merge, drop anchors, clean up
+## 3. On go — merge (`--no-ff`), clean up
 
-The prompt/plan anchors were loop scaffolding (durable state *during* the cycle); they do not
-persist on `main`. Squash-merge collapses the branch's tree onto `main` in one commit and drops
-the two empty anchors automatically:
+Merge with a merge commit; the whole branch rides onto `main` intact — the prompt/plan anchors
+stay as permanent intent records (audit trail, not scaffolding), and every commit keeps its
+reasoning body:
 
     git switch main
-    git merge --squash loop/<slug>
-    git commit          # message names the element + what shipped
-    git branch -D loop/<slug>
+    git merge --no-ff loop/<slug>   # merge commit; anchors + real commits preserved
+    git branch -d loop/<slug>
 
-When the branch's internal commits are worth preserving (a multi-spec ticket), replay them past
-the anchors instead of squashing (`-i` is unavailable, so use `--onto`):
-
-    git switch loop/<slug>
-    git rebase --onto main <plan-anchor-sha>   # drops both empty anchors, keeps real commits
-    git switch main && git merge --ff-only loop/<slug> && git branch -d loop/<slug>
-
-`<plan-anchor-sha>` is the `loop-plan(...)` commit — `git log --oneline main..loop/<slug>` lists it
-as the second commit up from the branch base (prompt anchor first, plan anchor second).
+`git log --first-parent` gives the clean per-ticket overview (one line per merge) a squash would
+have produced, while the full log preserves each change's why. Nothing is dropped, and bisect
+stays clean: the anchors are empty (tree-neutral) commits, and spec + code + test commit together
+within the branch.
 
 The merge is `main`-only. Governance (the context branch) is untouched here — it is the next step,
 `context`.
@@ -59,4 +53,4 @@ The merge is `main`-only. Governance (the context branch) is untouched here — 
 
 - Verdict surfaced (diff + contract-touching call) on every close.
 - Contract-touching / intent-requested changes approved before merge; others merged autonomously.
-- Feature on `main`; anchors gone from permanent history; `loop/<slug>` deleted.
+- Feature on `main` via a `--no-ff` merge commit; anchors preserved as intent records; `loop/<slug>` deleted.

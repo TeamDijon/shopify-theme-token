@@ -20,12 +20,24 @@ Gate weight scales to scope — the same loop flows a typo far lighter than a ne
 - **New element / primitive** — full loop; both human gates carry real weight.
 - **Change to a shipped element** — full loop; steps touching unaffected surface pass through.
 - **Typo / doc / copy fix** — spec may be a no-op; validation is a smoke; gates are a glance.
+- **Governance / review-only** — a `.context` rule/doc/skill edit, a spec review, or a process
+  change with no `main` element contract in play: `spec` / `implementation` / `validation` are
+  N/A; the work is the `context` step (or a direct context-branch edit), and `close`'s merge gate
+  applies only if `main` was touched.
 
 When scope reads ambiguously (a "change" that may really be a new primitive), size up — take the
 heavier gate weight and confirm with the developer rather than defaulting light.
 
 Scope is Linear-agnostic: if a Linear MCP is connected the agent may fetch the ticket, else
 the human pastes it. The prompt anchor (step 1) is the durable interface, not Linear.
+
+## Delegate for altitude
+
+The conductor sequences, gates, and reviews — it should not sink into doing every step inline.
+Spawn subagents to reach the right altitude and preserve the fresh eyes the terminate oracle's
+"reviewed against intent" check depends on: a nested subagent for a deep build, fanout for a
+parallel work-list. No agent-count prescription — adapt to the ticket; the point is staying high
+enough to judge the result against the prompt anchor.
 
 ## The spine
 
@@ -51,10 +63,11 @@ the human pastes it. The prompt anchor (step 1) is the durable interface, not Li
    no history of its own.
 6. **close** → ${CLAUDE_SKILL_DIR}/references/close.md — git hygiene on `main` + the **go/no-go merge gate**:
    surface diff + verdict *always*; block for approval when contract-touching OR
-   intent-requested; on go, merge, squash the provisional anchors, clean up. The only merge.
+   intent-requested; on go, merge `--no-ff` keeping the anchors on `main`, clean up. The only merge.
 7. **context** → ${CLAUDE_SKILL_DIR}/references/context.md — governance drift, run with `main` parked, fully
-   deferrable. Apply-now → normal context commit; defer → a `context-rec` empty commit;
-   reject → dropped. Only deferrals grow the `context-rec` queue that triage drains.
+   deferrable. Apply inline by default → a normal context commit; defer only when genuinely large
+   → a lightweight `context-rec` note; reject → dropped. Deferrals are the rare exception that
+   grows the `context-rec` queue triage drains.
 8. **evals** → ${CLAUDE_SKILL_DIR}/references/evals.md — a thin per-ticket retro into `_spec-feedback.md`, feeding
    the inter-ticket promotion loop. Heavy analytics stay out of the per-ticket path.
 

@@ -4,6 +4,10 @@ Translate a business need into a layered work plan, and open the loop's durable 
 a punch list (specs to author, files to touch, validations to add, design questions to resolve)
 plus the two anchor commits that make the intent survive compaction and stay auditable.
 
+For a governance / review-only ticket (Route-first), triage is light: anchor the intent, then
+steps 4–7 collapse to naming the governance surface (the rule / doc / skill or the spec under
+review). The punch list is governance items, not specs and impls.
+
 ## Inputs
 
 - The business need in 1–3 sentences — what the storefront visitor or admin does. If a ticket
@@ -21,7 +25,7 @@ plus the two anchor commits that make the intent survive compaction and stay aud
    interpretation, so audit can re-read the untouched intent later:
    `git commit --allow-empty -m "loop-prompt(<slug>): <one-line>" -m "<verbatim request>"`.
 3. The **plan anchor** follows once the punch list is settled (step 8). Both anchors are
-   provisional — `close` squashes them into the merge.
+   kept — `close` preserves them on `main` via a `--no-ff` merge as permanent intent records.
 
 ## 2. Drain the context-rec queue for elements in scope
 
@@ -29,7 +33,7 @@ Conditional surface, not a gate. It fires only when there is an open `context-re
 element this ticket touches; with none, this step is a silent no-op. Discover open recs
 (enqueued at the `context` step of past cycles — see `context.md`):
 
-    git -C .context log --grep="context-rec"
+    git -C .context log --grep="^context-rec("
 
 An entry is open until a later commit references it with a `Closes-rec: <sha>` trailer. For each
 open rec touching an in-scope element, the debt is already approved (it cleared human judgment

@@ -49,6 +49,10 @@ All on the `loop/<slug>` branch — code and the spec's pin/`Reconciled`/`Status
 same branch (the spec is colocated on `main`'s history now, so there is no separate context-branch
 commit for these). One commit per logical unit, or one for the whole element if cohesive.
 
+Each commit's body (2nd line onward) carries that change's reasoning — the why, not a restated
+what. With the squash dropped at `close`, these bodies persist on `main` as the per-change
+contract, so write them for a future reader, not just this cycle.
+
 ## Done state
 
 - Implementation file(s) match the spec's API + Behavior + CSS + Locale-keys.

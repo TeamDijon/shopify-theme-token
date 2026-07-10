@@ -4,6 +4,10 @@ Settle the contract. Author or revise the colocated spec, then hold the human RE
 convergence before the loop proceeds to build. This step owns the *contract only* — no code
 changes happen here; making code match the settled contract is `implementation`'s job.
 
+For a governance / review-only ticket (Route-first) there may be no contract to author: this step
+is either N/A (a rule / doc / skill edit) or *is* the review itself (a spec under review), running
+only the REVIEW gate below.
+
 ## Where the spec lives
 
 - **Colocated beside the logic owner**, on `main`'s history — authored on the `loop/<slug>`

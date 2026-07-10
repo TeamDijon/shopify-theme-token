@@ -16,9 +16,10 @@ cycle writes nothing — empty rows are noise.
    preamble: the `Pass` value, Worked / Friction / Tightening, and `Candidates` in
    `<target>:<short-kebab>` form. Commit on the context branch.
 2. **Loop-mechanics friction** (a step reference that misled, a gate that misfired, routing that
-   didn't fit the scope) → capture it as a retro note (chat surface) toward a future `ticket-loop`
-   reference / rule edit. `_spec-feedback.md`'s slugs target the spec system, not skills, so a
-   loop-mechanics note does not go there.
+   didn't fit the scope) is governance on the loop itself — it is handled at the `context` step
+   (scan item 7), landing as a `ticket-loop` / rule edit inline or a deferral, not captured here.
+   `_spec-feedback.md`'s slugs target the spec system, not skills, so loop-mechanics friction does
+   not go there.
 
 ## Promotion is separate
 
