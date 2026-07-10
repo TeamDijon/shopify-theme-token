@@ -122,8 +122,8 @@ No runtime strings.
 Per `validation-contract.md` Tier 2 (theme-primitive).
 
 - **Tier**: primitive (L1 block-backed; no sub-component half)
-- **Page**: `sections/validation--primitive--richtext.liquid` v1.2.0 (production-faithful — `token-section` is the real theme-root grid; chrome + the layout-neutral outline/label indicator come from the shared `validation--harness-styles` snippet; the dead `narrow` / `prose:narrow` fixtures were purged when that setting was removed in block v1.2.0) + `templates/index.validation--primitive--richtext.json` (shipped)
-- **Tests**: `.tests/e2e/primitive--richtext.spec.js` (executable; `npm run test:e2e`)
+- **Source**: `snippets/richtext.validation.json` — colocated fixture matrix (`{ settings, blocks, block_order }`), staged into the generic `?view=validation` slot by `.scripts/validation-generate.mjs` (`sections/validation.liquid` harness + a generated, gitignored `templates/index.validation.json`) for the run, then dropped. The harness is production-faithful — `token-section` is the real theme-root grid; chrome + the layout-neutral outline/label indicator come from the shared `validation--harness-styles` snippet; the dead `narrow` / `prose:narrow` fixtures were purged when that setting was removed in block v1.2.0.
+- **Tests**: `snippets/richtext.test.js` (executable; `npm run test:e2e`)
 - **Requires seeded**: `content_width/reading` (680px); `theme_color/accent`. The accent token's *value* is store-defined — the test resolves `--color-accent` at runtime rather than asserting a literal hex. (A `wide` cap was dropped from the matrix — the harness container never exceeds ~1232px, so a 1400px cap is a visual no-op; `reading` exercises the cap + self-center.)
 - **API surface**:
   - **content variation**: single paragraph, multi-paragraph, list (`<ul>`, `<ol>`), links, inline em/strong — verify the `prose` rules apply (paragraph spacing, list bullets, link underline)
@@ -138,7 +138,7 @@ Per `validation-contract.md` Tier 2 (theme-primitive).
   - Blank `content_width` → wrapper spans 100%; no `justify-self` override (grid stretch fills)
   - `text_color` set to a handle with no matching `theme_color` entry → `--text-color: var(--color-<handle>)` emits; the CSS variable resolves to its declaration default (or unset if not declared anywhere)
 - **Visual showcase**: a vertical stack of richtext blocks demonstrating content variations × widths × alignments. Reader confirms prose rules apply (paragraph spacing, list bullets, link decoration); content_width caps line length where set; color resolution matches.
-- **Assertions** (executable — `.tests/e2e/primitive--richtext.spec.js`):
+- **Assertions** (executable — `snippets/richtext.test.js`):
   - Every richtext root carries `data-modifiers="prose"` (no conditional emission)
   - Paragraph rhythm: a lone paragraph collapses both margins (first AND last child → `0` top and bottom); in a multi-paragraph block the middle paragraph gets `16px` top + bottom, the first collapses its top, the last its bottom
   - Lists render markers: `<ul>` computes `list-style-type: disc` (position `outside`, non-zero `padding-inline-start`), `<ol>` computes `decimal` — reaffirmed by the prose layer (`list-style: disc/decimal outside`) so a downstream reset can't strip them

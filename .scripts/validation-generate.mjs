@@ -5,20 +5,23 @@
  *   node .scripts/validation-generate.mjs <element>
  *
  * Reads the colocated `<element>.validation.json` source (located by name beside
- * the element's code — glob discovery, so it works whether the source sits in
- * snippets/, blocks/, or assets/), wraps it in the Shopify JSON-template envelope,
- * and writes templates/index.validation.json (gitignored; pushed for the test run,
- * then removed by validation-clean).
+ * the element's code — glob discovery across snippets/, blocks/, sections/, assets/,
+ * layout/), wraps it in the Shopify JSON-template envelope, and writes
+ * templates/index.validation.json (gitignored; pushed for the test run, then removed
+ * by validation-clean).
  *
- * The wrap is purely structural: the source carries { settings, blocks,
- * block_order }; the section type is always the generic `validation` harness.
+ * The wrap is purely structural: the source carries { settings, blocks, block_order }
+ * consumed by the generic `validation` harness. A source may also name a dedicated
+ * harness via `"harness": "<section-type>"` — snippet-only primitives (image / video)
+ * whose case matrix is Liquid `{% render %}` logic, not block data, point at their own
+ * committed harness section; everything else defaults to the generic block harness.
  */
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import { join, relative } from "node:path";
 
 const ROOT = process.cwd();
 const OUT = join(ROOT, "templates", "index.validation.json");
-const SEARCH_DIRS = ["snippets", "blocks", "assets"];
+const SEARCH_DIRS = ["snippets", "blocks", "sections", "assets", "layout"];
 
 const el = process.argv[2];
 if (!el) {
@@ -35,12 +38,13 @@ if (!srcPath) {
   process.exit(1);
 }
 
-const source = JSON.parse(readFileSync(srcPath, "utf8"));
+const { harness = "validation", ...rest } = JSON.parse(readFileSync(srcPath, "utf8"));
 const template = {
-  sections: { main: { type: "validation", ...source } },
+  sections: { main: { type: harness, ...rest } },
   order: ["main"],
 };
 writeFileSync(OUT, JSON.stringify(template, null, 2) + "\n");
 
-const blocks = Object.keys(source.blocks || {}).length;
-console.log(`generated ${relative(ROOT, OUT)} from ${relative(ROOT, srcPath)} (${blocks} blocks) — reach at /?view=validation`);
+const blocks = Object.keys(rest.blocks || {}).length;
+const via = harness === "validation" ? "" : ` (harness: ${harness})`;
+console.log(`generated ${relative(ROOT, OUT)} from ${relative(ROOT, srcPath)} (${blocks} blocks)${via} — reach at /?view=validation`);

@@ -207,8 +207,8 @@ Runtime strings (`locales/en.default.json` + `locales/fr.json`):
 
 Per `validation-contract.md` Tier 2 (theme-primitive; L1 block-backed, no sub-component half).
 
-- **Page**: `sections/validation--primitive--embed.liquid` + `templates/index.validation--primitive--embed.json` (shipped). The page is the production theme-root grid harness (renders `validation--harness-styles`); the JSON bakes the matrix, each case selected in tests by its `--block-label`. `media_size` + `content_width` are baked by metaobject handle. Embeds render full-width (production-faithful — the page is long, the live iframes lazy-load). One per-page exception (see the section's stylesheet): an inside-block label (embed is `overflow: hidden`, so the shared above-block label is clipped — placed inside top-left with a backing chip for legibility over live thumbnails, lifted by a doubled section class because the blank / unparseable cases carry no `[data-modifiers]`).
-- **Tests**: `.tests/e2e/primitive--embed.spec.js` (executable; `npm run test:e2e`)
+- **Source**: `snippets/embed.validation.json` — colocated fixture matrix (`{ settings, blocks, block_order }`), staged into the generic `?view=validation` slot by `.scripts/validation-generate.mjs` (`sections/validation.liquid` harness + a generated, gitignored `templates/index.validation.json`) for the run, then dropped. The generic harness is the production theme-root grid (renders `validation--harness-styles`); the source bakes the matrix as block instances, each case selected in tests by its `--block-label`. `media_size` + `content_width` are baked by metaobject handle. Embeds render full-width (production-faithful — the matrix is long, the live iframes lazy-load); because embed clips overflow, its block label is seated inside the block by the shared harness styles rather than placed above it.
+- **Tests**: `snippets/embed.test.js` (executable; `npm run test:e2e`)
 - **Requires seeded**: `media_size` handle `1-1`; `content_width` handle `narrow` — from Token's shipped catalog. The provider URLs are public YouTube / Vimeo IDs baked in the matrix (no store seeding).
 - **API surface**:
   - **URL parsing matrix**: every supported shape per provider (4 YouTube: watch / short / shorts / embed; 3 Vimeo: public / unlisted / player) → provider modifier + embed src
@@ -223,7 +223,7 @@ Per `validation-contract.md` Tier 2 (theme-primitive; L1 block-backed, no sub-co
   - Vimeo URL with unlisted hash (`vimeo.com/<ID>/<HASH>`) → embed URL includes `?h=<HASH>`
   - In a non-stretching parent (direct grid child, flex item) the wrapper still renders at full width — `inline-size: 100%` prevents the shrink-to-0 its absolutely-positioned content would otherwise cause (regression-guarded)
   - Iframe focus → inset focus ring visible (not clipped by `overflow: hidden`)
-- **Assertions** (executable — `.tests/e2e/primitive--embed.spec.js`):
+- **Assertions** (executable — `snippets/embed.test.js`):
   - All four YouTube shapes normalize to `https://www.youtube.com/embed/<id>`; `provider:youtube` modifier; `loading="lazy"`, `allowfullscreen`, YouTube `allow` policy
   - Vimeo public → `https://player.vimeo.com/video/<id>`; `provider:vimeo`; Vimeo `allow` policy; unlisted appends `?h=<hash>`; player URL used as-is
   - `title` carries the merchant value on the iframe

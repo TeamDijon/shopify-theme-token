@@ -133,7 +133,7 @@ N/A — design-system catalog, no user-facing strings beyond the `name` field fo
 Per `validation-contract.md` Tier 1a (substrate / metaobject).
 
 - **Tier**: substrate — metaobject sub-shape
-- **Page(s)**: `sections/validation--substrate--button-style.liquid` + `templates/index.validation--substrate--button-style.json` *(shipped)*. The page renders one button per seeded entry, showing the family × variant matrix at a glance.
+- **Page(s)**: `sections/button-style.liquid` + `templates/page.button-style.json` *(shipped)*. The page renders one button per seeded entry, showing the family × variant matrix at a glance.
 - **API surface** (matrix to exercise):
   - **Per-entry rendering**: each `button_style` metaobject entry rendered as a button with `data-modifiers="button-style:<handle>"`. Reader confirms each button matches the family + variant intent (solid filled, outline ring-only, link text-decoration; primary uses accent, secondary uses black, tertiary uses white).
   - **3×3 matrix completeness**: all 9 family × variant combinations render with distinct styling. No two render identically.

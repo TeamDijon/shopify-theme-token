@@ -194,7 +194,7 @@ Per `validation-contract.md` Tier 1a (substrate / utility-css).
   - `<details>` inside `prose` — the details-content animation block is scoped to all details elements globally; the prose rhythm rules apply on the wrapping element. The two coordinate well.
   - Nested prose containers — the rhythm cascade is intentionally not recursive; nested `data-modifiers*="prose"` re-applies the rules but inner-most wins on margin specifics
   - Star icon with `[data-preset="empty"]` and no `path[data-half-star]` — the `path[data-half-star]` selector matches nothing; the `[data-preset="empty"] { fill: none }` rule still applies and renders as outline-only
-- **Visual showcase**: rendering `validation--substrate--icon` exercises the icon system; rendering `validation--primitive--richtext` exercises the prose modifier
+- **Visual showcase**: the `icon` page showcase exercises the icon system; richtext's generate-and-drop validation exercises the prose modifier
 - **Assertions** (prose; Playwright once installed):
   - `[data-modifiers*="prose"] > :first-child` has computed `margin-block-start: 0`
   - `.skip-to-content` has computed `position: absolute; clip: rect(0, 0, 0, 0)` by default

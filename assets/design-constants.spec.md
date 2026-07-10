@@ -163,7 +163,7 @@ N/A — design constants, no user-facing strings.
 Per `validation-contract.md` Tier 1c (substrate / utility-css).
 
 - **Tier**: substrate — utility-css sub-shape
-- **Page(s)**: `sections/validation--utility-css--design-constants.liquid` + `templates/index.validation--utility-css--design-constants.json` *(planned — does not exist today)*. The page would surface all four scales as labeled swatches: z-index layers via positioned overlays, motion via interactive timing demonstrations, focus-ring via tabbable inputs, border-radius via container shapes.
+- **Source**: colocated `assets/design-constants.validation.json` source + `assets/design-constants.test.js` — generate-and-drop through the `?view=validation` slot *(planned)*. The matrix would surface all four scales as labeled swatches: z-index layers via positioned overlays, motion via interactive timing demonstrations, focus-ring via tabbable inputs, border-radius via container shapes.
 - **API surface** (matrix to exercise):
   - **Z-index layers**: 7 boxes, each positioned with a different `z-index: var(--layer-*)`, overlapping; reader confirms stack order matches `below` (under) → `temporary` (top).
   - **Motion durations + easings**: hover-triggered transitions, one card per duration × easing matrix (9 combinations); reader feels the perceptual difference and confirms the slow/emphasized one reads noticeably longer than fast/out.

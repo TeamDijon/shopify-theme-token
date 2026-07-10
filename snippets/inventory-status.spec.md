@@ -145,7 +145,7 @@ Locale-file structure follows `locale-conventions.md`. Keys live in `locales/en.
 Per `validation-contract.md` Tier 2 (theme-primitive — snippet-half).
 
 - **Tier**: theme-primitive (Tier 2 — snippet-half group)
-- **Page(s)**: `sections/validation--primitive--inventory-status.liquid` + `templates/index.validation--primitive--inventory-status.json` *(planned)*
+- **Source**: colocated `snippets/inventory-status.validation.json` source + `snippets/inventory-status.test.js` — generate-and-drop through the `?view=validation` slot *(planned)*
 - **API surface** (matrix to exercise):
   - **In-stock**: `inventory_management: nil` (untracked); `inventory_quantity > threshold` (e.g. 20, threshold 5)
   - **Low-stock**: `inventory_quantity` at threshold edge (5), just below (4), at minimum positive (1)

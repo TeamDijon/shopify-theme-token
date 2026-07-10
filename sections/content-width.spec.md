@@ -122,7 +122,7 @@ N/A — design-system catalog, no user-facing strings beyond the `name` field fo
 Per `validation-contract.md` Tier 1a (substrate / metaobject).
 
 - **Tier**: substrate — metaobject sub-shape
-- **Page(s)**: `sections/validation--substrate--content-width.liquid` + `templates/index.validation--substrate--content-width.json` *(shipped — describes the per-entry width emission and the substrate fallback)*
+- **Page(s)**: `sections/content-width.liquid` + `templates/page.content-width.json` *(shipped — describes the per-entry width emission and the substrate fallback)*
 - **API surface** (matrix to exercise):
   - **Per-entry catalog**: each `content_width` metaobject entry rendered as a horizontal bar with `max-inline-size: var(--content-width); width: 100%;` inside a section that picks the entry — reader confirms the rendered width matches the entry's `width`.
   - **Section-level pick**: a section with `content_width: reading` (680px) constrains its content track to 680px on viewports wider than ~720px; falls back to `100% - 2 * --gutter` on narrower viewports (the `min(...)` clamp).

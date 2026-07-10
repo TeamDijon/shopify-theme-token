@@ -14,7 +14,7 @@
 
 **Depends on**: Liquid built-in `color_contrast` filter
 
-**Consumers**: `sections/validation--substrate--theme-color.liquid` — picks the legible foreground for the "on-self" swatch per `theme_color` entry. No production consumers yet; future foreground-on-arbitrary-background contexts (sections sourcing a background hex from a `theme_color` setting and wanting auto-legible text) are the next likely consumers.
+**Consumers**: `sections/theme-color.liquid` (the `theme-color` page showcase) — picks the legible foreground for the "on-self" swatch per `theme_color` entry. No production consumers yet; future foreground-on-arbitrary-background contexts (sections sourcing a background hex from a `theme_color` setting and wanting auto-legible text) are the next likely consumers.
 
 ## Purpose
 
@@ -71,7 +71,7 @@ N/A — pure-logic utility, no user-facing strings.
 Per `validation-contract.md` Tier 1b (substrate / utility-snippet).
 
 - **Tier**: substrate — utility-snippet sub-shape
-- **Page**: `sections/validation--utility-snippet--color-contrast.liquid` + `templates/index.validation--utility-snippet--color-contrast.json` *(planned — Tier 1b has zero pages live; this would be the first)*
+- **Source**: colocated `snippets/utility--color-contrast.validation.json` source (its `{% render %}` case matrix names a committed harness section, as with `image` / `video`) + `snippets/utility--color-contrast.test.js` — generate-and-drop through the `?view=validation` slot *(planned)*
 - **API surface** (matrix of `{% render %}` calls):
   - **Defaults pair (`dark=#000`, `light=#fff`)** against:
     - Light backgrounds: `#ffffff`, `#faf8f5`, `#fff8dc` → `#000000` expected

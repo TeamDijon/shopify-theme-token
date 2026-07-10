@@ -1,0 +1,9 @@
+{
+  "sections": {
+    "main": {
+      "type": "container-style",
+      "settings": {}
+    }
+  },
+  "order": ["main"]
+}

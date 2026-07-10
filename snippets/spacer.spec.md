@@ -97,8 +97,8 @@ Both emitted per-instance via `utility--dynamic-style`, only when the source set
 
 Per `validation-contract.md` Tier 2 (theme-primitive; block-backed only).
 
-- **Page**: `sections/validation--primitive--spacer.liquid` + `templates/index.validation--primitive--spacer.json` (shipped). The page is the production theme-root grid harness (renders `validation--harness-styles`) carrying a base `--block-rhythm`, so the rhythm-neutral substrate rule is exercised, not just emitted. `size` + `background_color` are baked by metaobject **handle**; each case is selected in tests by its `--block-label`. Spacers are rhythm-neutral (no top margin) and often 0-height / transparent, so a harness-only `margin-block-end` separates the cases for legibility — it touches neither `block-size` nor `margin-block-start`.
-- **Tests**: `.tests/e2e/primitive--spacer.spec.js` (executable; `npm run test:e2e`)
+- **Source**: `snippets/spacer.validation.json` — colocated fixture matrix (`{ settings, blocks, block_order }`), staged into the generic `?view=validation` slot by `.scripts/validation-generate.mjs` (`sections/validation.liquid` harness + a generated, gitignored `templates/index.validation.json`) for the run, then dropped. The generic harness is the production theme-root grid (renders `validation--harness-styles`) carrying a base `--block-rhythm`, so the rhythm-neutral substrate rule is exercised, not just emitted. `size` + `background_color` are baked by metaobject **handle**; each case is selected in tests by its `--block-label`. Spacers are rhythm-neutral (no top margin) and often 0-height / transparent, so a harness-only `margin-block-end` separates the cases for legibility — it touches neither `block-size` nor `margin-block-start`.
+- **Tests**: `snippets/spacer.test.js` (executable; `npm run test:e2e`)
 - **Requires seeded**: `spacing` handles `xs` (4/8) · `sm` (8/12) · `md` (16/24) · `lg` (32/48) · `xl` (64/96); `theme_color` handles `accent` + `muted` — from Token's shipped catalog (`.scripts/seed-metaobjects.mjs`).
 - **API surface**:
   - `size` ∈ {blank, `xs`, `sm`, `md`, `lg`, `xl`} — height tracks the token's resolved value and switches mobile↔desktop at 48rem (the token's own `@media` branch)
@@ -108,7 +108,7 @@ Per `validation-contract.md` Tier 2 (theme-primitive; block-backed only).
   - `background_color` blank → transparent (no `--background-color` emitted)
   - Rhythm-neutral: a spacer in a section with `--block-rhythm` set still takes `margin-block-start: 0` (the substrate forces it on the spacer and on the block immediately after it) — the spacer's height *is* the gap, not stacked on top of rhythm
   - Placed inside a row-direction container → out of scope (anti-pattern; not validation-tested)
-- **Assertions** (executable — `.tests/e2e/primitive--spacer.spec.js`):
+- **Assertions** (executable — `snippets/spacer.test.js`):
   - Each `size` token emits `--spacer-block-size` and the computed `block-size` matches the token's value per viewport (desktop project → desktop value, mobile → mobile value)
   - Blank `size` → no `--spacer-block-size`, `block-size` collapses to 0, background transparent
   - `background_color` → `--background-color` emitted; computed `background-color` resolves to the picked token (`accent` → `rgb(255, 107, 53)`, `muted` → `rgb(107, 114, 128)`)

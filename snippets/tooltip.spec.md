@@ -209,7 +209,7 @@ Common per-project keys callers might add (project-side, not snippet-internal):
 Per `validation-contract.md` Tier 2 (theme-primitive — snippet-half).
 
 - **Tier**: theme-primitive (Tier 2 — snippet-half group)
-- **Page(s)**: `sections/validation--primitive--tooltip.liquid` + `templates/index.validation--primitive--tooltip.json` *(planned)*
+- **Source**: colocated `snippets/tooltip.validation.json` source + `snippets/tooltip.test.js` — generate-and-drop through the `?view=validation` slot *(planned)*
 - **API surface** (matrix to exercise):
   - **Icon trigger with `trigger_label`** — renders icon + carries `aria-label`
   - **Text trigger** (`trigger_text` set, `trigger_icon` ignored) — renders text + no `aria-label`

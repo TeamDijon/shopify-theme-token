@@ -96,7 +96,7 @@ N/A — handle-only metaobject, no user-facing strings beyond the `name` field f
 Per `validation-contract.md` Tier 1a (substrate / metaobject).
 
 - **Tier**: substrate — metaobject sub-shape
-- **Page**: `sections/validation--substrate--container-style.liquid` + `templates/index.validation--substrate--container-style.json` (shipped)
+- **Page**: `sections/container-style.liquid` + `templates/page.container-style.json` (shipped)
 - **Surface**: each variant (card / outlined / elevated) applied to each of the three container blocks (group / columns / media). Reader confirms identical appearance across containers per variant — verifying the centralized rule is what fires, not per-block duplicates.
 - **Edge cases**:
   - Off-list handle → modifier emits, no variant styling, block renders with default chrome (diagnostic mode)

@@ -224,7 +224,7 @@ The `*` asterisk character is locale-independent (universal required-marker conv
 Per `validation-contract.md` Tier 2 (theme-primitive — snippet-half).
 
 - **Tier**: theme-primitive (Tier 2 — snippet-half group)
-- **Page(s)**: `sections/validation--primitive--form-field.liquid` + `templates/index.validation--primitive--form-field.json` *(planned)*
+- **Source**: colocated `snippets/form-field.validation.json` source + `snippets/form-field.test.js` — generate-and-drop through the `?view=validation` slot *(planned)*
 - **API surface** (matrix to exercise):
   - **All nine types**: text / email / tel / number / url / password / textarea / select / checkbox — render each with a representative name + label
   - **States per type**:

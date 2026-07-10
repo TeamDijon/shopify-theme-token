@@ -1,0 +1,259 @@
+{% # Validation - Button style v2.0.0 %}
+
+{% comment %}
+  Changelog
+  - v2.0.0 — converted to the bare `button-style` page showcase (from the retired prefixed validation section) (`templates/page.button-style.json`, merchant-browsable Page template); class shortened to `shopify-section--button-style`
+  - v1.2.1 — schema `name` shortened to "Button style" (drop "Validation - " prefix; the URL path is the source of truth and the prefix bumped longer names past Shopify's 25-char schema-name limit)
+  - v1.2.0 — drop the "recognized/unrecognized" flag (no canonical handle list — off-list handles fall through to the default solid-primary appearance, that's all)
+  - v1.1.0 — render `validation--breadcrumb` at the top so the developer can navigate back to the hub
+  - v1.0.0 — initial
+
+  Visual test page for the `button_style` metaobject. Iterates every
+  entry and renders four button-snippet invocations per entry — one for
+  each branch of the button snippet — so the metaobject → snippet → CSS
+  pipeline is exercised end-to-end.
+
+  Diagnostic intent:
+  1. The variant CSS rule at `[data-modifiers*='button-style:<handle>']`
+     matches and applies the variant appearance (color, border, padding).
+  2. The four cells cover the snippet's conditional branches: plain
+     link → `<a>`; no link → `<button type="button">`; with icon →
+     leading SVG; new tab → target attrs + sr-only span.
+  3. Hover and focus-visible states are validated by the developer
+     interactively (no static rendering for those).
+  4. Off-list handles fall through to the default solid-primary look —
+     no flag, the visual itself signals whether the variant matched.
+
+  Merchant-browsable via the button-style page template (assign templates/page.button-style.json to a Page in admin).
+  See `.context/docs/validation.md` for the validation-suite convention.
+{% endcomment %}
+
+{% liquid
+  assign max_inline_size = section.settings.max_inline_size
+  assign base_selector = 'shopify-section-' | append: section.id
+%}
+
+<token-section data-modifiers="theme-root">
+  <header class="validation__intro">
+    <h1>Button style</h1>
+    <p>
+      Source: <code>metaobjects.button_style.values</code>. Consumed by the <code>button</code> snippet, which emits
+      <code>data-modifiers="button-style:&lt;handle&gt;"</code> for the variant CSS to match. Each row exercises four
+      snippet branches (plain link, with icon, no link, new-tab link). Off-list handles fall through to the default
+      solid-primary appearance — the visual itself tells you which rule matched. Hover or tab into a button to validate
+      states.
+    </p>
+  </header>
+
+  <ol class="button-style-suite">
+    {% for button_style in metaobjects.button_style.values %}
+      {% liquid
+        assign handle = button_style.system.handle
+      %}
+
+      <li class="button-style-row">
+        <header class="button-style-row__head">
+          <code class="button-style-row__handle">{{ handle }}</code>
+          <code class="button-style-row__modifier">data-modifiers="button-style:{{ handle }}"</code>
+        </header>
+
+        <div class="button-style-row__samples">
+          <div class="button-style-cell">
+            <div class="button-style-cell__sample">
+              {%
+                render 'button',
+                section: section,
+                block_id: handle | append: '-link',
+                content: 'Sample button',
+                link: '#',
+                button_style: button_style
+              %}
+            </div>
+            <span class="button-style-cell__label">link</span>
+          </div>
+
+          <div class="button-style-cell">
+            <div class="button-style-cell__sample">
+              {%
+                render 'button',
+                section: section,
+                block_id: handle | append: '-icon',
+                content: 'With icon',
+                link: '#',
+                button_style: button_style,
+                icon: metaobjects.icon.arrow
+              %}
+            </div>
+            <span class="button-style-cell__label">link + icon</span>
+          </div>
+
+          <div class="button-style-cell">
+            <div class="button-style-cell__sample">
+              {%
+                render 'button',
+                section: section,
+                block_id: handle | append: '-button',
+                content: 'No link',
+                button_style: button_style
+              %}
+            </div>
+            <span class="button-style-cell__label">&lt;button&gt;</span>
+          </div>
+
+          <div class="button-style-cell">
+            <div class="button-style-cell__sample">
+              {%
+                render 'button',
+                section: section,
+                block_id: handle | append: '-newtab',
+                content: 'External',
+                link: 'https://example.com',
+                open_in_new_tab: true,
+                button_style: button_style
+              %}
+            </div>
+            <span class="button-style-cell__label">link, new tab</span>
+          </div>
+        </div>
+      </li>
+    {% else %}
+      <li class="button-style-suite__empty">No <code>button_style</code> metaobject entries defined.</li>
+    {% endfor %}
+  </ol>
+</token-section>
+
+{% capture dynamic_style %}
+  {% if max_inline_size and max_inline_size != blank %}
+    --max-inline-size: {{ max_inline_size }}px;
+  {% endif %}
+{% endcapture %}
+{% render 'utility--dynamic-style', base_selector: base_selector, css_content: dynamic_style %}
+
+{% schema %}
+{
+  "name": "Button style",
+  "tag": "section",
+  "class": "shopify-section--button-style",
+  "settings": [
+    {
+      "type": "range",
+      "id": "max_inline_size",
+      "label": "Max width",
+      "min": 800,
+      "max": 1920,
+      "step": 20,
+      "unit": "px",
+      "default": 1280
+    }
+  ]
+}
+{% endschema %}
+
+{% stylesheet %}
+  @layer components {
+    .shopify-section--button-style {
+      token-section {
+        display: block;
+        max-inline-size: var(--max-inline-size, 80rem);
+        margin-inline: auto;
+        padding-block: 2rem;
+        padding-inline: 1.5rem;
+      }
+
+      .validation__intro {
+        margin-block-end: 2rem;
+
+        h1 {
+          margin-block-end: 0.5rem;
+        }
+
+        p {
+          max-inline-size: 65ch;
+          opacity: 0.75;
+        }
+
+        code {
+          font-family: ui-monospace, monospace;
+          font-size: 0.95em;
+        }
+      }
+
+      .button-style-suite {
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+
+      .button-style-suite__empty {
+        padding: 1.5rem;
+        border: 1px dashed currentColor;
+        border-radius: 0.5rem;
+        text-align: center;
+        opacity: 0.7;
+      }
+
+      .button-style-row {
+        display: flex;
+        flex-direction: column;
+        gap: 0.875rem;
+        padding: 1rem;
+        border: 1px solid rgba(0, 0, 0, 0.12);
+        border-radius: 0.5rem;
+      }
+
+      .button-style-row__head {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: baseline;
+        gap: 0.375rem 0.75rem;
+        font-family: ui-monospace, monospace;
+        font-size: 0.8125rem;
+      }
+
+      .button-style-row__handle {
+        font-weight: 600;
+      }
+
+      .button-style-row__modifier {
+        opacity: 0.55;
+      }
+
+      .button-style-row__samples {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 0.75rem;
+
+        @media (width < 48rem) {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+
+      .button-style-cell {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.625rem;
+        padding: 1rem 0.75rem;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        border-radius: 0.375rem;
+      }
+
+      .button-style-cell__sample {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-block-size: 3.5rem;
+      }
+
+      .button-style-cell__label {
+        font-family: ui-monospace, monospace;
+        font-size: 0.75rem;
+        opacity: 0.65;
+      }
+    }
+  }
+{% endstylesheet %}

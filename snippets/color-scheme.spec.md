@@ -156,7 +156,7 @@ N/A — pure CSS-variable emitter; the upstream scheme-setting labels live in Sh
 Per `validation-contract.md` Tier 1c (substrate / utility-css).
 
 - **Tier**: substrate — utility-css sub-shape
-- **Page(s)**: planned dedicated page `sections/validation--substrate--color-scheme.liquid` + `templates/index.validation--substrate--color-scheme.json`. The existing `validation--substrate--theme-color` covers the `--color-<handle>` palette but not the scheme-role surface — the planned page surfaces every role-token under each scheme as labeled swatches + state demos (idle / hover / focus / disabled).
+- **Source**: colocated `snippets/color-scheme.validation.json` source + `snippets/color-scheme.test.js` — generate-and-drop through the `?view=validation` slot *(planned)*. The `theme-color` page showcase covers the `--color-<handle>` palette but not the scheme-role surface — this source surfaces every role-token under each scheme as labeled swatches + state demos (idle / hover / focus / disabled).
 - **API surface** (the matrix to exercise):
   - **Scheme isolation**: a section with three child blocks, each carrying `color-scheme:scheme-N` modifier. Reader confirms each block renders with its scheme's role tokens; the outer ancestor stays in scheme-1 (no descendant catch-all leak).
   - **Direct color settings per scheme**: each of the 16 direct scheme settings rendered as a labeled swatch under each scheme (3 schemes × 16 settings = 48 cells).

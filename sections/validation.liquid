@@ -1,6 +1,15 @@
-{% # Validation harness v1.0.0 %}
+{% # Validation harness v1.2.0 %}
 
 {% comment %}
+  Changelog
+  - v1.2.0 — optional raw `content_width` setting → `--content-width` on the section, so
+    preset compositions that cap the readable track (e.g. content) reproduce it on this
+    harness (raw resolved value, like `max_inline_size` — the harness mirrors the CSS a
+    composition would carry, not section.liquid's metaobject mechanism).
+  - v1.1.0 — optional `color_scheme` setting → `color-scheme:<id>` modifier when set,
+    so preset compositions (which override the section scheme) run on this generic
+    harness instead of a bespoke per-preset section.
+
   Generic validation harness. Renders one element's block matrix — baked into the
   generated `templates/index.validation.json` and reached at `?view=validation` — as
   a labelled list. Title, description, and layout come from section settings supplied
@@ -22,10 +31,16 @@
   assign description = section.settings.description
   assign harness_layout = section.settings.harness_layout | default: 'grid'
   assign max_inline_size = section.settings.max_inline_size
+  assign content_width = section.settings.content_width
   assign base_selector = 'shopify-section-' | append: section.id
+  assign modifiers = 'theme-root'
+  assign color_scheme = section.settings.color_scheme
+  if color_scheme != blank
+    assign modifiers = modifiers | append: ',color-scheme:' | append: color_scheme
+  endif
 %}
 
-<token-section data-modifiers="theme-root" data-harness-layout="{{ harness_layout }}">
+<token-section data-modifiers="{{ modifiers }}" data-harness-layout="{{ harness_layout }}">
   <header class="validation__intro">
     <h1>{{ title | escape }}</h1>
     {% if description != blank %}{{ description }}{% endif %}
@@ -43,6 +58,9 @@
 {% capture dynamic_style %}
   {% if max_inline_size and max_inline_size != blank %}
     --max-inline-size: {{ max_inline_size }}px;
+  {% endif %}
+  {% if content_width != blank %}
+    --content-width: {{ content_width }};
   {% endif %}
 {% endcapture %}
 {% render 'utility--dynamic-style', base_selector: base_selector, css_content: dynamic_style %}
@@ -85,6 +103,16 @@
       "step": 20,
       "unit": "px",
       "default": 1280
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme (preset compositions)"
+    },
+    {
+      "type": "text",
+      "id": "content_width",
+      "label": "Content-width cap (raw CSS value, e.g. 42.5rem — preset compositions)"
     }
   ]
 }

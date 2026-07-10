@@ -1,0 +1,9 @@
+{
+  "sections": {
+    "main": {
+      "type": "gradient",
+      "settings": {}
+    }
+  },
+  "order": ["main"]
+}

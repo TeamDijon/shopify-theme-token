@@ -1,0 +1,209 @@
+{% # Validation - Media size v2.0.0 %}
+
+{% comment %}
+  Changelog
+  - v2.0.0 — converted to the bare `media-size` page showcase (from the retired prefixed validation section) (`templates/page.media-size.json`, merchant-browsable Page template); class shortened to `shopify-section--media-size`
+
+  Visual test page for the `media_size` metaobject. Iterates every entry
+  and renders a `media` block per entry with no image — the snippet's
+  built-in `placeholder_svg_tag` fallback supplies the visual fill — so
+  what's tested is the size container resolution, not the asset path.
+
+  Diagnostic intent:
+  1. Each metaobject entry resolves to one of three rule branches in
+     `media.liquid`:
+       - handle == `fill`              → modifier `sizing:fill`   → block-size: 100svh
+       - type == `ratio`               → modifier `sizing:ratio`  → aspect-ratio: <value>
+       - type == `relative` / `fixed`  → modifier `sizing:height` → block-size: <value>
+     The metadata strip surfaces the inputs (handle / type / value) and
+     the modifier the snippet would emit, so a misconfig is visible
+     without reading CSS.
+  2. The placeholder SVG fills its container via the snippet's own
+     `inline-size: 100%; block-size: 100%; object-fit: cover` rule, so a
+     visually-correct media wrapper is what the rule branch actually
+     resolved to.
+
+  `fill` and tall `relative` entries (e.g. 100svh) render at full design
+  size — the page becomes scroll-heavy. That's intentional: the validation
+  is showing what the rule produces, not a compact preview.
+
+  Merchant-browsable via the media-size page template (assign templates/page.media-size.json to a Page in admin).
+  See `.context/docs/validation.md` for the validation-suite convention.
+{% endcomment %}
+
+{% liquid
+  assign max_inline_size = section.settings.max_inline_size
+  assign base_selector = 'shopify-section-' | append: section.id
+%}
+
+<token-section data-modifiers="theme-root">
+  <header class="validation__intro">
+    <h1>Media size</h1>
+    <p>
+      Source: <code>metaobjects.media_size.values</code>. Consumed by the <code>media</code> snippet, which emits a
+      <code>sizing:&lt;mode&gt;</code> modifier for the wrapper's CSS to match. Each row renders one metaobject entry
+      through the real media snippet (no image — the snippet's built-in placeholder fills in) so the resolved sizing
+      rule is what you see.
+    </p>
+  </header>
+
+  <ol class="media-size-suite">
+    {% for media_size in metaobjects.media_size.values %}
+      {% liquid
+        assign handle = media_size.system.handle
+        assign type = media_size.type.value
+        assign value = media_size.value.value
+
+        if handle == 'fill'
+          assign emitted = 'sizing:fill'
+        elsif type == 'ratio'
+          assign emitted = 'sizing:ratio'
+        elsif type == 'relative' or type == 'fixed'
+          assign emitted = 'sizing:height'
+        else
+          assign emitted = '—'
+        endif
+      %}
+
+      <li class="media-size-row">
+        <header class="media-size-row__head">
+          <code class="media-size-row__handle">{{ handle }}</code>
+          {% if handle == 'fill' %}
+            <code class="media-size-row__metric">special:fill</code>
+          {% else %}
+            <code class="media-size-row__metric">type:{{ type | default: '—' }}</code>
+            <code class="media-size-row__metric">value:{{ value | default: '—' }}</code>
+          {% endif %}
+          <code class="media-size-row__emitted">data-modifiers="…,{{ emitted }}"</code>
+        </header>
+
+        <div class="media-size-row__sample">
+          {% render 'media', section: section, block_id: handle, media_size: media_size %}
+        </div>
+      </li>
+    {% else %}
+      <li class="media-size-suite__empty">No <code>media_size</code> metaobject entries defined.</li>
+    {% endfor %}
+  </ol>
+</token-section>
+
+{% capture dynamic_style %}
+  {% if max_inline_size and max_inline_size != blank %}
+    --max-inline-size: {{ max_inline_size }}px;
+  {% endif %}
+{% endcapture %}
+{% render 'utility--dynamic-style', base_selector: base_selector, css_content: dynamic_style %}
+
+{% schema %}
+{
+  "name": "Media size",
+  "tag": "section",
+  "class": "shopify-section--media-size",
+  "settings": [
+    {
+      "type": "range",
+      "id": "max_inline_size",
+      "label": "Max width",
+      "min": 800,
+      "max": 1920,
+      "step": 20,
+      "unit": "px",
+      "default": 1280
+    }
+  ]
+}
+{% endschema %}
+
+{% stylesheet %}
+  @layer components {
+    .shopify-section--media-size {
+      token-section {
+        display: block;
+        max-inline-size: var(--max-inline-size, 80rem);
+        margin-inline: auto;
+        padding-block: 2rem;
+        padding-inline: 1.5rem;
+      }
+
+      .validation__intro {
+        margin-block-end: 2rem;
+
+        h1 {
+          margin-block-end: 0.5rem;
+        }
+
+        p {
+          max-inline-size: 65ch;
+          opacity: 0.75;
+        }
+
+        code {
+          font-family: ui-monospace, monospace;
+          font-size: 0.95em;
+        }
+      }
+
+      .media-size-suite {
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+
+      .media-size-suite__empty {
+        padding: 1.5rem;
+        border: 1px dashed currentColor;
+        border-radius: 0.5rem;
+        text-align: center;
+        opacity: 0.7;
+      }
+
+      .media-size-row {
+        display: flex;
+        flex-direction: column;
+        gap: 0.875rem;
+        padding: 1rem;
+        border: 1px solid rgba(0, 0, 0, 0.12);
+        border-radius: 0.5rem;
+      }
+
+      .media-size-row__head {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: baseline;
+        gap: 0.375rem 0.75rem;
+        font-family: ui-monospace, monospace;
+        font-size: 0.8125rem;
+      }
+
+      .media-size-row__handle {
+        font-weight: 600;
+      }
+
+      .media-size-row__metric {
+        opacity: 0.65;
+      }
+
+      .media-size-row__emitted {
+        opacity: 0.5;
+        margin-inline-start: auto;
+      }
+
+      .media-size-row__sample {
+        max-inline-size: 32rem;
+
+        /* The Shopify placeholder SVG renders a small centered icon, not a
+           full-bleed fill — paint a faint background + dashed outline on the
+           media block so its actual computed dimensions are visible. */
+        & .shopify-block--media {
+          border-radius: 0.375rem;
+          background-color: rgba(0, 0, 0, 0.04);
+          outline: 1px dashed rgba(0, 0, 0, 0.18);
+          outline-offset: -1px;
+        }
+      }
+    }
+  }
+{% endstylesheet %}

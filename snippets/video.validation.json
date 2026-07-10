@@ -1,0 +1,7 @@
+{
+  "harness": "validation--primitive--video",
+  "settings": {
+    "desktop_video": "shopify://files/videos/landscape.mp4",
+    "mobile_video": "shopify://files/videos/portrait.mp4"
+  }
+}

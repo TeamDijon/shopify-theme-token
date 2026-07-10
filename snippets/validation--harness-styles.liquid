@@ -1,7 +1,10 @@
-{% # Validation harness styles v1.1.0 %}
+{% # Validation harness styles v1.2.0 %}
 
 {% comment %}
   Changelog
+  - v1.2.0 — seat the block label inside media blocks (media clips overflow, so an
+    above-block label is cut off). Generalized from the former per-hero section
+    exception so preset compositions on the generic harness inherit it.
   - v1.1.0 — broaden the scope selector to `[class*='shopify-section--validation']`
     (dropped the trailing `--`) so it also covers the generic `validation` harness
     (generate-and-drop model), not only the legacy per-element
@@ -94,6 +97,14 @@
         font-weight: 600;
         opacity: 0.7;
         white-space: nowrap;
+      }
+
+      /* media clips overflow (object-fit box), so a label placed above the block is
+         cut off — seat it inside the top-left for media blocks. Generalized from the
+         former per-hero exception so any harness (incl. preset compositions) gets it. */
+      token-section > .shopify-block--media::before {
+        inset-block: 0.5rem auto;
+        inset-inline: 0.5rem auto;
       }
     }
   }

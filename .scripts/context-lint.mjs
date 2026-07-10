@@ -106,9 +106,51 @@ if (existsSync(LEGACY_SPECS)) {
   }
 }
 
+// ---- 4. template-pin — a colocated spec citing a committed template must resolve it ----
+// PIN_RE only covers versioned .liquid/.js; JSON templates (page.<name>.json showcase
+// pins) carry no version, so verify existence directly. Catches index.→page. drift.
+// Scan only the header (the Implementation / Page(s) pin region before the first `## `),
+// so body-prose examples + deferred hypotheticals aren't treated as pins.
+const TPL_RE = /`(templates\/[\w.-]+\.json)`/g;
+for (const dir of CODE_DIRS) {
+  const absDir = join(ROOT, dir);
+  if (!existsSync(absDir)) continue;
+  for (const specFile of readdirSync(absDir).filter((f) => f.endsWith(".spec.md"))) {
+    const header = read(join(absDir, specFile)).split(/\n##\s/)[0];
+    const seen = new Set();
+    for (const [, rel] of header.matchAll(TPL_RE)) {
+      if (seen.has(rel) || rel === "templates/index.validation.json") continue; // generated slot is gitignored
+      seen.add(rel);
+      if (!existsSync(join(ROOT, rel)))
+        note("template-pin", `${dir}/${specFile}: pins \`${rel}\` — file not found`);
+    }
+  }
+}
+
+// ---- 5. retired-ref — retired validation naming must not resurface ----
+// Live: bare `?view=validation`, and image/video's `validation--primitive--image/video`
+// harnesses. Retired: substrate → bare `page.<name>` showcases; presets → `section--<preset>`
+// sources; every `?view=validation--…` route → the generate-and-drop `?view=validation` slot.
+// These three literals are dead references anywhere they appear (use prose for history).
+const RETIRED = ["?view=validation--", "validation--substrate--", "validation--preset--"];
+const REF_DIRS = ["snippets", "blocks", "sections", "assets", "layout", ".context/docs", ".context/rules"];
+for (const dir of REF_DIRS) {
+  const absDir = join(ROOT, dir);
+  if (!existsSync(absDir)) continue;
+  for (const f of readdirSync(absDir).filter((f) => /\.(liquid|json|md|js)$/.test(f))) {
+    const src = read(join(absDir, f));
+    for (const pat of RETIRED) {
+      if (src.includes(pat)) {
+        note("retired-ref", `${dir}/${f} — retired \`${pat}…\` literal (see validation.md for the current model)`);
+        break;
+      }
+    }
+  }
+}
+
 // ---- report ----
 if (findings.length === 0) {
-  console.log("context-lint: clean ✓  (tally, colocation, placement)");
+  console.log("context-lint: clean ✓  (tally, colocation, placement, template-pin, retired-ref)");
   process.exit(0);
 }
 const byCheck = {};

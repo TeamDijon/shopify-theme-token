@@ -198,7 +198,7 @@ N/A at the layout layer — layouts emit no user-facing strings. The strings the
 Per `validation-contract.md` — substrate / layout sub-shape (no dedicated tier; layouts are validated by the page-shape they wrap rather than a per-layout page).
 
 - **Tier**: substrate — layout sub-shape
-- **Page(s)**: covered indirectly by every shipped validation template. Every `templates/index.validation--*.json` renders through `layout/theme.liquid`; the head spine + body chrome + main-anchor are observable on every validation page. `landing.liquid` has no current consumer; a future validation surface that exercises it would set `"layout": "landing"` in its template JSON.
+- **Page(s)**: covered indirectly by every validation surface. The `?view=validation` generate-and-drop slot and the `page.<name>` metaobject showcases all render through `layout/theme.liquid`; the head spine + body chrome + main-anchor are observable on every validation page. `landing.liquid` has no current consumer; a future validation surface that exercises it would set `"layout": "landing"` in its template JSON.
 - **API surface**:
   - Head spine ordering — DevTools shows the 12 stages in the documented order before `content_for_header`'s injections
   - `<html lang>` matches the active locale (defaults: `en`; flips to `fr` under FR locale)
@@ -212,7 +212,7 @@ Per `validation-contract.md` — substrate / layout sub-shape (no dedicated tier
   - `settings.favicon` unset → no favicon link
   - FR locale active → `<html lang="fr">`, hreflang alternates change accordingly (per `utility--hreflang.spec.md`)
   - landing.liquid invoked → header / footer / overlay groups do not render; main + chrome unchanged
-- **Visual showcase**: each validation page renders through the default layout; the rendered head + body chrome is itself the showcase. A dedicated `templates/index.validation--substrate--layout.json` is not required — the layout's footprint is exhaustively exercised by every other validation surface.
+- **Visual showcase**: each validation page renders through the default layout; the rendered head + body chrome is itself the showcase. A dedicated layout validation page is not required — the layout's footprint is exhaustively exercised by every other validation surface.
 - **Assertions** (prose; Playwright once installed):
   - `document.querySelectorAll('main').length === 1`
   - `document.getElementById('page_content')` returns the `<main>` element

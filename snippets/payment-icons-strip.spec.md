@@ -121,7 +121,7 @@ Locale-file structure follows `locale-conventions.md`. Key lives in `locales/en.
 Per `validation-contract.md` Tier 2 (theme-primitive — snippet-half).
 
 - **Tier**: theme-primitive (Tier 2 — snippet-half group)
-- **Page(s)**: `sections/validation--primitive--payment-icons-strip.liquid` + `templates/index.validation--primitive--payment-icons-strip.json` *(planned)*
+- **Source**: colocated `snippets/payment-icons-strip.validation.json` source + `snippets/payment-icons-strip.test.js` — generate-and-drop through the `?view=validation` slot *(planned)*
 - **API surface** (matrix to exercise):
   - **Default (no `types` arg)** — uses `shop.enabled_payment_types`; visual confirms every enabled method renders
   - **Explicit `types` override** with a curated list (e.g. `['visa', 'master', 'amex']`) — confirms order + filtering work

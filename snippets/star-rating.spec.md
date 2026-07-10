@@ -131,7 +131,7 @@ Locale-file structure follows `locale-conventions.md`. Both keys live in `locale
 Per `validation-contract.md` Tier 2 (theme-primitive — snippet-half) and Tier 1c (utility-css for the star preset rules — covered indirectly by the icon validation path).
 
 - **Tier**: theme-primitive (Tier 2 — snippet-half group)
-- **Page(s)**: `sections/validation--primitive--star-rating.liquid` + `templates/index.validation--primitive--star-rating.json` *(planned)*
+- **Source**: colocated `snippets/star-rating.validation.json` source + `snippets/star-rating.test.js` — generate-and-drop through the `?view=validation` slot *(planned)*
 - **API surface** (matrix to exercise):
   - **Rating values across the spectrum**: `0`, `0.4` (< 0.5 → all empty), `0.5` (one half-star), `1.0`, `2.5`, `3.7` (rounds visually to 3.5; SR reads 3.7), `4.5`, `5.0`
   - **Count states**: blank (no count rendered, SR label drops suffix), `1` (singular grammar consideration — `1 review` vs `1 reviews` — depending on locale), `1000` (large value; visual layout doesn't break)

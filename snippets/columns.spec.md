@@ -203,8 +203,8 @@ No runtime strings.
 Per `validation-contract.md` Tier 2 (theme-primitive).
 
 - **Tier**: primitive (L1 block-backed; no sub-component half)
-- **Page**: `sections/validation--primitive--columns.liquid` v1.2.0 (production-faithful — `token-section` is the real theme-root bleed grid, so blocks sit in the content track and bleed modifiers paint; chrome + the layout-neutral outline/label indicator come from the shared `validation--harness-styles` snippet) + `templates/index.validation--primitive--columns.json` (shipped)
-- **Tests**: `.tests/e2e/primitive--columns.spec.js` (executable; `npm run test:e2e`)
+- **Source**: `snippets/columns.validation.json` — colocated fixture matrix (`{ settings, blocks, block_order }`), staged into the generic `?view=validation` slot by `.scripts/validation-generate.mjs` (`sections/validation.liquid` harness + a generated, gitignored `templates/index.validation.json`) for the run, then dropped. The harness is production-faithful — `token-section` is the real theme-root bleed grid, so blocks sit in the content track and bleed modifiers paint; chrome + the layout-neutral outline/label indicator come from the shared `validation--harness-styles` snippet.
+- **Tests**: `snippets/columns.test.js` (executable; `npm run test:e2e`)
 - **Requires seeded**: `container_style/card`, `content_width/reading` (Token's shipped seed catalog); color scheme `scheme-2` must exist in the theme's color schemes. A test needing an unseeded handle signals a seed-set gap, not a test workaround.
 - **API surface**:
   - **Ratio matrix**: `2`, `3`, `4`, `1-2`, `2-1`, `1-3`, `3-1` × stack-below ∈ {none, 40, 60, 80} — verify grid-template-columns emission and stack-below behavior at each breakpoint
@@ -223,7 +223,7 @@ Per `validation-contract.md` Tier 2 (theme-primitive).
   - Bleed modifier emitted on a columns block nested inside another container → section's bleed grid-column rule doesn't match (`>` direct-child selector); nested columns positions in its container's layout, no bleed
   - Container query support absent (legacy engines) → grid renders without stack-below switching; degrades to default `--grid-template-columns` always-on
 - **Visual showcase**: matrix sections per concern. Reader confirms ratio renders correctly at desktop/mobile, stack-below switches at the named breakpoint, sticky pins the correct track, bleed escapes the gutter.
-- **Assertions** (executable — `.tests/e2e/primitive--columns.spec.js`):
+- **Assertions** (executable — `snippets/columns.test.js`):
   - Each of the seven ratios emits `columns:<value>`, sets `--grid-template-columns` to the expected template (`repeat(2, 1fr)` / `1fr 2fr` / … ), and lays the expected track count on `token-layout`; asymmetric ratios size tracks proportionally (1-3 → second track ≈ 3× first), equal ratios evenly
   - `gap` emits `--gap` (rem) and applies as `token-layout` `gap`; zero gap emits nothing
   - `vertical_alignment` start is zero-emission (`--vertical-alignment` unset, `align-items: start`); center / end / stretch emit the var and set `align-items`
@@ -238,7 +238,7 @@ Per `validation-contract.md` Tier 2 (theme-primitive).
   - Child fill: an uncapped richtext track child fills its `1fr` track (width ≈ track width, not its content width) — regression guard for the text-block `margin-inline: auto` fix (`richtext` v1.2.2 / `title` v1.1.4): auto inline margins are gated on a `content_width` cap so they don't disable grid `justify-self: stretch`
   - Empty columns renders the outer `.shopify-block--columns` + `token-layout` wrapper with no children
   - Top-spacing overrides emit `--mobile-/--desktop-margin-block-start` (loose `1.0rem` / `4.0rem`, tight `0.5rem` / `1.0rem`) — absolute values that replace the rhythm
-- **Deliberately unasserted**: `block.shopify_attributes` (editor-only). `container_style` legibility is delegated to `validation--substrate--container-style`. (Bleed painting is now asserted here — the harness `token-section` is the real theme-root grid.)
+- **Deliberately unasserted**: `block.shopify_attributes` (editor-only). `container_style` legibility is delegated to the `container-style` page showcase. (Bleed painting is now asserted here — the harness `token-section` is the real theme-root grid.)
 - **Unit scope**: none (Liquid + CSS only)
 
 ## Out of scope

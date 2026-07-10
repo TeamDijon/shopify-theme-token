@@ -114,8 +114,8 @@ No runtime strings; separator is structural with no semantic role announcement b
 
 Per `validation-contract.md` Tier 2 (theme-primitive; L1 block-backed, no sub-component half).
 
-- **Page**: `sections/validation--primitive--separator.liquid` + `templates/index.validation--primitive--separator.json` (shipped). The page is the production theme-root grid harness (renders `validation--harness-styles`); the JSON bakes the matrix as block instances, each selected in tests by its `--block-label`. `content_width` + `line_color` are baked by metaobject **handle** (`"content_width": "narrow"`, `"line_color": "primary"`) — the same handle-reference form `index.json` uses for `spacing`, so the matrix is JSON-portable.
-- **Tests**: `.tests/e2e/primitive--separator.spec.js` (executable; `npm run test:e2e`)
+- **Source**: `snippets/separator.validation.json` — colocated fixture matrix (`{ settings, blocks, block_order }`), staged into the generic `?view=validation` slot by `.scripts/validation-generate.mjs` (`sections/validation.liquid` harness + a generated, gitignored `templates/index.validation.json`) for the run, then dropped. The generic harness is the production theme-root grid (renders `validation--harness-styles`); the source bakes the matrix as block instances, each selected in tests by its `--block-label`. `content_width` + `line_color` are baked by metaobject **handle** (`"content_width": "narrow"`, `"line_color": "primary"`) — the same handle-reference form `index.json` uses for `spacing`, so the matrix is JSON-portable.
+- **Tests**: `snippets/separator.test.js` (executable; `npm run test:e2e`)
 - **Requires seeded**: `content_width` handles `narrow` (600) + `medium` (1000); `theme_color` handles `primary` + `accent` — from Token's shipped catalog (`.scripts/seed-metaobjects.mjs`).
 - **API surface**:
   - **content_width variation**: blank (full content track), `narrow`, `medium` → wrapper caps and centers at each value
@@ -126,7 +126,7 @@ Per `validation-contract.md` Tier 2 (theme-primitive; L1 block-backed, no sub-co
   - Blank `line_color` → border resolves to `--color-role-border` (no `--line-color` emitted)
   - Inside a flex parent (e.g. a `direction:row` group) → wrapper still renders at 100% width thanks to the explicit `inline-size: 100%` (without it the wrapper collapses to 0 — see CSS rationale)
   - `content_width` > container width → browser `min()` semantics cap at the container
-- **Assertions** (executable — `.tests/e2e/primitive--separator.spec.js`):
+- **Assertions** (executable — `snippets/separator.test.js`):
   - Default: no `--content-width` / `--line-color` emitted; `<hr>` border is a hairline (`border-block-start-width: 1px`, `solid`) at the `--color-role-border` color; wrapper spans the content track
   - `content_width` caps: emitted `--content-width` (rem) + computed `max-inline-size` (px) match the handle (`narrow` → `37.5rem` / `600px`; `medium` → `62.5rem` / `1000px`); the capped wrapper renders narrower than full and centers (geometric `leftGap ≈ rightGap`, desktop)
   - `line_color`: emitted `--line-color` resolves to the picked token on the `<hr>` border (`primary` → `rgb(46, 91, 255)`, `accent` → `rgb(255, 107, 53)`), distinct from the role-border default
