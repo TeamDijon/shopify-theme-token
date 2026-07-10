@@ -1,0 +1,68 @@
+{
+  "settings": {
+    "title": "Block: spacer",
+    "description": "<p>Each row is one spacer block instance, labelled by its block id. Matrix per snippets/spacer.spec.md § Validation.</p>",
+    "harness_layout": "grid",
+    "max_inline_size": 1280
+  },
+  "blocks": {
+    "blank": {
+      "type": "spacer",
+      "settings": {}
+    },
+    "xs": {
+      "type": "spacer",
+      "settings": {
+        "size": "xs"
+      }
+    },
+    "sm": {
+      "type": "spacer",
+      "settings": {
+        "size": "sm"
+      }
+    },
+    "md": {
+      "type": "spacer",
+      "settings": {
+        "size": "md"
+      }
+    },
+    "lg": {
+      "type": "spacer",
+      "settings": {
+        "size": "lg"
+      }
+    },
+    "xl": {
+      "type": "spacer",
+      "settings": {
+        "size": "xl"
+      }
+    },
+    "md-bg": {
+      "type": "spacer",
+      "settings": {
+        "size": "md",
+        "background_color": "accent"
+      }
+    },
+    "lg-bg": {
+      "type": "spacer",
+      "settings": {
+        "size": "lg",
+        "background_color": "muted"
+      }
+    }
+  },
+  "block_order": [
+    "blank",
+    "xs",
+    "sm",
+    "md",
+    "lg",
+    "xl",
+    "md-bg",
+    "lg-bg"
+  ]
+}

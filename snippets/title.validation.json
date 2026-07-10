@@ -1,0 +1,158 @@
+{
+  "settings": {
+    "title": "Block: title",
+    "description": "<p>Each row is one title block instance, labelled by its block id. Matrix per snippets/title.spec.md § Validation.</p>",
+    "harness_layout": "grid",
+    "max_inline_size": 1280
+  },
+  "blocks": {
+    "h1": {
+      "type": "title",
+      "settings": {
+        "tag": "h1",
+        "content": "Heading level 1 — display"
+      }
+    },
+    "h2": {
+      "type": "title",
+      "settings": {
+        "tag": "h2",
+        "content": "Heading level 2"
+      }
+    },
+    "h3": {
+      "type": "title",
+      "settings": {
+        "tag": "h3",
+        "content": "Heading level 3"
+      }
+    },
+    "h4": {
+      "type": "title",
+      "settings": {
+        "tag": "h4",
+        "content": "Heading level 4"
+      }
+    },
+    "h5": {
+      "type": "title",
+      "settings": {
+        "tag": "h5",
+        "content": "Heading level 5"
+      }
+    },
+    "h6": {
+      "type": "title",
+      "settings": {
+        "tag": "h6",
+        "content": "Heading level 6"
+      }
+    },
+    "p-tag": {
+      "type": "title",
+      "settings": {
+        "tag": "p",
+        "content": "Paragraph tag — body text style"
+      }
+    },
+    "richtext": {
+      "type": "title",
+      "settings": {
+        "tag": "h2",
+        "content": "Heading with <em>italic</em>, <strong>bold</strong>, and a <a href=\"#\">link</a>"
+      }
+    },
+    "styled": {
+      "type": "title",
+      "settings": {
+        "tag": "h3",
+        "content": "H3 styled as H1",
+        "text_style": "h1"
+      }
+    },
+    "with-icon": {
+      "type": "title",
+      "settings": {
+        "tag": "h2",
+        "content": "Title with icon",
+        "icon": "arrow"
+      }
+    },
+    "centered": {
+      "type": "title",
+      "settings": {
+        "tag": "h2",
+        "content": "Centered title",
+        "text_align": "center"
+      }
+    },
+    "end-aligned": {
+      "type": "title",
+      "settings": {
+        "tag": "h2",
+        "content": "End-aligned title",
+        "text_align": "end"
+      }
+    },
+    "colored": {
+      "type": "title",
+      "settings": {
+        "tag": "h2",
+        "content": "Accent-colored title",
+        "text_color": "accent"
+      }
+    },
+    "width-capped": {
+      "type": "title",
+      "settings": {
+        "tag": "h2",
+        "content": "Width-capped title — long enough that the reading cap wraps it onto multiple lines instead of spanning the whole content column",
+        "content_width": "reading"
+      }
+    },
+    "tight-spacing": {
+      "type": "title",
+      "settings": {
+        "tag": "h2",
+        "content": "Tighter than the rhythm — a 16px override sits closer to the block above than the 48px section rhythm",
+        "mobile_margin_block_start": 8,
+        "desktop_margin_block_start": 16
+      }
+    },
+    "with-spacing": {
+      "type": "title",
+      "settings": {
+        "tag": "h2",
+        "content": "After 64px desktop top margin",
+        "mobile_margin_block_start": 16,
+        "desktop_margin_block_start": 64
+      }
+    },
+    "blank": {
+      "type": "title",
+      "settings": {
+        "tag": "h2",
+        "content": ""
+      }
+    }
+  },
+  "block_order": [
+    "h1",
+    "h2",
+    "h3",
+    "h4",
+    "h5",
+    "h6",
+    "p-tag",
+    "richtext",
+    "styled",
+    "with-icon",
+    "centered",
+    "end-aligned",
+    "colored",
+    "with-spacing",
+    "tight-spacing",
+    "width-capped",
+    "blank"
+  ]
+}

@@ -1,0 +1,95 @@
+{
+  "settings": {
+    "title": "Block: richtext",
+    "description": "<p>Each row is one richtext block instance, labelled by its block id. Matrix per snippets/richtext.spec.md § Validation.</p>",
+    "harness_layout": "grid",
+    "max_inline_size": 1280
+  },
+  "blocks": {
+    "plain": {
+      "type": "richtext",
+      "settings": {
+        "content": "<p>Plain single standalone paragraph. The quick brown fox jumps over the lazy dog while a verbose narrator describes the entire scene in unnecessary detail.</p>"
+      }
+    },
+    "multi-paragraph": {
+      "type": "richtext",
+      "settings": {
+        "content": "<p>Multi first para — tests the paragraph-to-paragraph spacing emitted by the prose utility rules.</p><p>Multi middle para — the gap between paragraphs should be consistent with the design-system rhythm.</p><p>Multi last para — closes the sequence.</p>"
+      }
+    },
+    "with-list": {
+      "type": "richtext",
+      "settings": {
+        "content": "<p>List lead paragraph introducing the items below.</p><ul><li>UL item one</li><li>UL item two with longer text that may wrap to a second line</li><li>UL item three</li></ul><ol><li>OL step one</li><li>OL step two</li><li>OL step three</li></ol>"
+      }
+    },
+    "with-emphasis": {
+      "type": "richtext",
+      "settings": {
+        "content": "<p>Emphasis paragraph carries <em>italic emphasis here</em>, <strong>bold weight here</strong>, and an <a href=\"#\">inline link here</a> to validate inline-element rendering inside prose.</p>"
+      }
+    },
+    "with-heading": {
+      "type": "richtext",
+      "settings": {
+        "content": "<p>Intro paragraph before the heading, so the h2 is not the block's first child.</p><h2>Heading inside prose</h2><p>Body paragraph after the heading — the nested h2 binds to its text_style via the bare-tag pattern and the prose rule sets its top margin.</p>"
+      }
+    },
+    "align-center": {
+      "type": "richtext",
+      "settings": {
+        "content": "<p>Centered prose body — text_align center should set text-align center on the wrapper.</p>",
+        "text_align": "center"
+      }
+    },
+    "align-end": {
+      "type": "richtext",
+      "settings": {
+        "content": "<p>End-aligned prose body — text_align end should set text-align end on the wrapper.</p>",
+        "text_align": "end"
+      }
+    },
+    "width-reading": {
+      "type": "richtext",
+      "settings": {
+        "content": "<p>Reading-width prose capped at the seeded reading content_width (680px / 42.5rem) — the readable column for long-form body copy.</p>",
+        "content_width": "reading"
+      }
+    },
+    "color-accent": {
+      "type": "richtext",
+      "settings": {
+        "content": "<p>Accent-colored prose — text_color accent emits --text-color and recolors the body.</p>",
+        "text_color": "accent"
+      }
+    },
+    "with-spacing": {
+      "type": "richtext",
+      "settings": {
+        "content": "<p>Spacing override prose — 16px mobile / 64px desktop top margin, absolute (replaces the section rhythm).</p>",
+        "mobile_margin_block_start": 16,
+        "desktop_margin_block_start": 64
+      }
+    },
+    "blank": {
+      "type": "richtext",
+      "settings": {
+        "content": ""
+      }
+    }
+  },
+  "block_order": [
+    "plain",
+    "multi-paragraph",
+    "with-list",
+    "with-emphasis",
+    "with-heading",
+    "align-center",
+    "align-end",
+    "width-reading",
+    "color-accent",
+    "with-spacing",
+    "blank"
+  ]
+}

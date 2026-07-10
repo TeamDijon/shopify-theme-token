@@ -1,8 +1,8 @@
 import { test, expect } from '@playwright/test';
 
 // Tier 2 (theme-primitive) assertions for the richtext block, converted from
-// .context/specs/richtext.md § Validation. Matrix baked in
-// templates/index.validation--primitive--richtext.json.
+// snippets/richtext.spec.md § Validation. Matrix baked in
+// snippets/richtext.validation.json.
 //
 // richtext renders a <div class="shopify-block--richtext" data-modifiers="prose">
 // wrapping the rich-text content. Block-side contract: the prose modifier is
@@ -12,7 +12,7 @@ import { test, expect } from '@playwright/test';
 // and link underline are UA defaults preserved through the reset, NOT declared
 // by the prose layer, so these assertions guard the whole chain.
 
-const PATH = '/?view=validation--primitive--richtext';
+const PATH = '/?view=validation';
 
 test.beforeEach(async ({ page }) => {
   await page.goto(PATH);

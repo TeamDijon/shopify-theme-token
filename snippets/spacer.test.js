@@ -1,15 +1,15 @@
 import { test, expect } from '@playwright/test';
 
 // Tier 2 (theme-primitive) assertions for the spacer block, converted from
-// .context/specs/spacer.md § Validation. Matrix baked in
-// templates/index.validation--primitive--spacer.json.
+// snippets/spacer.spec.md § Validation. Matrix baked in
+// snippets/spacer.validation.json.
 //
 // Spacers carry no text, so each case is selected by its --block-label (set per
 // block by validation--block-labels, read off the wrapper). The page is the real
 // theme-root grid carrying a base --block-rhythm, so the rhythm-neutral substrate
 // rule is exercised here, not just emitted.
 
-const PATH = '/?view=validation--primitive--spacer';
+const PATH = '/?view=validation';
 
 // spacing tokens (px): [mobile, desktop] — seeded by .scripts/seed-metaobjects.mjs.
 // Desktop project (1280) is ≥ the 48rem (768px) breakpoint → desktop value;

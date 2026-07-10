@@ -1,8 +1,8 @@
 import { test, expect } from '@playwright/test';
 
 // Tier 2 (theme-primitive) assertions for the embed block, converted from
-// .context/specs/embed.md § Validation. Matrix baked in
-// templates/index.validation--primitive--embed.json.
+// snippets/embed.spec.md § Validation. Matrix baked in
+// snippets/embed.validation.json.
 //
 // embed's real logic is the Liquid URL parser; the tests assert the emitted
 // iframe markup (src per provider, loading/allow/title) + the provider/sizing
@@ -11,7 +11,7 @@ import { test, expect } from '@playwright/test';
 // the provider's concern, deliberately unasserted. Each case is selected by its
 // --block-label (embed carries no stable text).
 
-const PATH = '/?view=validation--primitive--embed';
+const PATH = '/?view=validation';
 const VIMEO_EMBED = 'https://player.vimeo.com/video/76979871';
 
 // Each YouTube URL shape normalizes to /embed/<id>. watch / short-url / embed

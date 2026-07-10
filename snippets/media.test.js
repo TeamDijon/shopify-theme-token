@@ -1,8 +1,8 @@
 import { test, expect } from '@playwright/test';
 
 // Tier 2 (theme-primitive) assertions for the media container block, converted
-// from .context/specs/media.md § Validation. Matrix baked in
-// templates/index.validation--primitive--media.json.
+// from snippets/media.spec.md § Validation. Matrix baked in
+// snippets/media.validation.json.
 //
 // Strategy (decided 2026-06-28): the media block page validates the COMPOSITION
 // surface — placeholder SVG (assets can't be handle-seeded) + handle-seeded
@@ -14,7 +14,7 @@ import { test, expect } from '@playwright/test';
 // validation--block-labels) — so feature fixtures carry no redundant overlay
 // content; only content-placement fixtures (alignment / gap / group) have children.
 
-const PATH = '/?view=validation--primitive--media';
+const PATH = '/?view=validation';
 
 test.beforeEach(async ({ page }) => {
   await page.goto(PATH);

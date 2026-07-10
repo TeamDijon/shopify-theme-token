@@ -1,15 +1,15 @@
 import { test, expect } from '@playwright/test';
 
 // Tier 2 (theme-primitive) assertions for the columns container block, converted
-// from .context/specs/columns.md § Validation. Matrix baked in
-// templates/index.validation--primitive--columns.json.
+// from snippets/columns.spec.md § Validation. Matrix baked in
+// snippets/columns.validation.json.
 //
 // Columns have no stable text of their own, so each test selects a columns block
 // by a unique child's text and walks up via .closest('.shopify-block--columns').
 // The grid lives on the inner <token-layout>; the outer hosts the named container
 // + per-instance custom properties.
 
-const PATH = '/?view=validation--primitive--columns';
+const PATH = '/?view=validation';
 
 test.beforeEach(async ({ page }) => {
   await page.goto(PATH);

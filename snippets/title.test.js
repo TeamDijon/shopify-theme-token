@@ -1,10 +1,10 @@
 import { test, expect } from '@playwright/test';
 
 // Tier 2 (theme-primitive) assertions for the title block, converted from
-// .context/specs/title.md § Validation. Matrix baked in
-// templates/index.validation--primitive--title.json.
+// snippets/title.spec.md § Validation. Matrix baked in
+// snippets/title.validation.json.
 
-const PATH = '/?view=validation--primitive--title';
+const PATH = '/?view=validation';
 
 test.beforeEach(async ({ page }) => {
   await page.goto(PATH);

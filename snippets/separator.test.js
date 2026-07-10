@@ -1,15 +1,15 @@
 import { test, expect } from '@playwright/test';
 
 // Tier 2 (theme-primitive) assertions for the separator block, converted from
-// .context/specs/separator.md § Validation. Matrix baked in
-// templates/index.validation--primitive--separator.json.
+// snippets/separator.spec.md § Validation. Matrix baked in
+// snippets/separator.validation.json.
 //
 // Separators carry no text, so each case is selected by its --block-label
 // (set per block by validation--block-labels, read off the wrapper). The page
 // is the production theme-root grid, so content_width caps + centers the wrapper
 // and line_color resolves on the <hr> border.
 
-const PATH = '/?view=validation--primitive--separator';
+const PATH = '/?view=validation';
 
 test.beforeEach(async ({ page }) => {
   await page.goto(PATH);

@@ -1,13 +1,13 @@
 import { test, expect } from '@playwright/test';
 
 // Tier 2 (theme-primitive) assertions for the group container block, converted
-// from .context/specs/group.md § Validation. Matrix baked in
-// templates/index.validation--primitive--group.json.
+// from snippets/group.spec.md § Validation. Matrix baked in
+// snippets/group.validation.json.
 //
 // Groups have no stable text of their own, so each test selects a group by a
 // unique child's text and walks up via .closest('.shopify-block--group').
 
-const PATH = '/?view=validation--primitive--group';
+const PATH = '/?view=validation';
 
 test.beforeEach(async ({ page }) => {
   await page.goto(PATH);
