@@ -110,18 +110,16 @@ if (existsSync(CLAUDE)) {
 }
 
 // ---- 4. colocation-hygiene ----
-// For every colocated `<name>.spec.md` beside code: require a sibling
-// `<name>.test.js`, and every Implementation pin must match the file's version.
-// Only fires on specs that have already colocated, so the unmigrated corpus under
-// .context/specs/ doesn't false-fail during the migration.
+// For every colocated `<name>.spec.md` beside code, every Implementation pin must
+// match the file's version. A sibling `<name>.test.js` is optional — most colocated
+// specs (utility JS/CSS, metaobject showcases) carry no Playwright coverage, so test
+// presence is not a lint concern. Only fires on specs that have already colocated, so
+// the unmigrated corpus under .context/specs/ doesn't false-fail during migration.
 const CODE_DIRS = ["snippets", "blocks", "sections", "assets"];
 for (const dir of CODE_DIRS) {
   const absDir = join(ROOT, dir);
   if (!existsSync(absDir)) continue;
   for (const specFile of readdirSync(absDir).filter((f) => f.endsWith(".spec.md"))) {
-    const base = specFile.replace(/\.spec\.md$/, "");
-    if (!existsSync(join(absDir, `${base}.test.js`)))
-      note("colocation", `${dir}/${specFile}: no sibling ${base}.test.js`);
     const header = read(join(absDir, specFile)).split(/\n##\s/)[0];
     const seen = new Set();
     for (const [, rel, pinned] of header.matchAll(PIN_RE)) {
