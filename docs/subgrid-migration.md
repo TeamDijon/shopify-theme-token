@@ -143,8 +143,8 @@ CSS in `assets/layer-theme.css`:
 | `snippets/media.liquid` (stylesheet block) | Same — bleed via grid-column. |
 | `.context/docs/theme-root.md` | "Five responsibilities" section reduces to four (appearance moves to body). "Substrate CSS shape" section updates to the subgrid model. "Layout enum" mention removed (no enum after this migration; section's `layout` setting itself is removed in a separate pass — see Open questions). |
 | `.context/docs/container-patterns.md` | Major trim. "Partial-bleed escape (per-side, inside a grid track)" section removed entirely. "Default content sizing" and "Section-bleed — full-width default" sections rewritten as grid-column declarations instead of `inline-size: min(...)` formulas. "Content cap and convergence" section updated to describe grid behavior. Position-selector table removed (no gating needed). |
-| `.context/specs/group.md` | API surface (`bleed_desktop` / `bleed_mobile` enums) unchanged; CSS section rewritten to grid-column model; Behavior section updates the bleed-math entry. |
-| `.context/specs/spacer.md`, `separator.md`, etc. | No bleed-related changes (content blocks have no bleed setting under the strict model; today's specs reflect this). |
+| `group.spec.md` | API surface (`bleed_desktop` / `bleed_mobile` enums) unchanged; CSS section rewritten to grid-column model; Behavior section updates the bleed-math entry. |
+| `spacer.spec.md`, `separator.spec.md`, etc. | No bleed-related changes (content blocks have no bleed setting under the strict model; today's specs reflect this). |
 | `.context/docs/architecture.md` | "CSS layering" mention of body-level appearance. "Section render model" example unchanged (data-modifiers contract unchanged). |
 | `.context/docs/css-standards.md` | `@layer theme` description updates: body now hosts appearance defaults; theme-root hosts layout + rhythm. |
 | `sections/section.liquid` | Possible removal of `layout` setting — see Open questions. Otherwise unchanged. |
@@ -156,7 +156,7 @@ Staged commits to keep verification tractable.
 
 ### Stage 0 — Exploration scaffold
 
-One consolidated verification page (`sections/exploration--subgrid.liquid`, reachable at `/?view=exploration--subgrid`) covered six representative cases — section-bleed band, asymmetric image-left / image-right bleed, two-track band with both edges bleeding, three-track content-aligned, nested groups inside a section-bleed columns block (verifying the strict-container-only model). Retired after the substrate landed; the six cases are spec'd in `specs/section.md` § Validation for the future preset surface.
+One consolidated verification page (`sections/exploration--subgrid.liquid`, reachable at `/?view=exploration--subgrid`) covered six representative cases — section-bleed band, asymmetric image-left / image-right bleed, two-track band with both edges bleeding, three-track content-aligned, nested groups inside a section-bleed columns block (verifying the strict-container-only model). Retired after the substrate landed; the six cases are spec'd in `section.spec.md` § Validation for the future preset surface.
 
 ### Stage 1 — Substrate cutover
 
@@ -174,8 +174,8 @@ Commits on context worktree:
 
 - `theme-root.md` — reduce responsibilities; update substrate-CSS-shape section; remove layout-enum references if section's `layout` setting is being dropped.
 - `container-patterns.md` — major trim per § Affected files. Becomes a tighter doc focused on the grid model.
-- `group.md` — CSS section + Behavior section updates; Implementation pin bump.
-- `columns.md`, `media.md` — analogous updates when those specs are authored / reconciled.
+- `group.spec.md` — CSS section + Behavior section updates; Implementation pin bump.
+- `columns.spec.md`, `media.spec.md` — analogous updates when those specs are authored / reconciled.
 - `architecture.md`, `css-standards.md` — body-level appearance prose.
 
 ### Stage 3 — `<token-layout>` follow-up
@@ -218,5 +218,5 @@ Lean: **drop entirely.** Section schema simplifies to content_width + block_rhyt
 - Theme-root contract: `.context/docs/theme-root.md`
 - Container patterns (today's bleed model — superseded by this migration's Stage 2): `.context/docs/container-patterns.md`
 - Composition strategy (layer model): `.context/docs/composition-strategy.md`
-- Group spec (current implementation pin for the strict-bleed container API): `.context/specs/group.md`
+- Group spec (current implementation pin for the strict-bleed container API): `group.spec.md`
 - Architecture: `.context/docs/architecture.md`

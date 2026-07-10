@@ -1,18 +1,22 @@
 ---
 paths:
-  - ".context/specs/**/*.md"
+  - "**/*.spec.md"
 ---
 
 # Spec convention
 
-Every element in the theme — substrate token, utility, primitive snippet, primitive block, preset, specialized section — earns a spec at `.context/specs/<kebab-name>.md` and an entry in `specs-index.md` under its composition layer.
+Every element in the theme — substrate token, utility, primitive snippet, primitive block, preset, specialized section — earns a spec colocated beside its code (the logic owner), on `main`, discovered by glob.
 
 A spec is the contract. It describes the element's API, output, behavior, validation, and out-of-scope. It is **not** a chronicle of how the design evolved — git history covers that. Write declaratively per `reference-voice.md`.
 
-## File placement and indexing
+## File placement
 
-- Path: `.context/specs/<name>.md`. Name is kebab-case matching the element's filename (e.g. `theme-color`, `utility--color-contrast`, `star-rating`).
-- Index entry: `specs-index.md` under the matching layer section (`Substrate`, `Layer 0 — Snippets`, `Layer 1 — Theme blocks`, `Layer 2 — Presets`, `Layer 3/4 — Sections`). One line, `(planned)` or `(shipped — retrofit)` status suffix.
+- **Colocated beside the logic owner**, on `main`, named `<name>.spec.md` in kebab-case matching the element (e.g. `theme-color`, `utility--color-contrast`, `star-rating`). Discovered by glob (`**/*.spec.md`) — there is no maintained index.
+- Where the logic owner lives, by type:
+  - snippet, or block+snippet pair → `snippets/<name>.spec.md` (the snippet owns the logic; a pair pins both `snippets/<name>.liquid` + `blocks/<name>.liquid`).
+  - block-only → `blocks/<name>.spec.md`; section host → `sections/section.spec.md`; layout → `layout/<name>.spec.md`.
+  - utility JS / CSS → `assets/<name>.spec.md`.
+  - metaobject → `sections/<name>.spec.md`, beside its permanent `validation--substrate--<name>` showcase (the metaobject's visible artifact); the spec keeps the clean name, the section keeps its prefix.
 - Template: copy `_template.md` and fill. Sections that don't apply get `N/A` with a one-clause reason, or omit entirely when the omission is obvious from the element's nature.
 
 ## Header fields
@@ -136,7 +140,7 @@ The canonical header is `## CSS custom properties (exposed)`. Variants like `(em
 
 ### Spec filename convention
 
-Spec filenames use kebab-case (`text-style.md`, `content-width.md`, `button-style.md`) uniformly across the corpus. For metaobject-type specs, this means the filename diverges from the underlying Shopify type key (which uses snake_case: `text_style` / `content_width` / `button_style`). The type key appears in the Schema field tables and Implementation pin where it's load-bearing; the spec name follows kebab-case for filesystem consistency with non-metaobject specs.
+Spec filenames use kebab-case (`text-style.spec.md`, `content-width.spec.md`, `button-style.spec.md`) uniformly across the corpus. For metaobject-type specs, this means the filename diverges from the underlying Shopify type key (which uses snake_case: `text_style` / `content_width` / `button_style`). The type key appears in the Schema field tables and Implementation pin where it's load-bearing; the spec name follows kebab-case for filesystem consistency with non-metaobject specs.
 
 ## Validation vs QoL
 

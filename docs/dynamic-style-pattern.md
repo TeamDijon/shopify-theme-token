@@ -110,5 +110,5 @@ Then in the consumer page's stylesheet:
 
 - `snippets/utility--dynamic-style.liquid` — the renderer
 - `snippets/utility--base-selector.liquid` — the selector source for blocks
-- `snippets/utility--block-layout-vars.liquid` + `.context/specs/utility--block-layout-vars.md` — the skip-on-default + var-fallback cascade worked example (per-block top margin + content-width)
+- `snippets/utility--block-layout-vars.liquid` + `utility--block-layout-vars.spec.md` — the skip-on-default + var-fallback cascade worked example (per-block top margin + content-width)
 - `snippets/validation--block-labels.liquid` — the loop-emitted-variables worked example

@@ -95,4 +95,4 @@ Forward-looking: if we ever add hierarchical template paths (e.g. `template:prod
 
 ### Swapping a key's value
 
-The manager intentionally provides no atomic replace operation — value swaps go through `remove(key)` + `add(key:value)`. The explicit two-step makes the swap intent visible at the call site. See `specs/modifiers-manager.md` § Behavior ("add does not update existing keys") + § Out of scope ("Atomic value swap") for the API surface and design rationale.
+The manager intentionally provides no atomic replace operation — value swaps go through `remove(key)` + `add(key:value)`. The explicit two-step makes the swap intent visible at the call site. See `modifiers-manager.spec.md` § Behavior ("add does not update existing keys") + § Out of scope ("Atomic value swap") for the API surface and design rationale.

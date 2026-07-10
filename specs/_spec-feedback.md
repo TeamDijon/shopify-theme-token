@@ -6,22 +6,21 @@ Read at the start of an authoring or review pass when a refresh on recent fricti
 
 ## When to append
 
-Append a row to the **Log** table when a pipeline phase (authoring, review, implementation, validation, audit) surfaces friction the spec system didn't already absorb. Skip when the phase was friction-free — empty rows are noise.
+Append a row to the **Log** table when a ticket-loop step (spec, implementation, validation, audit) surfaces friction the spec system didn't already absorb. Skip when the step was friction-free — empty rows are noise.
 
-The implementation skill's checklist names this explicitly; other skills should follow the same discipline as they mature.
+The ticket-loop `evals` step names this explicitly: spec-system friction lands here; loop-mechanics friction goes to the `context` step instead.
 
 ## Pass enum
 
-| Value | Source skill (pipeline phase) | Typical friction shape |
+| Value | Source step (ticket-loop) | Typical friction shape |
 |---|---|---|
-| `author` | spec-author (phase 2) | Template gap (no section/field fits the spec's nature); convention ambiguity surfaced while filling the template |
-| `review` | spec-review (phase 3) | Voice drift the reviewer noticed; section ordering that read poorly; cross-reference gaps; convention bullets the spec couldn't apply cleanly |
-| `impl-first` | implementation (phase 4, first build) | API ambiguity, edge-case behavior not covered, decision punted to implementer |
-| `impl-update` | implementation (phase 4, subsequent build) | Drift between amended spec and prior implementation; spec change unclear on backwards-compat surface |
-| `validation` | validation (phase 5) | Validation matrix doesn't translate cleanly into a buildable page; tier sub-shape mismatch; missing assertion vocabulary |
-| `audit` | audit (phase 6) | Cross-spec pattern — the only phase scanning multiple specs at once, so its findings tend to be promotion-ready |
+| `spec` | spec (authoring + the REVIEW gate, merged) | Template gap (no section/field fits the spec's nature); convention ambiguity; voice drift; section ordering that read poorly; cross-reference gaps |
+| `impl-first` | implementation (first build) | API ambiguity, edge-case behavior not covered, decision punted to implementer |
+| `impl-update` | implementation (subsequent build) | Drift between amended spec and prior implementation; spec change unclear on backwards-compat surface |
+| `validation` | validation | Validation matrix doesn't translate cleanly into a buildable page; tier sub-shape mismatch; missing assertion vocabulary |
+| `audit` | audit | Feature↔intent review scanning multiple specs at once, so findings tend to be promotion-ready |
 
-Triage (phase 1) doesn't interact with spec content and doesn't write to this log.
+`triage` doesn't interact with spec content and doesn't write to this log. Loop-mechanics friction (a step reference that misled, a gate that misfired) is governance on the loop itself — it goes to the ticket-loop `context` step, not here. Historical rows may carry the pre-merge `author` / `review` values from the six-phase era.
 
 ## Slug format for candidates
 

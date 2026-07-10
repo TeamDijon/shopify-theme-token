@@ -34,9 +34,9 @@ Substrate emitters applying the convention:
 
 `snippets/utility--font-face.liquid` doesn't apply the convention — its `font-weight` field is numeric (100–900 dimensionless) and emits as-is; no px / rem unit involved on either side.
 
-Substrate specs documenting the convention at their emission boundary: `spacing.md`, `content-width.md`, `text-style.md`, `utility--block-layout-vars.md`, `utility--css-variables.md`.
+Substrate specs documenting the convention at their emission boundary: `spacing.spec.md`, `content-width.spec.md`, `text-style.spec.md`, `utility--block-layout-vars.spec.md`, `utility--css-variables.spec.md`.
 
 ## Related
 
 - `.context/docs/css-standards.md` — variable-naming conventions
-- `.context/specs/design-constants.md` — the px-magic exceptions (border-width scale, `--radius-pill`)
+- `design-constants.spec.md` — the px-magic exceptions (border-width scale, `--radius-pill`)

@@ -159,7 +159,7 @@ This resolves the "rhythm + gap sum" footgun that exists when a flat selector (`
 }
 ```
 
-So `block_rhythm` (the default between-sibling gap) and spacers (explicit gaps) never double up — a spacer yields exactly its token's height at that boundary. Additive spacing is achieved with a larger spacer token, not by stacking rhythm onto it. This is the CSS encoding of the spacer = explicit-gap / rhythm = default-between-sibling split (see `spacer.md`).
+So `block_rhythm` (the default between-sibling gap) and spacers (explicit gaps) never double up — a spacer yields exactly its token's height at that boundary. Additive spacing is achieved with a larger spacer token, not by stacking rhythm onto it. This is the CSS encoding of the spacer = explicit-gap / rhythm = default-between-sibling split (see `spacer.spec.md`).
 
 ## Substrate CSS shape
 

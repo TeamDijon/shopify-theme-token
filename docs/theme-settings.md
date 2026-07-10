@@ -47,7 +47,7 @@ Subsection header before the two ranges: `t:spacing.gutter.content`. The two ran
 
 | ID | Type | Default / Notes | Consumed by |
 |---|---|---|---|
-| `color_schemes` | color_scheme_group | 14 colors per scheme definition (see Color scheme definition below) | `snippets/utility--css-variables.liquid` — `{% for scheme in settings.color_schemes %}` emits one rule block per scheme: `[data-modifiers*='color-scheme:<id>'] { … }`. Cross-references the `--color-role-*` namespace contract in `.context/specs/color-scheme.md`. |
+| `color_schemes` | color_scheme_group | 14 colors per scheme definition (see Color scheme definition below) | `snippets/utility--css-variables.liquid` — `{% for scheme in settings.color_schemes %}` emits one rule block per scheme: `[data-modifiers*='color-scheme:<id>'] { … }`. Cross-references the `--color-role-*` namespace contract in `color-scheme.spec.md`. |
 | `meta_theme_color` | metaobject reference (`theme_color`) | optional | `snippets/utility--meta-theme-color.liquid` — emits `<meta name="theme-color">` from the picked palette entry, supporting the mobile browser UI's chrome color |
 
 #### Color scheme definition
@@ -117,7 +117,7 @@ After the `color_schemes` setting, a header (`t:colors.meta_theme_color.header`)
 
 | ID | Type | Default / Notes | Consumed by |
 |---|---|---|---|
-| `base_text_style` | metaobject reference (`text_style`) | — | `utility--css-variables.liquid` — emits the `--base-*` text-style aliases consumed by the body rule. `utility--font-preload.liquid` reads `settings.base_text_style.font_family.value` to determine which font face to preload. See `.context/specs/text-style.md`. |
+| `base_text_style` | metaobject reference (`text_style`) | — | `utility--css-variables.liquid` — emits the `--base-*` text-style aliases consumed by the body rule. `utility--font-preload.liquid` reads `settings.base_text_style.font_family.value` to determine which font face to preload. See `text-style.spec.md`. |
 | `mono_font` | font_picker | default `mono`, `visible_if: {{ false }}` | `utility--css-variables.liquid` — fallback `font_family` value when a `typeface` metaobject entry has its `font_family` field blank. Hidden from the editor; remains accessible to Liquid via `settings.mono_font.family`. |
 | `sans_serif_font` | font_picker | default `sans-serif`, `visible_if: {{ false }}` | Same — fallback for sans-serif typeface entries |
 | `serif_font` | font_picker | default `serif`, `visible_if: {{ false }}` | Same — fallback for serif typeface entries |
@@ -177,7 +177,7 @@ Theme settings are merchant-facing flat scalars (color, range, image, font, sing
 
 - `.context/docs/locale-conventions.md` — schema locale file structure (where `t:` keys resolve)
 - `.context/docs/metaobject-definitions.md` — the parallel surface for catalog-shaped content; boundary documented above
-- `.context/specs/color-scheme.md` — the `--color-role-*` namespace contract; consumes `color_schemes`
-- `.context/specs/text-style.md` — the typography metaobject; `base_text_style` setting picks one entry
-- `.context/specs/theme-color.md` — the named-color metaobject; `meta_theme_color` setting picks one entry
-- `.context/specs/font-system.md` — the font / typeface metaobjects; `mono_font` / `sans_serif_font` / `serif_font` are the hidden fallback resolvers
+- `color-scheme.spec.md` — the `--color-role-*` namespace contract; consumes `color_schemes`
+- `text-style.spec.md` — the typography metaobject; `base_text_style` setting picks one entry
+- `theme-color.spec.md` — the named-color metaobject; `meta_theme_color` setting picks one entry
+- `font-system.spec.md` — the font / typeface metaobjects; `mono_font` / `sans_serif_font` / `serif_font` are the hidden fallback resolvers

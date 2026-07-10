@@ -8,19 +8,20 @@ For the codebase itself (repo layout, render model, asset pipeline, CSS layers, 
 
 | Category | Path | Audience | Role |
 |---|---|---|---|
-| **Specs** | `.context/specs/<name>.md` | Authors + agents | Per-element contract — one spec per element (snippet, block, section, metaobject, utility-js, utility-css). The spec is the **source of truth** for the element's API, output, behavior, and validation. |
+| **Specs** | colocated beside code (glob `**/*.spec.md`) | Authors + agents | Per-element contract — one spec per element (snippet, block, section, metaobject, utility-js, utility-css), living beside the code it governs on `main`. The spec is the **source of truth** for the element's API, output, behavior, and validation. |
 | **Docs** | `.context/docs/<topic>.md` | Authors + agents | Cross-cutting patterns referenced by multiple specs or rules. Architecture, composition model, asset loading, naming conventions, validation contract. A pattern earns a doc when **2+ rules or specs reference it**. |
 | **Rules** | `.context/rules/<convention>.md` | Authors (per-file glob-loaded) | Authoring conventions for one file type — how to write a snippet, a block, a section, a JS asset, a spec. Loaded into agent context when editing a matching file (per the rule's glob). |
-| **Skills** | `.claude/skills/<phase>/SKILL.md` | Pipeline runbooks | Phase-specific workflow — triage, spec-author, spec-review, implementation, validation, audit. Invoked explicitly when entering a phase. |
+| **Skills** | `.claude/skills/<name>/SKILL.md` | Pipeline runbooks | The `ticket-loop` conductor owns the pipeline end to end; `deflavor` and `playwright-cleanup` are utilities. Invoked explicitly. |
 
 ## Where to start
 
 | If you're … | Start here |
 |---|---|
 | Orienting to the codebase | `architecture.md` |
-| Authoring a new spec | `specs/_template.md` + `rules/spec-convention.md` |
-| Reviewing a spec with `<!-- REVIEW: -->` markers | `.claude/skills/spec-review/SKILL.md` |
-| Building from a settled spec | `.claude/skills/implementation/SKILL.md` + the matching `<file-type>-convention.md` rule |
+| Running a unit of work end to end | `.claude/skills/ticket-loop/SKILL.md` |
+| Authoring a new spec | `.context/specs/_template.md` + `rules/spec-convention.md` (the spec lands colocated beside its code) |
+| Reviewing a spec with `<!-- REVIEW: -->` markers | `.claude/skills/ticket-loop/references/spec.md` |
+| Building from a settled spec | `.claude/skills/ticket-loop/references/implementation.md` + the matching `<file-type>-convention.md` rule |
 | Understanding the per-tier validation contract | `docs/validation-contract.md` |
 | Understanding the L0 → L1 → L2 → Beyond-L2 layer model | `docs/composition-strategy.md` |
 | Picking a unit (em / rem / px) for a CSS custom property | `docs/css-standards.md` § Unit choice in custom-property defaults |
@@ -34,7 +35,7 @@ The category boundaries are sharp:
 - **Specs reference docs + rules** for cross-cutting patterns the spec relies on, but the **API surface of the element stays in the spec.** Specs never duplicate a doc's pattern; they cross-reference it ("see `modifier-system.md` for the `data-modifiers` vocabulary").
 - **Docs reference specs** for the canonical API of an element the doc discusses. Pattern docs describe *when* and *why*; specs describe *the API* (per `spec-convention.md` § Cross-doc boundaries).
 - **Rules reference docs** when the convention depends on a pattern documented elsewhere. Rules don't duplicate spec content — a rule says "follow `<spec-name>.md`"; the rule's job is the authoring discipline, not the contract.
-- **Skills reference specs + rules + docs** as runbook inputs. Each phase skill names the files an agent should read before starting.
+- **Skills reference specs + rules + docs** as runbook inputs. Each `ticket-loop` step reference names the files an agent should read before starting.
 
 ## Content placement rule
 
@@ -53,18 +54,20 @@ Bias toward inlining until the 2+ threshold is crossed. Extraction is a delibera
 
 ## Per-category navigation
 
-### Specs (`.context/specs/`)
+### Specs (colocated, glob `**/*.spec.md`)
 
-Organized by composition layer in `specs-index.md`:
+Specs live beside the code they govern on `main`, discovered by glob rather than a maintained index. Location follows where the element's logic lives:
 
-- **Substrate** — metaobjects + utility snippets + utility-JS + utility-CSS. Foundation.
-- **Layer 0 — Snippets** — pure rendering primitives. Block-backed or sub-component.
-- **Layer 1 — Theme blocks** — schema wrapper around an L0 primitive.
-- **Section host** — `section.liquid` carrying L2 presets.
-- **Layer 2 — Presets** — saved compositions of L1 blocks (deferred; see `BACKLOG.md`).
-- **Beyond L2** — specialized sections (deferred).
+- **snippet, or block+snippet pair** → `snippets/<name>.spec.md` (the snippet is the logic owner; a pair pins both `snippets/<name>.liquid` and `blocks/<name>.liquid`).
+- **block-only** → `blocks/<name>.spec.md`.
+- **section host** → `sections/section.spec.md`.
+- **layout** → `layout/layout.spec.md`.
+- **utility JS / CSS** → `assets/<name>.spec.md`.
+- **metaobject** → `sections/<name>.spec.md`, beside its permanent `sections/validation--substrate--<name>.liquid` showcase.
 
-The index entry is one line per spec with a tight purpose summary. Click through for the full contract. Status suffix `(planned)` vs `(shipped — retrofit)` distinguishes spec-ahead-of-implementation from retrofit specs of shipped elements.
+The colocated pin block ties the spec to the file version(s) it governs; `.scripts/context-lint.mjs`'s `colocation` check verifies the pins match.
+
+The template lives at `.context/specs/_template.md` and per-ticket retro notes accumulate in `.context/specs/_spec-feedback.md`; those are the only spec-layer files that stay under `.context/`.
 
 ### Docs (`.context/docs/`)
 
@@ -105,7 +108,7 @@ Per-file-type authoring conventions:
 - `block-convention.md` — `blocks/*.liquid` authoring
 - `section-convention.md` — `sections/*.liquid` authoring
 - `js-asset-convention.md` — `assets/*.js` authoring
-- `spec-convention.md` — `.context/specs/*.md` authoring
+- `spec-convention.md` — colocated `**/*.spec.md` authoring
 - `reference-voice.md` — doc / spec / rule voice (declarative, no journey residue)
 - `a11y-conventions.md` — accessibility patterns
 - `icon-convention.md` — SVG icon authoring
@@ -115,17 +118,13 @@ Rules are loaded by globs (per the rule's frontmatter); editing a matching file 
 
 ### Skills (`.claude/skills/`)
 
-Six phase skills + one cleanup skill:
+One pipeline conductor + two utilities:
 
-- `triage/SKILL.md` — phase 1: business need → layered work plan
-- `spec-author/SKILL.md` — phase 2: draft spec
-- `spec-review/SKILL.md` — phase 3: close review cycle
-- `implementation/SKILL.md` — phase 4: build code
-- `validation/SKILL.md` — phase 5: build validation page
-- `audit/SKILL.md` — phase 6: drift-fix cycle close-out
-- `playwright-cleanup/SKILL.md` — utility: clean Playwright debug artifacts
+- `ticket-loop/SKILL.md` — the conductor: runs a unit of work end to end across eight steps — **triage → spec → implementation → validation → audit → close → context → evals** — arranged as two divergence→convergence diamonds (contract: triage/spec with a REVIEW gate; solution: implementation/validation) plus a decoupled tail (audit=loop-back gate, close=go/no-go merge gate, context=governance, evals=retro). Each step's runbook lives in `ticket-loop/references/<step>.md`, loaded only when that step runs.
+- `deflavor/SKILL.md` — utility: rewrite a reference doc in declarative voice.
+- `playwright-cleanup/SKILL.md` — utility: clean Playwright debug artifacts.
 
-Skills are invoked explicitly when entering a phase. They name their inputs, checklist steps, done state, and handoff.
+Skills are invoked explicitly. `ticket-loop` is the single entry point when work begins from a need.
 
 ## Always-on context budget
 
@@ -138,7 +137,7 @@ When a question arises during work:
 1. **Element-specific** (e.g., "what does `button` accept as `link`?") → spec
 2. **Cross-cutting pattern** (e.g., "how should I emit `data-modifiers` values?") → doc
 3. **Authoring discipline** (e.g., "how do I structure a new snippet's `{% doc %}` block?") → rule
-4. **Workflow question** (e.g., "what's the spec-review phase's checklist?") → skill
+4. **Workflow question** (e.g., "what's the spec step's checklist?") → the `ticket-loop` skill + its step reference
 
 If you can't answer the question from any of these, it's a real gap — propose where the answer should live before authoring.
 
@@ -146,5 +145,5 @@ If you can't answer the question from any of these, it's a real gap — propose 
 
 - `architecture.md` — codebase-layer counterpart to this doc
 - `composition-strategy.md` — the layer model specs map onto
-- `spec-to-component.md` — the 6-phase pipeline tying skills to specs
+- `spec-to-component.md` — the pipeline tying the `ticket-loop` skill to colocated specs
 - `CLAUDE.md` — project-level conventions (context system, loop protocol, always-on budget)

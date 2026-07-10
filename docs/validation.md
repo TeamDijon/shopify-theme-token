@@ -174,7 +174,7 @@ Each spec's prose assertions convert into committed Playwright specs under `.tes
 - **Gate**: e2e is **not** part of `npm run check`. The static gate (context-lint + prettier + theme-check) stays offline; e2e needs a live server and the seeded store. Run it separately.
 - **Tier scoping**: a spec asserts only what its page's tier owns — emitted attributes / modifiers / custom properties for a primitive, the cascade-applied result for a preset/section. See `validation-contract.md` § Tier 2 Boundary.
 - **Seed dependency**: tests rely on Token's shipped seed catalog (handles like `icon/arrow`, `button_style/link-primary`). Each spec's Validation § names the handles its tests require; a test needing an unseeded handle is a seed-set gap to surface, not a workaround to engineer.
-- **Reference**: `.tests/e2e/primitive--button.spec.js` + `.context/specs/button.md` § Validation are the worked example new pages follow.
+- **Reference**: `.tests/e2e/primitive--button.spec.js` + `button.spec.md` § Validation are the worked example new pages follow.
 
 ## Working with Playwright MCP
 

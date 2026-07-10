@@ -152,7 +152,7 @@ When promoting becomes routine, a script in `bin/` that maps GIDs by handle (que
 
 ### `theme_color`
 
-Consumer contract, runtime behavior, load-bearing handles, and canonical seed entries live in `specs/theme-color.md`. This section covers setup-time definition only.
+Consumer contract, runtime behavior, load-bearing handles, and canonical seed entries live in `theme-color.spec.md`. This section covers setup-time definition only.
 
 **Type:**
 
@@ -179,7 +179,7 @@ Standard name field — see [convention](#name-field-convention). Description: *
 
 ### `gradient`
 
-Consumer contract, runtime behavior, load-bearing handles, and canonical seed entries live in `specs/gradient.md`. This section covers setup-time definition only.
+Consumer contract, runtime behavior, load-bearing handles, and canonical seed entries live in `gradient.spec.md`. This section covers setup-time definition only.
 
 **Type:**
 
@@ -229,7 +229,7 @@ Yields `--gradient-hero` alongside `--gradient-hero-start-opacity: 1` and `--gra
 
 ### `typeface`
 
-Consumer contract, runtime behavior, load-bearing handles, and canonical seed entries live in `specs/font-system.md`. This section covers setup-time definition only.
+Consumer contract, runtime behavior, load-bearing handles, and canonical seed entries live in `font-system.spec.md`. This section covers setup-time definition only.
 
 **Type:**
 
@@ -259,7 +259,7 @@ Standard name field — see [convention](#name-field-convention). Description: *
 
 ### `font`
 
-Consumer contract, runtime behavior, load-bearing handles, and canonical seed entries live in `specs/font-system.md`. This section covers setup-time definition only.
+Consumer contract, runtime behavior, load-bearing handles, and canonical seed entries live in `font-system.spec.md`. This section covers setup-time definition only.
 
 **Type:**
 
@@ -320,7 +320,7 @@ Standard name field — see [convention](#name-field-convention). Description: *
 
 ### `text_style`
 
-Consumer contract, runtime behavior, load-bearing handles, and canonical seed entries live in `specs/text-style.md`. This section covers setup-time definition only.
+Consumer contract, runtime behavior, load-bearing handles, and canonical seed entries live in `text-style.spec.md`. This section covers setup-time definition only.
 
 **Type:**
 
@@ -433,7 +433,7 @@ Standard name field — see [convention](#name-field-convention). Description: *
 | `lead` | Lead | 18 | 20 | 1.5 | 400 |
 | `caption` | Caption | 13 | 14 | 1.4 | 400 |
 
-The h1–h6 + body set covers the document typography. The optional extras cover editorial roles that recur across archetypes: `eyebrow` for small uppercase pre-headings and section labels (consume via `uppercase: true` + `letter_spacing` in the entry); `lead` for long-form intro paragraphs (blog articles, hero copy under titles); `caption` for image captions, photo credits, footnotes, and fine-print disclaimers (a single style covers both decorative and legal-ish small text). All three are optional — add them when a project calls for them. See `specs/text-style.md` § Seed entries for the full required-vs-optional contract.
+The h1–h6 + body set covers the document typography. The optional extras cover editorial roles that recur across archetypes: `eyebrow` for small uppercase pre-headings and section labels (consume via `uppercase: true` + `letter_spacing` in the entry); `lead` for long-form intro paragraphs (blog articles, hero copy under titles); `caption` for image captions, photo credits, footnotes, and fine-print disclaimers (a single style covers both decorative and legal-ish small text). All three are optional — add them when a project calls for them. See `text-style.spec.md` § Seed entries for the full required-vs-optional contract.
 
 All entries point `font_family` at the same typeface (e.g., the merchant's primary sans-serif) and use `font_fallback_family: sans-serif`. Tune per-store post-seed.
 
@@ -441,7 +441,7 @@ After seeding, set `settings_data.json` → `current.base_text_style` to the `bo
 
 ### `content_width`
 
-Consumer contract, runtime behavior, load-bearing handles, and canonical seed entries live in `specs/content-width.md`. This section covers setup-time definition only.
+Consumer contract, runtime behavior, load-bearing handles, and canonical seed entries live in `content-width.spec.md`. This section covers setup-time definition only.
 
 **Type:**
 
@@ -477,7 +477,7 @@ Standard name field — see [convention](#name-field-convention). Description: *
 
 ### `icon`
 
-Consumer contract, runtime behavior, load-bearing handles, and canonical seed entries live in `specs/icon.md`. This section covers setup-time definition only.
+Consumer contract, runtime behavior, load-bearing handles, and canonical seed entries live in `icon.spec.md`. This section covers setup-time definition only.
 
 **Type:**
 
@@ -514,7 +514,7 @@ Standard name field — see [convention](#name-field-convention). Description: *
 
 ### `button_style`
 
-Consumer contract, runtime behavior, load-bearing handles, and canonical seed entries live in `specs/button-style.md`. This section covers setup-time definition only.
+Consumer contract, runtime behavior, load-bearing handles, and canonical seed entries live in `button-style.spec.md`. This section covers setup-time definition only.
 
 **Type:**
 
@@ -548,7 +548,7 @@ Standard name field — see [convention](#name-field-convention). Description: *
 
 ### `container_style`
 
-Consumer contract, runtime behavior, load-bearing handles, and canonical seed entries live in `specs/container-style.md`. This section covers setup-time definition only.
+Consumer contract, runtime behavior, load-bearing handles, and canonical seed entries live in `container-style.spec.md`. This section covers setup-time definition only.
 
 **Type:**
 
@@ -581,7 +581,7 @@ Default CSS for each:
 
 ### `media_size`
 
-Consumer contract, runtime behavior, load-bearing handles, and canonical seed entries live in `specs/media-size.md`. This section covers setup-time definition only.
+Consumer contract, runtime behavior, load-bearing handles, and canonical seed entries live in `media-size.spec.md`. This section covers setup-time definition only.
 
 **Type:**
 
@@ -631,7 +631,7 @@ Standard name field — see [convention](#name-field-convention). Description: *
 
 ### `spacing`
 
-Consumer contract, runtime behavior, load-bearing handles, and canonical seed entries live in `specs/spacing.md`. This section covers setup-time definition only.
+Consumer contract, runtime behavior, load-bearing handles, and canonical seed entries live in `spacing.spec.md`. This section covers setup-time definition only.
 
 **Type:**
 
